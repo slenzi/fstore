@@ -1,0 +1,234 @@
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.lenzi</groupId>
+	<artifactId>fstore</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>FStore Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	
+	<properties>
+		<version.junit>4.12</version.junit>
+		<version.logback>1.1.2</version.logback>
+		<version.joda.time>2.7</version.joda.time>
+		<version.google.guava>18.0</version.google.guava>
+		<version.apache.commons.io>2.4</version.apache.commons.io>
+		<version.apache.commons.fileupload>1.3.1</version.apache.commons.fileupload>
+		<version.apache.commons.lang3>3.3.2</version.apache.commons.lang3>
+		<version.apache.cxf>3.0.4</version.apache.cxf>
+		<version.jackson.jaxrs>1.9.13</version.jackson.jaxrs>
+		<version.javax.inject>1</version.javax.inject>
+		<version.javax.servlet>3.1.0</version.javax.servlet>
+		<version.javax.jsr311.version>1.1.1</version.javax.jsr311.version>
+		<version.spring>4.1.4.RELEASE</version.spring>
+		<version.hibernate>4.3.8.Final</version.hibernate>
+		<!-- not sure if hibernate jpa is needed -->
+		<version.hibernate.jpa>1.0.0.Final</version.hibernate.jpa>
+		<version.jdbc.postgres>9.1-901-1.jdbc4</version.jdbc.postgres>
+	</properties>
+	
+	<dependencies>
+	
+		<!-- Unit testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${version.junit}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Logging -->		
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${version.logback}</version>
+		</dependency>
+		
+		<!-- Date & time library -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${version.joda.time}</version>
+		</dependency>
+		
+		<!-- Google's excellent Guava lib -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${version.google.guava}</version>
+		</dependency>
+		
+		<!-- Apache Commons -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${version.apache.commons.io}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>${version.apache.commons.fileupload}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${version.apache.commons.lang3}</version>
+		</dependency>
+		
+		<!-- Javax -->
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>${version.javax.inject}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${version.javax.servlet}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Spring -->
+		<!--
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		-->
+		<!-- Spring-webmvc has dependency on many other spring components. No need to include them separately. -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${version.hibernate}</version>
+			<classifier/>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${version.hibernate}</version>
+			<classifier/>
+		</dependency>
+		<!-- not sure if this is needed -->
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>${version.hibernate.jpa}</version>
+			<classifier/>
+		</dependency>
+		<!-- For generating JPA meta models for type safe queries. -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			<version>${version.hibernate}</version>
+		</dependency>
+	
+		<!-- Postgres JDBC driver -->
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${version.jdbc.postgres}</version>
+		</dependency>
+		
+		<!-- Apache CXF web services -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>${version.apache.cxf}</version>
+		</dependency>
+		
+		<!-- Jax-RS provider for JSON content type, based on Jackson JSON processor's data binding functionality. -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>${version.jackson.jaxrs}</version>
+		</dependency>
+
+		<!-- JSR-311 RESTful Services Specification -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+			<version>${version.javax.jsr311.version}</version>
+		</dependency>
+
+	</dependencies>
+	
+	<build>
+		
+		<finalName>fstore</finalName>
+		
+		<plugins>
+		
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <version>3.1</version>
+			    <configuration>
+			        <source>1.7</source>
+			        <target>1.7</target>
+			        <!-- need this line for maven processor plugin to correctly generate metamodels without complaining of duplicate classes -->
+			        <compilerArgument>-proc:none</compilerArgument>
+			    </configuration>
+			</plugin>
+		
+			<!--
+			For generating JPA 2.0 meta models to be used with criteria API
+			We use Hibernate's meta model generation API, included as a dependency above
+			-->
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>2.2.0</version>
+				<executions>
+					<execution>
+						<id>process</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<processors>
+          						<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+        					</processors>
+							<outputDirectory>
+								src/generated/java
+							</outputDirectory>
+							<compilerArguments>
+								-source 1.7 -target 1.7
+							</compilerArguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		
+		</plugins>
+		
+	</build>
+
+</project>
