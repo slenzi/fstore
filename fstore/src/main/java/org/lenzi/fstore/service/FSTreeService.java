@@ -16,9 +16,9 @@ import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.FSClosure;
 import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +36,11 @@ public class FSTreeService {
 	
 	@Autowired
 	ClosureRepository closureRepository;
+	
+	// debug method for testing factory generation
+	public String getClosureRepoType(){
+		return closureRepository.getRepositoryName();
+	}
 	
 	/**
 	 * Create a new tree.
@@ -71,10 +76,14 @@ public class FSTreeService {
 	 * @param nodeName
 	 * @return
 	 */
-	public FSNode createNode(FSNode parentNode, String nodeName){
+	public FSNode createNode(FSNode parentNode, String nodeName) throws ServiceException{
 		
 		FSNode fsNode = null;
-		fsNode = closureRepository.addNode(parentNode.getNodeId(), nodeName);
+		try {
+			fsNode = closureRepository.addNode(parentNode.getNodeId(), nodeName);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage());
+		}
 		
 		return fsNode;
 		
@@ -85,9 +94,13 @@ public class FSTreeService {
 	 * 
 	 * @param node
 	 */
-	public void removeNode(FSNode node){
+	public void removeNode(FSNode node) throws ServiceException{
 		
-		closureRepository.removeNode(node.getNodeId());
+		try {
+			closureRepository.removeNode(node.getNodeId());
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage());
+		}
 		
 	}
 	
@@ -96,9 +109,13 @@ public class FSTreeService {
 	 * 
 	 * @param node
 	 */
-	public void removeChildren(FSNode node){
+	public void removeChildren(FSNode node) throws ServiceException {
 		
-		closureRepository.removeChildren(node.getNodeId());
+		try {
+			closureRepository.removeChildren(node.getNodeId());
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage());
+		}
 		
 	}
 	
@@ -108,14 +125,12 @@ public class FSTreeService {
 	 * @param nodeToMode
 	 * @param newParentNode
 	 */
-	public void moveNode(FSNode nodeToMode, FSNode newParentNode){
+	public void moveNode(FSNode nodeToMode, FSNode newParentNode) throws ServiceException {
 		
 		try {
 			closureRepository.moveNode(nodeToMode.getNodeId(), newParentNode.getNodeId());
 		} catch (DatabaseException e) {
-			e.printStackTrace();
-			logger.error("Error moving node " + nodeToMode.getNodeId() + 
-					" to under node " + newParentNode.getNodeId() + ". " + e.getMessage());
+			throw new ServiceException(e.getMessage());
 		}
 		
 	}
@@ -127,7 +142,7 @@ public class FSTreeService {
 	 * @param treeDesc - description of the new tree
 	 * @param leafNode - the existing leaf node that will become the root node of the new tree
 	 */
-	public FSTree leafToRoot(String treeName, String treeDesc, FSNode leafNode){
+	public FSTree leafToRoot(String treeName, String treeDesc, FSNode leafNode) throws ServiceException {
 		
 		// TODO - making a leaf node a root node requires making a new tree!
 		
@@ -144,7 +159,7 @@ public class FSTreeService {
 	 * @param newParentNode
 	 * @return
 	 */
-	public FSNode rootToLeaf(FSTree tree, FSNode newParentNode){
+	public FSNode rootToLeaf(FSTree tree, FSNode newParentNode) throws ServiceException {
 		
 		// TODO - making a current root node a leaf node requires deleting the tree entry!
 		
@@ -163,7 +178,7 @@ public class FSTreeService {
 	 * @param tree
 	 * @return
 	 */
-	public Tree<TreeMeta> buildTree(FSTree tree){
+	public Tree<TreeMeta> buildTree(FSTree tree) throws ServiceException {
 		
 		if(tree == null || tree.getRootNode() == null){
 			return null;
@@ -173,8 +188,7 @@ public class FSTreeService {
 		try {
 			closure = closureRepository.getClosureByNodeId(tree.getRootNode().getNodeId());
 		} catch (DatabaseException e) {
-			e.printStackTrace();
-			logger.error("Error getting closure data for root node " + tree.getRootNode().getNodeId() + ". " + e.getMessage());
+			throw new ServiceException(e.getMessage());
 		}
 		
 		return buildTree(closure);

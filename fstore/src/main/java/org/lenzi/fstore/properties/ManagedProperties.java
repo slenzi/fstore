@@ -23,6 +23,9 @@ public class ManagedProperties {
 	@Value( "${application.title}" )
 	private String appTitle = null;
 	
+	@Value( "${database.type}" )
+	private String databaseType = null;
+	
 	@Value( "${database.driver}" )
 	private String databaseDriver = null;
 	
@@ -82,6 +85,20 @@ public class ManagedProperties {
 	 */
 	public String getDatabasePassword() {
 		return databasePassword;
+	}
+
+	/**
+	 * @return the databaseType
+	 */
+	public String getDatabaseType() {
+		return databaseType;
+	}
+
+	/**
+	 * @param databaseType the databaseType to set
+	 */
+	public void setDatabaseType(String databaseType) {
+		this.databaseType = databaseType;
 	}
 
 }

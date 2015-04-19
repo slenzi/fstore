@@ -5,6 +5,7 @@ package org.lenzi.fstore.controller;
 
 import org.lenzi.fstore.properties.ManagedProperties;
 import org.lenzi.fstore.repository.model.Person;
+import org.lenzi.fstore.service.FSTreeService;
 import org.lenzi.fstore.service.PersonService;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -27,7 +28,10 @@ public class TestController {
     private ManagedProperties appProps;
     
     @Autowired
-    PersonService personService;
+    private PersonService personService;
+    
+    @Autowired
+    private FSTreeService treeService; 
     
     @InjectLogger
     Logger logger;
@@ -36,6 +40,8 @@ public class TestController {
 	public String printHello(ModelMap model) {
 		
 		logger.info("printHello called");
+		
+		logger.info("Closure type => " + treeService.getClosureRepoType());
 		
 		StringBuffer buff = new StringBuffer();
 		buff.append("Hello! This is the \"" + appProps.getAppTitle() + "\" application.");
