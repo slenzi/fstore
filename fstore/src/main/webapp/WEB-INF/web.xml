@@ -28,6 +28,13 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>org.lenzi.fstore.config.AppConfig</param-value>
     </context-param>
+    
+    <!-- specify which Spring profiles are active (we have two, "oracle" and "postgresql" -->
+	<context-param>
+	    <param-name>spring.profiles.active</param-name>
+	    <!-- can be a comma delimited list of profiles -->
+	    <param-value>postgresql</param-value>
+	</context-param>
 
     <!-- Bootstrap the root application context as usual using ContextLoaderListener -->
     <listener>

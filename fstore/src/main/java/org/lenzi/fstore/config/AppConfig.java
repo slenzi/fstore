@@ -24,7 +24,7 @@ import org.springframework.stereotype.Controller;
 	}
 )
 @Import({
-	PropertyConfig.class, PersistenceConfig.class, UploadConfig.class, CxfConfig.class
+	PropertyConfig.class, PersistenceConfig.class, UploadConfig.class, CxfConfig.class, RepositoryConfig.class
 })
 public class AppConfig {
 
@@ -35,5 +35,7 @@ public class AppConfig {
 	// CxfConfig - Setup our JAX-RS service using Apache CXF
 	
 	// UploadConfig - Initialize Spring's Multipart Resolver bean for processing file uploads.
+	
+	// RepositoryConfig - Setup repositories depending on which spring profiles are active
 	
 }

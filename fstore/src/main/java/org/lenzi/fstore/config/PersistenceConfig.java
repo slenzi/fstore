@@ -8,7 +8,6 @@ import javax.sql.DataSource;
 import org.lenzi.fstore.properties.ManagedProperties;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +27,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration 
 @EnableTransactionManagement
 public class PersistenceConfig {
-
-	//private Logger logger = LoggerFactory.getLogger(PersistenceConfig.class.getName());
 	
     @Autowired
     private ManagedProperties appProps;

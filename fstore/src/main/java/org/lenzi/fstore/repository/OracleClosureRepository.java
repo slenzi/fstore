@@ -31,8 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author sal
  */
-@Named
-@Repository
+//@Repository
 @Transactional
 public class OracleClosureRepository extends AbstractRepository implements ClosureRepository {
 
@@ -705,6 +704,9 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 
 	@Override
 	public String getRepositoryName() {
+		
+		logger.info(OracleClosureRepository.class.getName() + "getRepositoryName() called");
+		
 		return OracleClosureRepository.class.getName();
 	}
 

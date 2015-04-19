@@ -8,6 +8,9 @@ drop sequence FS_LINK_ID_SEQUENCE;
 drop sequence FS_PRUNE_ID_SEQUENCE;
 drop sequence FS_TREE_ID_SEQUENCE;
 
+drop index fs_parent_depth_child_idx;
+drop index fs_child_parent_depth_idx;
+
 drop table FS_NODE;
 drop table FS_CLOSURE;
 drop table FS_PRUNE;

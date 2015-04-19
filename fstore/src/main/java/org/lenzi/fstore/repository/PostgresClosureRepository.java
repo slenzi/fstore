@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.inject.Named;
 import javax.persistence.Query;
 
 import org.lenzi.filestore.util.DateUtil;
@@ -31,8 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author sal
  */
-@Named
-@Repository
+//@Repository
 @Transactional
 public class PostgresClosureRepository extends AbstractRepository implements ClosureRepository {
 
@@ -705,6 +703,9 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 
 	@Override
 	public String getRepositoryName() {
+		
+		logger.info(PostgresClosureRepository.class.getName() + "getRepositoryName() called");
+		
 		return PostgresClosureRepository.class.getName();
 	}
 
