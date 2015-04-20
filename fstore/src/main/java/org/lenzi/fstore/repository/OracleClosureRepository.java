@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author sal
  */
-//@Repository
+//@Repository - see org.lenzi.fstore.config.RepositoryConfig.
 @Transactional
 public class OracleClosureRepository extends AbstractRepository implements ClosureRepository {
 

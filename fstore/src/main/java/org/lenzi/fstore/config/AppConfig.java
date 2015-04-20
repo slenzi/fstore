@@ -30,7 +30,7 @@ public class AppConfig {
 
 	// PropertyConfig - Setup property access for our properties file under src/main/resource
 	
-	// PersistenceConfig - Setup entity manager with transaction management for our PostgreSQL database.
+	// PersistenceConfig - Setup entity manager with transaction management for our database.
 	
 	// CxfConfig - Setup our JAX-RS service using Apache CXF
 	

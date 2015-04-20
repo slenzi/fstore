@@ -16,7 +16,6 @@ import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -30,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author sal
  */
-//@Repository
+//@Repository - see org.lenzi.fstore.config.RepositoryConfig.
 @Transactional
 public class PostgresClosureRepository extends AbstractRepository implements ClosureRepository {
 
@@ -38,6 +37,8 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 * 
 	 */
 	private static final long serialVersionUID = -7800560911360236185L;
+	
+	private String SCHEMA = "TEST.";
 
 	@InjectLogger
 	private Logger logger;
@@ -103,11 +104,13 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"insert " +
 		"	into fs_closure (link_id,parent_node_id, child_node_id, depth) " + 
 		"select " +
-		"	FS_LINK_ID_SEQUENCE.nextval, p.parent_node_id, c.child_node_id, (p.depth + c.depth + 1) as depth " +
+		"	nextval(‘" + SCHEMA + "FS_LINK_ID_SEQUENCE’), p.parent_node_id, c.child_node_id, (p.depth + c.depth + 1) as depth " +
 		"from " +
 		"	fs_closure p, fs_closure c " +
 		"where " +
-		"	p.child_node_id = ? and c.parent_node_id = ?";	
+		"	p.child_node_id = ? and c.parent_node_id = ?";
+	
+	
 	
 	/**
 	 * Add nodes to prune table. These are the nodes to delete during a delete operation
@@ -120,7 +123,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_INSERT_PRUNE_TREE =
 		"insert into fs_prune " +
-		"select FS_PRUNE_ID_SEQUENCE.currval as prune_id, child_to_delete from ( " +
+		"select currval(‘" + SCHEMA + "FS_PRUNE_ID_SEQUENCE’) as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
 		"  from fs_closure c  " +
 		"  inner join fs_node n  " +
@@ -139,7 +142,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_INSERT_PRUNE_CHILDREN =
 		"insert into fs_prune " +
-		"select FS_PRUNE_ID_SEQUENCE.currval as prune_id, child_to_delete from ( " +
+		"select currval(‘" + SCHEMA + "FS_PRUNE_ID_SEQUENCE’) as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
 		"  from fs_closure c  " +
 		"  inner join fs_node n  " +
@@ -218,27 +221,28 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"      or " +
 		"      to_delete.child_node_id = pruneTable.child_to_delete " +
 		"    ) " +
-		")";	
+		")";
 	
 	/**
 	 * Select next available prune ID from sequence. Used in FS_PRUNE table.
 	 */
-	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT FS_PRUNE_ID_SEQUENCE.nextval from DUAL";
+	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_PRUNE_ID_SEQUENCE’)";
 	
 	/**
 	 * Select next available node ID from sequence. Used in FS_NODE table.
 	 */
-	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT FS_NODE_ID_SEQUENCE.nextval from DUAL";
+	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_NODE_ID_SEQUENCE’)";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_CLOSURE table.
 	 */
-	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT FS_LINK_ID_SEQUENCE.nextval from DUAL";
+	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_LINK_ID_SEQUENCE’)";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_TREE table.
 	 */
-	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT FS_TREE_ID_SEQUENCE.nextval from DUAL";	
+	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_TREE_ID_SEQUENCE’)";
+	
 	
 	public PostgresClosureRepository() {
 		
@@ -319,10 +323,12 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	public FSNode addNode(Long parentNodeId, String name) throws DatabaseException{
 		
+		logger.info("Query => " + SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE);
+		
 		// Get next available node id from sequence
 		Query queryPruneSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE);
 		BigDecimal result=(BigDecimal)queryPruneSequence.getSingleResult();
-		long nodeId = result.longValue();			
+		long nodeId = result.longValue();
 		
 		// create new node
 		FSNode newNode = new FSNode();
