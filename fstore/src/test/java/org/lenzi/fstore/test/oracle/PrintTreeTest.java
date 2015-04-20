@@ -28,15 +28,15 @@ import org.springframework.transaction.annotation.Transactional;
  * @author slenzi
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=TestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional
+@ContextConfiguration(classes=OracleTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@Transactional("oracle")
 @ActiveProfiles({"oracle"})
 public class PrintTreeTest extends BasicTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	TestConfiguration configuration = null;
+	OracleTestConfiguration configuration = null;
 	
 	@Autowired
 	FSTreeService treeService = null;
@@ -57,12 +57,20 @@ public class PrintTreeTest extends BasicTest {
 	 * Build sample tree and log.
 	 */
 	@Test
-	@Rollback(true)	
+	@Rollback(false)	
 	public void printTree() throws ServiceException {
 		
 		logTestTitle("Print tree test");
 		
+		logger.info("Creating sample tree");
 		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
+		
+		assertNotNull(fsTree);
+		assertNotNull(fsTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		
+		logger.info("Adding additional nodes to tree...");
 		
 		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
 			FSNode nodeD = treeService.createNode(nodeB,"D");
@@ -80,6 +88,8 @@ public class PrintTreeTest extends BasicTest {
 					FSNode nodeP = treeService.createNode(nodeO, "P");
 						FSNode nodeQ = treeService.createNode(nodeP, "Q");
 		
+		logger.info("Finished adding nodes to tree...");
+						
 		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		
 		assertNotNull(tree);

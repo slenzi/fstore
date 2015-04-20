@@ -2,11 +2,11 @@
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
-		<file>/Users/slenzi/programming/log/fstore-test.log</file>
+		<file>C:/programming/tomcats/apache-tomcat-7.0.23_solo/logs/fstore.log</file>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
-			<fileNamePattern>/Users/slenzi/programming/log/fstore-test.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>C:/programming/tomcats/apache-tomcat-7.0.23_solo/logs/fstore.%d{yyyy-MM-dd}.log</fileNamePattern>
 			<!-- keep 30 days' worth of history -->
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>

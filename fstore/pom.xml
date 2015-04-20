@@ -54,7 +54,7 @@
 					<name>env</name>
 					<value>lenzi.frontier.pc</value>
 				</property>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
 				<property.file>lenzi.frontier.pc.properties</property.file>
@@ -210,13 +210,13 @@
 		</dependency>
 		
 		<!-- Oracle JDBC Driver -->
-		<!--
+		
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc14</artifactId>
 			<version>${version.jdbc.oracle}</version>
 		</dependency>
-		-->
+		
 		
 		<!-- Apache CXF web services -->
 		<dependency>

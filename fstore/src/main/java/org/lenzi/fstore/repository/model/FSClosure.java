@@ -20,7 +20,7 @@ import javax.persistence.Transient;
 // @SequenceGenerator(name = "FS_LINK_ID_SEQUENCE", sequenceName = "FS_LINK_ID_SEQUENCE", schema = "ECOGUSER", allocationSize = 50)
 
 @Entity
-@Table(name = "FS_CLOSURE", schema = "TEST")
+@Table(name = "FS_CLOSURE", schema = "ECOGUSER")
 public class FSClosure implements Serializable {
 
 	/**

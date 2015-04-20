@@ -1,13 +1,15 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.postgresql;
+package org.lenzi.fstore.test.oracle;
 
 import java.io.IOException;
 
 import org.lenzi.fstore.logging.LoggerBeanPostProccessor;
 import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.PostgresClosureRepository;
+import org.lenzi.fstore.repository.OracleClosureRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,7 +26,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 /**
  * @author sal
  *
- * Configuration setup for our PostgreSQL unit test cases.
+ * Configuration setup for our Oracle unit test cases.
  */
 @Configuration
 @EnableTransactionManagement(proxyTargetClass=true)
@@ -36,35 +38,40 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 		}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=false)
-public class TestConfiguration implements TransactionManagementConfigurer {
+@TransactionConfiguration(transactionManager="oracleTxManager", defaultRollback=false)
+public class OracleTestConfiguration implements TransactionManagementConfigurer {
 
-	// defined in /src/test/resources/META-INF/test-persistence.xml
-	private String persistenceUnitName = "FStoreTestPostgreSQLPersistenceUnit";
+	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+	
+	// defined in /src/test/resources/META-INF/test-oracle-persistence.xml
+	private String persistenceUnitName = "FStoreOracleSQLPersistenceUnit";
 	
 	/**
 	 * 
 	 */
-	public TestConfiguration() {
+	public OracleTestConfiguration() {
 	
 	}
 	
 	/**
-	 * PostgreSQL closure repository
+	 * Oracle closure repository
 	 * 
 	 * @return
 	 */
 	@Bean
-	@Profile("postgresql")
-	public ClosureRepository getPostgresClosureRepository(){
-		return new PostgresClosureRepository();
+	@Profile("oracle")
+	public ClosureRepository getOracleClosureRepository(){
+		
+		logger.info("Getting OracleClosureRepository");
+		
+		return new OracleClosureRepository();
 	}
 
 	/**
 	 * Transaction manager
 	 */
-    @Bean(name="postgresqlTxManager")
-    @Qualifier("postgresql")
+    @Bean(name="oracleTxManager")
+    @Qualifier("oracle")
 	public PlatformTransactionManager annotationDrivenTransactionManager() {
     	JpaTransactionManager txManager = new JpaTransactionManager();
     	txManager.setPersistenceUnitName(persistenceUnitName);
@@ -78,10 +85,10 @@ public class TestConfiguration implements TransactionManagementConfigurer {
      * @throws IOException
      */
     @Bean
-    @Qualifier("postgresql")
+    @Qualifier("oracle")
     public LocalContainerEntityManagerFactoryBean oracleEntityManagerFactory() throws IOException {	
     	LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-    	emf.setPersistenceXmlLocation("classpath:META-INF/test-persistence.xml");
+    	emf.setPersistenceXmlLocation("classpath:META-INF/test-oracle-persistence.xml");
     	emf.setPersistenceUnitName(persistenceUnitName);
     	return emf; 
     }
