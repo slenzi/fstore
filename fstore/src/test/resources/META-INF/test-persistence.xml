@@ -19,6 +19,7 @@
       	<class>org.lenzi.fstore.repository.model.FSTree</class>	  	      	
     
         <properties>
+        
         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
         	<!--
         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
@@ -43,5 +44,42 @@
         </properties>        
         
     </persistence-unit>
+    
+    <!-- 
+    Oracle test persistence unit
+    -->
+	<persistence-unit name="FStoreOracleSQLPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+    
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		
+      	<class>org.lenzi.fstore.repository.model.FSNode</class>
+      	<class>org.lenzi.fstore.repository.model.FSClosure</class>
+      	<class>org.lenzi.fstore.repository.model.FSPrune</class>
+      	<class>org.lenzi.fstore.repository.model.FSTree</class>		      	
+    
+        <properties>
+        	
+        	<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+        	<!--
+        	<property name="hibernate.hbm2ddl.auto" value="validate"/>
+        	-->
+            <property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver"/>
+            <property name="hibernate.connection.username" value="ecoguser"/>
+            <property name="hibernate.connection.password" value="*****"/>
+            <property name="hibernate.default_schema" value="ecoguser"/>
+            <property name="hibernate.connection.url" value="jdbc:oracle:thin:@ecog1.dfci.harvard.edu:1511:ecogtst"/>
+            
+            <!-- Turn off autodetection of class and hbm files (default to class,hbm) -->
+            <!--
+            <property name="hibernate.archive.autodetection" value=""/>
+            <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+            -->
+          
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            
+            <property name="hibernate.jdbc.batch_size" value="25"/>
+                 
+        </properties>    
     
 </persistence>

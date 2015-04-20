@@ -2,6 +2,7 @@ package org.lenzi.fstore.config;
 
 import java.util.Properties;
 
+import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -43,7 +45,10 @@ public class PersistenceConfig {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-		em.setDataSource(getDriverManagerDataSource());
+		
+		//em.setDataSource(getDriverManagerDataSource());
+		em.setDataSource(getJndiDataSource());
+		
 		em.setPackagesToScan(new String[] { "org.lenzi.fstore.repository.model" });
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -58,7 +63,6 @@ public class PersistenceConfig {
 	 * 
 	 * @return
 	 */
-	/*
 	@Bean
 	public DataSource getJndiDataSource() {
 		
@@ -74,7 +78,6 @@ public class PersistenceConfig {
         }
         return dataSource;
 	}
-	*/
 	
 	/**
 	 * Get DataSource for database.

@@ -2,13 +2,16 @@
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
-		<file>/Users/slenzi/programming/log/fstore.log</file>
+		<file>@log.file@</file>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			
 			<!-- daily rollover -->
-			<fileNamePattern>/Users/slenzi/programming/log/fstore.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>@log.rolling.pattern@</fileNamePattern>
+			
 			<!-- keep 30 days' worth of history -->
-			<maxHistory>30</maxHistory>
+			<maxHistory>@log.max.history@</maxHistory>
+			
 		</rollingPolicy>
 
 		<encoder>
@@ -23,7 +26,7 @@
 		</encoder>	
 	</appender>
 
-	<root level="info">
+	<root level="@log.level@">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>

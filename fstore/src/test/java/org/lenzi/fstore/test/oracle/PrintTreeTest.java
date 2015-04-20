@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.postgresql;
+package org.lenzi.fstore.test.oracle;
 
 
 import static org.junit.Assert.assertNotNull;
@@ -23,14 +23,14 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * PostgreSQL unit test, controlled by the ActiveProfiles annotation. Uses the PostgresClosureRepository.
+ * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
  * 
  * @author slenzi
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=TestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional
-@ActiveProfiles({"postgresql"})
+@ActiveProfiles({"oracle"})
 public class PrintTreeTest extends BasicTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());

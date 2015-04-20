@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Setup which closure repository to use depending on which spring profile is active (oracle or postgresql)
+ * Setup which closure repository to use depending on which spring profile
+ * is active (oracle or postgresql)
  * 
  * @author slenzi
  */
@@ -20,6 +21,12 @@ public class RepositoryConfig {
 	@InjectLogger
 	private Logger logger;
 
+	/**
+	 * Create instance of OracleClosureRepository. Will only be created when
+	 * the "oracle" Spring Profile is active.
+	 * 
+	 * @return Instance of an OracleClosureRepository.
+	 */
 	@Bean
 	@Profile("oracle")
 	public ClosureRepository getOracleClosureRepository(){
@@ -30,6 +37,12 @@ public class RepositoryConfig {
 		
 	}
 	
+	/**
+	 * Create instance of PostgresClosureRepository. Will only be created when
+	 * the "postgresql" Spring Profile is active.
+	 * 
+	 * @return Instance of an PostgresClosureRepository.
+	 */
 	@Bean
 	@Profile("postgresql")
 	public ClosureRepository getPostgresClosureRepository(){

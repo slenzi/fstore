@@ -33,6 +33,35 @@
 		<version.jdbc.oracle>10.2.0.2</version.jdbc.oracle>
 	</properties>
 	
+	<profiles>
+		<profile>
+			<id>lenzi.mac</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>lenzi.mac</value>
+				</property>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<property.file>lenzi.mac.properties</property.file>
+			</properties>
+		</profile>	
+		<profile>
+			<id>lenzi.frontier.pc</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>lenzi.frontier.pc</value>
+				</property>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<property.file>lenzi.frontier.pc.properties</property.file>
+			</properties>
+		</profile>
+	</profiles>
+	
 	<dependencies>
 	
 		<!-- Unit testing -->
@@ -56,7 +85,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		
 		<!-- Logging -->		
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -215,7 +243,34 @@
 	
 	<build>
 		
+		<!-- final build file name (for war, or jar) -->
 		<finalName>fstore</finalName>
+		
+		<!-- property file used for filtering during build process -->
+		<filters>
+			<filter>${property.file}</filter>
+		</filters>
+		
+		<!-- define resources that will be filtered -->
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/java</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.java</include>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+		</resources>
 		
 		<plugins>
 		

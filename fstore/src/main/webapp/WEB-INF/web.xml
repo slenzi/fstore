@@ -33,7 +33,7 @@
 	<context-param>
 	    <param-name>spring.profiles.active</param-name>
 	    <!-- can be a comma delimited list of profiles -->
-	    <param-value>postgresql</param-value>
+	    <param-value>@spring.active.profiles@</param-value>
 	</context-param>
 
     <!-- Bootstrap the root application context as usual using ContextLoaderListener -->
