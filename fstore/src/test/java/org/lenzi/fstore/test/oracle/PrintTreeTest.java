@@ -57,7 +57,7 @@ public class PrintTreeTest extends BasicTest {
 	 * Build sample tree and log.
 	 */
 	@Test
-	@Rollback(false)	
+	@Rollback(true)	
 	public void printTree() throws ServiceException {
 		
 		logTestTitle("Print tree test");

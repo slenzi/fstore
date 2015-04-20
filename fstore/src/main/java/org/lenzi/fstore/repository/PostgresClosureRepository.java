@@ -50,7 +50,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 * @param1 The ID of the starting/parent node.
 	 * @param2 The ID of the starting/parent node.
 	 */		
-	private String HQL_TREE_BY_NODE_ID_ALT =
+	private String HQL_CLOSURE_BY_NODE_ID_ALT =
 		"select c " +
 		"from FSClosure as c " +  
 		"join fetch c.childNode child " +  
@@ -104,13 +104,11 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"insert " +
 		"	into fs_closure (link_id,parent_node_id, child_node_id, depth) " + 
 		"select " +
-		"	nextval(‘" + SCHEMA + "FS_LINK_ID_SEQUENCE’), p.parent_node_id, c.child_node_id, (p.depth + c.depth + 1) as depth " +
+		"	nextval('" + SCHEMA + "FS_LINK_ID_SEQUENCE'), p.parent_node_id, c.child_node_id, (p.depth + c.depth + 1) as depth " +
 		"from " +
 		"	fs_closure p, fs_closure c " +
 		"where " +
 		"	p.child_node_id = ? and c.parent_node_id = ?";
-	
-	
 	
 	/**
 	 * Add nodes to prune table. These are the nodes to delete during a delete operation
@@ -123,7 +121,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_INSERT_PRUNE_TREE =
 		"insert into fs_prune " +
-		"select currval(‘" + SCHEMA + "FS_PRUNE_ID_SEQUENCE’) as prune_id, child_to_delete from ( " +
+		"select currval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE') as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
 		"  from fs_closure c  " +
 		"  inner join fs_node n  " +
@@ -142,7 +140,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_INSERT_PRUNE_CHILDREN =
 		"insert into fs_prune " +
-		"select currval(‘" + SCHEMA + "FS_PRUNE_ID_SEQUENCE’) as prune_id, child_to_delete from ( " +
+		"select currval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE') as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
 		"  from fs_closure c  " +
 		"  inner join fs_node n  " +
@@ -223,30 +221,54 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"    ) " +
 		")";
 	
+	private String HQL_GET_TREE_BY_ID =
+		"select t from FSTree as t " +
+		"left join fetch t.rootNode " +
+		"where t.treeId = :treeid";	
+	
 	/**
 	 * Select next available prune ID from sequence. Used in FS_PRUNE table.
 	 */
-	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_PRUNE_ID_SEQUENCE’)";
+	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE')";
 	
 	/**
 	 * Select next available node ID from sequence. Used in FS_NODE table.
 	 */
-	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_NODE_ID_SEQUENCE’)";
+	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_NODE_ID_SEQUENCE')";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_CLOSURE table.
 	 */
-	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_LINK_ID_SEQUENCE’)";
+	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_LINK_ID_SEQUENCE')";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_TREE table.
 	 */
-	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT nextval(‘" + SCHEMA + "FS_TREE_ID_SEQUENCE’)";
+	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_TREE_ID_SEQUENCE')";
 	
 	
 	public PostgresClosureRepository() {
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#getTree(java.lang.Long)
+	 */
+	@Override
+	public FSTree getTree(Long treeId) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(HQL_GET_TREE_BY_ID);
+			query.setParameter("treeid", treeId);
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		FSTree tree = (FSTree)getSingleResult(query);
+		
+		return tree;
+	}	
 	
 	/**
 	 * Add new tree to the database.
@@ -303,7 +325,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		List<FSClosure> results = null;
 		Query query = null;
 		try {
-			query = getEntityManager().createQuery(HQL_TREE_BY_NODE_ID_ALT);
+			query = getEntityManager().createQuery(HQL_CLOSURE_BY_NODE_ID_ALT);
 			query.setParameter(1, nodeId);
 			query.setParameter(2, nodeId);			
 		} catch (IllegalArgumentException e) {

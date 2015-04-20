@@ -45,7 +45,11 @@ public class Tree<T> {
     
     public String toString() {
         return toList().toString();
-    } 	
+    }
+    
+    public String printTree(String lineSeparator){
+    	return rootNode.printTree(lineSeparator);
+    }
 	
     public String printTree(){
     	return rootNode.printTree();

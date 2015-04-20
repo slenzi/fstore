@@ -92,21 +92,27 @@ public class TreeNode<T> {
 		return ((childList != null) ? childList.size() : 0);
 	}
 	
-	public String printTree() {
+	// print tree with provided line separator (e.d. <br> tag)
+	public String printTree(String lineSepartor){
 		StringBuffer buf = new StringBuffer();
-        print(buf, "", true);
-        return buf.toString();
+        print(buf, "", true, lineSepartor);
+        return buf.toString();		
+	}
+	
+	// print tree, default like separator is, System.getProperty("line.separator")
+	public String printTree() {
+		return printTree(System.getProperty("line.separator"));
     }
 
-    private void print(StringBuffer buf, String prefix, boolean isTail) {
-    	//buf.append(prefix + (isTail ? "|   " : "|   ") + System.getProperty("line.separator"));
-    	buf.append(prefix + (isTail ? "|__ " : "|__ ") + data.toString() + System.getProperty("line.separator"));
+    private void print(StringBuffer buf, String prefix, boolean isTail, String lineSepartor) {
+    	//buf.append(prefix + (isTail ? "|   " : "|   ") + lineSepartor);
+    	buf.append(prefix + (isTail ? "|__ " : "|__ ") + data.toString() + lineSepartor);
     	if(childList != null){
 	        for (int i = 0; i < childList.size() - 1; i++) {
-	        	childList.get(i).print(buf, prefix + (isTail ? "   " : "|   "), false);
+	        	childList.get(i).print(buf, prefix + (isTail ? "   " : "|   "), false, lineSepartor);
 	        }
 	        if (childList.size() >= 1) {
-	        	childList.get(childList.size() - 1).print(buf, prefix + (isTail ? "   " : "|   "), true);
+	        	childList.get(childList.size() - 1).print(buf, prefix + (isTail ? "   " : "|   "), true, lineSepartor);
 	        }
     	}
     }	

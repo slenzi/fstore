@@ -43,6 +43,26 @@ public class FSTreeService {
 	}
 	
 	/**
+	 * Get tree by id
+	 * 
+	 * @param treeId
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FSTree getTree(Long treeId) throws ServiceException {
+		
+		FSTree fsTree = null;
+		try {
+			fsTree = closureRepository.getTree(treeId);
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			logger.error("Error creating new tree. " + e.getMessage());
+		}
+		
+		return fsTree;
+	}
+	
+	/**
 	 * Create a new tree.
 	 * 
 	 * @param treeName
@@ -76,7 +96,7 @@ public class FSTreeService {
 	 * @param nodeName
 	 * @return
 	 */
-	public FSNode createNode(FSNode parentNode, String nodeName) throws ServiceException{
+	public FSNode createNode(FSNode parentNode, String nodeName) throws ServiceException {
 		
 		FSNode fsNode = null;
 		try {

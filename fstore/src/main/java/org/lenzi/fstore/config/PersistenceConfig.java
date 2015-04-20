@@ -6,6 +6,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.lenzi.filestore.util.StringUtil;
 import org.lenzi.fstore.properties.ManagedProperties;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class PersistenceConfig {
 		DataSource dataSource = null;
         JndiTemplate jndi = new JndiTemplate();
         
-        String jndiDataSourceName = appProps.getProperty("database.jndi.pool");
+        String jndiDataSourceName = appProps.getProperty("database.jndi.pool.main");
         
         try {
             dataSource = (DataSource) jndi.lookup(jndiDataSourceName);
@@ -95,6 +96,14 @@ public class PersistenceConfig {
 		logger.info("Database url = " + appProps.getDatabaseUrl());
 		logger.info("Database user = " + appProps.getDatabaseUser());
 		logger.info("Database password = *******");
+		
+		if(StringUtil.isNullEmpty(appProps.getDatabaseDriver()) || StringUtil.isNullEmpty(appProps.getDatabaseUrl()) ||
+				StringUtil.isNullEmpty(appProps.getDatabaseUser()) || StringUtil.isNullEmpty(appProps.getDatabasePassword())){
+			
+			logger.error("Missing required values for data source. Check driver name, connection url, username, and/or password");
+			
+			return null;
+		}
 		
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		
@@ -132,8 +141,8 @@ public class PersistenceConfig {
 		
 		properties.setProperty("hibernate.show_sql", appProps.getProperty("hibernate.show_sql"));
 		properties.setProperty("hibernate.jdbc.batch_size", appProps.getProperty("hibernate.jdbc.batch_size"));
-		properties.setProperty("hibernate.dialect",appProps.getProperty("hibernate.dialect"));
-		properties.setProperty("hibernate.generate_statistics",appProps.getProperty("hibernate.generate_statistics"));
+		properties.setProperty("hibernate.dialect", appProps.getProperty("hibernate.dialect"));
+		properties.setProperty("hibernate.generate_statistics", appProps.getProperty("hibernate.generate_statistics"));
 		
 		logger.info("Additional JPA Hibernate properties:");
 		

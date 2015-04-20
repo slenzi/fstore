@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 /**
  * Encapsulates logic for basic repository functionality.
  * 
- * 
  * @author slenzi
  */
 public class AbstractRepository implements Serializable {

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.inject.Named;
 import javax.persistence.Query;
 
 import org.lenzi.filestore.util.DateUtil;
@@ -50,7 +49,7 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 	 * @param1 The ID of the starting/parent node.
 	 * @param2 The ID of the starting/parent node.
 	 */		
-	private String HQL_TREE_BY_NODE_ID_ALT =
+	private String HQL_CLOSURE_BY_NODE_ID_ALT =
 		"select c " +
 		"from FSClosure as c " +  
 		"join fetch c.childNode child " +  
@@ -221,6 +220,11 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		"    ) " +
 		")";	
 	
+	private String HQL_GET_TREE_BY_ID =
+		"select t from FSTree as t " +
+		"left join fetch t.rootNode " +
+		"where t.treeId = :treeid";
+	
 	/**
 	 * Select next available prune ID from sequence. Used in FS_PRUNE table.
 	 */
@@ -245,6 +249,28 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		
 	}
 	
+
+	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#getTree(java.lang.Long)
+	 */
+	@Override
+	public FSTree getTree(Long treeId) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(HQL_GET_TREE_BY_ID);
+			query.setParameter("treeid", treeId);
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		FSTree tree = (FSTree)getSingleResult(query);
+		
+		return tree;
+	}
+
+
 	/**
 	 * Add new tree to the database.
 	 * 
@@ -300,7 +326,7 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		List<FSClosure> results = null;
 		Query query = null;
 		try {
-			query = getEntityManager().createQuery(HQL_TREE_BY_NODE_ID_ALT);
+			query = getEntityManager().createQuery(HQL_CLOSURE_BY_NODE_ID_ALT);
 			query.setParameter(1, nodeId);
 			query.setParameter(2, nodeId);			
 		} catch (IllegalArgumentException e) {

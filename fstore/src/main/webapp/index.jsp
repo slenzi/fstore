@@ -12,7 +12,7 @@
 	</p>
 
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/test">Spring MVC Test</a>
+		<a href="<%=request.getContextPath() %>/spring/test">Fetch sample tree with ID = 1</a>
 	</p>
 	
 	<p>
