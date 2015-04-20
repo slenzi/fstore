@@ -9,6 +9,7 @@ import org.lenzi.fstore.logging.LoggerBeanPostProccessor;
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.OracleClosureRepository;
 import org.lenzi.fstore.repository.PostgresClosureRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 /**
@@ -37,7 +37,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 		}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@TransactionConfiguration(transactionManager="oracleTxManager", defaultRollback=false)
+@TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=false)
 public class TestConfiguration implements TransactionManagementConfigurer {
 
 	// defined in /src/test/resources/META-INF/test-persistence.xml
@@ -75,7 +75,8 @@ public class TestConfiguration implements TransactionManagementConfigurer {
 	/**
 	 * Transaction manager
 	 */
-    @Bean
+    @Bean(name="postgresqlTxManager")
+    @Qualifier("postgresql")
 	public PlatformTransactionManager annotationDrivenTransactionManager() {
     	JpaTransactionManager txManager = new JpaTransactionManager();
     	txManager.setPersistenceUnitName(persistenceUnitName);
@@ -89,6 +90,7 @@ public class TestConfiguration implements TransactionManagementConfigurer {
      * @throws IOException
      */
     @Bean
+    @Qualifier("postgresql")
     public LocalContainerEntityManagerFactoryBean oracleEntityManagerFactory() throws IOException {	
     	LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
     	emf.setPersistenceXmlLocation("classpath:META-INF/test-persistence.xml");
