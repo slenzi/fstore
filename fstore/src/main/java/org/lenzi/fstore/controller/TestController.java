@@ -64,7 +64,7 @@ public class TestController {
 			logger.error("Error builder tree for FSTree with id " + treeId);
 		}
 		
-		String treeData = tree.printTree("<br>");
+		String treeData = tree.printHtmlTree();
 		
 		StringBuffer buff = new StringBuffer();
 		buff.append("Hello! This is the \"" + appProps.getAppTitle() + "\" application.");

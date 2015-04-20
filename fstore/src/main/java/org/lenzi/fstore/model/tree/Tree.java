@@ -53,6 +53,10 @@ public class Tree<T> {
 	
     public String printTree(){
     	return rootNode.printTree();
-    }    
+    }
+    
+    public String printHtmlTree(){
+    	return rootNode.printHtmlTree();
+    }
     
 }
