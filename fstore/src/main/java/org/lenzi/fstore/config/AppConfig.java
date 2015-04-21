@@ -24,7 +24,7 @@ import org.springframework.stereotype.Controller;
 	}
 )
 @Import({
-	PropertyConfig.class, PersistenceConfig.class, UploadConfig.class, CxfConfig.class, RepositoryConfig.class
+	PropertyConfig.class, DataSourceConfig.class, PersistenceConfig.class, UploadConfig.class, CxfConfig.class, RepositoryConfig.class
 })
 public class AppConfig {
 
