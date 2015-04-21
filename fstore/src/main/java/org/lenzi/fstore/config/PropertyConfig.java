@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
- * Load properties from our src/main/resources/application.properties file.
+ * Load properties from our src/main/resources/my.application.properties file.
  * 
  * @author slenzi
  */

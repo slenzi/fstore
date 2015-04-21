@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * 
  * @author slenzi
  */
-@Component(value="SetupProperties")
+@Component(value="postgreSQLSetupProperties")
 @Scope("singleton")
 public class PostgreSQLSetupProperties {
 
