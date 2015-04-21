@@ -1,4 +1,4 @@
-package org.lenzi.fstore.database.setup.config;
+package org.lenzi.fstore.database.setup.postgresql.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -6,15 +6,15 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
- * Load properties from our src/main/resources/setup.oracle.properties
+ * Load properties from our src/main/resources/setup.postgresql.properties
  * 
- * These properties are used when setting up the Oracle database.
+ * These properties are used when setting up the PostgreSQL database.
  * 
  * @author slenzi
  */
 @Configuration
-@PropertySource("classpath:setup.oracle.properties")
-public class SetupPropertyConfig {
+@PropertySource("classpath:setup.postgresql.properties")
+public class PostgreSQLSetupPropertyConfig {
 
 	/**
 	 * To resolve ${} in @Value annotations.

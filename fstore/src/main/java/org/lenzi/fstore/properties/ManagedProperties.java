@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 /**
  * Global spring managed application properties for our application
  *
- * @see SetupPropertyConfig.lenzi.fstore.config.PropertyConfig
+ * @see PostgreSQLSetupPropertyConfig.lenzi.fstore.config.PropertyConfig
  * 
  * @author slenzi
  */

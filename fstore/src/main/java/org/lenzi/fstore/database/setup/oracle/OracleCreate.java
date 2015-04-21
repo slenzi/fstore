@@ -1,4 +1,4 @@
-package org.lenzi.fstore.database.setup.config;
+package org.lenzi.fstore.database.setup.oracle;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -138,23 +138,11 @@ public class OracleCreate {
 	}
 	
 	/**
-	 * Reset database objects
+	 * Add database objects
 	 * 
 	 * @throws DatabaseException
 	 */
-	public void resetDatabase() throws DatabaseException {
-		
-		// drop
-		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_PRUNE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_NODE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_LINK_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PRUNE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
+	public void createDatabase() throws DatabaseException {
 		
 		// add
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_PRUNE_ID).executeUpdate();
@@ -167,6 +155,42 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TREE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();		
+		
+	}
+	
+	/**
+	 * Drop database objects
+	 * 
+	 * @throws DatabaseException
+	 */
+	public void dropDatabase() throws DatabaseException {
+		
+		// drop
+		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_PRUNE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_NODE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_LINK_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PRUNE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();		
+		
+	}
+	
+	/**
+	 * Reset database objects
+	 * 
+	 * @throws DatabaseException
+	 */
+	public void resetDatabase() throws DatabaseException {
+		
+		// drop
+		dropDatabase();
+		
+		// add
+		createDatabase();		
 		
 	}
 

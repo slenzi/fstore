@@ -1,7 +1,6 @@
-package org.lenzi.fstore.database.setup;
+package org.lenzi.fstore.database.setup.oracle;
 
-import org.lenzi.fstore.database.setup.config.OracleCreate;
-import org.lenzi.fstore.database.setup.config.OracleSetupConfig;
+import org.lenzi.fstore.database.setup.oracle.config.OracleSetupConfig;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +26,7 @@ public class OracleSetupMain {
 		// get instance of this app
 		final OracleSetupMain databaseSetupApp = context.getBean(OracleSetupMain.class);
 		
-		// reset oracle database
+		// reset Oracle database objects
 		databaseSetupApp.doReset();
 		
 	}
@@ -41,7 +40,7 @@ public class OracleSetupMain {
 	 */
 	public void doReset(){
 	
-		System.out.println("Running Oracle setup");
+		System.out.println("Running Oracle reset");
 		
 		System.out.println("Have entity manager? => " + oracleCreate.haveEntityManager());
 		
@@ -49,7 +48,7 @@ public class OracleSetupMain {
 			oracleCreate.resetDatabase();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
-			System.err.println("Error resetting database. " + e.getMessage());
+			System.err.println("Error resetting Oracle database. " + e.getMessage());
 		}
 	
 	}

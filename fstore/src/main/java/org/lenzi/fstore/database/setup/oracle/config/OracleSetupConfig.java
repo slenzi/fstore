@@ -1,4 +1,4 @@
-package org.lenzi.fstore.database.setup.config;
+package org.lenzi.fstore.database.setup.oracle.config;
 
 import java.util.Properties;
 
@@ -31,21 +31,21 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(
-	basePackages = "org.lenzi.fstore.database.setup",
+	basePackages = "org.lenzi.fstore.database.setup.oracle",
 	excludeFilters = {
 		@ComponentScan.Filter(value = Controller.class, type = FilterType.ANNOTATION),
 		@ComponentScan.Filter(value = Configuration.class, type = FilterType.ANNOTATION)
 	}
 )
 @Import({
-	SetupPropertyConfig.class
+	OracleSetupPropertyConfig.class
 })
 public class OracleSetupConfig {
 
 	private Logger logger = LoggerFactory.getLogger(OracleSetupConfig.class);
 	
 	@Autowired
-	private SetupProperties setupProps;
+	private OracleSetupProperties setupProps;
 	
 	/**
 	 * Setup entity manager factory
@@ -98,7 +98,7 @@ public class OracleSetupConfig {
 		logger.info("Database user = " + user);
 		logger.info("Database password = *****");
 		
-		if(StringUtil.isNullEmpty(driver) || StringUtil.isNullEmpty(url) || StringUtil.isNullEmpty(user) || StringUtil.isNullEmpty(pwd)){
+		if(StringUtil.isNullEmpty(driver) || StringUtil.isNullEmpty(url) || StringUtil.isNullEmpty(user)){
 			
 			logger.error("Missing required values for data source. Check driver name, connection url, username, and/or password");
 			
