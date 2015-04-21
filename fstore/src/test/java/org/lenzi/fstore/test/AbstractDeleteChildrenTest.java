@@ -1,66 +1,43 @@
-package org.lenzi.fstore.test.postgresql;
+package org.lenzi.fstore.test;
 
 
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
 import org.lenzi.fstore.service.FSTreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
-import org.lenzi.fstore.test.BasicTest;
+import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * PostgreSQL unit test, controlled by the ActiveProfiles annotation. Uses the PostgresClosureRepository.
+ * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
  * 
  * @author slenzi
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=PostgreSQLTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("postgresql")
-@ActiveProfiles({"postgresql"})
-public class DeleteNodeTest extends BasicTest {
+public abstract class AbstractDeleteChildrenTest extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
-	@Autowired
-	PostgreSQLTestConfiguration configuration = null;
-	
-	@Autowired
-	FSTreeService treeService = null;
-	
-	public DeleteNodeTest() {
-		//logger.info(this.getClass().getName() + " initialized");
-	}
-	
-	@Test
-	public void testWiring(){
-		
-		assertNotNull(configuration);
-		assertNotNull(treeService);
+	public AbstractDeleteChildrenTest() {
 		
 	}
 	
 	/**
-	 * Build sample tree, print before, delete node, then print after.
+	 * Build sample tree, print before, delete children of node, then print after.
 	 */
 	@Test
 	@Rollback(true)	
-	public void deleteNode() throws ServiceException {
+	public void deleteChildren() throws ServiceException {
 		
-		logTestTitle("Delete node test");
+		logTestTitle("Delete children test");
+		
+		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
 		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
@@ -90,15 +67,15 @@ public class DeleteNodeTest extends BasicTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		logger.info("Before deleting node G");
+		logger.info("Before deleting children of node D");
 		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
 		logger.info(tree.printTree());
 		
-		logger.info("Removing node G...");
-		treeService.removeNode(nodeG);
+		logger.info("Removing children of node D...");
+		treeService.removeChildren(nodeD);
 		
-		logger.info("After deleting node G");
+		logger.info("After deleting children of node D");
 		tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
 		logger.info(tree.printTree());

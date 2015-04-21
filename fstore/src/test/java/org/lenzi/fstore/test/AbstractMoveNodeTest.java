@@ -1,55 +1,30 @@
-package org.lenzi.fstore.test.postgresql;
+package org.lenzi.fstore.test;
 
 
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
 import org.lenzi.fstore.service.FSTreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
-import org.lenzi.fstore.test.BasicTest;
+import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * PostgreSQL unit test, controlled by the ActiveProfiles annotation. Uses the PostgresClosureRepository.
+ * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
  * 
  * @author slenzi
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=PostgreSQLTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("postgresql")
-@ActiveProfiles({"postgresql"})
-public class MoveNodeTest extends BasicTest {
+public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
-	@Autowired
-	PostgreSQLTestConfiguration configuration = null;
-	
-	@Autowired
-	FSTreeService treeService = null;
-	
-	public MoveNodeTest() {
-		//logger.info(this.getClass().getName() + " initialized");
-	}
-	
-	@Test
-	public void testWiring(){
-		
-		assertNotNull(configuration);
-		assertNotNull(treeService);
+	public AbstractMoveNodeTest() {
 		
 	}
 	
@@ -62,6 +37,8 @@ public class MoveNodeTest extends BasicTest {
 	public void moveNodeSameTree() throws ServiceException {
 		
 		logTestTitle("Move node test: same tree");
+		
+		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
 		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
@@ -112,6 +89,8 @@ public class MoveNodeTest extends BasicTest {
 	public void moveNodeDifferentTree() throws ServiceException {
 		
 		logTestTitle("Move node test: different tree");
+		
+		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree 1");
 		FSTree fsTree1 = treeService.createTree("Sample Tree 1", "A sample test tree #1", "A1");
@@ -188,5 +167,98 @@ public class MoveNodeTest extends BasicTest {
 		logger.info("Done.");
 		
 	}
+	
+	/**
+	 * Build sample tree, move a node to under a different node in the same tree.
+	 * Print tree before and after.
+	 */
+	@Test
+	@Rollback(true)	
+	public void multiMoveSameTree() throws ServiceException {
+		
+		logTestTitle("Multi-move test: same tree");
+		
+		FSTreeService treeService = getTreeSerive();
+		
+		logger.info("Creating sample tree");
+		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
+		
+		assertNotNull(fsTree);
+		assertNotNull(fsTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		
+		logger.info("Adding additional nodes to tree...");
+		
+		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
+			FSNode nodeD = treeService.createNode(nodeB,"D");
+			FSNode nodeE = treeService.createNode(nodeB,"E");
+		FSNode nodeC = treeService.createNode(fsTree.getRootNode(), "C");
+			FSNode nodeF = treeService.createNode(nodeC,"F");
+				FSNode nodeH = treeService.createNode(nodeF,"H");
+					FSNode nodeI = treeService.createNode(nodeH,"I");
+					FSNode nodeJ = treeService.createNode(nodeH,"J");
+			FSNode nodeG = treeService.createNode(nodeC,"G");		
+		
+		logger.info("Finished adding nodes to tree...");
+		
+		Tree<TreeMeta> tree = null;
+		
+		logger.info("Before moves...");
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving C to E");
+		treeService.moveNode(nodeC, nodeE);
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving F to A");
+		treeService.moveNode(nodeF, fsTree.getRootNode());
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving E to A");
+		treeService.moveNode(nodeE, fsTree.getRootNode());
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving C to A");
+		treeService.moveNode(nodeC, fsTree.getRootNode());
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving H to C");
+		treeService.moveNode(nodeH, nodeC);
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving B to I");
+		treeService.moveNode(nodeB, nodeI);
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving F to B");
+		treeService.moveNode(nodeF, nodeB);
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Moving E to F");
+		treeService.moveNode(nodeE, nodeF);
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+	
+		logger.info("Done.");
+		
+	}	
 
 }

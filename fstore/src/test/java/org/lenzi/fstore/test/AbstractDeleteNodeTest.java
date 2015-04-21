@@ -1,66 +1,43 @@
-package org.lenzi.fstore.test.oracle;
+package org.lenzi.fstore.test;
 
 
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
 import org.lenzi.fstore.service.FSTreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
-import org.lenzi.fstore.test.BasicTest;
+import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
  * 
  * @author slenzi
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=OracleTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("oracle")
-@ActiveProfiles({"oracle"})
-public class PrintTreeTest extends BasicTest {
+public abstract class AbstractDeleteNodeTest extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
-	@Autowired
-	OracleTestConfiguration configuration = null;
-	
-	@Autowired
-	FSTreeService treeService = null;
-	
-	public PrintTreeTest() {
-		//logger.info(this.getClass().getName() + " initialized");
-	}
-	
-	@Test
-	public void testWiring(){
-		
-		assertNotNull(configuration);
-		assertNotNull(treeService);
+	public AbstractDeleteNodeTest() {
 		
 	}
 	
 	/**
-	 * Build sample tree and log.
+	 * Build sample tree, print before, delete node, then print after.
 	 */
 	@Test
 	@Rollback(true)	
-	public void printTree() throws ServiceException {
+	public void deleteNode() throws ServiceException {
 		
-		logTestTitle("Print tree test");
+		logTestTitle("Delete node test");
+		
+		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
 		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
@@ -89,12 +66,21 @@ public class PrintTreeTest extends BasicTest {
 						FSNode nodeQ = treeService.createNode(nodeP, "Q");
 		
 		logger.info("Finished adding nodes to tree...");
-						
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		
+		logger.info("Before deleting node G");
+		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
-	
 		logger.info(tree.printTree());
+		
+		logger.info("Removing node G...");
+		treeService.removeNode(nodeG);
+		
+		logger.info("After deleting node G");
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Done.");
 		
 	}
 
