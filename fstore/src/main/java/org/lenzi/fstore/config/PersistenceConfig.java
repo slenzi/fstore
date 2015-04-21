@@ -2,11 +2,9 @@ package org.lenzi.fstore.config;
 
 import java.util.Properties;
 
-import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.lenzi.filestore.util.StringUtil;
 import org.lenzi.fstore.properties.ManagedProperties;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -14,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -39,15 +34,9 @@ public class PersistenceConfig {
 	@InjectLogger
 	private Logger logger;
 	
-	// default/prefered datasource.
 	@Autowired
-	@Qualifier("jndiDataSource")
-	private DataSource jndiDatasource;
-	
-	// backup datasource if jndi data source is null
-	@Autowired
-	@Qualifier("driverManagerDataSource")
-	private DataSource driverManagerDataSource;
+	@Qualifier("primaryDataSource")
+	private DataSource primaryDataSource;
 	
 	/**
 	 * Setup entity manager factory
@@ -59,16 +48,7 @@ public class PersistenceConfig {
 		
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		
-		//em.setDataSource(getDriverManagerDataSource());
-		//em.setDataSource(getJndiDataSource());
-		
-		if(jndiDatasource != null){
-			em.setDataSource(jndiDatasource);
-		}else if(driverManagerDataSource != null){
-			em.setDataSource(driverManagerDataSource);
-		}else{
-			logger.error("No available datasource. check spring setup.");
-		}
+		em.setDataSource(primaryDataSource);
 		
 		em.setPackagesToScan(new String[] { "org.lenzi.fstore.repository.model" });
 

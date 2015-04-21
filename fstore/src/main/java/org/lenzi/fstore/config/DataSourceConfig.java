@@ -28,22 +28,57 @@ public class DataSourceConfig {
 	private Logger logger;
 	
 	/**
+	 * Primary data source for the application. Can add more later if needed....
+	 * 
+	 * First, look for JNDI name in properties. If that's available then it grabs the data source from JNDI.
+	 * 
+	 * Second, if no JNDI data source then manually create a driver manager data source using values from property file.
+	 * 
+	 * @return
+	 */
+	@Bean(name="primaryDataSource")
+	public DataSource getPrimaryDataSource(){
+		
+		DataSource dataSource = null;
+		
+		String jndiDataSourceName = appProps.getProperty("database.jndi.pool.main");
+		
+		if(!StringUtil.isNullEmpty(jndiDataSourceName)){
+			
+			logger.info("Getting data source from JNDI, name => " + jndiDataSourceName);
+			
+			JndiTemplate jndi = new JndiTemplate();
+	        try {
+	            dataSource = (DataSource) jndi.lookup(jndiDataSourceName);
+	        } catch (NamingException e) {
+	            logger.error("NamingException for " + jndiDataSourceName, e);
+	        }
+	        
+		}else{
+			
+			dataSource = getDriverManagerDataSource();
+			
+		}
+		
+		return dataSource;
+		
+	}
+	
+	
+	/**
 	 * Fetch data source from JNDI.
 	 * 
 	 * @return
 	 */
-	@Bean(name="jndiDataSource")
-	public DataSource getJndiDataSource() {
+	private DataSource getJndiDataSource(String jndiName) {
 		
 		DataSource dataSource = null;
         JndiTemplate jndi = new JndiTemplate();
         
-        String jndiDataSourceName = appProps.getProperty("database.jndi.pool.main");
-        
         try {
-            dataSource = (DataSource) jndi.lookup(jndiDataSourceName);
+            dataSource = (DataSource) jndi.lookup(jndiName);
         } catch (NamingException e) {
-            logger.error("NamingException for " + jndiDataSourceName, e);
+            logger.error("NamingException for " + jndiName, e);
         }
         return dataSource;
 	}
@@ -55,8 +90,7 @@ public class DataSourceConfig {
 	 * 
 	 * @return
 	 */
-	@Bean(name="driverManagerDataSource")
-	public DataSource getDriverManagerDataSource(){
+	private DataSource getDriverManagerDataSource(){
 		
 		logger.info("Initializing driver manager data source:");
 		
