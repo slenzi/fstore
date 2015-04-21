@@ -81,11 +81,27 @@ public class FSTreeService {
 		}
 		
 		//
-		// When the tree is created, the node is added automatically by hiberate. see code for addTree in closure repository.
+		// When the tree is created, the node is added automatically by Hibernate. see code for addTree in closure repository.
 		//
 		//closureRepository.addNode(fsTree.getRootNodeId(), rootNodeName);
 		
 		return fsTree;
+		
+	}
+	
+	/**
+	 * Remove a tree
+	 * 
+	 * @param tree
+	 * @throws ServiceException
+	 */
+	public void removeTree(FSTree tree) throws ServiceException {
+		
+		// TODO - implement
+		
+		// delete all children of tree's root node
+		
+		// then delete tree with root node
 		
 	}
 	
@@ -115,6 +131,10 @@ public class FSTreeService {
 	 * @param node
 	 */
 	public void removeNode(FSNode node) throws ServiceException{
+		
+		if(node.getParentNodeId() == 0L){
+			throw new ServiceException("Cannot remove root node of tree. Use removeTree() method.");
+		}		
 		
 		try {
 			closureRepository.removeNode(node.getNodeId());
@@ -167,6 +187,10 @@ public class FSTreeService {
 	 * @param leafNode - the existing leaf node that will become the root node of the new tree
 	 */
 	public FSTree leafToRoot(String treeName, String treeDesc, FSNode leafNode) throws ServiceException {
+		
+		if(leafNode.getParentNodeId() == 0L){
+			throw new ServiceException("Node is not a leaf node.");
+		}		
 		
 		// TODO - making a leaf node a root node requires making a new tree!
 		
