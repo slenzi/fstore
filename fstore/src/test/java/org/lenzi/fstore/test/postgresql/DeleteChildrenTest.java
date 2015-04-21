@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.oracle;
+package org.lenzi.fstore.test.postgresql;
 
 
 import static org.junit.Assert.assertNotNull;
@@ -23,25 +23,25 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
+ * PostgreSQL unit test, controlled by the ActiveProfiles annotation. Uses the PostgresClosureRepository.
  * 
  * @author slenzi
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=OracleTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("oracle")
-@ActiveProfiles({"oracle"})
-public class PrintTreeTest extends BasicTest {
+@ContextConfiguration(classes=PostgreSQLTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@Transactional("postgresql")
+@ActiveProfiles({"postgresql"})
+public class DeleteChildrenTest extends BasicTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	OracleTestConfiguration configuration = null;
+	PostgreSQLTestConfiguration configuration = null;
 	
 	@Autowired
 	FSTreeService treeService = null;
 	
-	public PrintTreeTest() {
+	public DeleteChildrenTest() {
 		//logger.info(this.getClass().getName() + " initialized");
 	}
 	
@@ -54,13 +54,13 @@ public class PrintTreeTest extends BasicTest {
 	}
 	
 	/**
-	 * Build sample tree and log.
+	 * Build sample tree, print before, delete children of node, then print after.
 	 */
 	@Test
 	@Rollback(true)	
-	public void printTree() throws ServiceException {
+	public void deleteChildren() throws ServiceException {
 		
-		logTestTitle("Print tree test");
+		logTestTitle("Delete children test");
 		
 		logger.info("Creating sample tree");
 		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
@@ -89,12 +89,21 @@ public class PrintTreeTest extends BasicTest {
 						FSNode nodeQ = treeService.createNode(nodeP, "Q");
 		
 		logger.info("Finished adding nodes to tree...");
-						
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		
+		logger.info("Before deleting children of node D");
+		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
-	
 		logger.info(tree.printTree());
+		
+		logger.info("Removing children of node D...");
+		treeService.removeChildren(nodeD);
+		
+		logger.info("After deleting children of node D");
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Done.");
 		
 	}
 

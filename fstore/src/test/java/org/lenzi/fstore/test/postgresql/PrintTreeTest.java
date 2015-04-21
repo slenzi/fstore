@@ -45,7 +45,7 @@ public class PrintTreeTest extends BasicTest {
 		//logger.info(this.getClass().getName() + " initialized");
 	}
 	
-	//@Test
+	@Test
 	public void testWiring(){
 		
 		assertNotNull(configuration);
@@ -56,7 +56,7 @@ public class PrintTreeTest extends BasicTest {
 	/**
 	 * Build sample tree and log.
 	 */
-	//@Test
+	@Test
 	@Rollback(true)	
 	public void printTree() throws ServiceException {
 		
@@ -80,6 +80,8 @@ public class PrintTreeTest extends BasicTest {
 					FSNode nodeP = treeService.createNode(nodeO, "P");
 						FSNode nodeQ = treeService.createNode(nodeP, "Q");
 		
+		logger.info("Finished adding nodes to tree...");
+						
 		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		
 		assertNotNull(tree);

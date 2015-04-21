@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class PrintTreeTest extends BasicTest {
+public class DeleteChildrenTest extends BasicTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -41,8 +41,8 @@ public class PrintTreeTest extends BasicTest {
 	@Autowired
 	FSTreeService treeService = null;
 	
-	public PrintTreeTest() {
-		//logger.info(this.getClass().getName() + " initialized");
+	public DeleteChildrenTest() {
+		
 	}
 	
 	@Test
@@ -54,13 +54,13 @@ public class PrintTreeTest extends BasicTest {
 	}
 	
 	/**
-	 * Build sample tree and log.
+	 * Build sample tree, print before, delete children of node, then print after.
 	 */
 	@Test
 	@Rollback(true)	
-	public void printTree() throws ServiceException {
+	public void deleteChildren() throws ServiceException {
 		
-		logTestTitle("Print tree test");
+		logTestTitle("Delete children test");
 		
 		logger.info("Creating sample tree");
 		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
@@ -89,12 +89,21 @@ public class PrintTreeTest extends BasicTest {
 						FSNode nodeQ = treeService.createNode(nodeP, "Q");
 		
 		logger.info("Finished adding nodes to tree...");
-						
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		
+		logger.info("Before deleting children of node D");
+		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
-	
 		logger.info(tree.printTree());
+		
+		logger.info("Removing children of node D...");
+		treeService.removeChildren(nodeD);
+		
+		logger.info("After deleting children of node D");
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Done.");
 		
 	}
 

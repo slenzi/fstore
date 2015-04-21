@@ -619,6 +619,8 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 	 */
 	public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException {
 		
+		// TODO - make sure node being moved is not a root node.
+		
 		logger.info("Moving node => " + nodeId + " to new parent node => " + newParentNodeId);
 		
 		//

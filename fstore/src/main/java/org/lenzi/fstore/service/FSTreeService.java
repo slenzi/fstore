@@ -142,10 +142,14 @@ public class FSTreeService {
 	/**
 	 * Move a node
 	 * 
-	 * @param nodeToMode
-	 * @param newParentNode
+	 * @param nodeToMode - The node to move. Cannot be a root node.
+	 * @param newParentNode - The new parent node. Can be in a different tree.
 	 */
 	public void moveNode(FSNode nodeToMode, FSNode newParentNode) throws ServiceException {
+		
+		if(nodeToMode.getParentNodeId() == 0L){
+			throw new ServiceException("Cannot move root node of tree. Use rootToLeaf() method.");
+		}
 		
 		try {
 			closureRepository.moveNode(nodeToMode.getNodeId(), newParentNode.getNodeId());
