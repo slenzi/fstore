@@ -1,4 +1,4 @@
-package org.lenzi.fstore.database.setup;
+package org.lenzi.fstore.database.setup.config;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -8,23 +8,21 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Reset PostgreSQL database objects by deleting and recreating tables, indexes, sequence, etc.
+ * Reset Oracle database objects by deleting and recreating tables, indexes, sequence, etc.
  * 
  * @author sal
  */
 @Repository
 @Transactional
-public class PostgreSQLDatabaseSetup {
+public class OracleCreate {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7175619343965011323L;
-
-	private String SCHEMA = "TEST.";
 	
 	@PersistenceContext
-	protected EntityManager entityManager;	
+	private EntityManager entityManager;		
 	
 	private String SQL_DROP_TABLE_FS_NODE =
 			"drop table FS_NODE";
@@ -78,49 +76,65 @@ public class PostgreSQLDatabaseSetup {
 			"create unique index fs_parent_depth_child_idx on fs_closure(parent_node_id,depth,child_node_id)";
 		
 		private String SQL_DROP_INDEX_FS_CHILD_PARENT_DEPTH =
-			"drop index fs_child_parent_depth_idx";	
+				"drop index fs_child_parent_depth_idx";	
 		private String SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH =
 			"create unique index fs_child_parent_depth_idx on fs_closure(child_node_id,parent_node_id,depth)";	
 		
 		private String SQL_DROP_SEQUENCE_FS_NODE_ID =
 			"drop sequence FS_NODE_ID_SEQUENCE";
 		private String SQL_CREATE_SEQUENCE_FS_NODE_ID =
-			"CREATE SEQUENCE " + SCHEMA + "FS_NODE_ID_SEQUENCE " + 
+			"CREATE SEQUENCE FS_NODE_ID_SEQUENCE " + 
+			"MINVALUE 1 " +
+			"MAXVALUE 999999999999999999999999999 " + 
 			"INCREMENT BY 1 " +
 			"START WITH 1 " +
 			"CACHE 10  " +
-			"NOCYCLE";	
+			"ORDER  " +
+			"NOCYCLE";
 		
 		private String SQL_DROP_SEQUENCE_FS_LINK_ID =
 			"drop sequence FS_LINK_ID_SEQUENCE";	
 		private String SQL_CREATE_SEQUENCE_FS_LINK_ID =
-			"CREATE SEQUENCE " + SCHEMA + "FS_LINK_ID_SEQUENCE " + 
+			"CREATE SEQUENCE FS_LINK_ID_SEQUENCE " + 
+			"MINVALUE 1 " +
+			"MAXVALUE 999999999999999999999999999 " + 
 			"INCREMENT BY 1 " +
 			"START WITH 1 " +
 			"CACHE 10  " +
-			"NOCYCLE";	
+			"ORDER  " +
+			"NOCYCLE";
 		
 		// used in our prune table
 		private String SQL_DROP_SEQUENCE_FS_PRUNE_ID =
 			"drop sequence FS_PRUNE_ID_SEQUENCE";	
 		private String SQL_CREATE_SEQUENCE_FS_PRUNE_ID =
-			"CREATE SEQUENCE " + SCHEMA + "FS_PRUNE_ID_SEQUENCE " + 
+			"CREATE SEQUENCE FS_PRUNE_ID_SEQUENCE " + 
+			"MINVALUE 1 " +
+			"MAXVALUE 999999999999999999999999999 " + 
 			"INCREMENT BY 1 " +
 			"START WITH 1 " +
 			"CACHE 10  " +
-			"NOCYCLE";	
+			"ORDER  " +
+			"NOCYCLE";
 		
 		private String SQL_DROP_SEQUENCE_FS_TREE_ID =
 			"drop sequence FS_TREE_ID_SEQUENCE";	
 		private String SQL_CREATE_SEQUENCE_FS_TREE_ID =
-			"CREATE SEQUENCE " + SCHEMA + "FS_TREE_ID_SEQUENCE " + 
+			"CREATE SEQUENCE FS_TREE_ID_SEQUENCE " + 
+			"MINVALUE 1 " +
+			"MAXVALUE 999999999999999999999999999 " + 
 			"INCREMENT BY 1 " +
 			"START WITH 1 " +
 			"CACHE 10  " +
+			"ORDER  " +
 			"NOCYCLE";		
 	
-	public PostgreSQLDatabaseSetup() {
+	public OracleCreate() {
 		
+	}
+
+	public boolean haveEntityManager(){
+		return entityManager != null ? true : false;
 	}
 	
 	/**
@@ -152,7 +166,7 @@ public class PostgreSQLDatabaseSetup {
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TREE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();		
 		
 	}
 
