@@ -16,7 +16,6 @@ import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -310,7 +309,22 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		
 		return tree;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#removeTree(java.lang.Long)
+	 */
+	@Override
+	public void removeTree(Long treeId) throws DatabaseException {
+		
+		FSTree treeToDelete = getTree(treeId);
+		FSNode rootNode = treeToDelete.getRootNode();
+		
+		removeNode(rootNode.getNodeId());
+		
+		getEntityManager().remove(treeToDelete);
+		
+	}
+
 	/**
 	 * Fetches all child node data from the closure table for the specified parent node. This
 	 * will give you all necessary data to build a tree data structure.

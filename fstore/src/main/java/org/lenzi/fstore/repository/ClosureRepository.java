@@ -17,6 +17,8 @@ public interface ClosureRepository {
 	
 	public FSTree addTree(String treeName, String treeDesc, String rootNodeName) throws DatabaseException;
 	
+	public void removeTree(Long treeId) throws DatabaseException;
+	
 	public List<FSClosure> getClosureByNodeId(Long nodeId) throws DatabaseException;
 	
 	public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException;

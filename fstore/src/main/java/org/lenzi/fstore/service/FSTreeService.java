@@ -70,14 +70,13 @@ public class FSTreeService {
 	 * @param rootNodeName
 	 * @return
 	 */
-	public FSTree createTree(String treeName, String treeDesc, String rootNodeName) {
+	public FSTree createTree(String treeName, String treeDesc, String rootNodeName) throws ServiceException {
 		
 		FSTree fsTree = null;
 		try {
 			fsTree = closureRepository.addTree(treeName, treeDesc, rootNodeName);
 		} catch (DatabaseException e) {
-			e.printStackTrace();
-			logger.error("Error creating new tree. " + e.getMessage());
+			throw new ServiceException(e.getMessage(), e);
 		}
 		
 		//
@@ -97,11 +96,11 @@ public class FSTreeService {
 	 */
 	public void removeTree(FSTree tree) throws ServiceException {
 		
-		// TODO - implement
-		
-		// delete all children of tree's root node
-		
-		// then delete tree with root node
+		try {
+			closureRepository.removeTree(tree.getTreeId());
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
 		
 	}
 	
@@ -118,7 +117,7 @@ public class FSTreeService {
 		try {
 			fsNode = closureRepository.addNode(parentNode.getNodeId(), nodeName);
 		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage());
+			throw new ServiceException(e.getMessage(), e);
 		}
 		
 		return fsNode;
@@ -139,7 +138,7 @@ public class FSTreeService {
 		try {
 			closureRepository.removeNode(node.getNodeId());
 		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage());
+			throw new ServiceException(e.getMessage(), e);
 		}
 		
 	}
@@ -154,7 +153,7 @@ public class FSTreeService {
 		try {
 			closureRepository.removeChildren(node.getNodeId());
 		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage());
+			throw new ServiceException(e.getMessage(), e);
 		}
 		
 	}
@@ -174,7 +173,7 @@ public class FSTreeService {
 		try {
 			closureRepository.moveNode(nodeToMode.getNodeId(), newParentNode.getNodeId());
 		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage());
+			throw new ServiceException(e.getMessage(), e);
 		}
 		
 	}
@@ -250,7 +249,7 @@ public class FSTreeService {
 		try {
 			closure = closureRepository.getClosureByNodeId(tree.getRootNode().getNodeId());
 		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage());
+			throw new ServiceException(e.getMessage(), e);
 		}
 		
 		return buildTree(closure);
@@ -269,7 +268,7 @@ public class FSTreeService {
 			return null;
 		}
 		
-		LogUtil.logClosure(closureList);
+		//LogUtil.logClosure(closureList);
 		
 		HashMap<Long,List<FSNode>> treeMap = new HashMap<Long,List<FSNode>>();
 		

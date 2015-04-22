@@ -323,6 +323,21 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		return tree;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#removeTree(java.lang.Long)
+	 */
+	@Override
+	public void removeTree(Long treeId) throws DatabaseException {
+	
+		FSTree treeToDelete = getTree(treeId);
+		FSNode rootNode = treeToDelete.getRootNode();
+		
+		removeNode(rootNode.getNodeId());
+		
+		getEntityManager().remove(treeToDelete);
+		
+	}
+
 	/**
 	 * Fetches all child node data from the closure table for the specified parent node. This
 	 * will give you all necessary data to build a tree data structure.
