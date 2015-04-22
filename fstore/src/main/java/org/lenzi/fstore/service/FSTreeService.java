@@ -79,14 +79,34 @@ public class FSTreeService {
 			throw new ServiceException(e.getMessage(), e);
 		}
 		
-		//
-		// When the tree is created, the node is added automatically by Hibernate. see code for addTree in closure repository.
-		//
-		//closureRepository.addNode(fsTree.getRootNodeId(), rootNodeName);
-		
 		return fsTree;
 		
 	}
+	
+	/**
+	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
+	 * All children of the existing node are alos moved over.
+	 * 
+	 * @param treeName - name of the new tree
+	 * @param treeDesc - description of the new tree
+	 * @param existingNode - a non-root node of an existing tree which will become the root node of 
+	 * 	the new tree. All child nodes will be moved over as well.
+	 */
+	public FSTree createTree(String treeName, String treeDesc, FSNode existingNode) throws ServiceException {
+		
+		if(existingNode.getParentNodeId() == 0L){
+			throw new ServiceException("Existing node is a root node. Cannot make this node a root node of a new tree.");
+		}
+		FSTree newTree = null;
+		try {
+			newTree = closureRepository.addTree(treeName, treeDesc, existingNode);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+		return newTree;
+		
+	}	
 	
 	/**
 	 * Remove a tree
@@ -175,27 +195,6 @@ public class FSTreeService {
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
-		
-	}
-	
-	/**
-	 * Make a leaf node into a root node of a new tree.
-	 * 
-	 * @param treeName - name of the new tree
-	 * @param treeDesc - description of the new tree
-	 * @param leafNode - the existing leaf node that will become the root node of the new tree
-	 */
-	public FSTree leafToRoot(String treeName, String treeDesc, FSNode leafNode) throws ServiceException {
-		
-		if(leafNode.getParentNodeId() == 0L){
-			throw new ServiceException("Node is not a leaf node.");
-		}		
-		
-		// TODO - making a leaf node a root node requires making a new tree!
-		
-		// make sure the node is actually a leaf node!
-
-		return null;
 		
 	}
 	

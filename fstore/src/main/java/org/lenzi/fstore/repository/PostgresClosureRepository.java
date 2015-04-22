@@ -285,6 +285,41 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		return tree;
 	}	
 	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(java.lang.String, java.lang.String, org.lenzi.fstore.repository.model.FSNode)
+	 */
+	@Override
+	public FSTree addTree(String treeName, String treeDesc, FSNode existingNode) throws DatabaseException {
+
+		moveNode(existingNode.getNodeId(), 0L);
+		
+		// Get next available node id from sequence
+		Query queryPruneSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE);
+		BigDecimal result=(BigDecimal)queryPruneSequence.getSingleResult();
+		long treeId = result.longValue();			
+	
+		Timestamp now = DateUtil.getCurrentTime();
+		
+		FSTree tree = new FSTree();
+		tree.setTreeId(treeId);
+		tree.setName(treeName);
+		tree.setDescription(treeDesc);
+		tree.setDateCreated(now);
+		tree.setDateUpdated(now);
+		tree.setRootNodeId(existingNode.getNodeId());
+		tree.setRootNode(existingNode); // adds node to database
+		
+		// save node to database
+		//getEntityManager().persist(tree);
+		persist(tree);
+		
+		getEntityManager().flush();
+		getEntityManager().clear();		
+		
+		return tree;		
+		
+	}	
+	
 	/**
 	 * Add new tree to the database.
 	 * 
