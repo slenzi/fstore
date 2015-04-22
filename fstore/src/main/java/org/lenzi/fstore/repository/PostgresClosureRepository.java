@@ -78,7 +78,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"inner join fetch childClosure.childNode childNode " +
 		"where " +
 		"	n.nodeId = :nodeId " +
-		"	and childClosure.depth > 0";
+		"	and childClosure.depth >= 0";
 
 	/**
 	 * Fetches a node by ID, and includes the closure entries with the parent node data.
@@ -91,7 +91,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"inner join fetch parentClosure.parentNode parentNode " +
 		"where " +
 		"	n.nodeId = :nodeId " +
-		"	and parentClosure.depth > 0";
+		"	and parentClosure.depth >= 0";
 	
 	/**
 	 * Make node N1 a parent of node N2.
@@ -267,6 +267,105 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isSameTree(org.lenzi.fstore.repository.model.FSNode, org.lenzi.fstore.repository.model.FSNode)
+	 */
+	@Override
+	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException {
+		
+		// both are root nodes. they are not in the same tree
+		if(node1.getParentNodeId() == 0L && node2.getParentNodeId() == 0L){
+			return false;
+		}
+		// both are not root nodes, but both have the same parent. they are in the same tree
+		if( (node1.getParentNodeId() != 0L && node2.getParentNodeId() != 0L) && (node1.getParentNodeId() == node2.getParentNodeId())){
+			return true;
+		}
+		
+		FSNode parentNode1 = getNodeWithParentClosure(node1);
+		FSNode parentNode2 = getNodeWithParentClosure(node2);
+		
+		if(parentNode1 == null || parentNode1.getParentClosure() == null || parentNode1.getParentClosure().size() == 0){
+			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
+		}
+		if(parentNode2 == null || parentNode2.getParentClosure() == null || parentNode2.getParentClosure().size() == 0){
+			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
+		}
+		
+		FSNode rootNode1 = null;
+		FSNode rootNode2 = null;
+		
+		for(FSClosure c : parentNode1.getParentClosure()){
+			if(c.getParentNode().getParentNodeId() == 0L){
+				rootNode1 = c.getParentNode();
+				break;
+			}
+		}
+		for(FSClosure c : parentNode2.getParentClosure()){
+			if(c.getParentNode().getParentNodeId() == 0L){
+				rootNode2 = c.getParentNode();
+				break;
+			}
+		}
+		if(rootNode1 == null){
+			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node1.getNodeId());
+		}
+		if(rootNode2 == null){
+			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node2.getNodeId());
+		}
+		
+		// they have the same parent most node. they are in the same tree.
+		if(rootNode1.getNodeId() == rootNode2.getNodeId()){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Get an FSNode object with it's parent closure and nodes.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private FSNode getNodeWithParentClosure(FSNode node) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(HQL_NODE_WITH_PARENT);
+			query.setParameter("nodeId", node.getNodeId());
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		FSNode nodeWithParentClosure = (FSNode)getSingleResult(query);		
+		
+		return nodeWithParentClosure;
+	}
+	
+	/**
+	 * Get an FSNode object with it's child closure and nodes.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private FSNode getNodeWithChildClosure(FSNode node) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(HQL_NODE_WITH_CHILDREN);
+			query.setParameter("nodeId", node.getNodeId());
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		FSNode nodeWithChildClosure = (FSNode)getSingleResult(query);		
+		
+		return nodeWithChildClosure;
+	}
+
+	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.repository.ClosureRepository#getTree(java.lang.Long)
 	 */
 	@Override
@@ -372,6 +471,23 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		getEntityManager().remove(treeToDelete);
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#removeTree(org.lenzi.fstore.repository.model.FSTree, org.lenzi.fstore.repository.model.FSNode)
+	 */
+	@Override
+	public void removeTree(FSTree tree, FSNode newParentNode) throws DatabaseException {
+
+		if(isSameTree(tree.getRootNode(), newParentNode)){
+			throw new DatabaseException("You cannot move the root node of the existing tree to another node under the "
+					+ "same tree. New parent node must be a node in a different tree.");			
+		}
+		
+		moveNode(tree.getRootNode().getNodeId(), newParentNode.getNodeId());
+		
+		getEntityManager().remove(tree);		
+		
+	}	
 
 	/**
 	 * Fetches all child node data from the closure table for the specified parent node. This

@@ -125,6 +125,25 @@ public class FSTreeService {
 	}
 	
 	/**
+	 * Take the root node of an tree you want to delete, and move it plus all children to under any node
+	 * of some other tree. Then delete the old tree. 
+	 * 
+	 * @param tree - The tree you want to delete (but keep all nodes under it.)
+	 * @param newParentNode - The root node (plus all children) of the tree being deleted will be moved to
+	 * 	under this node. This node must be a node in a different tree.
+	 * @return
+	 */
+	public void removeTree(FSTree tree, FSNode newParentNode) throws ServiceException {
+		
+		try {
+			closureRepository.removeTree(tree, newParentNode);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+	}	
+	
+	/**
 	 * Add a new node.
 	 * 
 	 * @param parentNode
@@ -195,25 +214,6 @@ public class FSTreeService {
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
-		
-	}
-	
-	/**
-	 * Make an existing root node of a tree a leaf node of some other tree.
-	 * 
-	 * @param tree
-	 * @param newParentNode
-	 * @return
-	 */
-	public FSNode rootToLeaf(FSTree tree, FSNode newParentNode) throws ServiceException {
-		
-		// TODO - making a current root node a leaf node requires deleting the tree entry!
-		
-		// make sure the node being moved is an actual root node
-		
-		// make sure they are not trying to move the root node to another node under the same tree!
-		
-		return null;
 		
 	}
 

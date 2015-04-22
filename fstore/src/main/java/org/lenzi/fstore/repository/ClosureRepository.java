@@ -21,6 +21,8 @@ public interface ClosureRepository {
 	
 	public void removeTree(Long treeId) throws DatabaseException;
 	
+	public void removeTree(FSTree tree, FSNode newParentNode)  throws DatabaseException;
+	
 	public List<FSClosure> getClosureByNodeId(Long nodeId) throws DatabaseException;
 	
 	public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException;
@@ -28,5 +30,7 @@ public interface ClosureRepository {
 	public void removeNode(Long nodeId) throws DatabaseException;
 	
 	public void removeChildren(Long nodeId) throws DatabaseException;
+	
+	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException;
 	
 }
