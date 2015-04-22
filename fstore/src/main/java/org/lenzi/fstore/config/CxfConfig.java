@@ -25,6 +25,7 @@ import org.springframework.context.annotation.DependsOn;
 public class CxfConfig {
 
 	/**
+	 * will call shutdown on SpringBus when bean is destroyed.
 	 * 
 	 * @return
 	 */
