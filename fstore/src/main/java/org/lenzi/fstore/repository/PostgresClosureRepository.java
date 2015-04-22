@@ -103,11 +103,11 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */	
 	private String SQL_INSERT_MAKE_PARENT =
 		"insert " +
-		"	into fs_closure (link_id,parent_node_id, child_node_id, depth) " + 
+		"	into " + SCHEMA + "fs_closure (link_id,parent_node_id, child_node_id, depth) " + 
 		"select " +
 		"	nextval('" + SCHEMA + "FS_LINK_ID_SEQUENCE'), p.parent_node_id, c.child_node_id, (p.depth + c.depth + 1) as depth " +
 		"from " +
-		"	fs_closure p, fs_closure c " +
+		"	" + SCHEMA + "fs_closure p, " + SCHEMA + "fs_closure c " +
 		"where " +
 		"	p.child_node_id = ? and c.parent_node_id = ?";
 	
@@ -121,11 +121,11 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 * be deleted.
 	 */
 	private String SQL_INSERT_PRUNE_TREE =
-		"insert into fs_prune " +
+		"insert into " + SCHEMA + "fs_prune " +
 		"select currval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE') as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
-		"  from fs_closure c  " +
-		"  inner join fs_node n  " +
+		"  from " + SCHEMA + "fs_closure c  " +
+		"  inner join " + SCHEMA + "fs_node n  " +
 		"  on c.child_node_id = n.node_id " + 
 		"  where c.parent_node_id = ? " +
 		")";
@@ -140,11 +140,11 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 * deleted from the closure table.
 	 */
 	private String SQL_INSERT_PRUNE_CHILDREN =
-		"insert into fs_prune " +
+		"insert into " + SCHEMA + "fs_prune " +
 		"select currval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE') as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
-		"  from fs_closure c  " +
-		"  inner join fs_node n  " +
+		"  from " + SCHEMA + "fs_closure c  " +
+		"  inner join " + SCHEMA + "fs_node n  " +
 		"  on c.child_node_id = n.node_id " + 
 		"  where c.parent_node_id = ? " +
 		"  and c.depth > 0 " +
@@ -160,10 +160,10 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_DELETE_FS_NODE_PRUNE_TREE =
 		"delete " +
-		"from fs_node n " +
+		"from " + SCHEMA + "fs_node n " +
 		"where n.node_id in ( " +
 		"  select c.child_node_id " +
-		"  from fs_closure c " +
+		"  from " + SCHEMA + "fs_closure c " +
 		"  where c.parent_node_id = ? " +
 		")";
 	
@@ -178,10 +178,10 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_DELETE_FS_NODE_PRUNE_CHILDREN =
 		"delete " +
-		"from fs_node n " +
+		"from " + SCHEMA + "fs_node n " +
 		"where n.node_id in ( " +
 		"  select c.child_node_id " +
-		"  from fs_closure c " +
+		"  from " + SCHEMA + "fs_closure c " +
 		"  where c.parent_node_id = ? " +
 		"  and c.depth > 0 " +
 		")";	
@@ -193,15 +193,15 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_DELETE_FS_CLOSURE_PRUNE =
 		"delete " +
-		"  fs_closure " +
+		"  " + SCHEMA + "fs_closure " +
 		"where link_id in ( " +
 		"  select l.link_id " +
-		"  from fs_closure p " +
-		"  inner join fs_closure l " +
+		"  from " + SCHEMA + "fs_closure p " +
+		"  inner join " + SCHEMA + "fs_closure l " +
 		"    on p.parent_node_id = l.parent_node_id " +
-		"  inner join fs_closure c " +
+		"  inner join " + SCHEMA + "fs_closure c " +
 		"    on c.child_node_id = l.child_node_id " +
-		"  inner join fs_closure to_delete " +
+		"  inner join " + SCHEMA + "fs_closure to_delete " +
 		"  on " +
 		"    p.child_node_id = to_delete.parent_node_id " +
 		"    and c.parent_node_id = to_delete.child_node_id " +
@@ -210,7 +210,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"  ( " +
 		/* select the IDs of the node we are deleting from our prune table */
 		"        select p.node_id as child_to_delete " +
-		"        from fs_prune p " +
+		"        from " + SCHEMA + "fs_prune p " +
 		"        where p.prune_id = ?  " +
 		"  ) pruneTable " +
 		"  on " +

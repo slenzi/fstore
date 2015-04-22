@@ -19,7 +19,7 @@ import javax.persistence.Transient;
  *
  */
 @Entity
-@Table(name = "FS_TREE", schema = "ECOGUSER")
+@Table(name = "FS_TREE") /* schema = "ECOGUSER"*/
 public class FSTree implements Serializable {
 
 	/**

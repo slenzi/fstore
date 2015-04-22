@@ -16,7 +16,7 @@ import javax.persistence.Transient;
  * @author slenzi
  */
 @Entity
-@Table(name = "PEOPLE", schema = "TEST")
+@Table(name = "PEOPLE")
 public class Person implements Serializable {
 
 	/**

@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 // @SequenceGenerator(name = "FS_NODE_ID_SEQUENCE", sequenceName = "FS_NODE_ID_SEQUENCE", schema = "ECOGUSER", allocationSize = 50)
 
 @Entity
-@Table(name = "FS_NODE", schema = "ECOGUSER") 
+@Table(name = "FS_NODE") /* schema = "ECOGUSER"*/ 
 public class FSNode implements Serializable {
 
 	/**
