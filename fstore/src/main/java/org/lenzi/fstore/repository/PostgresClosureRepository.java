@@ -1,6 +1,7 @@
 package org.lenzi.fstore.repository;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -251,6 +252,20 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		
 	}
 	
+	/**
+	 * Get value from sequence
+	 * 
+	 * @param query - a native SQL query which returns either nextval or currval from a sequence.
+	 * @return
+	 */
+	private long getSequenceVal(String query){
+		
+		Query queryPruneSequence = getEntityManager().createNativeQuery(query);
+		BigInteger result = (BigInteger)queryPruneSequence.getSingleResult();
+		long sequenceId = result.longValue();
+		return sequenceId;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.repository.ClosureRepository#getTree(java.lang.Long)
 	 */
@@ -284,10 +299,8 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		FSNode rootNode = addNode(0L, rootNodeName);
 		Long rootNodeId = rootNode.getNodeId();
 		
-		// Get next available node id from sequence
-		Query queryPruneSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE);
-		BigDecimal result=(BigDecimal)queryPruneSequence.getSingleResult();
-		long treeId = result.longValue();			
+		// Get next available tree id from sequence
+		long treeId = getSequenceVal(SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE);
 	
 		Timestamp now = DateUtil.getCurrentTime();
 		
@@ -348,9 +361,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		logger.info("Query => " + SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE);
 		
 		// Get next available node id from sequence
-		Query queryPruneSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE);
-		BigDecimal result=(BigDecimal)queryPruneSequence.getSingleResult();
-		long nodeId = result.longValue();
+		long nodeId = getSequenceVal(SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE);
 		
 		// create new node
 		FSNode newNode = new FSNode();
@@ -365,9 +376,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		getEntityManager().persist(newNode);
 		
 		// Get next available link id from sequence
-		Query queryLinkIdSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE);
-		result = (BigDecimal)queryLinkIdSequence.getSingleResult();
-		long linkId = result.longValue();		
+		long linkId = getSequenceVal(SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE);
 		
 		// add depth-0 self link to closure table
 		FSClosure selfLink = new FSClosure();
@@ -426,9 +435,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		getEntityManager().merge(reAddNode);
 		
 		// Get next available link id from sequence
-		Query queryLinkIdSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE);
-		BigDecimal result = (BigDecimal)queryLinkIdSequence.getSingleResult();
-		long linkId = result.longValue();		
+		long linkId = getSequenceVal(SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE);
 		
 		// add depth-0 self link to closure table
 		FSClosure selfLink = new FSClosure();
@@ -491,12 +498,11 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		long pruneId = 0;
 		
 		if(pruneTable){
+			
 			//
 			// Get next available prune id from sequence
 			//
-			Query queryPruneSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE);
-			BigDecimal result=(BigDecimal)queryPruneSequence.getSingleResult();
-			pruneId = result.longValue();		
+			pruneId = getSequenceVal(SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE);
 			
 			//
 			// Add list of nodes to delete to our prune table
@@ -515,6 +521,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		
 		// this part must happen in the middle. it relies on data in the closure table
 		if(nodeTable){
+			
 			//
 			// Remove node, plus children, from node table. 
 			//
@@ -531,6 +538,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		}
 		
 		if(pruneTable){
+			
 			//
 			// Remove node depth-0 self link, plus all children links, from closure table.
 			//
@@ -562,9 +570,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		//
 		// Get next available prune id from sequence.
 		//
-		Query queryPruneSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE);
-		BigDecimal result=(BigDecimal)queryPruneSequence.getSingleResult();
-		long pruneId = result.longValue();		
+		long pruneId = getSequenceVal(SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE);
 		
 		//
 		// Add list of nodes to delete to our prune table

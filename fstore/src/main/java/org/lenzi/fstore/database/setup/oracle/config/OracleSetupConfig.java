@@ -120,6 +120,7 @@ public class OracleSetupConfig {
 		
 		Properties properties = new Properties();
 		
+		properties.setProperty("hibernate.default_schema", setupProps.getProperty("hibernate.default_schema"));
 		properties.setProperty("hibernate.show_sql", setupProps.getProperty("hibernate.show_sql"));
 		properties.setProperty("hibernate.format_sql", setupProps.getProperty("hibernate.format_sql"));
 		properties.setProperty("hibernate.jdbc.batch_size", setupProps.getProperty("hibernate.jdbc.batch_size"));

@@ -83,10 +83,14 @@ public class PersistenceConfig {
 		
 		Properties properties = new Properties();
 		
+		properties.setProperty("hibernate.default_schema", appProps.getProperty("hibernate.default_schema"));
 		properties.setProperty("hibernate.show_sql", appProps.getProperty("hibernate.show_sql"));
+		properties.setProperty("hibernate.format_sql", appProps.getProperty("hibernate.format_sql"));
 		properties.setProperty("hibernate.jdbc.batch_size", appProps.getProperty("hibernate.jdbc.batch_size"));
 		properties.setProperty("hibernate.dialect", appProps.getProperty("hibernate.dialect"));
+		properties.setProperty("hibernate.driver", appProps.getProperty("hibernate.driver"));
 		properties.setProperty("hibernate.generate_statistics", appProps.getProperty("hibernate.generate_statistics"));
+		properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", appProps.getProperty("hibernate.temp.use_jdbc_metadata_defaults"));
 		
 		logger.info("Additional JPA Hibernate properties:");
 		
