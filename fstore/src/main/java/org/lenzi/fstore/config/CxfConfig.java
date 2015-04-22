@@ -10,6 +10,7 @@ import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.lenzi.fstore.rest.JaxRsApiApplication;
 import org.lenzi.fstore.rest.PersonResource;
+import org.lenzi.fstore.rest.TreeResource;
 import org.lenzi.fstore.rest.exception.WebServiceExceptionMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,12 +35,16 @@ public class CxfConfig {
 	
 	@Bean @DependsOn ( "cxf" )
 	public Server jaxRsServer() {
+		
 		JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint( jaxRsApiApplication(), JAXRSServerFactoryBean.class );
+		
+		// add all our service beans
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
-				getPersonServiceBean(), getExceptionMapper()
+					getTreeResourceBean(), getPersonResourceBean(), getExceptionMapper()
 			)
 		);
+		
 		factory.setAddress( factory.getAddress() );
 		factory.setProviders( Arrays.<Object>asList( getJsonProvider() ) );
 		return factory.create();
@@ -56,13 +61,23 @@ public class CxfConfig {
 	}
 	
 	/**
-	 * Our persons jax-rs service bean.
+	 * Jax-rs person service bean
 	 * 
 	 * @return
 	 */
 	@Bean
-	public PersonResource getPersonServiceBean(){
+	public PersonResource getPersonResourceBean(){
 		return new PersonResource();
+	}
+	
+	/**
+	 * Jax-rs tree service bean
+	 * 
+	 * @return
+	 */
+	@Bean
+	public TreeResource getTreeResourceBean(){
+		return new TreeResource();
 	}
 	
 	/**

@@ -3,7 +3,6 @@ package org.lenzi.fstore.test;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Test;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.FSNode;
@@ -13,7 +12,6 @@ import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.annotation.Rollback;
 
 /**
  * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
@@ -32,8 +30,6 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 	 * Build sample tree, move a node to under a different node in the same tree.
 	 * Print tree before and after.
 	 */
-	@Test
-	@Rollback(true)	
 	public void moveNodeSameTree() throws ServiceException {
 		
 		logTestTitle("Move node test: same tree");
@@ -84,8 +80,6 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 	 * Build two trees, move node from one tree to the other.
 	 * print both trees before and after move.
 	 */
-	@Test
-	@Rollback(true)	
 	public void moveNodeDifferentTree() throws ServiceException {
 		
 		logTestTitle("Move node test: different tree");
@@ -172,8 +166,6 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 	 * Build sample tree, move a node to under a different node in the same tree.
 	 * Print tree before and after.
 	 */
-	@Test
-	@Rollback(true)	
 	public void multiMoveSameTree() throws ServiceException {
 		
 		logTestTitle("Multi-move test: same tree");

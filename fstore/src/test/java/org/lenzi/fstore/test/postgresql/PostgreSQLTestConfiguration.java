@@ -36,7 +36,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 		}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=false)
+@TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=true)
 public class PostgreSQLTestConfiguration implements TransactionManagementConfigurer {
 
 	// defined in /src/test/resources/META-INF/test-postgresql-persistence.xml

@@ -38,7 +38,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 		}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@TransactionConfiguration(transactionManager="oracleTxManager", defaultRollback=false)
+@TransactionConfiguration(transactionManager="oracleTxManager", defaultRollback=true)
 public class OracleTestConfiguration implements TransactionManagementConfigurer {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());

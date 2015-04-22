@@ -6,10 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractDeleteNodeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -36,8 +38,13 @@ public class PostreSQLDeleteNodeTest extends AbstractDeleteNodeTest {
 	FSTreeService treeService = null;
 	
 	public PostreSQLDeleteNodeTest() {
-		//logger.info(this.getClass().getName() + " initialized");
+
 	}
+	
+	@Override
+	public FSTreeService getTreeSerive() {
+		return treeService;
+	}	
 	
 	@Test
 	public void testWiring(){
@@ -47,12 +54,14 @@ public class PostreSQLDeleteNodeTest extends AbstractDeleteNodeTest {
 		
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.test.CommonTest#getTreeSerive()
-	 */
-	@Override
-	public FSTreeService getTreeSerive() {
-		return treeService;
+	@Test
+	@Rollback(true)	
+	public void deleteNodeTest(){
+		try {
+			deleteNode();
+		} catch (ServiceException e) {
+			logger.error(e.getMessage());
+		}
 	}
 
 }

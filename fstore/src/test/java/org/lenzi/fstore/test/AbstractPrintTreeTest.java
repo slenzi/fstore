@@ -1,9 +1,7 @@
 package org.lenzi.fstore.test;
 
-
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Test;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.FSNode;
@@ -13,7 +11,6 @@ import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.annotation.Rollback;
 
 /**
  * Print tree test
@@ -31,8 +28,6 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 	/**
 	 * Build sample tree and log.
 	 */
-	@Test
-	@Rollback(true)	
 	public void printTree() throws ServiceException {
 		
 		logTestTitle("Print tree test");

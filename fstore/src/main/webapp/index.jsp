@@ -16,6 +16,10 @@
 	</p>
 	
 	<p>
+		<a href="<%=request.getContextPath() %>/cxf/api/tree/1">CXF JAX-RS fetch tree with ID 1</a>
+	</p>	
+	
+	<p>
 		<a href="<%=request.getContextPath() %>/cxf/api/person">CXF JAX-RS Test</a>
 	</p>
 	

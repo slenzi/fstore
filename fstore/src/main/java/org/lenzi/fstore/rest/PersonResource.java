@@ -5,7 +5,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.lenzi.fstore.repository.model.Person;
 import org.lenzi.fstore.rest.exception.WebServiceException;
@@ -33,6 +32,7 @@ public class PersonResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getServiceName(){
+		logger.info(PersonResource.class.getName() + ".getServiceName() called");
 		return PersonResource.class.getName();
 	}
 

@@ -3,7 +3,6 @@ package org.lenzi.fstore.test;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Test;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.FSNode;
@@ -13,7 +12,6 @@ import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.annotation.Rollback;
 
 /**
  * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
@@ -31,8 +29,6 @@ public abstract class AbstractDeleteNodeTest extends AbstractTreeTest {
 	/**
 	 * Build sample tree, print before, delete node, then print after.
 	 */
-	@Test
-	@Rollback(true)	
 	public void deleteNode() throws ServiceException {
 		
 		logTestTitle("Delete node test");

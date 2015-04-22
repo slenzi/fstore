@@ -218,12 +218,26 @@ public class FSTreeService {
 		return null;
 		
 	}
-	
+
+	/**
+	 * Builds a non managed tree object from a database FSTree.
+	 * 
+	 * @param treeId - ID of the FSTree.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Tree<TreeMeta> buildTree(Long treeId) throws ServiceException {
+		
+		FSTree fsTree = getTree(treeId);
+		
+		return buildTree(fsTree);
+		
+	}
 	
 	/**
-	 * Builds a non manage Tree object from a database FSTree.
+	 * Builds a non manage tree object from a database FSTree.
 	 * 
-	 * @param tree
+	 * @param tree The FSTree entity
 	 * @return
 	 */
 	public Tree<TreeMeta> buildTree(FSTree tree) throws ServiceException {

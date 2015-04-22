@@ -6,14 +6,17 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractPrintTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -39,9 +42,6 @@ public class OraclePrintTreeTest extends AbstractPrintTreeTest {
 
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.test.CommonTest#getTreeSerive()
-	 */
 	@Override
 	public FSTreeService getTreeSerive() {
 		return treeService;
@@ -53,6 +53,16 @@ public class OraclePrintTreeTest extends AbstractPrintTreeTest {
 		assertNotNull(configuration);
 		assertNotNull(treeService);
 		
+	}
+	
+	@Test
+	@Rollback(true)
+	public void printTreeTest(){
+		try {
+			printTree();
+		} catch (ServiceException e) {
+			logger.error(e.getMessage());
+		}
 	}
 
 }
