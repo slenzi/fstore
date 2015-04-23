@@ -75,6 +75,15 @@ public interface ClosureRepository {
 	// TODO implement this
 	
 	/**
+	 * Copy a the node and all it's children.
+	 * 
+	 * @param nodeId - the id of the node to copy. this node and all it's children will be copied to the parent node.
+	 * @param parentNodeId - the parent node where all the copied data will go.
+	 * @throws DatabaseException
+	 */
+	public void copyNode(Long nodeId, Long parentNodeId) throws DatabaseException;
+	
+	/**
 	 * Remove a tree
 	 * 
 	 * @param treeId

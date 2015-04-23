@@ -786,6 +786,56 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#copyNode(java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public void copyNode(Long nodeId, Long parentNodeId) throws DatabaseException {
+		
+		//
+		// Get tree structure for the branch / tree section we are moving.
+		//
+		List<FSClosure> closureList = getClosureByNodeId(nodeId);
+		
+		if(closureList == null || closureList.size() == 0){
+			throw new DatabaseException("Move error. No closure list for node " + nodeId);
+		}
+		
+		HashMap<Long,List<FSNode>> treeMap = new HashMap<Long,List<FSNode>>();
+		
+		// get the root node of the sub-tree we are copying.
+		FSNode rootNode = null;
+		for(FSClosure c : closureList){
+			if(c.hasParent() && c.hasChild()){
+				rootNode = c.getParentNode();
+				break;
+			}
+		}
+		
+		// loop through closure list and build tree map
+		FSClosure closure = null;
+		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
+			closure = closureList.get(closureIndex);
+			if(closure.hasParent() && closure.hasChild()){
+				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
+					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
+				}else{
+					List<FSNode> childList = new ArrayList<FSNode>();
+					childList.add(closure.getChildNode());
+					treeMap.put(closure.getParentNode().getNodeId(), childList);
+				}
+			}
+		}
+		
+		List<FSNode> childList = treeMap.get(rootNode.getNodeId());
+		
+		//
+		// add the root node to the new parent node, then walk the tree and add all the children.
+		//
+		copyNodes(rootNode, parentNodeId, childList, treeMap);
+		
+	}
+	
 	/**
 	 * Move the node (with all children) to the new parent node.
 	 * 
@@ -864,9 +914,9 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		List<FSNode> childList = treeMap.get(rootNode.getNodeId());
 		
 		//
-		// add the tree to the new parent node
+		// add the root node to the new parent node, then walk the tree and add all the children.
 		//
-		reAddTree(rootNode, newParentNodeId, childList, treeMap, DateUtil.getCurrentTime());
+		moveNodes(rootNode, newParentNodeId, childList, treeMap, DateUtil.getCurrentTime());
 		
 	}
 	
@@ -879,7 +929,7 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 	 * @param treeMap - The rest of the tree data that we iterate over.
 	 * @param dateUpdated - The updated data that will be set on all the nodes being moved.
 	 */
-	private void reAddTree(FSNode rootNode, Long newParentId, List<FSNode> childNodes, HashMap<Long,List<FSNode>> treeMap, Timestamp dateUpdated) throws DatabaseException {
+	private void moveNodes(FSNode rootNode, Long newParentId, List<FSNode> childNodes, HashMap<Long,List<FSNode>> treeMap, Timestamp dateUpdated) throws DatabaseException {
 		
 		logger.debug("Adding " + rootNode.getNodeId() + " (" + rootNode.getName() + ") to parent " + newParentId);
 		
@@ -896,7 +946,42 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 				if(childNode.getNodeId() != rootNode.getNodeId()){
 					
 					// recursively add child nodes, and all their children. The next child node becomes the current root node.
-					reAddTree(childNode, rootNode.getNodeId(), treeMap.get(childNode.getNodeId()), treeMap, dateUpdated);
+					moveNodes(childNode, rootNode.getNodeId(), treeMap.get(childNode.getNodeId()), treeMap, dateUpdated);
+					
+				}
+				
+			}
+		}
+		
+	}
+	
+	/**
+	 * Helper function for the copy node operation. Copies the tree to the new parent node.
+	 * 
+	 * @param rootNode - The root node of the sub tree that is being copied
+	 * @param newParentId - The new parent node for the root node
+	 * @param childNodes - The set of child nodes for the current root node
+	 * @param treeMap - The rest of the tree data that we iterate over.
+	 * @param copiedDate - The date the will be used for the created date and uopdated date on the new node copies.
+	 */
+	private void copyNodes(FSNode rootNode, Long newParentId, List<FSNode> childNodes, HashMap<Long,List<FSNode>> treeMap) throws DatabaseException {
+		
+		logger.debug("Adding " + rootNode.getNodeId() + " (" + rootNode.getName() + ") to parent " + newParentId);
+		
+		// add root node
+		FSNode newCopy = addNode(newParentId, rootNode.getName());
+		
+		if(childNodes != null && childNodes.size() > 0){
+			
+			logger.debug("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
+			
+			for(FSNode childNode : childNodes){
+				
+				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
+				if(childNode.getNodeId() != rootNode.getNodeId()){
+					
+					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
+					copyNodes(childNode, newCopy.getNodeId(), treeMap.get(childNode.getNodeId()), treeMap);
 					
 				}
 				

@@ -198,6 +198,23 @@ public class FSTreeService {
 	}
 	
 	/**
+	 * Copy a node and all it's children.
+	 * 
+	 * @param nodeToCopy - the node to copy
+	 * @param copyToNode - where everything is copied to.
+	 * @throws ServiceException
+	 */
+	public void copyNode(FSNode nodeToCopy, FSNode copyToNode) throws ServiceException {
+		
+		try {
+			closureRepository.copyNode(nodeToCopy.getNodeId(), copyToNode.getNodeId());
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+	}
+	
+	/**
 	 * Move a node
 	 * 
 	 * @param nodeToMode - The node to move. Cannot be a root node.
