@@ -55,7 +55,7 @@ public class PostreSQLDeleteTreeMoveNodesTest extends AbstractDeleteTreeMoveNode
 	}
 	
 	@Test
-	@Rollback(false)
+	@Rollback(true)
 	public void doTest() {
 		
 		logTestTitle("Delete Tree but Move Nodes Test");

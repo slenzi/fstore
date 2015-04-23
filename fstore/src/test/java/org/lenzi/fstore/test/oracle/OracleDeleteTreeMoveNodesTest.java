@@ -55,7 +55,7 @@ public class OracleDeleteTreeMoveNodesTest extends AbstractDeleteTreeMoveNodesTe
 	}
 	
 	@Test
-	@Rollback(false)
+	@Rollback(true)
 	public void doTest() {
 		
 		logTestTitle("Delete Tree but Move Nodes Test");
