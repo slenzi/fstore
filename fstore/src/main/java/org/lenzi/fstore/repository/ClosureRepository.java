@@ -60,6 +60,21 @@ public interface ClosureRepository {
 	public FSTree addTree(String treeName, String treeDesc, FSNode existingNode) throws DatabaseException;
 	
 	/**
+	 * Add a new tree, and copy over all the nodes from another tree.
+	 * 
+	 * @param treeName - name for the new tree
+	 * @param treeDesc - description for the new tree
+	 * @param rootNodeName - optional name of the root node for the new tree. If null, the root node
+	 * of the new tree will have the same name as the root node of the tree being copied. If your tree
+	 * is modeling a directory structure you might want the root node to have a different name (i.e path).
+	 * @param treeToCopy
+	 * @return
+	 * @throws DatabaseException
+	 */
+	//public FSTree addTree(String treeName, String treeDesc, String rootNodeName, FSTree treeToCopy) throws DatabaseException;
+	// TODO implement this
+	
+	/**
 	 * Remove a tree
 	 * 
 	 * @param treeId
