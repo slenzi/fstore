@@ -26,7 +26,7 @@
         	-->
             <property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver"/>
             <property name="hibernate.connection.username" value="ecoguser"/>
-            <property name="hibernate.connection.password" value="ecogweb"/>
+            <property name="hibernate.connection.password" value="******"/>
             <!-- specify default schema so you don't have to hard code schema on each entity  -->
             <property name="hibernate.default_schema" value="ecoguser"/>
             <property name="hibernate.connection.url" value="jdbc:oracle:thin:@ecog1.dfci.harvard.edu:1511:ecogtst"/>
