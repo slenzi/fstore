@@ -128,7 +128,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"  inner join " + SCHEMA + "fs_node n  " +
 		"  on c.child_node_id = n.node_id " + 
 		"  where c.parent_node_id = ? " +
-		")";
+		") as treeDeleteTable";
 	
 	/**
 	 * Add nodes to prune table. These are the nodes to delete during a delete operation
@@ -148,7 +148,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"  on c.child_node_id = n.node_id " + 
 		"  where c.parent_node_id = ? " +
 		"  and c.depth > 0 " +
-		")";	
+		") as childDeleteTable";	
 	
 	/**
 	 * Will delete the node from the FS_NODE table, as well as all children
@@ -193,7 +193,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	 */
 	private String SQL_DELETE_FS_CLOSURE_PRUNE =
 		"delete " +
-		"  " + SCHEMA + "fs_closure " +
+		"from  " + SCHEMA + "fs_closure " +
 		"where link_id in ( " +
 		"  select l.link_id " +
 		"  from " + SCHEMA + "fs_closure p " +
@@ -212,7 +212,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		"        select p.node_id as child_to_delete " +
 		"        from " + SCHEMA + "fs_prune p " +
 		"        where p.prune_id = ?  " +
-		"  ) pruneTable " +
+		"  ) as pruneTable " +
 		"  on " +
 		"    ( " +
 		/* for all nodes in the prune table, delete any parent node links and and child node links */
@@ -393,9 +393,7 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		moveNode(existingNode.getNodeId(), 0L);
 		
 		// Get next available node id from sequence
-		Query queryPruneSequence = getEntityManager().createNativeQuery(SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE);
-		BigDecimal result=(BigDecimal)queryPruneSequence.getSingleResult();
-		long treeId = result.longValue();			
+		long treeId = getSequenceVal(SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE);
 	
 		Timestamp now = DateUtil.getCurrentTime();
 		
