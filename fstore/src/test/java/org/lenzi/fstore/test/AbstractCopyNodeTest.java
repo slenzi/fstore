@@ -28,6 +28,56 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 	
 	/**
 	 * Build sample tree, copy a node to under a different node in the same tree.
+	 * Print tree before and after. Does not copy children of the node
+	 */
+	public void copyNodeButNotChildren() throws ServiceException {
+		
+		logTestTitle("Copy node, but not children: same tree");
+		
+		FSTreeService treeService = getTreeSerive();
+		
+		logger.info("Creating sample tree");
+		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
+		
+		assertNotNull(fsTree);
+		assertNotNull(fsTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		
+		logger.info("Adding additional nodes to tree...");
+		
+		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
+			FSNode nodeD = treeService.createNode(nodeB,"D");
+				FSNode nodeE = treeService.createNode(nodeD,"E");
+					FSNode nodeI = treeService.createNode(nodeE,"I");
+					FSNode nodeJ = treeService.createNode(nodeE,"J");
+				FSNode nodeF = treeService.createNode(nodeD,"F");
+			FSNode nodeG = treeService.createNode(nodeB,"G");
+				FSNode nodeH = treeService.createNode(nodeG,"H");
+					FSNode nodeK = treeService.createNode(nodeH,"K");
+					FSNode nodeL = treeService.createNode(nodeH,"L");
+		
+		logger.info("Finished adding nodes to tree...");
+		
+		logger.info("Before copying node D to Node H");
+		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Copying node D to node H, but not the children of node D...");
+		treeService.copyNode(nodeD, nodeH, false);
+		
+		logger.info("After copying node D");
+		tree = treeService.buildTree(fsTree);
+		assertNotNull(tree);
+		logger.info(tree.printTree());
+		
+		logger.info("Done.");
+		
+	}	
+	
+	/**
+	 * Build sample tree, copy a node to under a different node in the same tree.
 	 * Print tree before and after.
 	 */
 	public void copyNodeSameTree() throws ServiceException {
@@ -65,7 +115,7 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logger.info(tree.printTree());
 		
 		logger.info("Copying node D to node H...");
-		treeService.copyNode(nodeD, nodeH);
+		treeService.copyNode(nodeD, nodeH, true);
 		
 		logger.info("After copying node D");
 		tree = treeService.buildTree(fsTree);
@@ -146,7 +196,7 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logger.info(tree.printTree());		
 		
 		logger.info("Copying node E1 from tree 1 to under node G2 on tree 2...");
-		treeService.copyNode(nodeE1, nodeG2);
+		treeService.copyNode(nodeE1, nodeG2, true);
 		
 		logger.info("Tree 1 after");
 		tree = treeService.buildTree(fsTree1);
@@ -214,13 +264,13 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logger.info(tree.printTree());
 		
 		logger.info("Copy C to N");
-		treeService.copyNode(nodeC, nodeN);
+		treeService.copyNode(nodeC, nodeN, true);
 		tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
 		logger.info(tree.printTree());
 		
 		logger.info("Copy G to E");
-		treeService.copyNode(nodeG, nodeE);
+		treeService.copyNode(nodeG, nodeE, true);
 		tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
 		logger.info(tree.printTree());

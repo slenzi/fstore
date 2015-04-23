@@ -202,12 +202,13 @@ public class FSTreeService {
 	 * 
 	 * @param nodeToCopy - the node to copy
 	 * @param copyToNode - where everything is copied to.
+	 * @param copyChildren - true to copy over all the nodes children nodes as well, false to just copy the node.
 	 * @throws ServiceException
 	 */
-	public void copyNode(FSNode nodeToCopy, FSNode copyToNode) throws ServiceException {
+	public void copyNode(FSNode nodeToCopy, FSNode copyToNode, boolean copyChildren) throws ServiceException {
 		
 		try {
-			closureRepository.copyNode(nodeToCopy.getNodeId(), copyToNode.getNodeId());
+			closureRepository.copyNode(nodeToCopy.getNodeId(), copyToNode.getNodeId(), copyChildren);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}

@@ -41,6 +41,9 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 	@InjectLogger
 	private Logger logger;
 	
+	private String HQL_GET_NODE_BY_ID =
+		"select n from FSNode n where n.nodeId = :nodeId";	
+	
 	/**
 	 * For any given node in the tree, select all depth-1 parent-child links under that node. This will give
 	 * you all the necessary information to build a tree model.
@@ -248,6 +251,25 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#getNode(java.lang.Long)
+	 */
+	@Override
+	public FSNode getNode(Long nodeId) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(HQL_GET_NODE_BY_ID);
+			query.setParameter("nodeId", nodeId);
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		return (FSNode)getSingleResult(query);	
+
+	}
+
 	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.repository.ClosureRepository#isSameTree(org.lenzi.fstore.repository.model.FSNode, org.lenzi.fstore.repository.model.FSNode)
 	 */
@@ -444,6 +466,17 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		getEntityManager().clear();		
 		
 		return tree;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(java.lang.String, java.lang.String, java.lang.String, org.lenzi.fstore.repository.model.FSTree)
+	 */
+	@Override
+	public FSTree addTree(String treeName, String treeDesc, String rootNodeName, FSTree treeToCopy) throws DatabaseException {
+		
+		// TODO - implement
+		
+		return null;
 	}
 
 	/* (non-Javadoc)
@@ -790,50 +823,61 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 	 * @see org.lenzi.fstore.repository.ClosureRepository#copyNode(java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public void copyNode(Long nodeId, Long parentNodeId) throws DatabaseException {
+	public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException {
 		
-		//
-		// Get tree structure for the branch / tree section we are moving.
-		//
-		List<FSClosure> closureList = getClosureByNodeId(nodeId);
-		
-		if(closureList == null || closureList.size() == 0){
-			throw new DatabaseException("Move error. No closure list for node " + nodeId);
-		}
-		
-		HashMap<Long,List<FSNode>> treeMap = new HashMap<Long,List<FSNode>>();
-		
-		// get the root node of the sub-tree we are copying.
-		FSNode rootNode = null;
-		for(FSClosure c : closureList){
-			if(c.hasParent() && c.hasChild()){
-				rootNode = c.getParentNode();
-				break;
+		// copy just the node
+		if(!copyChildren){
+			
+			FSNode nodeToCopy = getNode(nodeId);
+			
+			addNode(parentNodeId, nodeToCopy.getName());
+			
+		// copy the node and all children	
+		}else{
+			
+			//
+			// Get tree structure for the branch / tree section we are moving.
+			//
+			List<FSClosure> closureList = getClosureByNodeId(nodeId);
+			
+			if(closureList == null || closureList.size() == 0){
+				throw new DatabaseException("Move error. No closure list for node " + nodeId);
 			}
-		}
-		
-		// loop through closure list and build tree map
-		FSClosure closure = null;
-		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
-			closure = closureList.get(closureIndex);
-			if(closure.hasParent() && closure.hasChild()){
-				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
-					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
-				}else{
-					List<FSNode> childList = new ArrayList<FSNode>();
-					childList.add(closure.getChildNode());
-					treeMap.put(closure.getParentNode().getNodeId(), childList);
+			
+			HashMap<Long,List<FSNode>> treeMap = new HashMap<Long,List<FSNode>>();
+			
+			// get the root node of the sub-tree we are copying.
+			FSNode rootNode = null;
+			for(FSClosure c : closureList){
+				if(c.hasParent() && c.hasChild()){
+					rootNode = c.getParentNode();
+					break;
 				}
 			}
+			
+			// loop through closure list and build tree map
+			FSClosure closure = null;
+			for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
+				closure = closureList.get(closureIndex);
+				if(closure.hasParent() && closure.hasChild()){
+					if(treeMap.containsKey(closure.getParentNode().getNodeId())){
+						treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
+					}else{
+						List<FSNode> childList = new ArrayList<FSNode>();
+						childList.add(closure.getChildNode());
+						treeMap.put(closure.getParentNode().getNodeId(), childList);
+					}
+				}
+			}
+			
+			// get children for root node of sub-tree
+			List<FSNode> childList = treeMap.get(rootNode.getNodeId());
+			
+			// add the root node to the new parent node, then walk the tree and add all the children.
+			copyNodes(rootNode, parentNodeId, childList, treeMap);			
+			
 		}
-		
-		List<FSNode> childList = treeMap.get(rootNode.getNodeId());
-		
-		//
-		// add the root node to the new parent node, then walk the tree and add all the children.
-		//
-		copyNodes(rootNode, parentNodeId, childList, treeMap);
-		
+
 	}
 	
 	/**

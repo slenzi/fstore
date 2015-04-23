@@ -27,6 +27,14 @@ public interface ClosureRepository {
 	public FSNode addNode(Long parentNodeId, String nodeName) throws DatabaseException;
 	
 	/**
+	 * Get a node, not closure data, or children. Just the node data.
+	 * 
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FSNode getNode(Long nodeId) throws DatabaseException;
+	
+	/**
 	 * Get a tree with it's root node.
 	 * 
 	 * @param treeId - The ID of the tree.
@@ -71,17 +79,27 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	//public FSTree addTree(String treeName, String treeDesc, String rootNodeName, FSTree treeToCopy) throws DatabaseException;
-	// TODO implement this
+	public FSTree addTree(String treeName, String treeDesc, String rootNodeName, FSTree treeToCopy) throws DatabaseException;
+	
+	/**
+	 * Copy a the node, and optionally all it's children.
+	 * 
+	 * @param nodeId - the id of the node to copy.
+	 * @param parentNodeId - the parent node where all the new copy node will be placed under.
+	 * @param copyChildren - true to copy over all the nodes children nodes as well, false to just copy the node.
+	 */
+	public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException;
 	
 	/**
 	 * Copy a the node and all it's children.
 	 * 
 	 * @param nodeId - the id of the node to copy. this node and all it's children will be copied to the parent node.
 	 * @param parentNodeId - the parent node where all the copied data will go.
+	 * @param newRootNodeName - new name for the root node of the sub-tree being moved. this is optional. if you don't
+	 * 	provide a name then the node will have the same name as the original node node.
 	 * @throws DatabaseException
 	 */
-	public void copyNode(Long nodeId, Long parentNodeId) throws DatabaseException;
+	//public void copyNode(Long nodeId, Long parentNodeId, String newRootNodeName) throws DatabaseException;
 	
 	/**
 	 * Remove a tree
