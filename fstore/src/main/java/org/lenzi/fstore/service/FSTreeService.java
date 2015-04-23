@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.lenzi.filestore.util.CollectionUtil;
-import org.lenzi.filestore.util.LogUtil;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.tree.TreeNode;
@@ -18,6 +16,8 @@ import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.util.CollectionUtil;
+import org.lenzi.fstore.util.LogUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,7 +85,7 @@ public class FSTreeService {
 	
 	/**
 	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
-	 * All children of the existing node are alos moved over.
+	 * All children of the existing node are also moved over.
 	 * 
 	 * @param treeName - name of the new tree
 	 * @param treeDesc - description of the new tree

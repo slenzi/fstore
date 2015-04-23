@@ -1,4 +1,4 @@
-package org.lenzi.filestore.util;
+package org.lenzi.fstore.util;
 
 import java.util.Collection;
 import java.util.Collections;

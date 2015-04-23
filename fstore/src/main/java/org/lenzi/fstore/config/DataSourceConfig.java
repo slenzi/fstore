@@ -3,9 +3,9 @@ package org.lenzi.fstore.config;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.lenzi.filestore.util.StringUtil;
 import org.lenzi.fstore.properties.ManagedProperties;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.util.StringUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

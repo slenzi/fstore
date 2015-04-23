@@ -1,4 +1,4 @@
-package org.lenzi.filestore.util;
+package org.lenzi.fstore.util;
 
 public abstract class StringUtil {
 
