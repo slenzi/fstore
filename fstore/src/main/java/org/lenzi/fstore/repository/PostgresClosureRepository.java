@@ -1,6 +1,5 @@
 package org.lenzi.fstore.repository;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -281,7 +280,9 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 			return true;
 		}
 		
+		logger.info("Getting parent data for node1 => " + node1.getNodeId());
 		FSNode parentNode1 = getNodeWithParentClosure(node1);
+		logger.info("Getting parent data for node2 => " + node2.getNodeId());
 		FSNode parentNode2 = getNodeWithParentClosure(node2);
 		
 		if(parentNode1 == null || parentNode1.getParentClosure() == null || parentNode1.getParentClosure().size() == 0){
@@ -294,12 +295,14 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 		FSNode rootNode1 = null;
 		FSNode rootNode2 = null;
 		
+		logger.info("Iterating through node1 parent data to find tree root node");
 		for(FSClosure c : parentNode1.getParentClosure()){
 			if(c.getParentNode().getParentNodeId() == 0L){
 				rootNode1 = c.getParentNode();
 				break;
 			}
 		}
+		logger.info("Iterating through node2 parent data to find tree root node");
 		for(FSClosure c : parentNode2.getParentClosure()){
 			if(c.getParentNode().getParentNodeId() == 0L){
 				rootNode2 = c.getParentNode();
@@ -476,14 +479,22 @@ public class PostgresClosureRepository extends AbstractRepository implements Clo
 	@Override
 	public void removeTree(FSTree tree, FSNode newParentNode) throws DatabaseException {
 
+		logger.info("Remove tree but keeps nodes.");
+		
 		if(isSameTree(tree.getRootNode(), newParentNode)){
 			throw new DatabaseException("You cannot move the root node of the existing tree to another node under the "
 					+ "same tree. New parent node must be a node in a different tree.");			
 		}
 		
+		logger.info("Not same tree, may proceed with move.");
+		
 		moveNode(tree.getRootNode().getNodeId(), newParentNode.getNodeId());
 		
-		getEntityManager().remove(tree);		
+		logger.info("Moved nodes...Now deleting old tree");
+		
+		FSTree treeToDelete = getEntityManager().find(FSTree.class, tree.getTreeId());
+		
+		getEntityManager().remove(treeToDelete);		
 		
 	}	
 

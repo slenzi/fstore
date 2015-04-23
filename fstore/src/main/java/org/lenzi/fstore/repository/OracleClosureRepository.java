@@ -14,7 +14,6 @@ import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.FSClosure;
 import org.lenzi.fstore.repository.model.FSNode;
 import org.lenzi.fstore.repository.model.FSTree;
-import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -481,7 +480,9 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 		
 		logger.info("Moved nodes...Now deleting old tree");
 		
-		getEntityManager().remove(tree);
+		FSTree treeToDelete = getEntityManager().find(FSTree.class, tree.getTreeId());
+		
+		getEntityManager().remove(treeToDelete);
 		
 	}
 
