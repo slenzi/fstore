@@ -1008,7 +1008,7 @@ public class OracleClosureRepository extends AbstractRepository implements Closu
 	 * @param treeMap - The rest of the tree data that we iterate over.
 	 * @param copiedDate - The date the will be used for the created date and uopdated date on the new node copies.
 	 */
-	private void copyNodes(FSNode rootNode, Long newParentId, List<FSNode> childNodes, HashMap<Long,List<FSNode>> treeMap) throws DatabaseException {
+	private void copyNodes(FSNode rootNode, Long newParentId, List<FSNode> childNodes, HashMap<Long, List<FSNode>> treeMap) throws DatabaseException {
 		
 		logger.debug("Adding " + rootNode.getNodeId() + " (" + rootNode.getName() + ") to parent " + newParentId);
 		
