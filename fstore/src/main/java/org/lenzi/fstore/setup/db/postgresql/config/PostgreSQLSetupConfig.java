@@ -1,4 +1,4 @@
-package org.lenzi.fstore.database.setup.postgresql.config;
+package org.lenzi.fstore.setup.db.postgresql.config;
 
 import java.util.Properties;
 
@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(
-	basePackages = "org.lenzi.fstore.database.setup.postgresql",
+	basePackages = "org.lenzi.fstore.setup.db.postgresql",
 	excludeFilters = {
 		@ComponentScan.Filter(value = Controller.class, type = FilterType.ANNOTATION),
 		@ComponentScan.Filter(value = Configuration.class, type = FilterType.ANNOTATION)

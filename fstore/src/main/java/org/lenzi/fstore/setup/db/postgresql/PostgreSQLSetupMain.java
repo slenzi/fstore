@@ -1,7 +1,7 @@
-package org.lenzi.fstore.database.setup.postgresql;
+package org.lenzi.fstore.setup.db.postgresql;
 
-import org.lenzi.fstore.database.setup.postgresql.config.PostgreSQLSetupConfig;
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.setup.db.postgresql.config.PostgreSQLSetupConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

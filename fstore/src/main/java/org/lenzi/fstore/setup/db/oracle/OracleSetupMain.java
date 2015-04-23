@@ -1,7 +1,7 @@
-package org.lenzi.fstore.database.setup.oracle;
+package org.lenzi.fstore.setup.db.oracle;
 
-import org.lenzi.fstore.database.setup.oracle.config.OracleSetupConfig;
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.setup.db.oracle.config.OracleSetupConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

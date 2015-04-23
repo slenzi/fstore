@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
  * Scan all packages from base package org.lenzi.fstore, but skip the following.
  * - skip other classes marked with @Configuration. Our AppConfig class specifically includes all the ones we need.
  * - skip classes marked with @Controller. The WebMvcConfig class sets up Spring MVC and all our controllers.
- * - skip all classes under org.lenzi.fstore.database.* These classes are only used when setting up the database,
+ * - skip all classes under org.lenzi.fstore.setup.* These classes are only used when setting up the database,
  *   and they have their own @Configurtion classes.
  * 
  * @see org.lenzi.fstore.config.WebMvcConfig for Spring MVC configuration.
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Controller;
 	excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class),
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
-		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.lenzi.fstore.database.")
+		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.lenzi.fstore.setup.")
 	}
 )
 @Import({

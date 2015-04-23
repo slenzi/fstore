@@ -1,4 +1,4 @@
-package org.lenzi.fstore.database.setup.postgresql.config;
+package org.lenzi.fstore.setup.db.postgresql.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * Properties used during the PostgreSQL database setup process.
  *
- * @see org.lenzi.fstore.database.setup.postgresql.config.PostgreSQLSetupPropertyConfig
+ * @see org.lenzi.fstore.setup.db.postgresql.config.PostgreSQLSetupPropertyConfig
  * 
  * @author slenzi
  */

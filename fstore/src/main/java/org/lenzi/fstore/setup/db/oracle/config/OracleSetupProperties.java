@@ -1,4 +1,4 @@
-package org.lenzi.fstore.database.setup.oracle.config;
+package org.lenzi.fstore.setup.db.oracle.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * Properties used during the Oracle database setup process.
  *
- * @see org.lenzi.fstore.database.setup.oracle.config.OracleSetupPropertyConfig
+ * @see org.lenzi.fstore.setup.db.oracle.config.OracleSetupPropertyConfig
  * 
  * @author slenzi
  */
