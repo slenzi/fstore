@@ -111,27 +111,25 @@ public class TreeNode<T> {
     }	
 
     private void print(StringBuffer buf, String prefix, boolean isTail, String lineSepartor) {
-    	//buf.append(prefix + (isTail ? "|   " : "|   ") + lineSepartor);
-    	buf.append(prefix + (isTail ? "|__ " : "|__ ") + data.toString() + lineSepartor);
+    	buf.append(prefix + (isTail ? "|__" : "|__") + data.toString() + lineSepartor);
     	if(childList != null){
 	        for (int i = 0; i < childList.size() - 1; i++) {
-	        	childList.get(i).print(buf, prefix + (isTail ? "   " : "|   "), false, lineSepartor);
+	        	childList.get(i).print(buf, prefix + (isTail ? "   " : "|  "), false, lineSepartor);
 	        }
 	        if (childList.size() >= 1) {
-	        	childList.get(childList.size() - 1).print(buf, prefix + (isTail ? "   " : "|   "), true, lineSepartor);
+	        	childList.get(childList.size() - 1).print(buf, prefix + (isTail ? "   " : "|  "), true, lineSepartor);
 	        }
     	}
     }
     
     private void printHtml(StringBuffer buf, String prefix, boolean isTail, String lineSepartor) {
-    	//buf.append(prefix + (isTail ? "|   " : "|   ") + lineSepartor);
-    	buf.append(prefix + (isTail ? "|__ " : "|__ ") + data.toString() + lineSepartor);
+    	buf.append(prefix + (isTail ? "|__" : "|__") + data.toString() + lineSepartor);
     	if(childList != null){
 	        for (int i = 0; i < childList.size() - 1; i++) {
-	        	childList.get(i).printHtml(buf, prefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), false, lineSepartor);
+	        	childList.get(i).printHtml(buf, prefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), false, lineSepartor);
 	        }
 	        if (childList.size() >= 1) {
-	        	childList.get(childList.size() - 1).printHtml(buf, prefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), true, lineSepartor);
+	        	childList.get(childList.size() - 1).printHtml(buf, prefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), true, lineSepartor);
 	        }
     	}
     }	    
