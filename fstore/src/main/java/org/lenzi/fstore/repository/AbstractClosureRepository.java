@@ -102,7 +102,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			return null;
 		}
 		
-		
 		// these two calls are required ( definitely the clear() call )
 		getEntityManager().flush();
 		getEntityManager().clear();
@@ -129,6 +128,50 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		return (FSNode)getSingleResult(query);		
 		
 	}
+	
+	/**
+	 * Get an FSNode object with it's parent closure and nodes.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FSNode getNodeWithParentClosure(FSNode node) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(getHqlQueryNodeWithParentClosure());
+			query.setParameter("nodeId", node.getNodeId());
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		FSNode nodeWithParentClosure = (FSNode)getSingleResult(query);		
+		
+		return nodeWithParentClosure;
+	}
+	
+	/**
+	 * Get an FSNode object with it's child closure and nodes.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FSNode getNodeWithChildClosure(FSNode node) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(getHqlQueryNodeWithChildClosure());
+			query.setParameter("nodeId", node.getNodeId());
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		FSNode nodeWithChildClosure = (FSNode)getSingleResult(query);		
+		
+		return nodeWithChildClosure;
+	}	
 
 	/**
 	 * 
@@ -356,10 +399,14 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		// TODO - make sure node being moved is not a root node.
 		// FSTreeService currently performs this check, but it would be better here.
 		
-		// TODO - make sure new parent node is not a current child of the node that's being moved. you
+		// make sure new parent node is not a current child of the node that's being moved. you
 		// cannot move a tree to under itself! we don't need to worry about this for the copy operation.
+		if(isChild(getNode(newParentNodeId), getNode(nodeId), true)){
+			throw new DatabaseException("Cannot move node " + nodeId + " to under node " + newParentNodeId + 
+					". Node " + newParentNodeId + " is a child of node " + nodeId);
+		}
 		
-		logger.info("Moving node => " + nodeId + " to new parent node => " + newParentNodeId);
+		logger.debug("Moving node => " + nodeId + " to new parent node => " + newParentNodeId);
 		
 		//
 		// Get tree structure for the  branch / tree section we are moving.
@@ -632,52 +679,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	
 	// --------------------------------------------------------------------------------------------------------
 	// private helper methods
-	// --------------------------------------------------------------------------------------------------------
-	
-
-	/**
-	 * Get an FSNode object with it's parent closure and nodes.
-	 * 
-	 * @param node
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private FSNode getNodeWithParentClosure(FSNode node) throws DatabaseException {
-		
-		Query query = null;
-		try {
-			query = getEntityManager().createQuery(getHqlQueryNodeWithParentClosure());
-			query.setParameter("nodeId", node.getNodeId());
-		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
-		}		
-		
-		FSNode nodeWithParentClosure = (FSNode)getSingleResult(query);		
-		
-		return nodeWithParentClosure;
-	}
-	
-	/**
-	 * Get an FSNode object with it's child closure and nodes.
-	 * 
-	 * @param node
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private FSNode getNodeWithChildClosure(FSNode node) throws DatabaseException {
-		
-		Query query = null;
-		try {
-			query = getEntityManager().createQuery(getHqlQueryNodeWithChildClosure());
-			query.setParameter("nodeId", node.getNodeId());
-		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
-		}		
-		
-		FSNode nodeWithChildClosure = (FSNode)getSingleResult(query);		
-		
-		return nodeWithChildClosure;
-	}	
+	// --------------------------------------------------------------------------------------------------------	
 	
 	/**
 	 * Re-add node. Called during move operation. Uses merge() because we re-use the same node ids.

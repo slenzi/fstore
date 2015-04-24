@@ -68,20 +68,6 @@ public interface ClosureRepository {
 	public FSTree addTree(String treeName, String treeDesc, FSNode existingNode) throws DatabaseException;
 	
 	/**
-	 * Add a new tree, and copy over all the nodes from another tree.
-	 * 
-	 * @param treeName - name for the new tree
-	 * @param treeDesc - description for the new tree
-	 * @param rootNodeName - optional name of the root node for the new tree. If null, the root node
-	 * of the new tree will have the same name as the root node of the tree being copied. If your tree
-	 * is modeling a directory structure you might want the root node to have a different name (i.e path).
-	 * @param treeToCopy
-	 * @return
-	 * @throws DatabaseException
-	 */
-	//public FSTree addTree(String treeName, String treeDesc, String rootNodeName, FSTree treeToCopy) throws DatabaseException;
-	
-	/**
 	 * Copy a the node, and optionally all it's children.
 	 * 
 	 * @param nodeId - the id of the node to copy.
@@ -89,17 +75,6 @@ public interface ClosureRepository {
 	 * @param copyChildren - true to copy over all the nodes children nodes as well, false to just copy the node.
 	 */
 	public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException;
-	
-	/**
-	 * Copy a the node and all it's children.
-	 * 
-	 * @param nodeId - the id of the node to copy. this node and all it's children will be copied to the parent node.
-	 * @param parentNodeId - the parent node where all the copied data will go.
-	 * @param newRootNodeName - new name for the root node of the sub-tree being moved. this is optional. if you don't
-	 * 	provide a name then the node will have the same name as the original node node.
-	 * @throws DatabaseException
-	 */
-	//public void copyNode(Long nodeId, Long parentNodeId, String newRootNodeName) throws DatabaseException;
 	
 	/**
 	 * Remove a tree

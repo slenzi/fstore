@@ -96,7 +96,12 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
+		FSNode nodeB = treeService.createNode(fsTree.getRootNode(),"B");
+		FSNode nodeM = treeService.createNode(fsTree.getRootNode(),"M");
+			FSNode nodeN = treeService.createNode(nodeM,"N");
+				FSNode nodeO = treeService.createNode(nodeN,"O");
+					FSNode nodeP = treeService.createNode(nodeO,"P");
+						FSNode nodeQ = treeService.createNode(nodeP,"Q");		
 			FSNode nodeD = treeService.createNode(nodeB,"D");
 				FSNode nodeE = treeService.createNode(nodeD,"E");
 					FSNode nodeI = treeService.createNode(nodeE,"I");
@@ -105,19 +110,33 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 			FSNode nodeG = treeService.createNode(nodeB,"G");
 				FSNode nodeH = treeService.createNode(nodeG,"H");
 					FSNode nodeK = treeService.createNode(nodeH,"K");
-					FSNode nodeL = treeService.createNode(nodeH,"L");
+						FSNode nodeR = treeService.createNode(nodeK,"R");
+							FSNode nodeS = treeService.createNode(nodeR,"S");
+								FSNode nodeW = treeService.createNode(nodeS,"W");
+									FSNode nodeX = treeService.createNode(nodeW,"X");
+										FSNode nodeY = treeService.createNode(nodeX,"Y");
+											FSNode nodeZ = treeService.createNode(nodeY,"Z");
+												FSNode node0 = treeService.createNode(nodeZ,"0");
+													FSNode node1 = treeService.createNode(node0,"1");
+												FSNode node2 = treeService.createNode(nodeZ,"2");
+											FSNode node3 = treeService.createNode(nodeY,"3");
+										FSNode node4 = treeService.createNode(nodeX,"4");
+									FSNode node5 = treeService.createNode(nodeW,"5");
+								FSNode nodeT = treeService.createNode(nodeS,"T");
+									FSNode nodeU = treeService.createNode(nodeT,"U");
+										FSNode nodeV = treeService.createNode(nodeU,"V");
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		logger.info("Before copying node D to Node H");
+		logger.info("Before copying node G to Node 3");
 		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
 		logger.info(tree.printTree());
 		
-		logger.info("Copying node D to node H...");
-		treeService.copyNode(nodeD, nodeH, true);
+		logger.info("Copying node G to node 3...");
+		treeService.copyNode(nodeG, node3, true);
 		
-		logger.info("After copying node D");
+		logger.info("After copying node G");
 		tree = treeService.buildTree(fsTree);
 		assertNotNull(tree);
 		logger.info(tree.printTree());
