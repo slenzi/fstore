@@ -354,6 +354,10 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException {
 
 		// TODO - make sure node being moved is not a root node.
+		// FSTreeService currently performs this check, but it would be better here.
+		
+		// TODO - make sure new parent node is not a current child of the node that's being moved. you
+		// cannot move a tree to under itself! we don't need to worry about this for the copy operation.
 		
 		logger.info("Moving node => " + nodeId + " to new parent node => " + newParentNodeId);
 		
@@ -508,7 +512,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 */
 	@Override
 	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException {
-
+		
 		// both are root nodes. they are not in the same tree
 		if(node1.getParentNodeId() == 0L && node2.getParentNodeId() == 0L){
 			return false;
@@ -563,12 +567,74 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
+	/**
+	 * 
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isParent(org.lenzi.fstore.repository.model.FSNode, org.lenzi.fstore.repository.model.FSNode, boolean)
+	 */
+	@Override
+	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {
+		
+		if(node2.getParentNodeId() == node1.getNodeId()){
+			return true;
+		}
+		if(!fullSearch){
+			return false;
+		}else{
+			
+			// search all the way up the tree till the root node. if node1 is found, return true.
+			FSNode node2Parents = getNodeWithParentClosure(node2);
+			if(node2Parents == null || node2Parents.getParentClosure() == null || node2Parents.getParentClosure().size() == 0){
+				throw new DatabaseException("Failed to get parent closure and parent node data for node " + node2.getNodeId());
+			}
+			for(FSClosure c : node2Parents.getParentClosure()){
+				if(c.getParentNode().getNodeId() == node1.getNodeId()){
+					return true;
+				}
+			}			
+			
+		}
+		return false;
+		
+	}
+
+	/**
+	 * 
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isChild(org.lenzi.fstore.repository.model.FSNode, org.lenzi.fstore.repository.model.FSNode, boolean)
+	 */
+	@Override
+	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {
+
+		if(node2.getNodeId() == node1.getParentNodeId()){
+			return true;
+		}
+		if(!fullSearch){
+			return false;
+		}else{
+			
+			// search all children of node2, till all leaf nodes are reached. If node 1 is found, return true
+			FSNode node2Children = this.getNodeWithChildClosure(node2);
+			if(node2Children == null || node2Children.getParentClosure() == null || node2Children.getParentClosure().size() == 0){
+				throw new DatabaseException("Failed to get child closure and child node data for node " + node2.getNodeId());
+			}
+			for(FSClosure c : node2Children.getChildClosure()){
+				if(c.getChildNode().getNodeId() == node1.getNodeId()){
+					return true;
+				}
+			}			
+			
+		}
+		return false;		
+		
+	}	
+	
+	
 	
 	
 	// --------------------------------------------------------------------------------------------------------
 	// private helper methods
 	// --------------------------------------------------------------------------------------------------------
 	
+
 	/**
 	 * Get an FSNode object with it's parent closure and nodes.
 	 * 

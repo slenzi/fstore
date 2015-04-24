@@ -165,4 +165,41 @@ public interface ClosureRepository {
 	 */
 	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException;
 	
+	/**
+	 * Check if node1 is a parent of node2.
+	 * 
+	 * If 'fullSearch' is true, a full search will be completed all the way to the root node. If
+	 * node1 is found anywhere up the tree then true is returned, otherwise false.
+	 * 
+	 * If 'fullSearch' is false, then a simple check is performed to see if node1 is an immediate
+	 * parent of node2. An immediate parent would mean node2.getParentNodeId() == node1.getNodeId().
+	 * 
+	 * @param node1 - The first node
+	 * @param node2 - The second node
+	 * @param fullSearch - Pass true to search up the tree till the root node. Pass False to simply
+	 * 	check if node2.getParentNodeId() == node1.getNodeId()
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException;
+	
+	/**
+	 * Check if node1 is a child of node2.
+	 * 
+	 * If 'fullSearch' is true, a full search will be completed of all nodes under node2, until all
+	 * leaf nodes have been reached. If node1 is found anywhere under node2 then true is returned,
+	 * otherwise false.
+	 * 
+	 * If 'fullSearch' is false, then a simple check is performed to see if node1 is an immediate
+	 * child of node2. An immediate child would mean node2.getNodeId() == node1.getParentNodeId().
+	 * 
+	 * @param node1 - The first node
+	 * @param node2 - The second node
+	 * @param fullSearch - Pass true to search all nodes under node2, till all leaf nodes are reached.
+	 * 	Pass false to simple check if node2.getNodeId() == node1.getParentNodeId().
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException;
+	
 }
