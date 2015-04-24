@@ -2,7 +2,7 @@ package org.lenzi.fstore.config;
 
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.OracleClosureRepository;
-import org.lenzi.fstore.repository.PostgresClosureRepository;
+import org.lenzi.fstore.repository.PostgreSQLClosureRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +49,7 @@ public class RepositoryConfig {
 		
 		logger.info("Creating PostgreSQL Closure Repository");
 		
-		return new PostgresClosureRepository();
+		return new PostgreSQLClosureRepository();
 		
 	}
 

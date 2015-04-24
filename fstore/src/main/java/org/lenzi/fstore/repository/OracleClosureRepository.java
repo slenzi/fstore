@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author sal
  */
 @Transactional
-public class OracleClosureRepository extends AbstractClosureRepository implements ClosureRepository {
+public class OracleClosureRepository extends AbstractClosureRepository {
 
 	/**
 	 * 

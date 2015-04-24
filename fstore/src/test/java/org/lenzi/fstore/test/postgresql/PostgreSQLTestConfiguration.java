@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import org.lenzi.fstore.logging.LoggerBeanPostProccessor;
 import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.PostgresClosureRepository;
+import org.lenzi.fstore.repository.PostgreSQLClosureRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -57,7 +57,7 @@ public class PostgreSQLTestConfiguration implements TransactionManagementConfigu
 	@Bean
 	@Profile("postgresql")
 	public ClosureRepository getPostgresClosureRepository(){
-		return new PostgresClosureRepository();
+		return new PostgreSQLClosureRepository();
 	}
 
 	/**

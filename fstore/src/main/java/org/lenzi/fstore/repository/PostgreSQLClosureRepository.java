@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author sal
  */
 @Transactional
-public class PostgresClosureRepository extends AbstractClosureRepository implements ClosureRepository {
+public class PostgreSQLClosureRepository extends AbstractClosureRepository {
 
 	/**
 	 * 
@@ -234,7 +234,7 @@ public class PostgresClosureRepository extends AbstractClosureRepository impleme
 	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_TREE_ID_SEQUENCE')";
 	
 	
-	public PostgresClosureRepository() {
+	public PostgreSQLClosureRepository() {
 		
 	}
 	
@@ -364,9 +364,9 @@ public class PostgresClosureRepository extends AbstractClosureRepository impleme
 	@Override
 	public String getRepositoryName() {
 		
-		logger.info(PostgresClosureRepository.class.getName() + "getRepositoryName() called");
+		logger.info(PostgreSQLClosureRepository.class.getName() + "getRepositoryName() called");
 		
-		return PostgresClosureRepository.class.getName();
+		return PostgreSQLClosureRepository.class.getName();
 	}	
 	
 	/**

@@ -22,8 +22,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * Where all the work happens. Contains all code, minus specific database queries, for maintaining tree like
+ * structures in a database using a closure table.
+ * 
+ * See OracleClosureRepository and PostgreSQLClosureRepository for database specific code.
+ * 
  * @author sal
- *
  */
 @Transactional(propagation=Propagation.REQUIRED)
 public abstract class AbstractClosureRepository extends AbstractRepository implements ClosureRepository {
