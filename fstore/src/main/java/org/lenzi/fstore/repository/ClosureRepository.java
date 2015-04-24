@@ -79,7 +79,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FSTree addTree(String treeName, String treeDesc, String rootNodeName, FSTree treeToCopy) throws DatabaseException;
+	//public FSTree addTree(String treeName, String treeDesc, String rootNodeName, FSTree treeToCopy) throws DatabaseException;
 	
 	/**
 	 * Copy a the node, and optionally all it's children.

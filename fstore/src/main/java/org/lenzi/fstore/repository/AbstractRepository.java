@@ -28,7 +28,7 @@ import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 
 /**
- * Encapsulates logic for basic repository functionality.
+ * Encapsulates logic for basic repository functionality with a single entity manager.
  * 
  * @author slenzi
  */
