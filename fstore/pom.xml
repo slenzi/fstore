@@ -41,7 +41,7 @@
 					<name>env</name>
 					<value>lenzi.mac</value>
 				</property>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
 				<property.file>lenzi.mac.properties</property.file>
@@ -54,7 +54,7 @@
 					<name>env</name>
 					<value>lenzi.frontier.pc</value>
 				</property>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
 				<property.file>lenzi.frontier.pc.properties</property.file>

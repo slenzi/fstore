@@ -100,7 +100,7 @@ public class DataSourceConfig {
 		logger.info("Database password = *******");
 		
 		if(StringUtil.isNullEmpty(appProps.getDatabaseDriver()) || StringUtil.isNullEmpty(appProps.getDatabaseUrl()) ||
-				StringUtil.isNullEmpty(appProps.getDatabaseUser()) || StringUtil.isNullEmpty(appProps.getDatabasePassword())){
+				StringUtil.isNullEmpty(appProps.getDatabaseUser())){
 			
 			logger.error("Missing required values for data source. Check driver name, connection url, username, and/or password");
 			
