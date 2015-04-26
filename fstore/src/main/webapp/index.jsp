@@ -16,6 +16,14 @@
 	</p>
 	
 	<p>
+		<a href="<%=request.getContextPath() %>/spring/res">CMS Resource Dispatcher...</a>
+	</p>
+	
+	<p>
+		<a href="<%=request.getContextPath() %>/spring/tree/1">Test Tree Dispatcher...</a>
+	</p>
+	
+	<p>
 		<a href="<%=request.getContextPath() %>/cxf/api/tree/1">CXF JAX-RS fetch tree with ID 1</a>
 	</p>	
 	

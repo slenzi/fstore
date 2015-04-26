@@ -9,7 +9,8 @@ import org.springframework.stereotype.Controller;
 /**
  * Spring project configuration setup
  * 
- * Scan all packages from base package org.lenzi.fstore, but skip the following.
+ * Scan all packages from base fstore package org.lenzi.fstore, and base CMS package org.lenzi.cms,
+ * but skip the following items.
  * - skip other classes marked with @Configuration. Our AppConfig class specifically includes all the ones we need.
  * - skip classes marked with @Controller. The WebMvcConfig class sets up Spring MVC and all our controllers.
  * - skip all classes under org.lenzi.fstore.setup.* These classes are only used when setting up the database,
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Controller;
  */
 @Configuration
 @ComponentScan(
-	basePackages = "org.lenzi.fstore",
+	basePackages = {"org.lenzi.fstore","org.lenzi.cms"},
 	excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class),
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
