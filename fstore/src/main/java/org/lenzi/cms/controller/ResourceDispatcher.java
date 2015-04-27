@@ -6,7 +6,7 @@ package org.lenzi.cms.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class ResourceDispatcher {
     Logger logger;
     
     @Autowired
-    private FSTreeService treeService;
+    private TreeService treeService;
 	
 	/**
 	 * 

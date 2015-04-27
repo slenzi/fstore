@@ -9,7 +9,7 @@ import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;

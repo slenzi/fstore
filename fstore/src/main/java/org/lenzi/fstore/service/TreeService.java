@@ -11,8 +11,9 @@ import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.Closure;
-import org.lenzi.fstore.repository.model.Node;
+import org.lenzi.fstore.repository.model.DbClosure;
+import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.CollectionUtil;
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Transactional
-public class FSTreeService {
+public class TreeService {
 
 	@InjectLogger
 	private Logger logger;
@@ -159,9 +160,9 @@ public class FSTreeService {
 	 * @param nodeName
 	 * @return
 	 */
-	public Node createRootNode(Node newNode) throws ServiceException {
+	public DbNode createRootNode(DbNode newNode) throws ServiceException {
 		
-		Node addedNode = null;
+		DbNode addedNode = null;
 		try {
 			addedNode = closureRepository.addRootNode(newNode);
 		} catch (DatabaseException e) {
@@ -179,9 +180,9 @@ public class FSTreeService {
 	 * @param nodeName
 	 * @return
 	 */
-	public Node createChildNode(Node parentNode, Node newNode) throws ServiceException {
+	public DbNode createChildNode(DbNode parentNode, DbNode newNode) throws ServiceException {
 		
-		Node addedNode = null;
+		DbNode addedNode = null;
 		try {
 			addedNode = closureRepository.addChildNode(parentNode, newNode);
 		} catch (DatabaseException e) {
@@ -199,9 +200,9 @@ public class FSTreeService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public List<Closure> getClosure(Node node) throws ServiceException {
+	public List<DbClosure> getClosure(DbNode node) throws ServiceException {
 		
-		List<Closure> closure = null;
+		List<DbClosure> closure = null;
 		try {
 			closure = closureRepository.getClosure(node);
 		} catch (DatabaseException e) {
@@ -209,6 +210,26 @@ public class FSTreeService {
 		}
 		
 		return closure;
+	}
+	
+	/**
+	 * Add a tree.
+	 * 
+	 * @param newTree - The new tree to add
+	 * @param newRootNode - The root node for the new tree.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public DbTree addTree(DbTree newTree, DbNode newRootNode) throws ServiceException {
+		
+		DbTree tree = null;
+		try {
+			tree = closureRepository.addTree(newTree, newRootNode);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+		return tree;
 	}
 	
 	/**
@@ -391,16 +412,15 @@ public class FSTreeService {
 	 * @param tree The FSTree entity
 	 * @return
 	 */
-	/*
-	public Tree<TreeMeta> buildTree(FSTree tree) throws ServiceException {
+	public Tree<TreeMeta> buildTree(DbTree tree) throws ServiceException {
 		
 		if(tree == null || tree.getRootNode() == null){
 			return null;
 		}
 		
-		List<FSClosure> closure = null;
+		List<DbClosure> closure = null;
 		try {
-			closure = closureRepository.getClosureByNodeId(tree.getRootNode().getNodeId());
+			closure = closureRepository.getClosure(tree.getRootNode());
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -408,7 +428,6 @@ public class FSTreeService {
 		return buildTree(closure);
 		
 	}
-	*/
 	
 	/**
 	 * Builds a GenericTree from a list of closure data.
@@ -416,7 +435,7 @@ public class FSTreeService {
 	 * @param closureList
 	 * @return
 	 */
-	public Tree<TreeMeta> buildTree(List<Closure> closureList){
+	public Tree<TreeMeta> buildTree(List<DbClosure> closureList){
 		
 		if(closureList == null || closureList.size() == 0){
 			return null;
@@ -424,11 +443,11 @@ public class FSTreeService {
 		
 		LogUtil.logClosure(closureList);
 		
-		HashMap<Long,List<Node>> treeMap = new HashMap<Long,List<Node>>();
+		HashMap<Long,List<DbNode>> treeMap = new HashMap<Long,List<DbNode>>();
 		
 		// get root node of tree
-		Node rootNode = null;
-		for(Closure c : closureList){
+		DbNode rootNode = null;
+		for(DbClosure c : closureList){
 			if(c.hasParent() && c.hasChild()){
 				rootNode = c.getParentNode();
 				break;
@@ -440,14 +459,14 @@ public class FSTreeService {
 		//
 		// loop through closure list and build tree map
 		//
-		Closure closure = null;
+		DbClosure closure = null;
 		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
 			closure = closureList.get(closureIndex);
 			if(closure.hasParent() && closure.hasChild()){
 				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
 					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
 				}else{
-					List<Node> childList = new ArrayList<Node>();
+					List<DbNode> childList = new ArrayList<DbNode>();
 					childList.add(closure.getChildNode());
 					treeMap.put(closure.getParentNode().getNodeId(), childList);
 				}
@@ -482,11 +501,11 @@ public class FSTreeService {
 	}
 	
 	// walk the data in the tree map and add children to parentNode
-	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<Node>> treeMap){
+	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<DbNode>> treeMap){
 		
 		TreeNode<TreeMeta> childTreeNode = null;
 		
-		for(Node childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getId()))){
+		for(DbNode childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getId()))){
 			
 			// closure table contains entries where a node is a parent of itself at depth 0. we
 			// need to skip over these entries otherwise we'll go into an infinite loop and exhaust the
@@ -506,7 +525,7 @@ public class FSTreeService {
 	}
 	
 	// build TreeMeta object from FSNode object
-	private TreeMeta getMeta(Node node){
+	private TreeMeta getMeta(DbNode node){
 		TreeMeta meta = new TreeMeta();
 		meta.setId(node.getNodeId());
 		meta.setName(node.getName());

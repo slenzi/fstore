@@ -11,8 +11,9 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.Closure;
-import org.lenzi.fstore.repository.model.Node;
+import org.lenzi.fstore.repository.model.DbClosure;
+import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSTestNode;
@@ -49,14 +50,33 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	public AbstractClosureRepository() {
 	
 	}
+	
+	/**
+	 * Fetch node, just meta data. No closure data with parent child relationships is fetched.
+	 * 
+	 * @see org.lenzi.fstore.repository.ClosureRepository#getNode(java.lang.Long)
+	 */
+	@Override
+	public DbNode getNode(Long nodeId) throws DatabaseException {
+		
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(getHqlQueryNodeById());
+			query.setParameter("nodeId", nodeId);
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+		return (FSNode)getSingleResult(query);	
+	}	
 
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addRootNode(org.lenzi.fstore.repository.model.Node)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addRootNode(org.lenzi.fstore.repository.model.DbNode)
 	 */
 	@Override
-	public Node addRootNode(Node newNode) throws DatabaseException {
+	public DbNode addRootNode(DbNode newNode) throws DatabaseException {
 		
 		if(newNode == null){
 			throw new DatabaseException("Cannot add new node. Node object is null.");
@@ -72,10 +92,10 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @param parentNode - The parent node under which the new node will be added.
 	 * @param newNode - The new node to add.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addChildNode(org.lenzi.fstore.repository.model.Node, org.lenzi.fstore.repository.model.Node)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addChildNode(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode)
 	 */
 	@Override
-	public Node addChildNode(Node parentNode, Node newNode) throws DatabaseException {
+	public DbNode addChildNode(DbNode parentNode, DbNode newNode) throws DatabaseException {
 
 		if(parentNode == null || newNode == null){
 			throw new DatabaseException("Cannot add new node. Parent node and/or new node objects are null.");
@@ -96,7 +116,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private Node addNode(Long parentNodeId, Node newNode) throws DatabaseException {
+	private DbNode addNode(Long parentNodeId, DbNode newNode) throws DatabaseException {
 		
 		if(newNode.getName() == null){
 			throw new DatabaseException("Cannot add new node, new node is missing a name. This is a required field.");
@@ -158,10 +178,10 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#getClosure(org.lenzi.fstore.repository.model.Node)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#getClosure(org.lenzi.fstore.repository.model.DbNode)
 	 */
 	@Override
-	public List<Closure> getClosure(Node node) throws DatabaseException {
+	public List<DbClosure> getClosure(DbNode node) throws DatabaseException {
 
 		if(node == null){
 			throw new DatabaseException("Cannot fetch closure data for node. Node object is null.");
@@ -172,7 +192,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 		logger.info("Fetching closure data for node id => " + node.getNodeId());
 		
-		List<Closure> results = null;
+		List<DbClosure> results = null;
 		Query query = null;
 		try {
 			query = getEntityManager().createQuery(getHqlQueryClosureByNodeId());
@@ -187,22 +207,168 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 	
-	/*
-
+	/**
+	 * Copy a node.
+	 * 
+	 * @see org.lenzi.fstore.repository.ClosureRepository#copyNode(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode, boolean)
+	 */
 	@Override
-	public FSNode getNode(Long nodeId) throws DatabaseException {
-
-		Query query = null;
-		try {
-			query = getEntityManager().createQuery(getHqlQueryNodeById());
-			query.setParameter("nodeId", nodeId);
-		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+	public void copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws DatabaseException {
+		
+		if(nodeToCopy == null || parentNode == null){
+			throw new DatabaseException("Cannot copy node. Node object is null, and/or parent node object is null.");
+		}
+		if(parentNode.getNodeId() == null){
+			throw new DatabaseException("Cannot copy node. Node ID of parent node is null. This value is needed.");
+		}
+		if(nodeToCopy.getParentNodeId() == null){
+			throw new DatabaseException("Cannot copy node. Parent node ID of node being copied is null. Need this data to determin if node is a root node or a child node.");
+		}
+		
+		// copy just the node
+		if(!copyChildren){
+			
+			if(nodeToCopy.isRootNode()){
+				addRootNode(nodeToCopy);
+			}else{
+				addChildNode(parentNode, nodeToCopy);
+			}
+			
+		// copy the node and all children	
+		}else{
+			
+			//
+			// Get closure data for the sub-tree we are copying
+			//
+			List<DbClosure> closureList = getClosure(nodeToCopy);
+			
+			if(closureList == null || closureList.size() == 0){
+				throw new DatabaseException("Move error. No closure list for node " + nodeToCopy.getNodeId());
+			}
+			
+			HashMap<Long,List<DbNode>> treeMap = new HashMap<Long,List<DbNode>>();
+			
+			// get the root node of the sub-tree we are copying.
+			DbNode rootNode = null;
+			for(DbClosure c : closureList){
+				if(c.hasParent() && c.hasChild()){
+					rootNode = c.getParentNode();
+					break;
+				}
+			}
+			
+			// loop through closure list and build tree map
+			DbClosure closure = null;
+			for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
+				closure = closureList.get(closureIndex);
+				if(closure.hasParent() && closure.hasChild()){
+					if(treeMap.containsKey(closure.getParentNode().getNodeId())){
+						treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
+					}else{
+						List<DbNode> childList = new ArrayList<DbNode>();
+						childList.add(closure.getChildNode());
+						treeMap.put(closure.getParentNode().getNodeId(), childList);
+					}
+				}
+			}
+			
+			// get children for root node of sub-tree
+			List<DbNode> childList = treeMap.get(rootNode.getNodeId());
+			
+			// add the root node of the sub-tree to the new parent node, then walk the tree and add all the children.
+			copyNodes(nodeToCopy, parentNode, childList, treeMap);			
+			
 		}		
 		
-		return (FSNode)getSingleResult(query);		
+	}
+	
+	/**
+	 * Helper function for the copy node operation.
+	 * 
+	 * @param nodeToCopy
+	 * @param parentNode
+	 * @param childNodes
+	 * @param treeMap
+	 * @throws DatabaseException
+	 */
+	private void copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, HashMap<Long, List<DbNode>> treeMap) throws DatabaseException {
+		
+		logger.debug("Adding " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") to parent " + parentNode.getNodeId());
+		
+		// add root node of sub-tree
+		DbNode newCopy = null;
+		if(nodeToCopy.isRootNode()){
+			newCopy = addRootNode(nodeToCopy);
+		}else{
+			newCopy = addChildNode(parentNode, nodeToCopy);
+		}		
+		
+		if(childNodes != null && childNodes.size() > 0){
+			
+			logger.debug("Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + " children.");
+			
+			for(DbNode childNode : childNodes){
+				
+				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
+				if(childNode.getNodeId() != nodeToCopy.getNodeId()){
+					
+					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
+					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap);
+					
+				}
+				
+			}
+		}
+		
+	}	
+
+	/**
+	 * Add a tree.
+	 * 
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(org.lenzi.fstore.repository.model.DbTree, org.lenzi.fstore.repository.model.DbNode)
+	 */
+	@Override
+	public DbTree addTree(DbTree newTree, DbNode newRootNode) throws DatabaseException {
+
+		if(newTree == null || newRootNode == null){
+			throw new DatabaseException("Cannot add tree. Tree object is null, and/or root node object is null.");
+		}
+		if(newTree.getName() == null){
+			throw new DatabaseException("Cannot add tree. Tree name is null. This is a required field.");
+		}
+		if(newRootNode.getName() == null){
+			throw new DatabaseException("Cannot add tree. Root node name is null. This is a required field.");
+		}		
+		if(newTree.getDateCreated() == null || newTree.getDateUpdated() == null || 
+				newRootNode.getDateCreated() == null || newRootNode.getDateUpdated() == null){
+			
+			Timestamp dateNow = DateUtil.getCurrentTime();
+			newTree.setDateCreated(dateNow);
+			newTree.setDateUpdated(dateNow);
+			newRootNode.setDateCreated(dateNow);
+			newRootNode.setDateUpdated(dateNow);
+		}		
+		
+		DbNode rootNode = addRootNode(newRootNode);
+		
+		// Get next available tree id from sequence
+		long treeId = getSequenceVal(getSqlQueryTreeIdSequence());
+		
+		newTree.setTreeId(treeId);
+		newTree.setRootNodeId(rootNode.getNodeId());
+		newTree.setRootNode(rootNode);
+		
+		// save tree and its root node to database
+		persist(newTree);
+		
+		getEntityManager().flush();
+		getEntityManager().clear();		
+		
+		return newTree;		
 		
 	}
+	
+	/*
 	
 	public FSNode getNodeWithParentClosure(FSNode node) throws DatabaseException {
 		
@@ -310,64 +476,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 		return tree;		
 		
-	}
-
-	@Override
-	public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException {
-	
-		// copy just the node
-		if(!copyChildren){
-			
-			FSNode nodeToCopy = getNode(nodeId);
-			
-			addNode(parentNodeId, nodeToCopy.getName());
-			
-		// copy the node and all children	
-		}else{
-			
-			//
-			// Get tree structure for the branch / tree section we are moving.
-			//
-			List<FSClosure> closureList = getClosureByNodeId(nodeId);
-			
-			if(closureList == null || closureList.size() == 0){
-				throw new DatabaseException("Move error. No closure list for node " + nodeId);
-			}
-			
-			HashMap<Long,List<FSNode>> treeMap = new HashMap<Long,List<FSNode>>();
-			
-			// get the root node of the sub-tree we are copying.
-			FSNode rootNode = null;
-			for(FSClosure c : closureList){
-				if(c.hasParent() && c.hasChild()){
-					rootNode = c.getParentNode();
-					break;
-				}
-			}
-			
-			// loop through closure list and build tree map
-			FSClosure closure = null;
-			for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
-				closure = closureList.get(closureIndex);
-				if(closure.hasParent() && closure.hasChild()){
-					if(treeMap.containsKey(closure.getParentNode().getNodeId())){
-						treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
-					}else{
-						List<FSNode> childList = new ArrayList<FSNode>();
-						childList.add(closure.getChildNode());
-						treeMap.put(closure.getParentNode().getNodeId(), childList);
-					}
-				}
-			}
-			
-			// get children for root node of sub-tree
-			List<FSNode> childList = treeMap.get(rootNode.getNodeId());
-			
-			// add the root node to the new parent node, then walk the tree and add all the children.
-			copyNodes(rootNode, parentNodeId, childList, treeMap);			
-			
-		}
-
 	}
 
 	@Override
@@ -840,43 +948,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 	*/
-	
-	/**
-	 * Helper function for the copy node operation. Copies the tree to the new parent node.
-	 * 
-	 * @param rootNode - The root node of the sub tree that is being copied
-	 * @param newParentId - The new parent node for the root node
-	 * @param childNodes - The set of child nodes for the current root node
-	 * @param treeMap - The rest of the tree data that we iterate over.
-	 * @param copiedDate - The date the will be used for the created date and updated date on the new node copies.
-	 */
-	/*
-	private void copyNodes(Node rootNode, Long newParentId, List<Node> childNodes, HashMap<Long, List<Node>> treeMap) throws DatabaseException {
-		
-		logger.debug("Adding " + rootNode.getNodeId() + " (" + rootNode.getName() + ") to parent " + newParentId);
-		
-		// add root node
-		Node newCopy = addNode(newParentId, rootNode.getName());
-		
-		if(childNodes != null && childNodes.size() > 0){
-			
-			logger.debug("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
-			
-			for(Node childNode : childNodes){
-				
-				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
-				if(childNode.getNodeId() != rootNode.getNodeId()){
-					
-					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
-					copyNodes(childNode, newCopy.getNodeId(), treeMap.get(childNode.getNodeId()), treeMap);
-					
-				}
-				
-			}
-		}
-		
-	}
-	*/	
 
 	
 	

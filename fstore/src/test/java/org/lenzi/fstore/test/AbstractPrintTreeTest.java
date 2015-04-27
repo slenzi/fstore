@@ -4,9 +4,11 @@ import static org.junit.Assert.assertNotNull;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -32,19 +34,34 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		
 		logTestTitle("Print tree test");
 		
-		/*
-		FSTreeService treeService = getTreeSerive();
+		TreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
-		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
 		
-		assertNotNull(fsTree);
-		assertNotNull(fsTree.getRootNode());
+		FSTestNode rootNode = new FSTestNode();
+		rootNode.setName("A");
+		rootNode.setTestValue("Node A");
 		
-		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		FSTree tree = new FSTree();
+		tree.setName("Sample tree");
+		tree.setDescription("Sample tree description.");
+		
+		DbTree dbTree = treeService.addTree(tree, rootNode);
+		
+		assertNotNull(dbTree);
+		assertNotNull(dbTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + dbTree.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree...");
 		
+		FSTestNode childNode1 = new FSTestNode();
+		childNode1.setName("B");
+		childNode1.setTestValue("Node B");
+		
+		treeService.createChildNode(dbTree.getRootNode(), childNode1);
+		
+		/*
 		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
 			FSNode nodeD = treeService.createNode(nodeB,"D");
 				FSNode nodeE = treeService.createNode(nodeD,"E");
@@ -74,15 +91,16 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 				FSNode nodeO = treeService.createNode(nodeN, "O");
 					FSNode nodeP = treeService.createNode(nodeO, "P");
 						FSNode nodeQ = treeService.createNode(nodeP, "Q");
+		*/
 		
 		logger.info("Finished adding nodes to tree...");
 						
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
+		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
 		
-		assertNotNull(tree);
+		assertNotNull(treeMeta);
 	
-		logger.info(tree.printTree());
-		*/
+		logger.info(treeMeta.printTree());
+
 	}
 
 }

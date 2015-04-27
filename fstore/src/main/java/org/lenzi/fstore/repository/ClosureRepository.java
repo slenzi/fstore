@@ -3,9 +3,9 @@ package org.lenzi.fstore.repository;
 import java.util.List;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.Closure;
-import org.lenzi.fstore.repository.model.Node;
-import org.lenzi.fstore.repository.model.Tree;
+import org.lenzi.fstore.repository.model.DbClosure;
+import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DbTree;
 
 public interface ClosureRepository {
 	
@@ -17,13 +17,21 @@ public interface ClosureRepository {
 	public String getRepositoryName();
 
 	/**
+	 * Get a node, not closure data, or children. Just the node data.
+	 * 
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public DbNode getNode(Long nodeId) throws DatabaseException;	
+	
+	/**
 	 * Add a new root node. Parent node ID will be set to 0.
 	 * 
 	 * @param newNode
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Node addRootNode(Node newNode) throws DatabaseException;
+	public DbNode addRootNode(DbNode newNode) throws DatabaseException;
 	
 	/**
 	 * Add a new child node under the parent node.
@@ -33,15 +41,28 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Node addChildNode(Node parentNode, Node newNode) throws DatabaseException;
+	public DbNode addChildNode(DbNode parentNode, DbNode newNode) throws DatabaseException;
 	
 	/**
-	 * Get a node, not closure data, or children. Just the node data.
+	 * Copy a node.
 	 * 
+	 * @param nodeToCopy - The node to copy
+	 * @param parentNode - The new copy will be placed under this parent node.
+	 * @param copyChildren - True to copy all children of the node, false to copy just the node itself.
+	 * @throws DatabaseException
+	 */
+	public void copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws DatabaseException;
+	
+	
+	/**
+	 * Add a tree.
+	 * 
+	 * @param newTree
+	 * @param newRootNode
 	 * @return
 	 * @throws DatabaseException
 	 */
-	//public Node getNode(Long nodeId) throws DatabaseException;
+	public DbTree addTree(DbTree newTree, DbNode newRootNode) throws DatabaseException;
 	
 	/**
 	 * Get a tree with it's root node.
@@ -112,7 +133,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<Closure> getClosure(Node node) throws DatabaseException;
+	public List<DbClosure> getClosure(DbNode node) throws DatabaseException;
 	
 	/**
 	 * Move a node. The node, plus all its chilren, will be moved to under the new parent node.

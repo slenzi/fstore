@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractDeleteNodeTest;
 import org.slf4j.Logger;
@@ -35,14 +35,14 @@ public class OracleDeleteNodeTest extends AbstractDeleteNodeTest {
 	OracleTestConfiguration configuration = null;
 	
 	@Autowired
-	FSTreeService treeService = null;
+	TreeService treeService = null;
 	
 	public OracleDeleteNodeTest() {
 		
 	}
 	
 	@Override
-	public FSTreeService getTreeSerive() {
+	public TreeService getTreeSerive() {
 		return treeService;
 	}	
 	

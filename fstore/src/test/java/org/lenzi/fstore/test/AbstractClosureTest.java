@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
-import org.lenzi.fstore.repository.model.Closure;
+import org.lenzi.fstore.repository.model.DbClosure;
 import org.lenzi.fstore.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public abstract class AbstractClosureTest extends AbstractTreeTest {
 		
 		logTestTitle("Add sample node tree");
 		
-		FSTreeService treeService = getTreeSerive();
+		TreeService treeService = getTreeSerive();
 		
 		FSTestNode rootNode = new FSTestNode();
 		rootNode.setName("Sample root node");
@@ -60,7 +60,7 @@ public abstract class AbstractClosureTest extends AbstractTreeTest {
 		
 		treeService.createChildNode(childNode2, childNode3);
 		
-		List<Closure> closureList = treeService.getClosure(rootNode);
+		List<DbClosure> closureList = treeService.getClosure(rootNode);
 		
 		assertNotNull(closureList);
 		

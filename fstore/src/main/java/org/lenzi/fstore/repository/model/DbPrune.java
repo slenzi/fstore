@@ -9,7 +9,7 @@ import java.io.Serializable;
  * 
  * @author slenzi
  */
-public interface Prune extends Serializable {
+public interface DbPrune extends Serializable {
 
 	public Long getPruneId();
 	

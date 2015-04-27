@@ -13,8 +13,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.repository.model.Node;
-import org.lenzi.fstore.repository.model.Tree;
+import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DbTree;
 
 /**
  * @author sal
@@ -22,7 +22,7 @@ import org.lenzi.fstore.repository.model.Tree;
  */
 @Entity
 @Table(name = "FS_TREE")
-public class FSTree implements Tree {
+public class FSTree implements DbTree {
 
 	/**
 	 * 
@@ -51,7 +51,7 @@ public class FSTree implements Tree {
 	
 	@OneToOne(targetEntity = FSNode.class)
 	@JoinColumn(name = "ROOT_NODE_ID", insertable=false, updatable=false)
-	Node rootNode = null;
+	DbNode rootNode = null;
 	
 	/**
 	 * 
@@ -147,14 +147,14 @@ public class FSTree implements Tree {
 	/**
 	 * @return the rootNode
 	 */
-	public Node getRootNode() {
+	public DbNode getRootNode() {
 		return rootNode;
 	}
 
 	/**
 	 * @param rootNode the rootNode to set
 	 */
-	public void setRootNode(Node rootNode) {
+	public void setRootNode(DbNode rootNode) {
 		this.rootNode = rootNode;
 	}
 

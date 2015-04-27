@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.rest.exception.WebServiceException;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class TreeResource {
     Logger logger;
     
     @Autowired
-    private FSTreeService treeService;
+    private TreeService treeService;
     
 	/**
 	 * Get service name

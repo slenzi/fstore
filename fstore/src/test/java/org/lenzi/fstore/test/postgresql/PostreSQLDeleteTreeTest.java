@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.repository.model.impl.FSTree;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractDeleteTreeTest;
 import org.slf4j.Logger;
@@ -37,14 +37,14 @@ public class PostreSQLDeleteTreeTest extends AbstractDeleteTreeTest {
 	PostgreSQLTestConfiguration configuration = null;
 	
 	@Autowired
-	FSTreeService treeService = null;
+	TreeService treeService = null;
 	
 	public PostreSQLDeleteTreeTest() {
 
 	}
 	
 	@Override
-	public FSTreeService getTreeSerive() {
+	public TreeService getTreeSerive() {
 		return treeService;
 	}
 

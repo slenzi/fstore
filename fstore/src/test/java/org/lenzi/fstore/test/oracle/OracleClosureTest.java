@@ -2,7 +2,7 @@ package org.lenzi.fstore.test.oracle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractClosureTest;
 import org.slf4j.Logger;
@@ -32,14 +32,14 @@ public class OracleClosureTest extends AbstractClosureTest {
 	OracleTestConfiguration configuration = null;
 	
 	@Autowired
-	FSTreeService treeService = null;
+	TreeService treeService = null;
 	
 	public OracleClosureTest() {
 
 	}
 	
 	@Override
-	public FSTreeService getTreeSerive() {
+	public TreeService getTreeSerive() {
 		return treeService;
 	}
 	

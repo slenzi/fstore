@@ -1,14 +1,7 @@
 package org.lenzi.fstore.test;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.model.tree.TreeMeta;
-import org.lenzi.fstore.repository.model.Node;
-import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.repository.model.impl.FSTree;
-import org.lenzi.fstore.service.FSTreeService;
+import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -20,8 +13,6 @@ import org.slf4j.LoggerFactory;
  * @author sal
  */
 public abstract class AbstractAddNodeTest extends AbstractTreeTest {
-
-	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	public AbstractAddNodeTest() {
 
@@ -34,7 +25,7 @@ public abstract class AbstractAddNodeTest extends AbstractTreeTest {
 		
 		logTestTitle("Add root node test");
 		
-		FSTreeService treeService = getTreeSerive();
+		TreeService treeService = getTreeSerive();
 		
 		FSTestNode rootNode = new FSTestNode();
 		rootNode.setName("Sample root node 1");
@@ -51,7 +42,7 @@ public abstract class AbstractAddNodeTest extends AbstractTreeTest {
 		
 		logTestTitle("Add node tree");
 		
-		FSTreeService treeService = getTreeSerive();
+		TreeService treeService = getTreeSerive();
 		
 		FSTestNode rootNode = new FSTestNode();
 		rootNode.setName("Sample root node");
