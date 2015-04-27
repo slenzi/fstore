@@ -16,6 +16,8 @@ public interface ClosureRepository {
 	 */
 	public String getRepositoryName();
 
+	public Node addRootNode(Node newNode) throws DatabaseException;
+	
 	/**
 	 * Add a new child node.
 	 * 
@@ -24,7 +26,8 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Node addNode(Long parentNodeId, String nodeName) throws DatabaseException;
+	//public Node addNode(Long parentNodeId, String nodeName) throws DatabaseException;
+	public Node addChildNode(Node parentNode, Node newNode) throws DatabaseException;
 	
 	/**
 	 * Get a node, not closure data, or children. Just the node data.
@@ -32,7 +35,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Node getNode(Long nodeId) throws DatabaseException;
+	//public Node getNode(Long nodeId) throws DatabaseException;
 	
 	/**
 	 * Get a tree with it's root node.
@@ -41,7 +44,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Tree getTree(Long treeId) throws DatabaseException;
+	//public Tree getTree(Long treeId) throws DatabaseException;
 	
 	/**
 	 * Add a new tree.
@@ -52,7 +55,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Tree addTree(String treeName, String treeDesc, String rootNodeName) throws DatabaseException;
+	//public Tree addTree(String treeName, String treeDesc, String rootNodeName) throws DatabaseException;
 	
 	/**
 	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
@@ -65,7 +68,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Tree addTree(String treeName, String treeDesc, Node existingNode) throws DatabaseException;
+	//public Tree addTree(String treeName, String treeDesc, Node existingNode) throws DatabaseException;
 	
 	/**
 	 * Copy a the node, and optionally all it's children.
@@ -74,7 +77,7 @@ public interface ClosureRepository {
 	 * @param parentNodeId - the parent node where all the new copy node will be placed under.
 	 * @param copyChildren - true to copy over all the nodes children nodes as well, false to just copy the node.
 	 */
-	public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException;
+	//public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException;
 	
 	/**
 	 * Remove a tree
@@ -82,7 +85,7 @@ public interface ClosureRepository {
 	 * @param treeId
 	 * @throws DatabaseException
 	 */
-	public void removeTree(Long treeId) throws DatabaseException;
+	//public void removeTree(Long treeId) throws DatabaseException;
 	
 	/**
 	 * Take the root node of an tree you want to delete, and move it plus all children to under any node
@@ -93,7 +96,7 @@ public interface ClosureRepository {
 	 * 	under this node. This node must be a node in a different tree.
 	 * @throws DatabaseException
 	 */
-	public void removeTree(Tree tree, Node newParentNode)  throws DatabaseException;
+	//public void removeTree(Tree tree, Node newParentNode)  throws DatabaseException;
 	
 	/**
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
@@ -103,7 +106,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<Closure> getClosureByNodeId(Long nodeId) throws DatabaseException;
+	//public List<Closure> getClosureByNodeId(Long nodeId) throws DatabaseException;
 	
 	/**
 	 * Move a node. The node, plus all its chilren, will be moved to under the new parent node.
@@ -112,7 +115,7 @@ public interface ClosureRepository {
 	 * @param newParentNodeId - the id of the new parent node.
 	 * @throws DatabaseException
 	 */
-	public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException;
+	//public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException;
 	
 	/**
 	 * Remove a node and all its children.
@@ -120,7 +123,7 @@ public interface ClosureRepository {
 	 * @param nodeId - the id of the node to remove
 	 * @throws DatabaseException
 	 */
-	public void removeNode(Long nodeId) throws DatabaseException;
+	//public void removeNode(Long nodeId) throws DatabaseException;
 	
 	/**
 	 * Remove all children of a node. The node itself is not removed
@@ -128,7 +131,7 @@ public interface ClosureRepository {
 	 * @param nodeId - the id of the node, all its children will be removed.
 	 * @throws DatabaseException
 	 */
-	public void removeChildren(Long nodeId) throws DatabaseException;
+	//public void removeChildren(Long nodeId) throws DatabaseException;
 	
 	/**
 	 * Check if two nodes are in the same tree. Returns true if they are, false if they are not.
@@ -138,7 +141,7 @@ public interface ClosureRepository {
 	 * @return true if node1 and node2 are in the same tree, false if not.
 	 * @throws DatabaseException
 	 */
-	public boolean isSameTree(Node node1, Node node2) throws DatabaseException;
+	//public boolean isSameTree(Node node1, Node node2) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a parent of node2.
@@ -156,7 +159,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isParent(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
+	//public boolean isParent(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a child of node2.
@@ -175,6 +178,6 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isChild(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
+	//public boolean isChild(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
 	
 }

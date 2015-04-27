@@ -32,6 +32,7 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		
 		logTestTitle("Print tree test");
 		
+		/*
 		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
@@ -81,7 +82,7 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		assertNotNull(tree);
 	
 		logger.info(tree.printTree());
-		
+		*/
 	}
 
 }

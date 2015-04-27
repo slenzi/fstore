@@ -11,6 +11,7 @@ import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.repository.model.Node;
 import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
@@ -49,6 +50,7 @@ public class FSTreeService {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public FSTree getTree(Long treeId) throws ServiceException {
 		
 		FSTree fsTree = null;
@@ -61,6 +63,7 @@ public class FSTreeService {
 		
 		return fsTree;
 	}
+	*/
 	
 	/**
 	 * Create a new tree.
@@ -70,6 +73,7 @@ public class FSTreeService {
 	 * @param rootNodeName
 	 * @return
 	 */
+	/*
 	public FSTree createTree(String treeName, String treeDesc, String rootNodeName) throws ServiceException {
 		
 		FSTree fsTree = null;
@@ -82,6 +86,7 @@ public class FSTreeService {
 		return fsTree;
 		
 	}
+	*/
 	
 	/**
 	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
@@ -92,6 +97,7 @@ public class FSTreeService {
 	 * @param existingNode - a non-root node of an existing tree which will become the root node of 
 	 * 	the new tree. All child nodes will be moved over as well.
 	 */
+	/*
 	public FSTree createTree(String treeName, String treeDesc, FSNode existingNode) throws ServiceException {
 		
 		if(existingNode.getParentNodeId() == 0L){
@@ -106,7 +112,8 @@ public class FSTreeService {
 		
 		return newTree;
 		
-	}	
+	}
+	*/	
 	
 	/**
 	 * Remove a tree
@@ -114,6 +121,7 @@ public class FSTreeService {
 	 * @param tree
 	 * @throws ServiceException
 	 */
+	/*
 	public void removeTree(FSTree tree) throws ServiceException {
 		
 		try {
@@ -123,6 +131,7 @@ public class FSTreeService {
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Take the root node of an tree you want to delete, and move it plus all children to under any node
@@ -133,6 +142,7 @@ public class FSTreeService {
 	 * 	under this node. This node must be a node in a different tree.
 	 * @return
 	 */
+	/*
 	public void removeTree(FSTree tree, FSNode newParentNode) throws ServiceException {
 		
 		try {
@@ -141,25 +151,46 @@ public class FSTreeService {
 			throw new ServiceException(e.getMessage(), e);
 		}
 		
-	}	
+	}
+	*/
 	
 	/**
-	 * Add a new node.
+	 * Add a new root node.
 	 * 
 	 * @param parentNode
 	 * @param nodeName
 	 * @return
 	 */
-	public FSNode createNode(FSNode parentNode, String nodeName) throws ServiceException {
+	public Node createRootNode(Node newNode) throws ServiceException {
 		
-		FSNode fsNode = null;
+		Node addedNode = null;
 		try {
-			fsNode = closureRepository.addNode(parentNode.getNodeId(), nodeName);
+			addedNode = closureRepository.addRootNode(newNode);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 		
-		return fsNode;
+		return addedNode;
+		
+	}	
+	
+	/**
+	 * Add a new child node.
+	 * 
+	 * @param parentNode
+	 * @param nodeName
+	 * @return
+	 */
+	public Node createChildNode(Node parentNode, Node newNode) throws ServiceException {
+		
+		Node addedNode = null;
+		try {
+			addedNode = closureRepository.addChildNode(parentNode, newNode);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+		return addedNode;
 		
 	}
 	
@@ -168,6 +199,7 @@ public class FSTreeService {
 	 * 
 	 * @param node
 	 */
+	/*
 	public void removeNode(FSNode node) throws ServiceException{
 		
 		if(node.getParentNodeId() == 0L){
@@ -181,12 +213,14 @@ public class FSTreeService {
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Remove children of a node
 	 * 
 	 * @param node
 	 */
+	/*
 	public void removeChildren(FSNode node) throws ServiceException {
 		
 		try {
@@ -196,6 +230,7 @@ public class FSTreeService {
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Copy a node and all it's children.
@@ -205,6 +240,7 @@ public class FSTreeService {
 	 * @param copyChildren - true to copy over all the nodes children nodes as well, false to just copy the node.
 	 * @throws ServiceException
 	 */
+	/*
 	public void copyNode(FSNode nodeToCopy, FSNode copyToNode, boolean copyChildren) throws ServiceException {
 		
 		try {
@@ -214,6 +250,7 @@ public class FSTreeService {
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Move a node
@@ -221,6 +258,7 @@ public class FSTreeService {
 	 * @param nodeToMode - The node to move. Cannot be a root node.
 	 * @param newParentNode - The new parent node. Can be in a different tree.
 	 */
+	/*
 	public void moveNode(FSNode nodeToMode, FSNode newParentNode) throws ServiceException {
 		
 		if(nodeToMode.getParentNodeId() == 0L){
@@ -234,6 +272,7 @@ public class FSTreeService {
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Check if two nodes are in the same tree. Returns true if they are, false if they are not.
@@ -243,6 +282,7 @@ public class FSTreeService {
 	 * @return true if node1 and node2 are in the same tree, false if not.
 	 * @throws ServiceException
 	 */
+	/*
 	public boolean isSameTree(FSNode node1, FSNode node2) throws ServiceException {
 		
 		try {
@@ -252,6 +292,7 @@ public class FSTreeService {
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Check if node1 is a parent of node2.
@@ -269,6 +310,7 @@ public class FSTreeService {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws ServiceException {
 		
 		try {
@@ -278,6 +320,7 @@ public class FSTreeService {
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Check if node1 is a child of node2.
@@ -296,6 +339,7 @@ public class FSTreeService {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws ServiceException {
 		
 		try {
@@ -305,6 +349,7 @@ public class FSTreeService {
 		}		
 		
 	}
+	*/
 
 	/**
 	 * Builds a non managed tree object from a database FSTree.
@@ -313,6 +358,7 @@ public class FSTreeService {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public Tree<TreeMeta> buildTree(Long treeId) throws ServiceException {
 		
 		FSTree fsTree = getTree(treeId);
@@ -320,6 +366,7 @@ public class FSTreeService {
 		return buildTree(fsTree);
 		
 	}
+	*/
 	
 	/**
 	 * Builds a non manage tree object from a database FSTree.
@@ -327,6 +374,7 @@ public class FSTreeService {
 	 * @param tree The FSTree entity
 	 * @return
 	 */
+	/*
 	public Tree<TreeMeta> buildTree(FSTree tree) throws ServiceException {
 		
 		if(tree == null || tree.getRootNode() == null){
@@ -343,6 +391,7 @@ public class FSTreeService {
 		return buildTree(closure);
 		
 	}
+	*/
 	
 	/**
 	 * Builds a GenericTree from a list of closure data.
@@ -350,6 +399,7 @@ public class FSTreeService {
 	 * @param closureList
 	 * @return
 	 */
+	/*
 	private Tree<TreeMeta> buildTree(List<FSClosure> closureList){
 		
 		if(closureList == null || closureList.size() == 0){
@@ -414,6 +464,7 @@ public class FSTreeService {
 		
 		return tree;
 	}
+	*/
 	
 	// walk the data in the tree map and add children to parentNode
 	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<FSNode>> treeMap){

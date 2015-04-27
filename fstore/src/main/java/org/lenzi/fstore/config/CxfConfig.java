@@ -9,7 +9,6 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.lenzi.fstore.rest.JaxRsApiApplication;
-import org.lenzi.fstore.rest.PersonResource;
 import org.lenzi.fstore.rest.TreeResource;
 import org.lenzi.fstore.rest.exception.WebServiceExceptionMapper;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +41,7 @@ public class CxfConfig {
 		// add all our service beans
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
-					getTreeResourceBean(), getPersonResourceBean(), getExceptionMapper()
+					getTreeResourceBean(), getExceptionMapper()
 			)
 		);
 		
@@ -59,16 +58,6 @@ public class CxfConfig {
 	@Bean 
 	public JaxRsApiApplication jaxRsApiApplication() {
 		return new JaxRsApiApplication();
-	}
-	
-	/**
-	 * Jax-rs person service bean
-	 * 
-	 * @return
-	 */
-	@Bean
-	public PersonResource getPersonResourceBean(){
-		return new PersonResource();
 	}
 	
 	/**

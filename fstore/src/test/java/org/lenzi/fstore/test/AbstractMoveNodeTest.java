@@ -33,7 +33,7 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 	public void moveNodeSameTree() throws ServiceException {
 		
 		logTestTitle("Move node test: same tree");
-		
+		/*
 		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
@@ -73,7 +73,7 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 		logger.info(tree.printTree());
 		
 		logger.info("Done.");
-		
+		*/
 	}
 	
 	/**
@@ -83,7 +83,7 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 	public void moveNodeDifferentTree() throws ServiceException {
 		
 		logTestTitle("Move node test: different tree");
-		
+		/*
 		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree 1");
@@ -159,7 +159,7 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 		logger.info(tree.printTree());	
 		
 		logger.info("Done.");
-		
+		*/
 	}
 	
 	/**
@@ -169,7 +169,7 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 	public void multiMoveSameTree() throws ServiceException {
 		
 		logTestTitle("Multi-move test: same tree");
-		
+		/*
 		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
@@ -250,7 +250,7 @@ public abstract class AbstractMoveNodeTest extends AbstractTreeTest {
 		logger.info(tree.printTree());
 	
 		logger.info("Done.");
-		
+		*/
 	}	
 
 }

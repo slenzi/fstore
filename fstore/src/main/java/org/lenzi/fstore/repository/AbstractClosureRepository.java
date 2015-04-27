@@ -50,52 +50,92 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	}
 
 	/**
-	 * Add a new node
+	 * Add a new root node. Parent node ID will be set to 0.
 	 * 
-	 * @param parentNodeId - 
-	 * @param nodeName -
-	 * @param testVaue -
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addNode(java.lang.Long, java.lang.String)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addRootNode(org.lenzi.fstore.repository.model.Node)
 	 */
 	@Override
-	public FSNode addNode(Long parentNodeId, String nodeName) throws DatabaseException {
+	public Node addRootNode(Node newNode) throws DatabaseException {
+		
+		if(newNode == null){
+			throw new DatabaseException("Cannot add new node. Node object is null.");
+		}
+		
+		return addNode(0L, newNode);
+		
+	}
 
+	/**
+	 * Add a new child node.
+	 * 
+	 * @param parentNode - The parent node under which the new node will be added.
+	 * @param newNode - The new node to add.
+	 * 
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addChildNode(org.lenzi.fstore.repository.model.Node, org.lenzi.fstore.repository.model.Node)
+	 */
+	@Override
+	public Node addChildNode(Node parentNode, Node newNode) throws DatabaseException {
+
+		if(parentNode == null || newNode == null){
+			throw new DatabaseException("Cannot add new node. Parent node and/or new node objects are null.");
+		}
+		if(parentNode.getNodeId() == null){
+			throw new DatabaseException("Cannot add new node. Parent node ID is null. This information is needed.");
+		}
+		
+		return addNode(parentNode.getNodeId(), newNode);
+		
+	}
+	
+	/**
+	 * Add a new node.
+	 * 
+	 * @param parentNodeId - The ID of the parent node under which the new new will be added.
+	 * @param newNode - The new node to add.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private Node addNode(Long parentNodeId, Node newNode) throws DatabaseException {
+		
+		if(newNode.getName() == null){
+			throw new DatabaseException("Cannot add new node, new node is missing a name. This is a required field.");
+		}
+		if(newNode.getDateCreated() == null || newNode.getDateUpdated() == null){
+			Timestamp dateNow = DateUtil.getCurrentTime();
+			newNode.setDateCreated(dateNow);
+			newNode.setDateUpdated(dateNow);
+		}		
+		
 		// Get next available node id from sequence
 		long nodeId = getSequenceVal(getSqlQueryNodeIdSequence());
 		
-		// create new node
-		Node newNode = new FSTestNode();
+		// Set node id and parent nod id
 		newNode.setNodeId(nodeId);
 		newNode.setParentNodeId(parentNodeId);
-		newNode.setName(nodeName);
-		Timestamp now = DateUtil.getCurrentTime();
-		newNode.setDateCreated(now);
-		newNode.setDateUpdated(now);
 		
-		// save node to database
+		// Save node to database
 		getEntityManager().persist(newNode);
 		
 		// Get next available link id from sequence
 		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
 		
-		// add depth-0 self link to closure table
+		// Add depth-0 self link to closure table
 		FSClosure selfLink = new FSClosure();
 		selfLink.setLinkId(linkId);
 		selfLink.setChildNodeId(newNode.getNodeId());
 		selfLink.setParentNodeId(newNode.getNodeId());
 		selfLink.setDepth(0);
 		
-		// save closure self link to database
+		// Save closure self link to database
 		getEntityManager().persist(selfLink);
 		
-		// necessary?
+		// Necessary?
 		getEntityManager().flush();
 		
-		// add parent-child links to closure table
+		// Add parent-child links to closure table
 		Query queryInsertLinks = getEntityManager().createNativeQuery(getSqlQueryInsertMakeParent());
-		queryInsertLinks.setParameter(1,parentNodeId);
-		queryInsertLinks.setParameter(2,newNode.getNodeId());		
+		queryInsertLinks.setParameter(1, newNode.getParentNodeId());
+		queryInsertLinks.setParameter(2, newNode.getNodeId());		
 		try {
 			executeUpdate(queryInsertLinks);
 		} catch (DatabaseException e) {
@@ -111,12 +151,11 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 		return newNode;		
 		
-	}	
+	}
+	
+	
+	/*
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#getNode(java.lang.Long)
-	 */
 	@Override
 	public FSNode getNode(Long nodeId) throws DatabaseException {
 
@@ -132,13 +171,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 	
-	/**
-	 * Get an FSNode object with it's parent closure and nodes.
-	 * 
-	 * @param node
-	 * @return
-	 * @throws DatabaseException
-	 */
 	public FSNode getNodeWithParentClosure(FSNode node) throws DatabaseException {
 		
 		Query query = null;
@@ -154,13 +186,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		return nodeWithParentClosure;
 	}
 	
-	/**
-	 * Get an FSNode object with it's child closure and nodes.
-	 * 
-	 * @param node
-	 * @return
-	 * @throws DatabaseException
-	 */
 	public FSNode getNodeWithChildClosure(FSNode node) throws DatabaseException {
 		
 		Query query = null;
@@ -176,10 +201,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		return nodeWithChildClosure;
 	}	
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#getTree(java.lang.Long)
-	 */
 	@Override
 	public FSTree getTree(Long treeId) throws DatabaseException {
 
@@ -197,10 +218,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(java.lang.String, java.lang.String, java.lang.String)
-	 */
 	@Override
 	public FSTree addTree(String treeName, String treeDesc, String rootNodeName) throws DatabaseException {
 
@@ -232,10 +249,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(java.lang.String, java.lang.String, org.lenzi.fstore.repository.model.impl.FSNode)
-	 */
 	@Override
 	public FSTree addTree(String treeName, String treeDesc, FSNode existingNode) throws DatabaseException {
 
@@ -266,10 +279,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#copyNode(java.lang.Long, java.lang.Long, boolean)
-	 */
 	@Override
 	public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException {
 	
@@ -328,10 +337,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#removeTree(java.lang.Long)
-	 */
 	@Override
 	public void removeTree(Long treeId) throws DatabaseException {
 
@@ -344,10 +349,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#removeTree(org.lenzi.fstore.repository.model.impl.FSTree, org.lenzi.fstore.repository.model.impl.FSNode)
-	 */
 	@Override
 	public void removeTree(FSTree tree, FSNode newParentNode) throws DatabaseException {
 
@@ -369,10 +370,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		getEntityManager().remove(treeToDelete);
 
 	}
-
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.repository.ClosureRepository#getClosureByNodeId(java.lang.Long)
-	 */
+	
 	@Override
 	public List<FSClosure> getClosureByNodeId(Long nodeId) throws DatabaseException {
 
@@ -392,10 +390,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#moveNode(java.lang.Long, java.lang.Long)
-	 */
 	@Override
 	public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException {
 
@@ -483,10 +477,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#removeNode(java.lang.Long)
-	 */
 	@Override
 	public void removeNode(Long nodeId) throws DatabaseException {
 
@@ -496,10 +486,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#removeChildren(java.lang.Long)
-	 */
 	@Override
 	public void removeChildren(Long nodeId) throws DatabaseException {
 		
@@ -556,10 +542,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isSameTree(org.lenzi.fstore.repository.model.impl.FSNode, org.lenzi.fstore.repository.model.impl.FSNode)
-	 */
 	@Override
 	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException {
 		
@@ -617,10 +599,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isParent(org.lenzi.fstore.repository.model.impl.FSNode, org.lenzi.fstore.repository.model.impl.FSNode, boolean)
-	 */
 	@Override
 	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {
 		
@@ -647,10 +625,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 
-	/**
-	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isChild(org.lenzi.fstore.repository.model.impl.FSNode, org.lenzi.fstore.repository.model.impl.FSNode, boolean)
-	 */
 	@Override
 	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {
 
@@ -677,7 +651,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}	
 	
-	
+	*/
 	
 	
 	// --------------------------------------------------------------------------------------------------------
@@ -693,6 +667,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @param dateCreated
 	 * @param dateUpdated
 	 */
+	/*
 	private FSNode reAddNode(Long nodeId, Long parentNodeId, String name, Timestamp dateCreated, Timestamp dateUpdated) throws DatabaseException{
 		
 		// create new node
@@ -742,6 +717,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		return reAddNode;		
 		
 	}
+	*/
 	
 	/**
 	 * Remove node helper function.
@@ -823,7 +799,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @param treeMap - The rest of the tree data that we iterate over.
 	 * @param dateUpdated - The updated data that will be set on all the nodes being moved.
 	 */
-	private void moveNodes(FSNode rootNode, Long newParentId, List<FSNode> childNodes, HashMap<Long,List<FSNode>> treeMap, Timestamp dateUpdated) throws DatabaseException {
+	/*
+	private void moveNodes(Node rootNode, Long newParentId, List<Node> childNodes, HashMap<Long,List<Node>> treeMap, Timestamp dateUpdated) throws DatabaseException {
 		
 		logger.debug("Adding " + rootNode.getNodeId() + " (" + rootNode.getName() + ") to parent " + newParentId);
 		
@@ -834,7 +811,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			
 			logger.debug("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
 			
-			for(FSNode childNode : childNodes){
+			for(Node childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
 				if(childNode.getNodeId() != rootNode.getNodeId()){
@@ -848,6 +825,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		}
 		
 	}
+	*/
 	
 	/**
 	 * Helper function for the copy node operation. Copies the tree to the new parent node.
@@ -856,20 +834,21 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @param newParentId - The new parent node for the root node
 	 * @param childNodes - The set of child nodes for the current root node
 	 * @param treeMap - The rest of the tree data that we iterate over.
-	 * @param copiedDate - The date the will be used for the created date and uopdated date on the new node copies.
+	 * @param copiedDate - The date the will be used for the created date and updated date on the new node copies.
 	 */
-	private void copyNodes(FSNode rootNode, Long newParentId, List<FSNode> childNodes, HashMap<Long, List<FSNode>> treeMap) throws DatabaseException {
+	/*
+	private void copyNodes(Node rootNode, Long newParentId, List<Node> childNodes, HashMap<Long, List<Node>> treeMap) throws DatabaseException {
 		
 		logger.debug("Adding " + rootNode.getNodeId() + " (" + rootNode.getName() + ") to parent " + newParentId);
 		
 		// add root node
-		FSNode newCopy = addNode(newParentId, rootNode.getName());
+		Node newCopy = addNode(newParentId, rootNode.getName());
 		
 		if(childNodes != null && childNodes.size() > 0){
 			
 			logger.debug("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
 			
-			for(FSNode childNode : childNodes){
+			for(Node childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
 				if(childNode.getNodeId() != rootNode.getNodeId()){
@@ -882,7 +861,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			}
 		}
 		
-	}	
+	}
+	*/	
 
 	
 	

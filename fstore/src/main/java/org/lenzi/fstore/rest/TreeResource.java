@@ -52,6 +52,7 @@ public class TreeResource {
     	
 		logger.info("Fetch tree by id = " + treeid);
 		
+		/*
 		Long longTreeId = null;
 		try {
 			longTreeId = Long.parseLong(treeid);
@@ -73,6 +74,10 @@ public class TreeResource {
 		}
 		
 		return tree;
+		*/
+		return null;
+		
+		// TODO - add this back
     	
     }
     

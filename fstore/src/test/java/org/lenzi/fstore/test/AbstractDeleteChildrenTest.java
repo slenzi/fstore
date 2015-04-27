@@ -30,7 +30,7 @@ public abstract class AbstractDeleteChildrenTest extends AbstractTreeTest {
 	 * Build sample tree, print before, delete children of node, then print after.
 	 */
 	public void deleteChildren() throws ServiceException {
-		
+		/*
 		logTestTitle("Delete children test");
 		
 		FSTreeService treeService = getTreeSerive();
@@ -77,7 +77,7 @@ public abstract class AbstractDeleteChildrenTest extends AbstractTreeTest {
 		logger.info(tree.printTree());
 		
 		logger.info("Done.");
-		
+		*/
 	}
 
 }

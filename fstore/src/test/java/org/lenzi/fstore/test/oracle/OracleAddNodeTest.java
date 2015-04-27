@@ -1,14 +1,13 @@
 package org.lenzi.fstore.test.oracle;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.FSTreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
-import org.lenzi.fstore.test.AbstractDeleteTreeTest;
+import org.lenzi.fstore.test.AbstractAddNodeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class OracleDeleteTreeTest extends AbstractDeleteTreeTest {
+public class OracleAddNodeTest extends AbstractAddNodeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -38,7 +37,7 @@ public class OracleDeleteTreeTest extends AbstractDeleteTreeTest {
 	@Autowired
 	FSTreeService treeService = null;
 	
-	public OracleDeleteTreeTest() {
+	public OracleAddNodeTest() {
 
 	}
 	
@@ -57,38 +56,12 @@ public class OracleDeleteTreeTest extends AbstractDeleteTreeTest {
 	
 	@Test
 	@Rollback(false)
-	public void deleteTreeTest() {
-		/*
-		logTestTitle("Delete Tree Test");
-		
-		FSTree treeToDelete = null;
+	public void addRootNodeTest(){
 		try {
-			treeToDelete = createTreeForDeletion();
+			super.addRootNode();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
-			return;
 		}
-		
-		assertNotNull(treeToDelete);
-		
-		Long deleteId = treeToDelete.getTreeId();
-		try {
-			deleteTree(treeToDelete);
-		} catch (ServiceException e) {
-			logger.error(e.getMessage());
-			return;
-		}
-		
-		FSTree deletedTree = null;
-		try {
-			deletedTree = getTree(deleteId);
-		} catch (ServiceException e) {
-			logger.error(e.getMessage());
-			return;
-		}
-		
-		assertNull(deletedTree);
-		*/
 	}
 
 }

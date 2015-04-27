@@ -46,8 +46,8 @@ public class FSTestNode extends FSNode {
 	 * @param dateCreated
 	 * @param dateUpdated
 	 */
-	public FSTestNode(Long nodeId, Long parentNodeId, String name, String nodeType, String testValue, Timestamp dateCreated, Timestamp dateUpdated) {
-		super(nodeId, parentNodeId, name, nodeType, dateCreated, dateUpdated);
+	public FSTestNode(Long nodeId, Long parentNodeId, String name, String testValue, Timestamp dateCreated, Timestamp dateUpdated) {
+		super(nodeId, parentNodeId, name, dateCreated, dateUpdated);
 		this.testValue = testValue;
 	}
 

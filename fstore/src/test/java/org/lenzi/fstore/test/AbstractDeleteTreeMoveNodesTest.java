@@ -33,7 +33,7 @@ public abstract class AbstractDeleteTreeMoveNodesTest extends AbstractTreeTest {
 	 * @throws ServiceException
 	 */
 	public void deleteTreeButMoveNodes() throws ServiceException {
-		
+		/*
 		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree 1");
@@ -108,7 +108,7 @@ public abstract class AbstractDeleteTreeMoveNodesTest extends AbstractTreeTest {
 		FSTree deletedTree = getTree(deleteTreeId);
 		
 		assertNull(deletedTree);
-		
+		*/
 	}
 	
 	/**
@@ -118,6 +118,7 @@ public abstract class AbstractDeleteTreeMoveNodesTest extends AbstractTreeTest {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public FSTree getTree(Long treeId) throws ServiceException {
 		
 		logger.info("Getting tree with id => " + treeId);
@@ -126,6 +127,7 @@ public abstract class AbstractDeleteTreeMoveNodesTest extends AbstractTreeTest {
 		
 		return treeService.getTree(treeId);
 		
-	}	
+	}
+	*/	
 
 }

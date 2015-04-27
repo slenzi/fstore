@@ -2,8 +2,8 @@ package org.lenzi.fstore.util;
 
 import java.util.List;
 
-import org.lenzi.fstore.repository.model.impl.FSClosure;
-import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.Closure;
+import org.lenzi.fstore.repository.model.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,14 +11,14 @@ public abstract class LogUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(LogUtil.class.getName());
 	
-	public static void logClosure(List<FSClosure> closureList){
+	public static void logClosure(List<Closure> closureList){
 		if(closureList == null){
 			return;
 		}
 		logger.info("Closure list size => " + closureList.size());
-		FSNode parent = null, child = null;
+		Node parent = null, child = null;
 		Integer depth = 0;
-		for(FSClosure c : closureList){
+		for(Closure c : closureList){
 			parent = c.getParentNode();
 			child = c.getChildNode();
 			depth = c.getDepth();
@@ -34,7 +34,7 @@ public abstract class LogUtil {
 			}
 		}
 	}
-	public static String getNodeString(FSNode n){
+	public static String getNodeString(Node n){
 		if(n == null){
 			return "null";
 		}

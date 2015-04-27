@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.InheritanceType;
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ import org.lenzi.fstore.repository.model.Node;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="NODE_TYPE")
+@DiscriminatorColumn(name="NODE_TYPE", discriminatorType=DiscriminatorType.STRING)
 @DiscriminatorValue("BaseNode")
 @Table(name = "FS_NODE")
 public abstract class FSNode implements Node {
@@ -45,8 +46,10 @@ public abstract class FSNode implements Node {
 	@Column(name = "PARENT_NODE_ID", nullable = false)
 	private Long parentNodeId;
 	
+	/*
 	@Column(name = "NODE_TYPE", nullable = false)
 	private String nodeType;
+	*/
 	
 	@Column(name = "NAME", nullable = false)
 	private String name;
@@ -76,14 +79,14 @@ public abstract class FSNode implements Node {
 	 * @param dateCreated
 	 * @param dateUpdated
 	 */
-	public FSNode(Long nodeId, Long parentNodeId, String name, String nodeType, Timestamp dateCreated, Timestamp dateUpdated) {
+	public FSNode(Long nodeId, Long parentNodeId, String name, Timestamp dateCreated, Timestamp dateUpdated) {
 		
 		super();
 		
 		this.nodeId = nodeId;
 		this.parentNodeId = parentNodeId;
 		this.name = name;
-		this.nodeType = nodeType;
+		//this.nodeType = nodeType;
 		this.dateCreated = dateCreated;
 		this.dateUpdated = dateUpdated;
 	}

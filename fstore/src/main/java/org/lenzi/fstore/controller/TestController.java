@@ -39,6 +39,7 @@ public class TestController {
 		
 		logger.info("printHello called");
 		
+		/*
 		logger.info("Closure type => " + treeService.getClosureRepoType());
 		
 		Long treeId = 1L;
@@ -58,8 +59,10 @@ public class TestController {
 		buff.append(treeData);
 		
 		model.addAttribute("message", buff.toString());
+		*/
 		
 		return "/test/test.jsp";
+		
 	}
 
 }

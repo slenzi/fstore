@@ -33,6 +33,7 @@ public abstract class AbstractReRootTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
+		/*
 		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree 1");
@@ -78,7 +79,7 @@ public abstract class AbstractReRootTest extends AbstractTreeTest {
 		tree = treeService.buildTree(fsTree2);
 		assertNotNull(tree);
 		logger.info(tree.printTree());		
-		
+		*/
 	}
 
 }

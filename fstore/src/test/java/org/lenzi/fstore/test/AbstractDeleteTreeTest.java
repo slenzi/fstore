@@ -31,12 +31,13 @@ public abstract class AbstractDeleteTreeTest extends AbstractTreeTest {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public FSTree createTreeForDeletion() throws ServiceException {
 		
 		logger.info("Creating sample tree for testing delete process.");
 		
 		FSTreeService treeService = getTreeSerive();
-		
+	
 		FSTree fsTree = treeService.createTree("Sample Delete Tree", "A sample tree to test deleting", "A");
 		
 		assertNotNull(fsTree);
@@ -65,8 +66,9 @@ public abstract class AbstractDeleteTreeTest extends AbstractTreeTest {
 		logger.info(tree.printTree());
 		
 		return fsTree;
-		
+	
 	}
+	*/
 	
 	/**
 	 * Delete a tree. Tree should exists in database.
@@ -77,11 +79,11 @@ public abstract class AbstractDeleteTreeTest extends AbstractTreeTest {
 	public void deleteTree(FSTree tree) throws ServiceException {
 		
 		logger.info("Deleting tree with id => " + tree.getTreeId());
-		
+		/*
 		FSTreeService treeService = getTreeSerive();
 		
 		treeService.removeTree(tree);
-		
+		*/
 	}
 	
 	/**
@@ -91,6 +93,7 @@ public abstract class AbstractDeleteTreeTest extends AbstractTreeTest {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public FSTree getTree(Long treeId) throws ServiceException {
 		
 		logger.info("Getting tree with id => " + treeId);
@@ -100,5 +103,6 @@ public abstract class AbstractDeleteTreeTest extends AbstractTreeTest {
 		return treeService.getTree(treeId);
 		
 	}
+	*/
 
 }
