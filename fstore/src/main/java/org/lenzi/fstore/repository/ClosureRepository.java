@@ -49,9 +49,10 @@ public interface ClosureRepository {
 	 * @param nodeToCopy - The node to copy
 	 * @param parentNode - The new copy will be placed under this parent node.
 	 * @param copyChildren - True to copy all children of the node, false to copy just the node itself.
+	 * @return Reference to the copied node
 	 * @throws DatabaseException
 	 */
-	public void copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws DatabaseException;
+	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws DatabaseException;
 	
 	
 	/**

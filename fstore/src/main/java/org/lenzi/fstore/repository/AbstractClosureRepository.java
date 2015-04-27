@@ -213,7 +213,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @see org.lenzi.fstore.repository.ClosureRepository#copyNode(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode, boolean)
 	 */
 	@Override
-	public void copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws DatabaseException {
+	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws DatabaseException {
 		
 		if(nodeToCopy == null || parentNode == null){
 			throw new DatabaseException("Cannot copy node. Node object is null, and/or parent node object is null.");
@@ -229,9 +229,9 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		if(!copyChildren){
 			
 			if(nodeToCopy.isRootNode()){
-				addRootNode(nodeToCopy);
+				return addRootNode(nodeToCopy);
 			}else{
-				addChildNode(parentNode, nodeToCopy);
+				return addChildNode(parentNode, nodeToCopy);
 			}
 			
 		// copy the node and all children	
@@ -276,7 +276,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			List<DbNode> childList = treeMap.get(rootNode.getNodeId());
 			
 			// add the root node of the sub-tree to the new parent node, then walk the tree and add all the children.
-			copyNodes(nodeToCopy, parentNode, childList, treeMap);			
+			return copyNodes(nodeToCopy, parentNode, childList, treeMap);			
 			
 		}		
 		
@@ -291,7 +291,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @param treeMap
 	 * @throws DatabaseException
 	 */
-	private void copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, HashMap<Long, List<DbNode>> treeMap) throws DatabaseException {
+	private DbNode copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, HashMap<Long, List<DbNode>> treeMap) throws DatabaseException {
 		
 		logger.debug("Adding " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") to parent " + parentNode.getNodeId());
 		
@@ -319,6 +319,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 				
 			}
 		}
+		
+		return newCopy;
 		
 	}	
 

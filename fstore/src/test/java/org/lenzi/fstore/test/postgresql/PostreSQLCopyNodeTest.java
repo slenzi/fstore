@@ -58,7 +58,7 @@ public class PostreSQLCopyNodeTest extends AbstractCopyNodeTest {
 	@Rollback(true)	
 	public void copyNodeButNodeChildrenTest(){
 		try {
-			copyNodeButNotChildren();
+			copyNodeWithoutChildren();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}
@@ -66,9 +66,9 @@ public class PostreSQLCopyNodeTest extends AbstractCopyNodeTest {
 	
 	@Test
 	@Rollback(true)	
-	public void copyNodeSameTreeTest(){
+	public void copyNodeWithChildrenTest(){
 		try {
-			copyNodeSameTree();
+			copyNodeWithChildren();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}

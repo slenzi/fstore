@@ -5,7 +5,10 @@ import static org.junit.Assert.assertNotNull;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
@@ -27,122 +30,121 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 	}
 	
 	/**
-	 * Build sample tree, copy a node to under a different node in the same tree.
-	 * Print tree before and after. Does not copy children of the node
+	 * Build sample tree, copy a node to under a different node in the same tree, excluding children.
+	 * Print tree before and after.
 	 */
-	public void copyNodeButNotChildren() throws ServiceException {
-		/*
-		logTestTitle("Copy node, but not children: same tree");
+	public void copyNodeWithoutChildren() throws ServiceException {
 		
-		FSTreeService treeService = getTreeSerive();
+		logTestTitle("Copy node without children test");
+		
+		TreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
-		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
 		
-		assertNotNull(fsTree);
-		assertNotNull(fsTree.getRootNode());
+		FSTree tree = new FSTree();
+		tree.setName("Sample tree");
+		tree.setDescription("Sample tree description.");
 		
-		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		DbTree dbTree = treeService.addTree(tree, new FSTestNode("A","Node A"));
+		
+		assertNotNull(dbTree);
+		assertNotNull(dbTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + dbTree.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
-			FSNode nodeD = treeService.createNode(nodeB,"D");
-				FSNode nodeE = treeService.createNode(nodeD,"E");
-					FSNode nodeI = treeService.createNode(nodeE,"I");
-					FSNode nodeJ = treeService.createNode(nodeE,"J");
-				FSNode nodeF = treeService.createNode(nodeD,"F");
-			FSNode nodeG = treeService.createNode(nodeB,"G");
-				FSNode nodeH = treeService.createNode(nodeG,"H");
-					FSNode nodeK = treeService.createNode(nodeH,"K");
-					FSNode nodeL = treeService.createNode(nodeH,"L");
+		DbNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			DbNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				DbNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					DbNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						DbNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						DbNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					DbNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						DbNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						DbNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("I","Node J"));
+					DbNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						DbNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						DbNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						DbNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						DbNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		logger.info("Before copying node D to Node H");
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
-		assertNotNull(tree);
-		logger.info(tree.printTree());
+		Tree<TreeMeta> treeMeta = null;
 		
-		logger.info("Copying node D to node H, but not the children of node D...");
-		treeService.copyNode(nodeD, nodeH, false);
+		logger.info("Before copy...");
+		treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());
 		
-		logger.info("After copying node D");
-		tree = treeService.buildTree(fsTree);
-		assertNotNull(tree);
-		logger.info(tree.printTree());
+		logger.info("Copying node E to node M (excluding children)...");
+		DbNode copyE = treeService.copyNode(nodeE, nodeM, false);
 		
-		logger.info("Done.");
-		*/
+		logger.info("After copy...");
+		treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());		
+		
 	}	
 	
 	/**
-	 * Build sample tree, copy a node to under a different node in the same tree.
+	 * Build sample tree, copy a node to under a different node in the same tree, including children.
 	 * Print tree before and after.
 	 */
-	public void copyNodeSameTree() throws ServiceException {
-		/*
-		logTestTitle("Copy node test: same tree");
+	public void copyNodeWithChildren() throws ServiceException {
 		
-		FSTreeService treeService = getTreeSerive();
+		logTestTitle("Copy node with children test");
+		
+		TreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
-		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
 		
-		assertNotNull(fsTree);
-		assertNotNull(fsTree.getRootNode());
+		FSTree tree = new FSTree();
+		tree.setName("Sample tree");
+		tree.setDescription("Sample tree description.");
 		
-		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		DbTree dbTree = treeService.addTree(tree, new FSTestNode("A","Node A"));
+		
+		assertNotNull(dbTree);
+		assertNotNull(dbTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + dbTree.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSNode nodeB = treeService.createNode(fsTree.getRootNode(),"B");
-		FSNode nodeM = treeService.createNode(fsTree.getRootNode(),"M");
-			FSNode nodeN = treeService.createNode(nodeM,"N");
-				FSNode nodeO = treeService.createNode(nodeN,"O");
-					FSNode nodeP = treeService.createNode(nodeO,"P");
-						FSNode nodeQ = treeService.createNode(nodeP,"Q");		
-			FSNode nodeD = treeService.createNode(nodeB,"D");
-				FSNode nodeE = treeService.createNode(nodeD,"E");
-					FSNode nodeI = treeService.createNode(nodeE,"I");
-					FSNode nodeJ = treeService.createNode(nodeE,"J");
-				FSNode nodeF = treeService.createNode(nodeD,"F");
-			FSNode nodeG = treeService.createNode(nodeB,"G");
-				FSNode nodeH = treeService.createNode(nodeG,"H");
-					FSNode nodeK = treeService.createNode(nodeH,"K");
-						FSNode nodeR = treeService.createNode(nodeK,"R");
-							FSNode nodeS = treeService.createNode(nodeR,"S");
-								FSNode nodeW = treeService.createNode(nodeS,"W");
-									FSNode nodeX = treeService.createNode(nodeW,"X");
-										FSNode nodeY = treeService.createNode(nodeX,"Y");
-											FSNode nodeZ = treeService.createNode(nodeY,"Z");
-												FSNode node0 = treeService.createNode(nodeZ,"0");
-													FSNode node1 = treeService.createNode(node0,"1");
-												FSNode node2 = treeService.createNode(nodeZ,"2");
-											FSNode node3 = treeService.createNode(nodeY,"3");
-										FSNode node4 = treeService.createNode(nodeX,"4");
-									FSNode node5 = treeService.createNode(nodeW,"5");
-								FSNode nodeT = treeService.createNode(nodeS,"T");
-									FSNode nodeU = treeService.createNode(nodeT,"U");
-										FSNode nodeV = treeService.createNode(nodeU,"V");
+		DbNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			DbNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				DbNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					DbNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						DbNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						DbNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					DbNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						DbNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						DbNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("I","Node J"));
+					DbNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						DbNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						DbNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						DbNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						DbNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		logger.info("Before copying node G to Node 3");
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
-		assertNotNull(tree);
-		logger.info(tree.printTree());
+		Tree<TreeMeta> treeMeta = null;
 		
-		logger.info("Copying node G to node 3...");
-		treeService.copyNode(nodeG, node3, true);
+		logger.info("Before copy...");
+		treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());
 		
-		logger.info("After copying node G");
-		tree = treeService.buildTree(fsTree);
-		assertNotNull(tree);
-		logger.info(tree.printTree());
+		logger.info("Copying node E to node M (excluding children)...");
+		DbNode copyE = treeService.copyNode(nodeE, nodeM, true);
 		
-		logger.info("Done.");
-		*/
+		logger.info("After copy...");
+		treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());
+		
 	}
 	
 	/**

@@ -193,6 +193,26 @@ public class TreeService {
 	}
 	
 	/**
+	 * Copy a node, and optionally all its children
+	 * 
+	 * @param nodeToCopy - The node to copy
+	 * @param parentNode - The new copy will be placed under this parent node
+	 * @param copyChildren - True to copy all children, false not to.
+	 * @return A reference to the copied node.
+	 * @throws ServiceException
+	 */
+	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws ServiceException {
+		
+		DbNode newCopy = null;
+		try {
+			newCopy = closureRepository.copyNode(nodeToCopy, parentNode, copyChildren);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return newCopy;
+	}
+	
+	/**
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 

@@ -55,7 +55,7 @@ public class OracleAddNodeTest extends AbstractAddNodeTest {
 	}
 	
 	@Test
-	@Rollback(false)
+	@Rollback(true)
 	public void addRootNodeTest(){
 		try {
 			addRootNode();
@@ -65,7 +65,7 @@ public class OracleAddNodeTest extends AbstractAddNodeTest {
 	}
 	
 	@Test
-	@Rollback(false)
+	@Rollback(true)
 	public void addNodeTreeTest(){
 		try {
 			addNodeTree();

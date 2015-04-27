@@ -68,6 +68,9 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 						DbNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
+		
+		FSTestNode testNode = (FSTestNode)nodeO;
+		logger.info("Node 0 test value => " + testNode.getTestValue());
 						
 		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
 		
