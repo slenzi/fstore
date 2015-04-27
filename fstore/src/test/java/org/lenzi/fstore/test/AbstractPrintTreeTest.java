@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.repository.model.DbNode;
 import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSTestNode;
@@ -38,15 +39,11 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		FSTestNode rootNode = new FSTestNode();
-		rootNode.setName("A");
-		rootNode.setTestValue("Node A");
-		
 		FSTree tree = new FSTree();
 		tree.setName("Sample tree");
 		tree.setDescription("Sample tree description.");
 		
-		DbTree dbTree = treeService.addTree(tree, rootNode);
+		DbTree dbTree = treeService.addTree(tree, new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
 		assertNotNull(dbTree.getRootNode());
@@ -55,43 +52,20 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSTestNode childNode1 = new FSTestNode();
-		childNode1.setName("B");
-		childNode1.setTestValue("Node B");
-		
-		treeService.createChildNode(dbTree.getRootNode(), childNode1);
-		
-		/*
-		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
-			FSNode nodeD = treeService.createNode(nodeB,"D");
-				FSNode nodeE = treeService.createNode(nodeD,"E");
-					FSNode nodeI = treeService.createNode(nodeE,"I");
-					FSNode nodeJ = treeService.createNode(nodeE,"J");
-				FSNode nodeF = treeService.createNode(nodeD,"F");
-			FSNode nodeG = treeService.createNode(nodeB,"G");
-				FSNode nodeH = treeService.createNode(nodeG,"H");
-					FSNode nodeK = treeService.createNode(nodeH,"K");
-						FSNode nodeR = treeService.createNode(nodeK,"R");
-							FSNode nodeS = treeService.createNode(nodeR,"S");
-								FSNode nodeW = treeService.createNode(nodeS,"W");
-									FSNode nodeX = treeService.createNode(nodeW,"X");
-										FSNode nodeY = treeService.createNode(nodeX,"Y");
-											FSNode nodeZ = treeService.createNode(nodeY,"Z");
-												FSNode node0 = treeService.createNode(nodeZ,"0");
-													FSNode node1 = treeService.createNode(node0,"1");
-												FSNode node2 = treeService.createNode(nodeZ,"2");
-											FSNode node3 = treeService.createNode(nodeY,"3");
-										FSNode node4 = treeService.createNode(nodeX,"4");
-									FSNode node5 = treeService.createNode(nodeW,"5");
-								FSNode nodeT = treeService.createNode(nodeS,"T");
-									FSNode nodeU = treeService.createNode(nodeT,"U");
-										FSNode nodeV = treeService.createNode(nodeU,"V");
-		FSNode nodeM = treeService.createNode(fsTree.getRootNode(), "M");
-			FSNode nodeN = treeService.createNode(nodeM, "N");
-				FSNode nodeO = treeService.createNode(nodeN, "O");
-					FSNode nodeP = treeService.createNode(nodeO, "P");
-						FSNode nodeQ = treeService.createNode(nodeP, "Q");
-		*/
+		DbNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			DbNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				DbNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					DbNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						DbNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						DbNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					DbNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						DbNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						DbNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("I","Node J"));
+					DbNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						DbNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						DbNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						DbNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						DbNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
 						
