@@ -58,10 +58,20 @@ public class OracleAddNodeTest extends AbstractAddNodeTest {
 	@Rollback(false)
 	public void addRootNodeTest(){
 		try {
-			super.addRootNode();
+			addRootNode();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}
 	}
+	
+	@Test
+	@Rollback(false)
+	public void addNodeTreeTest(){
+		try {
+			addNodeTree();
+		} catch (ServiceException e) {
+			logger.error(e.getMessage());
+		}
+	}	
 
 }

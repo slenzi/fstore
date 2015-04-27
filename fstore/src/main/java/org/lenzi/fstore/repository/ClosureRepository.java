@@ -16,6 +16,13 @@ public interface ClosureRepository {
 	 */
 	public String getRepositoryName();
 
+	/**
+	 * Add a new root node. Parent node ID will be set to 0.
+	 * 
+	 * @param newNode
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public Node addRootNode(Node newNode) throws DatabaseException;
 	
 	/**
@@ -26,7 +33,6 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	//public Node addNode(Long parentNodeId, String nodeName) throws DatabaseException;
 	public Node addChildNode(Node parentNode, Node newNode) throws DatabaseException;
 	
 	/**
