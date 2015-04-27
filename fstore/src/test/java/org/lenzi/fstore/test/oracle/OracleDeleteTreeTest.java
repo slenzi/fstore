@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.repository.model.FSTree;
+import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.FSTreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractDeleteTreeTest;

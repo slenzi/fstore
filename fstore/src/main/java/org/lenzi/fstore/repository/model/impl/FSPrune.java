@@ -1,12 +1,13 @@
-package org.lenzi.fstore.repository.model;
+package org.lenzi.fstore.repository.model.impl;
 
-import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.lenzi.fstore.repository.model.Prune;
 
 /**
  * Database entity for FS_PRUNE.
@@ -15,12 +16,9 @@ import javax.persistence.Transient;
  * 
  * @author sal
  */
-
-//@SequenceGenerator(name = "FS_PRUNE_ID_SEQUENCE", sequenceName = "FS_PRUNE_ID_SEQUENCE", schema = "ECOGUSER", allocationSize = 50)
-
 @Entity
-@Table(name = "FS_PRUNE") /* schema = "ECOGUSER"*/
-public class FSPrune implements Serializable {
+@Table(name = "FS_PRUNE")
+public class FSPrune implements Prune {
 
 	/**
 	 * 

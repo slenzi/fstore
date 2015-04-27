@@ -1,6 +1,6 @@
 package org.lenzi.fstore.service;
 
-import org.lenzi.fstore.repository.model.Person;
+import org.lenzi.fstore.repository.model.impl.Person;
 
 /**
  * Person service interface.

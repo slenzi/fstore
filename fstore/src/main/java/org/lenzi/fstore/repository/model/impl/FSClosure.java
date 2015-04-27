@@ -1,6 +1,4 @@
-package org.lenzi.fstore.repository.model;
-
-import java.io.Serializable;
+package org.lenzi.fstore.repository.model.impl;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +8,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.lenzi.fstore.repository.model.Closure;
+import org.lenzi.fstore.repository.model.Node;
+
 /**
  * Database entity for FS_CLOSURE. 
  * 
@@ -17,11 +18,9 @@ import javax.persistence.Transient;
  * 
  * @author sal
  */
-// @SequenceGenerator(name = "FS_LINK_ID_SEQUENCE", sequenceName = "FS_LINK_ID_SEQUENCE", schema = "ECOGUSER", allocationSize = 50)
-
 @Entity
-@Table(name = "FS_CLOSURE") /* schema = "ECOGUSER"*/
-public class FSClosure implements Serializable {
+@Table(name = "FS_CLOSURE")
+public class FSClosure implements Closure {
 
 	/**
 	 * 
@@ -29,7 +28,6 @@ public class FSClosure implements Serializable {
 	@Transient
 	private static final long serialVersionUID = 6104278113268285089L;
 
-	// @GeneratedValue(generator="FS_LINK_ID_SEQUENCE")
 	@Id
 	@Column(name = "LINK_ID", updatable = false, nullable = false)
 	private Long linkId;
@@ -43,13 +41,13 @@ public class FSClosure implements Serializable {
 	@Column(name = "DEPTH", nullable = false)
 	private Integer depth = 0;
 	
-	@ManyToOne
+	@ManyToOne(targetEntity = FSNode.class)
 	@JoinColumn(name="PARENT_NODE_ID", referencedColumnName="NODE_ID", insertable=false, updatable=false)	
-	private FSNode parentNode;
+	private Node parentNode;
 	
-	@ManyToOne
+	@ManyToOne(targetEntity = FSNode.class)
 	@JoinColumn(name="CHILD_NODE_ID", referencedColumnName="NODE_ID", insertable=false, updatable=false)		
-	private FSNode childNode;
+	private Node childNode;
 	
 	
 	public FSClosure() {
@@ -87,28 +85,28 @@ public class FSClosure implements Serializable {
 	/**
 	 * @return the parentNode
 	 */
-	public FSNode getParentNode() {
+	public Node getParentNode() {
 		return parentNode;
 	}
 
 	/**
 	 * @param parentNode the parentNode to set
 	 */
-	public void setParentNode(FSNode parentNode) {
+	public void setParentNode(Node parentNode) {
 		this.parentNode = parentNode;
 	}
 
 	/**
 	 * @return the childNode
 	 */
-	public FSNode getChildNode() {
+	public Node getChildNode() {
 		return childNode;
 	}
 
 	/**
 	 * @param childNode the childNode to set
 	 */
-	public void setChildNode(FSNode childNode) {
+	public void setChildNode(Node childNode) {
 		this.childNode = childNode;
 	}
 

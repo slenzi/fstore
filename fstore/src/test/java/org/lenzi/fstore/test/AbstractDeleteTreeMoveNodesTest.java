@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
-import org.lenzi.fstore.repository.model.FSNode;
-import org.lenzi.fstore.repository.model.FSTree;
+import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.FSTreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;

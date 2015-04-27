@@ -1,29 +1,36 @@
-package org.lenzi.fstore.repository.model;
+package org.lenzi.fstore.repository.model.impl;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.InheritanceType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.lenzi.fstore.repository.model.Closure;
+import org.lenzi.fstore.repository.model.Node;
 
 /**
  * Database entity for FS_NODE.
  * 
  * FS_NODE contains master list of all nodes.
  * 
- * @author sal
+ * @author slenzi
  */
-// @SequenceGenerator(name = "FS_NODE_ID_SEQUENCE", sequenceName = "FS_NODE_ID_SEQUENCE", schema = "ECOGUSER", allocationSize = 50)
-
 @Entity
-@Table(name = "FS_NODE") /* schema = "ECOGUSER"*/ 
-public class FSNode implements Serializable {
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="NODE_TYPE")
+@DiscriminatorValue("BaseNode")
+@Table(name = "FS_NODE")
+public abstract class FSNode implements Node {
 
 	/**
 	 * 
@@ -31,13 +38,15 @@ public class FSNode implements Serializable {
 	@Transient
 	private static final long serialVersionUID = -13836178065227788L;
 
-	// @GeneratedValue(generator="FS_NODE_ID_SEQUENCE")
 	@Id
 	@Column(name = "NODE_ID", updatable = false, nullable = false)
 	private Long nodeId;
 	
 	@Column(name = "PARENT_NODE_ID", nullable = false)
 	private Long parentNodeId;
+	
+	@Column(name = "NODE_TYPE", nullable = false)
+	private String nodeType;
 	
 	@Column(name = "NAME", nullable = false)
 	private String name;
@@ -49,12 +58,12 @@ public class FSNode implements Serializable {
 	private Timestamp dateUpdated;
 	
 	// Closure entries that give access to the child nodes for this node.
-	@OneToMany(mappedBy="parentNode")
-	private Set<FSClosure> childClosure = new HashSet<FSClosure>(0);
+	@OneToMany(mappedBy="parentNode", targetEntity = FSClosure.class)
+	private Set<Closure> childClosure = new HashSet<Closure>(0);
 	
 	// Closure entries that give access to the parent nodes for this node.
-	@OneToMany(mappedBy="childNode")
-	private Set<FSClosure> parentClosure = new HashSet<FSClosure>(0);
+	@OneToMany(mappedBy="childNode", targetEntity = FSClosure.class)
+	private Set<Closure> parentClosure = new HashSet<Closure>(0);
 	
 	public FSNode() {
 		
@@ -67,14 +76,14 @@ public class FSNode implements Serializable {
 	 * @param dateCreated
 	 * @param dateUpdated
 	 */
-	public FSNode(Long nodeId, Long parentNodeId, String name,
-			Timestamp dateCreated, Timestamp dateUpdated) {
+	public FSNode(Long nodeId, Long parentNodeId, String name, String nodeType, Timestamp dateCreated, Timestamp dateUpdated) {
 		
 		super();
 		
 		this.nodeId = nodeId;
 		this.parentNodeId = parentNodeId;
 		this.name = name;
+		this.nodeType = nodeType;
 		this.dateCreated = dateCreated;
 		this.dateUpdated = dateUpdated;
 	}
@@ -105,6 +114,23 @@ public class FSNode implements Serializable {
 	 */
 	public void setParentNodeId(Long parentNodeId) {
 		this.parentNodeId = parentNodeId;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.model.Node#getNodeType()
+	 */
+	@Override
+	public String getNodeType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.model.Node#setNodeType(java.lang.String)
+	 */
+	@Override
+	public void setNodeType(String nodeType) {
+		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -152,28 +178,28 @@ public class FSNode implements Serializable {
 	/**
 	 * @return the childClosure
 	 */
-	public Set<FSClosure> getChildClosure() {
+	public Set<Closure> getChildClosure() {
 		return childClosure;
 	}
 
 	/**
 	 * @param childClosure the childClosure to set
 	 */
-	public void setChildClosure(Set<FSClosure> childClosure) {
+	public void setChildClosure(Set<Closure> childClosure) {
 		this.childClosure = childClosure;
 	}
 
 	/**
 	 * @return the parentClosure
 	 */
-	public Set<FSClosure> getParentClosure() {
+	public Set<Closure> getParentClosure() {
 		return parentClosure;
 	}
 
 	/**
 	 * @param parentClosure the parentClosure to set
 	 */
-	public void setParentClosure(Set<FSClosure> parentClosure) {
+	public void setParentClosure(Set<Closure> parentClosure) {
 		this.parentClosure = parentClosure;
 	}
 

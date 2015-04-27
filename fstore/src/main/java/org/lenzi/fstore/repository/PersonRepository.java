@@ -8,8 +8,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.lenzi.fstore.repository.model.Person;
 import org.lenzi.fstore.repository.model.Person_;
+import org.lenzi.fstore.repository.model.impl.Person;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;

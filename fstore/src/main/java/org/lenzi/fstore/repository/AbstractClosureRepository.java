@@ -11,9 +11,11 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.FSClosure;
-import org.lenzi.fstore.repository.model.FSNode;
-import org.lenzi.fstore.repository.model.FSTree;
+import org.lenzi.fstore.repository.model.Node;
+import org.lenzi.fstore.repository.model.impl.FSClosure;
+import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSTestNode;
+import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.DateUtil;
 import org.lenzi.fstore.util.LogUtil;
@@ -52,6 +54,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * 
 	 * @param parentNodeId - 
 	 * @param nodeName -
+	 * @param testVaue -
 	 * 
 	 * @see org.lenzi.fstore.repository.ClosureRepository#addNode(java.lang.Long, java.lang.String)
 	 */
@@ -62,7 +65,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		long nodeId = getSequenceVal(getSqlQueryNodeIdSequence());
 		
 		// create new node
-		FSNode newNode = new FSNode();
+		Node newNode = new FSTestNode();
 		newNode.setNodeId(nodeId);
 		newNode.setParentNodeId(parentNodeId);
 		newNode.setName(nodeName);
@@ -231,7 +234,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	/**
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(java.lang.String, java.lang.String, org.lenzi.fstore.repository.model.FSNode)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(java.lang.String, java.lang.String, org.lenzi.fstore.repository.model.impl.FSNode)
 	 */
 	@Override
 	public FSTree addTree(String treeName, String treeDesc, FSNode existingNode) throws DatabaseException {
@@ -343,7 +346,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	/**
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#removeTree(org.lenzi.fstore.repository.model.FSTree, org.lenzi.fstore.repository.model.FSNode)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#removeTree(org.lenzi.fstore.repository.model.impl.FSTree, org.lenzi.fstore.repository.model.impl.FSNode)
 	 */
 	@Override
 	public void removeTree(FSTree tree, FSNode newParentNode) throws DatabaseException {
@@ -555,7 +558,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	/**
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isSameTree(org.lenzi.fstore.repository.model.FSNode, org.lenzi.fstore.repository.model.FSNode)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isSameTree(org.lenzi.fstore.repository.model.impl.FSNode, org.lenzi.fstore.repository.model.impl.FSNode)
 	 */
 	@Override
 	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException {
@@ -616,7 +619,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	/**
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isParent(org.lenzi.fstore.repository.model.FSNode, org.lenzi.fstore.repository.model.FSNode, boolean)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isParent(org.lenzi.fstore.repository.model.impl.FSNode, org.lenzi.fstore.repository.model.impl.FSNode, boolean)
 	 */
 	@Override
 	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {
@@ -646,7 +649,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 
 	/**
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isChild(org.lenzi.fstore.repository.model.FSNode, org.lenzi.fstore.repository.model.FSNode, boolean)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isChild(org.lenzi.fstore.repository.model.impl.FSNode, org.lenzi.fstore.repository.model.impl.FSNode, boolean)
 	 */
 	@Override
 	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {

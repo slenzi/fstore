@@ -3,14 +3,14 @@ package org.lenzi.fstore.repository;
 import java.util.List;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.FSClosure;
-import org.lenzi.fstore.repository.model.FSNode;
-import org.lenzi.fstore.repository.model.FSTree;
+import org.lenzi.fstore.repository.model.Closure;
+import org.lenzi.fstore.repository.model.Node;
+import org.lenzi.fstore.repository.model.Tree;
 
 public interface ClosureRepository {
 	
 	/**
-	 * Get name of respository.
+	 * Get name of repository.
 	 * 
 	 * @return
 	 */
@@ -24,7 +24,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FSNode addNode(Long parentNodeId, String nodeName) throws DatabaseException;
+	public Node addNode(Long parentNodeId, String nodeName) throws DatabaseException;
 	
 	/**
 	 * Get a node, not closure data, or children. Just the node data.
@@ -32,7 +32,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FSNode getNode(Long nodeId) throws DatabaseException;
+	public Node getNode(Long nodeId) throws DatabaseException;
 	
 	/**
 	 * Get a tree with it's root node.
@@ -41,7 +41,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FSTree getTree(Long treeId) throws DatabaseException;
+	public Tree getTree(Long treeId) throws DatabaseException;
 	
 	/**
 	 * Add a new tree.
@@ -52,7 +52,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FSTree addTree(String treeName, String treeDesc, String rootNodeName) throws DatabaseException;
+	public Tree addTree(String treeName, String treeDesc, String rootNodeName) throws DatabaseException;
 	
 	/**
 	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
@@ -65,7 +65,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FSTree addTree(String treeName, String treeDesc, FSNode existingNode) throws DatabaseException;
+	public Tree addTree(String treeName, String treeDesc, Node existingNode) throws DatabaseException;
 	
 	/**
 	 * Copy a the node, and optionally all it's children.
@@ -93,7 +93,7 @@ public interface ClosureRepository {
 	 * 	under this node. This node must be a node in a different tree.
 	 * @throws DatabaseException
 	 */
-	public void removeTree(FSTree tree, FSNode newParentNode)  throws DatabaseException;
+	public void removeTree(Tree tree, Node newParentNode)  throws DatabaseException;
 	
 	/**
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
@@ -103,7 +103,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<FSClosure> getClosureByNodeId(Long nodeId) throws DatabaseException;
+	public List<Closure> getClosureByNodeId(Long nodeId) throws DatabaseException;
 	
 	/**
 	 * Move a node. The node, plus all its chilren, will be moved to under the new parent node.
@@ -138,7 +138,7 @@ public interface ClosureRepository {
 	 * @return true if node1 and node2 are in the same tree, false if not.
 	 * @throws DatabaseException
 	 */
-	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException;
+	public boolean isSameTree(Node node1, Node node2) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a parent of node2.
@@ -156,7 +156,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException;
+	public boolean isParent(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a child of node2.
@@ -175,6 +175,6 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException;
+	public boolean isChild(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
 	
 }

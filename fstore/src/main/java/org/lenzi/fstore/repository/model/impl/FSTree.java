@@ -1,9 +1,8 @@
 /**
  * 
  */
-package org.lenzi.fstore.repository.model;
+package org.lenzi.fstore.repository.model.impl;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -14,13 +13,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.lenzi.fstore.repository.model.Node;
+import org.lenzi.fstore.repository.model.Tree;
+
 /**
  * @author sal
  *
  */
 @Entity
-@Table(name = "FS_TREE") /* schema = "ECOGUSER"*/
-public class FSTree implements Serializable {
+@Table(name = "FS_TREE")
+public class FSTree implements Tree {
 
 	/**
 	 * 
@@ -47,9 +49,9 @@ public class FSTree implements Serializable {
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;
 	
-	@OneToOne
+	@OneToOne(targetEntity = FSNode.class)
 	@JoinColumn(name = "ROOT_NODE_ID", insertable=false, updatable=false)
-	FSNode rootNode = null;
+	Node rootNode = null;
 	
 	/**
 	 * 
@@ -145,14 +147,14 @@ public class FSTree implements Serializable {
 	/**
 	 * @return the rootNode
 	 */
-	public FSNode getRootNode() {
+	public Node getRootNode() {
 		return rootNode;
 	}
 
 	/**
 	 * @param rootNode the rootNode to set
 	 */
-	public void setRootNode(FSNode rootNode) {
+	public void setRootNode(Node rootNode) {
 		this.rootNode = rootNode;
 	}
 

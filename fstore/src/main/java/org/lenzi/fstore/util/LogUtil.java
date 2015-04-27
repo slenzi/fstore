@@ -2,8 +2,8 @@ package org.lenzi.fstore.util;
 
 import java.util.List;
 
-import org.lenzi.fstore.repository.model.FSClosure;
-import org.lenzi.fstore.repository.model.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSClosure;
+import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

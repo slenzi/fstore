@@ -3,7 +3,7 @@ package org.lenzi.fstore.service;
 import java.io.Serializable;
 
 import org.lenzi.fstore.repository.PersonRepository;
-import org.lenzi.fstore.repository.model.Person;
+import org.lenzi.fstore.repository.model.impl.Person;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

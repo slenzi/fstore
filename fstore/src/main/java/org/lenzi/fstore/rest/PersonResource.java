@@ -6,7 +6,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.lenzi.fstore.repository.model.Person;
+import org.lenzi.fstore.repository.model.impl.Person;
 import org.lenzi.fstore.rest.exception.WebServiceException;
 import org.lenzi.fstore.service.PersonService;
 import org.lenzi.fstore.stereotype.InjectLogger;

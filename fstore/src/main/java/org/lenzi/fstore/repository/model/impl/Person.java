@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.repository.model;
+package org.lenzi.fstore.repository.model.impl;
 
 import java.io.Serializable;
 
