@@ -11,6 +11,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.repository.model.Closure;
 import org.lenzi.fstore.repository.model.Node;
 import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.repository.model.impl.FSNode;
@@ -153,6 +154,38 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 	
+	/**
+	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
+	 * Usually you would do this for a root node of a tree.
+	 * 
+	 * @see org.lenzi.fstore.repository.ClosureRepository#getClosure(org.lenzi.fstore.repository.model.Node)
+	 */
+	@Override
+	public List<Closure> getClosure(Node node) throws DatabaseException {
+
+		if(node == null){
+			throw new DatabaseException("Cannot fetch closure data for node. Node object is null.");
+		}
+		if(node.getNodeId() == null){
+			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
+		}
+		
+		logger.info("Fetching closure data for node id => " + node.getNodeId());
+		
+		List<Closure> results = null;
+		Query query = null;
+		try {
+			query = getEntityManager().createQuery(getHqlQueryClosureByNodeId());
+			query.setParameter(1, node.getNodeId());
+			query.setParameter(2, node.getNodeId());			
+		} catch (IllegalArgumentException e) {
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}
+		results = getResultList(query);
+		
+		return results;			
+		
+	}
 	
 	/*
 
@@ -369,25 +402,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 		getEntityManager().remove(treeToDelete);
 
-	}
-	
-	@Override
-	public List<FSClosure> getClosureByNodeId(Long nodeId) throws DatabaseException {
-
-		logger.info("Getting closure list for node id => " + nodeId);
-		
-		List<FSClosure> results = null;
-		Query query = null;
-		try {
-			query = getEntityManager().createQuery(getHqlQueryClosureByNodeId());
-			query.setParameter(1, nodeId);
-			query.setParameter(2, nodeId);			
-		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
-		}
-		results = getResultList(query);
-		return results;		
-		
 	}
 
 	@Override
@@ -718,7 +732,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 	*/
-	
+
 	/**
 	 * Remove node helper function.
 	 * 

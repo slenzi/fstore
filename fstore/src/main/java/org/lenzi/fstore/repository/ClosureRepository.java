@@ -26,7 +26,7 @@ public interface ClosureRepository {
 	public Node addRootNode(Node newNode) throws DatabaseException;
 	
 	/**
-	 * Add a new child node.
+	 * Add a new child node under the parent node.
 	 * 
 	 * @param parentNodeId - The ID of the parent node.
 	 * @param nodeName - The name of the new node.
@@ -108,11 +108,11 @@ public interface ClosureRepository {
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 
-	 * @param nodeId - the node id, most likely the ID of a root node of a tree
+	 * @param node - The node to fetch closure data for. Most likely you want this to be a root node of a tree.
 	 * @return
 	 * @throws DatabaseException
 	 */
-	//public List<Closure> getClosureByNodeId(Long nodeId) throws DatabaseException;
+	public List<Closure> getClosure(Node node) throws DatabaseException;
 	
 	/**
 	 * Move a node. The node, plus all its chilren, will be moved to under the new parent node.

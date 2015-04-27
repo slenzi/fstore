@@ -11,10 +11,8 @@ import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.repository.model.Closure;
 import org.lenzi.fstore.repository.model.Node;
-import org.lenzi.fstore.repository.model.impl.FSClosure;
-import org.lenzi.fstore.repository.model.impl.FSNode;
-import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.CollectionUtil;
@@ -191,7 +189,26 @@ public class FSTreeService {
 		}
 		
 		return addedNode;
+	}
+	
+	/**
+	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
+	 * Usually you would do this for a root node of a tree.
+	 * 
+	 * @param node - The node to fetch closure data for.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public List<Closure> getClosure(Node node) throws ServiceException {
 		
+		List<Closure> closure = null;
+		try {
+			closure = closureRepository.getClosure(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+		return closure;
 	}
 	
 	/**
@@ -399,20 +416,19 @@ public class FSTreeService {
 	 * @param closureList
 	 * @return
 	 */
-	/*
-	private Tree<TreeMeta> buildTree(List<FSClosure> closureList){
+	public Tree<TreeMeta> buildTree(List<Closure> closureList){
 		
 		if(closureList == null || closureList.size() == 0){
 			return null;
 		}
 		
-		//LogUtil.logClosure(closureList);
+		LogUtil.logClosure(closureList);
 		
-		HashMap<Long,List<FSNode>> treeMap = new HashMap<Long,List<FSNode>>();
+		HashMap<Long,List<Node>> treeMap = new HashMap<Long,List<Node>>();
 		
 		// get root node of tree
-		FSNode rootNode = null;
-		for(FSClosure c : closureList){
+		Node rootNode = null;
+		for(Closure c : closureList){
 			if(c.hasParent() && c.hasChild()){
 				rootNode = c.getParentNode();
 				break;
@@ -424,14 +440,14 @@ public class FSTreeService {
 		//
 		// loop through closure list and build tree map
 		//
-		FSClosure closure = null;
+		Closure closure = null;
 		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
 			closure = closureList.get(closureIndex);
 			if(closure.hasParent() && closure.hasChild()){
 				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
 					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
 				}else{
-					List<FSNode> childList = new ArrayList<FSNode>();
+					List<Node> childList = new ArrayList<Node>();
 					childList.add(closure.getChildNode());
 					treeMap.put(closure.getParentNode().getNodeId(), childList);
 				}
@@ -464,14 +480,13 @@ public class FSTreeService {
 		
 		return tree;
 	}
-	*/
 	
 	// walk the data in the tree map and add children to parentNode
-	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<FSNode>> treeMap){
+	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<Node>> treeMap){
 		
 		TreeNode<TreeMeta> childTreeNode = null;
 		
-		for(FSNode childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getId()))){
+		for(Node childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getId()))){
 			
 			// closure table contains entries where a node is a parent of itself at depth 0. we
 			// need to skip over these entries otherwise we'll go into an infinite loop and exhaust the
@@ -491,7 +506,7 @@ public class FSTreeService {
 	}
 	
 	// build TreeMeta object from FSNode object
-	private TreeMeta getMeta(FSNode node){
+	private TreeMeta getMeta(Node node){
 		TreeMeta meta = new TreeMeta();
 		meta.setId(node.getNodeId());
 		meta.setName(node.getName());

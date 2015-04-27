@@ -35,4 +35,8 @@ public interface Closure extends Serializable {
 	
 	public void setChildNode(Node child);
 	
+	public boolean hasChild();
+	
+	public boolean hasParent();
+	
 }
