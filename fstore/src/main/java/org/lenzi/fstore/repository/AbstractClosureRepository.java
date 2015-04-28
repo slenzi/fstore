@@ -82,6 +82,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			throw new DatabaseException("Cannot add new node. Node object is null.");
 		}
 		
+		logger.info("Add root node");
+		
 		return addNode(0L, newNode);
 		
 	}
@@ -96,13 +98,15 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 */
 	@Override
 	public DbNode addChildNode(DbNode parentNode, DbNode newNode) throws DatabaseException {
-
+		
 		if(parentNode == null || newNode == null){
 			throw new DatabaseException("Cannot add new node. Parent node and/or new node objects are null.");
 		}
 		if(parentNode.getNodeId() == null){
 			throw new DatabaseException("Cannot add new node. Parent node ID is null. This information is needed.");
 		}
+		
+		logger.info("Add child node");
 		
 		return addNode(parentNode.getNodeId(), newNode);
 		
@@ -121,11 +125,9 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		if(newNode.getName() == null){
 			throw new DatabaseException("Cannot add new node, new node is missing a name. This is a required field.");
 		}
-		if(newNode.getDateCreated() == null || newNode.getDateUpdated() == null){
-			Timestamp dateNow = DateUtil.getCurrentTime();
-			newNode.setDateCreated(dateNow);
-			newNode.setDateUpdated(dateNow);
-		}		
+		Timestamp dateNow = DateUtil.getCurrentTime();
+		newNode.setDateCreated(dateNow);
+		newNode.setDateUpdated(dateNow);	
 		
 		// Get next available node id from sequence
 		long nodeId = getSequenceVal(getSqlQueryNodeIdSequence());
@@ -133,6 +135,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		// Set node id and parent nod id
 		newNode.setNodeId(nodeId);
 		newNode.setParentNodeId(parentNodeId);
+		
+		logger.info("Adding node " + nodeId + " to parent node " + parentNodeId);
 		
 		// Save node to database
 		getEntityManager().persist(newNode);
@@ -228,6 +232,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		// copy just the node
 		if(!copyChildren){
 			
+			logger.info("Copy node without children");
+			
 			if(nodeToCopy.isRootNode()){
 				return addRootNode(nodeToCopy);
 			}else{
@@ -237,14 +243,26 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		// copy the node and all children	
 		}else{
 			
+			logger.info("Copy node with children");
+			
 			//
 			// Get closure data for the sub-tree we are copying
 			//
 			List<DbClosure> closureList = getClosure(nodeToCopy);
 			
+			logger.info("Fetched closure data for node => " + nodeToCopy.getNodeId());
+			
+			LogUtil.logClosure(closureList);
+			
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for node " + nodeToCopy.getNodeId());
 			}
+			
+			// needed for copy node with children...
+			//getEntityManager().flush();
+			//getEntityManager().clear();
+			
+			logger.info("Cleared entity manager.");
 			
 			HashMap<Long,List<DbNode>> treeMap = new HashMap<Long,List<DbNode>>();
 			
@@ -256,6 +274,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 					break;
 				}
 			}
+			
+			logger.info("Found root node for sub-tree id => " + rootNode.getNodeId());
 			
 			// loop through closure list and build tree map
 			DbClosure closure = null;
@@ -271,6 +291,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 					}
 				}
 			}
+			
+			logger.info("Built tree map in preparation for copy.");
 			
 			// get children for root node of sub-tree
 			List<DbNode> childList = treeMap.get(rootNode.getNodeId());
@@ -293,7 +315,14 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 */
 	private DbNode copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, HashMap<Long, List<DbNode>> treeMap) throws DatabaseException {
 		
-		logger.debug("Adding " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") to parent " + parentNode.getNodeId());
+		Long copyNodeId = nodeToCopy.getNodeId();
+		
+		logger.info("Adding " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") to parent " + parentNode.getNodeId() + " (" + parentNode.getName() + ")");
+		
+		if(childNodes != null && childNodes.size() > 0){
+			logger.info("Before copy:");
+			logger.info("-Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + " children (including itself, depth-0 link).");
+		}
 		
 		// add root node of sub-tree
 		DbNode newCopy = null;
@@ -301,16 +330,20 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			newCopy = addRootNode(nodeToCopy);
 		}else{
 			newCopy = addChildNode(parentNode, nodeToCopy);
-		}		
+		}
+		
+		// the node id of nodeToCopy has changed!
 		
 		if(childNodes != null && childNodes.size() > 0){
 			
-			logger.debug("Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + " children.");
+			//logger.info("Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + " children (including itself, depth-0 link).");
 			
 			for(DbNode childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
-				if(childNode.getNodeId() != nodeToCopy.getNodeId()){
+				if(childNode.getNodeId() != copyNodeId){
+					
+					logger.info("Add next child node " + childNode.getNodeId() + " to newly added parent " + newCopy.getNodeId());
 					
 					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
 					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap);
