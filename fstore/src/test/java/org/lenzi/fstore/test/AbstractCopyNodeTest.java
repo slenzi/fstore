@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.model.util.FSTestNodeCopier;
 import org.lenzi.fstore.repository.model.DbNode;
 import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
@@ -79,7 +80,7 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Copying node E to node M (excluding children)...");
-		DbNode copyE = treeService.copyNode(nodeE, nodeM, false);
+		DbNode copyE = treeService.copyNode(nodeE, nodeM, false, new FSTestNodeCopier());
 		
 		logger.info("After copy...");
 		treeMeta = treeService.buildTree(dbTree);
@@ -138,7 +139,8 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Copying node E to node M (excluding children)...");
-		DbNode copyE = treeService.copyNode(nodeE, nodeM, true);
+		
+		DbNode copyE = treeService.copyNode(nodeE, nodeM, true, new FSTestNodeCopier());
 		
 		logger.info("After copy...");
 		treeMeta = treeService.buildTree(dbTree);

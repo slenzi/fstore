@@ -34,9 +34,11 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 		basePackages={
 			"org.lenzi.fstore.repository",
 			"org.lenzi.fstore.repository.model",
-			"org.lenzi.fstore.service"
+			"org.lenzi.fstore.service",
+			"org.lenzi.fstore.logging"
 		}
 )
+// "org.lenzi.fstore.service"
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 @TransactionConfiguration(transactionManager="oracleTxManager", defaultRollback=true)
 public class OracleTestConfiguration implements TransactionManagementConfigurer {
@@ -93,14 +95,11 @@ public class OracleTestConfiguration implements TransactionManagementConfigurer 
     	return emf; 
     }
     
-    /**
-     * To resolve our InjectLogger injection points.
-     * 
-     * @return
-     */
+    // added "org.lenzi.fstore.logging" package to @ComponentScan
+    /*
     @Bean
     public LoggerBeanPostProccessor getLoggerBeanPostProcessor(){
     	return new LoggerBeanPostProccessor();
     }
-
+	*/
 }

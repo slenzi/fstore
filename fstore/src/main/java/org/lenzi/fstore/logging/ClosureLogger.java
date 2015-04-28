@@ -1,17 +1,22 @@
-package org.lenzi.fstore.util;
+package org.lenzi.fstore.logging;
 
 import java.util.List;
 
 import org.lenzi.fstore.repository.model.DbClosure;
 import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-public abstract class LogUtil {
+@Service
+public class ClosureLogger {
 
-	private static Logger logger = LoggerFactory.getLogger(LogUtil.class.getName());
+	@InjectLogger
+	private Logger logger;
+
+	public ClosureLogger(){}
 	
-	public static void logClosure(List<DbClosure> closureList){
+	public void logClosure(List<DbClosure> closureList){
 		if(closureList == null){
 			return;
 		}
@@ -34,14 +39,14 @@ public abstract class LogUtil {
 			}
 		}
 	}
-	public static String getNodeString(DbNode n){
+	public String getNodeString(DbNode n){
 		if(n == null){
 			return "null";
 		}
 		return "{id = " + n.getNodeId() + ", name = " + n.getName() + ", paren Id = " + n.getParentNodeId() + 
 				", dt created = " + n.getDateCreated() + ", dt updated = " + n.getDateUpdated() + "}";
 	}
-	private static String padLeft(String s, int n){
+	private String padLeft(String s, int n){
 		return String.format("%1$" + n + "s", s); 
 	}
 

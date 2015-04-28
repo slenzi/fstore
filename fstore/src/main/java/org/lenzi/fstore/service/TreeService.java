@@ -6,9 +6,11 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.tree.TreeNode;
+import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DbClosure;
@@ -17,7 +19,6 @@ import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.CollectionUtil;
-import org.lenzi.fstore.util.LogUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class TreeService {
 	
 	@Autowired
 	ClosureRepository closureRepository;
+	
+	@Autowired
+	ClosureLogger closureLogger;
 	
 	// debug method for testing factory generation
 	public String getClosureRepoType(){
@@ -198,14 +202,15 @@ public class TreeService {
 	 * @param nodeToCopy - The node to copy
 	 * @param parentNode - The new copy will be placed under this parent node
 	 * @param copyChildren - True to copy all children, false not to.
+	 * @param copier - The copier which knows how to copy your node object.
 	 * @return A reference to the copied node.
 	 * @throws ServiceException
 	 */
-	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws ServiceException {
+	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren, NodeCopier copier) throws ServiceException {
 		
 		DbNode newCopy = null;
 		try {
-			newCopy = closureRepository.copyNode(nodeToCopy, parentNode, copyChildren);
+			newCopy = closureRepository.copyNode(nodeToCopy, parentNode, copyChildren, copier);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -461,7 +466,7 @@ public class TreeService {
 			return null;
 		}
 		
-		LogUtil.logClosure(closureList);
+		closureLogger.logClosure(closureList);
 		
 		HashMap<Long,List<DbNode>> treeMap = new HashMap<Long,List<DbNode>>();
 		
@@ -474,7 +479,7 @@ public class TreeService {
 			}
 		}
 		
-		logger.debug("Build tree, root node => " + LogUtil.getNodeString(rootNode));
+		logger.debug("Build tree, root node => " + closureLogger.getNodeString(rootNode));
 		
 		//
 		// loop through closure list and build tree map

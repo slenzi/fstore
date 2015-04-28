@@ -3,8 +3,6 @@
  */
 package org.lenzi.fstore.repository.model.impl;
 
-import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.repository.model.DbNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;

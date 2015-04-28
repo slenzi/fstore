@@ -10,9 +10,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.lenzi.fstore.logging.ClosureLogger;
+import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DbClosure;
 import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DbPrune;
 import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.repository.model.impl.FSNode;
@@ -20,8 +23,8 @@ import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.DateUtil;
-import org.lenzi.fstore.util.LogUtil;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +45,10 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	private static final long serialVersionUID = 9258076299035972L;
 
 	@InjectLogger
-	private Logger logger;	
+	private Logger logger;
+	
+	@Autowired
+	ClosureLogger closureLogger;
 	
 	/**
 	 * 
@@ -67,7 +73,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
 		}		
 		
-		return (FSNode)getSingleResult(query);	
+		return (DbNode)getSingleResult(query);	
 	}	
 
 	/**
@@ -217,7 +223,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @see org.lenzi.fstore.repository.ClosureRepository#copyNode(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode, boolean)
 	 */
 	@Override
-	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren) throws DatabaseException {
+	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren, NodeCopier copier) throws DatabaseException {
 		
 		if(nodeToCopy == null || parentNode == null){
 			throw new DatabaseException("Cannot copy node. Node object is null, and/or parent node object is null.");
@@ -233,6 +239,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		if(!copyChildren){
 			
 			logger.info("Copy node without children");
+			
+			DbNode newCopy = copier.copy(nodeToCopy);
 			
 			if(nodeToCopy.isRootNode()){
 				return addRootNode(nodeToCopy);
@@ -252,7 +260,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			
 			logger.info("Fetched closure data for node => " + nodeToCopy.getNodeId());
 			
-			LogUtil.logClosure(closureList);
+			closureLogger.logClosure(closureList);
 			
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for node " + nodeToCopy.getNodeId());
