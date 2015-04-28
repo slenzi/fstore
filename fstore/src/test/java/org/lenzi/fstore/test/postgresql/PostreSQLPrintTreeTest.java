@@ -55,7 +55,7 @@ public class PostreSQLPrintTreeTest extends AbstractPrintTreeTest {
 	}
 	
 	@Test
-	@Rollback(true)
+	@Rollback(false)
 	public void printTreeTest(){
 		try {
 			printTree();

@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.oracle;
+package org.lenzi.fstore.test.postgresql;
 
 
 import static org.junit.Assert.assertNotNull;
@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
-import org.lenzi.fstore.test.AbstractPrintTreeTest;
+import org.lenzi.fstore.test.AbstractClosureTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,25 +19,25 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Oracle unit test, controlled by the ActiveProfiles annotation. Uses the OracleClosureRepository.
+ * PostgreSQL unit test, controlled by the ActiveProfiles annotation. Uses the PostgresClosureRepository.
  * 
  * @author slenzi
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=OracleTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("oracle")
-@ActiveProfiles({"oracle"})
-public class OraclePrintTreeTest extends AbstractPrintTreeTest {
+@ContextConfiguration(classes=PostgreSQLTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@Transactional("postgresql")
+@ActiveProfiles({"postgresql"})
+public class PostreSQLClosureTest extends AbstractClosureTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	OracleTestConfiguration configuration = null;
+	PostgreSQLTestConfiguration configuration = null;
 	
 	@Autowired
 	TreeService treeService = null;
 	
-	public OraclePrintTreeTest() {
+	public PostreSQLClosureTest() {
 
 	}
 	
@@ -55,10 +55,10 @@ public class OraclePrintTreeTest extends AbstractPrintTreeTest {
 	}
 	
 	@Test
-	@Rollback(false)
-	public void printTreeTest(){
+	@Rollback(true)
+	public void fetchClosureDataTest(){
 		try {
-			printTree();
+			fetchClosureData();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}
