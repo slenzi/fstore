@@ -241,11 +241,15 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			logger.info("Copy node without children");
 			
 			DbNode newCopy = copier.copy(nodeToCopy);
+			newCopy.setChildClosure(null);
+			newCopy.setParentClosure(null);
+			
+			// TODO - persist this copy (remove closure data?)
 			
 			if(nodeToCopy.isRootNode()){
-				return addRootNode(nodeToCopy);
+				return addRootNode(newCopy);
 			}else{
-				return addChildNode(parentNode, nodeToCopy);
+				return addChildNode(parentNode, newCopy);
 			}
 			
 		// copy the node and all children	
