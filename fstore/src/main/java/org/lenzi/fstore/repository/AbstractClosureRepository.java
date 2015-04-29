@@ -88,7 +88,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			throw new DatabaseException("Cannot add new node. Node object is null.");
 		}
 		
-		logger.info("Add root node");
+		//logger.info("Add root node");
 		
 		return addNode(0L, newNode);
 		
@@ -112,7 +112,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			throw new DatabaseException("Cannot add new node. Parent node ID is null. This information is needed.");
 		}
 		
-		logger.info("Add child node");
+		//logger.info("Add child node");
 		
 		return addNode(parentNode.getNodeId(), newNode);
 		
@@ -142,7 +142,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		newNode.setNodeId(nodeId);
 		newNode.setParentNodeId(parentNodeId);
 		
-		logger.info("Adding node " + nodeId + " to parent node " + parentNodeId);
+		//logger.info("Adding node " + nodeId + " (" + newNode.getName() + ") to parent node " + parentNodeId);
 		
 		// Save node to database
 		getEntityManager().persist(newNode);
@@ -200,7 +200,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
 		}
 		
-		logger.info("Fetching closure data for node id => " + node.getNodeId());
+		//logger.info("Fetching closure data for node id => " + node.getNodeId());
 		
 		List<DbClosure> results = null;
 		Query query = null;
@@ -238,11 +238,13 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		// copy just the node
 		if(!copyChildren){
 			
-			logger.info("Copy node without children");
+			//logger.info("Copy node without children");
 			
 			DbNode newCopy = copier.copy(nodeToCopy);
-			//newCopy.setChildClosure(null);
-			//newCopy.setParentClosure(null);
+			newCopy.setNodeId(null);
+			newCopy.setParentNodeId(null);
+			newCopy.setChildClosure(null);
+			newCopy.setParentClosure(null);
 			
 			// TODO - persist this copy (remove closure data?)
 			
@@ -255,16 +257,16 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		// copy the node and all children	
 		}else{
 			
-			logger.info("Copy node with children");
+			//logger.info("Copy node with children");
 			
 			//
 			// Get closure data for the sub-tree we are copying
 			//
 			List<DbClosure> closureList = getClosure(nodeToCopy);
 			
-			logger.info("Fetched closure data for node => " + nodeToCopy.getNodeId());
+			//logger.info("Fetched closure data for node => " + nodeToCopy.getNodeId());
 			
-			closureLogger.logClosure(closureList);
+			//closureLogger.logClosure(closureList);
 			
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for node " + nodeToCopy.getNodeId());
@@ -274,7 +276,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			//getEntityManager().flush();
 			//getEntityManager().clear();
 			
-			logger.info("Cleared entity manager.");
+			//logger.info("Cleared entity manager.");
 			
 			HashMap<Long,List<DbNode>> treeMap = new HashMap<Long,List<DbNode>>();
 			
@@ -287,7 +289,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 				}
 			}
 			
-			logger.info("Found root node for sub-tree id => " + rootNode.getNodeId());
+			//logger.info("Found root node for sub-tree id => " + rootNode.getNodeId());
 			
 			// loop through closure list and build tree map
 			DbClosure closure = null;
@@ -304,7 +306,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 				}
 			}
 			
-			logger.info("Built tree map in preparation for copy.");
+			//logger.info("Built tree map in preparation for copy.");
 			
 			// get children for root node of sub-tree
 			List<DbNode> childList = treeMap.get(rootNode.getNodeId());
@@ -325,18 +327,27 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @param treeMap
 	 * @throws DatabaseException
 	 */
-	private DbNode copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, HashMap<Long, List<DbNode>> treeMap, NodeCopier copier) throws DatabaseException {
+	private DbNode copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, 
+			HashMap<Long, List<DbNode>> treeMap, NodeCopier copier) throws DatabaseException {
 		
 		Long copyNodeId = nodeToCopy.getNodeId();
 		
-		logger.info("Adding " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") to parent " + parentNode.getNodeId() + " (" + parentNode.getName() + ")");
+		/*
+		logger.info("Adding " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") to parent " + 
+				parentNode.getNodeId() + " (" + parentNode.getName() + ")");
 		
 		if(childNodes != null && childNodes.size() > 0){
 			logger.info("Before copy:");
-			logger.info("-Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + " children (including itself, depth-0 link).");
+			logger.info("-Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + 
+					" children (including itself, depth-0 link).");
 		}
+		*/
 		
 		DbNode newCopy = copier.copy(nodeToCopy);
+		newCopy.setNodeId(null);
+		newCopy.setParentNodeId(null);
+		newCopy.setChildClosure(null);
+		newCopy.setParentClosure(null);
 		
 		// add root node of sub-tree
 		if(nodeToCopy.isRootNode()){
@@ -356,7 +367,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
 				if(childNode.getNodeId() != copyNodeId){
 					
-					logger.info("Add next child node " + childNode.getNodeId() + " to newly added parent " + newCopy.getNodeId());
+					//logger.info("Add next child node " + childNode.getNodeId() + " (" + childNode.getName() + 
+					//		") to newly added parent " + newCopy.getNodeId() + " (" + newCopy.getName() + ")");
 					
 					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
 					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap, copier);
