@@ -269,6 +269,14 @@
 					<include>**/*.xml</include>
 					<include>**/*.properties</include>
 				</includes>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
 			</resource>		
 		</resources>
 		
