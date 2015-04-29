@@ -428,9 +428,125 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 	
-	/*
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isSameTree(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode)
+	 */
+	@Override
+	public boolean isSameTree(DbNode node1, DbNode node2) throws DatabaseException {
+
+		// both are root nodes. they are not in the same tree
+		if(node1.getParentNodeId() == 0L && node2.getParentNodeId() == 0L){
+			return false;
+		}
+		// both are not root nodes, but both have the same parent. they are in the same tree
+		if( (node1.getParentNodeId() != 0L && node2.getParentNodeId() != 0L) && (node1.getParentNodeId() == node2.getParentNodeId())){
+			return true;
+		}
+		
+		logger.info("Getting parent data for node1 => " + node1.getNodeId());
+		DbNode parentNode1 = getNodeWithParentClosure(node1);
+		logger.info("Getting parent data for node2 => " + node2.getNodeId());
+		DbNode parentNode2 = getNodeWithParentClosure(node2);
+		
+		if(parentNode1 == null || parentNode1.getParentClosure() == null || parentNode1.getParentClosure().size() == 0){
+			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
+		}
+		if(parentNode2 == null || parentNode2.getParentClosure() == null || parentNode2.getParentClosure().size() == 0){
+			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
+		}
+		
+		DbNode rootNode1 = null;
+		DbNode rootNode2 = null;
+		
+		logger.info("Iterating through node1 parent data to find tree root node");
+		for(DbClosure c : parentNode1.getParentClosure()){
+			if(c.getParentNode().getParentNodeId() == 0L){
+				rootNode1 = c.getParentNode();
+				break;
+			}
+		}
+		logger.info("Iterating through node2 parent data to find tree root node");
+		for(DbClosure c : parentNode2.getParentClosure()){
+			if(c.getParentNode().getParentNodeId() == 0L){
+				rootNode2 = c.getParentNode();
+				break;
+			}
+		}
+		if(rootNode1 == null){
+			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node1.getNodeId());
+		}
+		if(rootNode2 == null){
+			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node2.getNodeId());
+		}
+		
+		// they have the same parent most node. they are in the same tree.
+		if(rootNode1.getNodeId() == rootNode2.getNodeId()){
+			return true;
+		}
+		
+		return false;
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isParent(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode, boolean)
+	 */
+	@Override
+	public boolean isParent(DbNode node1, DbNode node2, boolean fullSearch) throws DatabaseException {
+
+		if(node2.getParentNodeId() == node1.getNodeId()){
+			return true;
+		}
+		if(!fullSearch){
+			return false;
+		}else{
+			
+			// search all the way up the tree till the root node. if node1 is found, return true.
+			DbNode node2Parents = getNodeWithParentClosure(node2);
+			if(node2Parents == null || node2Parents.getParentClosure() == null || node2Parents.getParentClosure().size() == 0){
+				throw new DatabaseException("Failed to get parent closure and parent node data for node " + node2.getNodeId());
+			}
+			for(DbClosure c : node2Parents.getParentClosure()){
+				if(c.getParentNode().getNodeId() == node1.getNodeId()){
+					return true;
+				}
+			}			
+			
+		}
+		return false;
+		
+	}
 	
-	public FSNode getNodeWithParentClosure(FSNode node) throws DatabaseException {
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#isChild(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode, boolean)
+	 */
+	@Override
+	public boolean isChild(DbNode node1, DbNode node2, boolean fullSearch) throws DatabaseException {
+
+		if(node2.getNodeId() == node1.getParentNodeId()){
+			return true;
+		}
+		if(!fullSearch){
+			return false;
+		}else{
+			
+			// search all children of node2, till all leaf nodes are reached. If node 1 is found, return true
+			DbNode node2Children = getNodeWithChildClosure(node2);
+			if(node2Children == null || node2Children.getParentClosure() == null || node2Children.getParentClosure().size() == 0){
+				throw new DatabaseException("Failed to get child closure and child node data for node " + node2.getNodeId());
+			}
+			for(DbClosure c : node2Children.getChildClosure()){
+				if(c.getChildNode().getNodeId() == node1.getNodeId()){
+					return true;
+				}
+			}			
+			
+		}
+		return false;
+		
+	}
+	
+	public DbNode getNodeWithParentClosure(DbNode node) throws DatabaseException {
 		
 		Query query = null;
 		try {
@@ -440,12 +556,12 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
 		}		
 		
-		FSNode nodeWithParentClosure = (FSNode)getSingleResult(query);		
+		DbNode nodeWithParentClosure = (DbNode)getSingleResult(query);		
 		
 		return nodeWithParentClosure;
 	}
-	
-	public FSNode getNodeWithChildClosure(FSNode node) throws DatabaseException {
+
+	public DbNode getNodeWithChildClosure(DbNode node) throws DatabaseException {
 		
 		Query query = null;
 		try {
@@ -455,10 +571,12 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
 		}		
 		
-		FSNode nodeWithChildClosure = (FSNode)getSingleResult(query);		
+		DbNode nodeWithChildClosure = (DbNode)getSingleResult(query);		
 		
 		return nodeWithChildClosure;
-	}	
+	}
+	
+	/*
 
 	@Override
 	public FSTree getTree(Long treeId) throws DatabaseException {
@@ -723,117 +841,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		logger.debug("Deleted children of node " + nodeId + " from the closure table.");		
 
 	}
-
-	@Override
-	public boolean isSameTree(FSNode node1, FSNode node2) throws DatabaseException {
-		
-		// both are root nodes. they are not in the same tree
-		if(node1.getParentNodeId() == 0L && node2.getParentNodeId() == 0L){
-			return false;
-		}
-		// both are not root nodes, but both have the same parent. they are in the same tree
-		if( (node1.getParentNodeId() != 0L && node2.getParentNodeId() != 0L) && (node1.getParentNodeId() == node2.getParentNodeId())){
-			return true;
-		}
-		
-		logger.info("Getting parent data for node1 => " + node1.getNodeId());
-		FSNode parentNode1 = getNodeWithParentClosure(node1);
-		logger.info("Getting parent data for node2 => " + node2.getNodeId());
-		FSNode parentNode2 = getNodeWithParentClosure(node2);
-		
-		if(parentNode1 == null || parentNode1.getParentClosure() == null || parentNode1.getParentClosure().size() == 0){
-			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
-		}
-		if(parentNode2 == null || parentNode2.getParentClosure() == null || parentNode2.getParentClosure().size() == 0){
-			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
-		}
-		
-		FSNode rootNode1 = null;
-		FSNode rootNode2 = null;
-		
-		logger.info("Iterating through node1 parent data to find tree root node");
-		for(FSClosure c : parentNode1.getParentClosure()){
-			if(c.getParentNode().getParentNodeId() == 0L){
-				rootNode1 = c.getParentNode();
-				break;
-			}
-		}
-		logger.info("Iterating through node2 parent data to find tree root node");
-		for(FSClosure c : parentNode2.getParentClosure()){
-			if(c.getParentNode().getParentNodeId() == 0L){
-				rootNode2 = c.getParentNode();
-				break;
-			}
-		}
-		if(rootNode1 == null){
-			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node1.getNodeId());
-		}
-		if(rootNode2 == null){
-			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node2.getNodeId());
-		}
-		
-		// they have the same parent most node. they are in the same tree.
-		if(rootNode1.getNodeId() == rootNode2.getNodeId()){
-			return true;
-		}
-		
-		return false;		
-		
-	}
-
-	@Override
-	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {
-		
-		if(node2.getParentNodeId() == node1.getNodeId()){
-			return true;
-		}
-		if(!fullSearch){
-			return false;
-		}else{
-			
-			// search all the way up the tree till the root node. if node1 is found, return true.
-			FSNode node2Parents = getNodeWithParentClosure(node2);
-			if(node2Parents == null || node2Parents.getParentClosure() == null || node2Parents.getParentClosure().size() == 0){
-				throw new DatabaseException("Failed to get parent closure and parent node data for node " + node2.getNodeId());
-			}
-			for(FSClosure c : node2Parents.getParentClosure()){
-				if(c.getParentNode().getNodeId() == node1.getNodeId()){
-					return true;
-				}
-			}			
-			
-		}
-		return false;
-		
-	}
-
-	@Override
-	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws DatabaseException {
-
-		if(node2.getNodeId() == node1.getParentNodeId()){
-			return true;
-		}
-		if(!fullSearch){
-			return false;
-		}else{
-			
-			// search all children of node2, till all leaf nodes are reached. If node 1 is found, return true
-			FSNode node2Children = this.getNodeWithChildClosure(node2);
-			if(node2Children == null || node2Children.getParentClosure() == null || node2Children.getParentClosure().size() == 0){
-				throw new DatabaseException("Failed to get child closure and child node data for node " + node2.getNodeId());
-			}
-			for(FSClosure c : node2Children.getChildClosure()){
-				if(c.getChildNode().getNodeId() == node1.getNodeId()){
-					return true;
-				}
-			}			
-			
-		}
-		return false;		
-		
-	}	
-	
-	*/
 	
 	
 	// --------------------------------------------------------------------------------------------------------
@@ -970,8 +977,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			logger.debug("Deleted node " + nodeId + " from the closure table.");
 		}
 		
-	}	
-	
+	}
+
 	/**
 	 * Helper function for the move node operation. Re-adds the tree to the new parent node
 	 * 

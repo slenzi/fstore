@@ -171,7 +171,7 @@ public interface ClosureRepository {
 	 * @return true if node1 and node2 are in the same tree, false if not.
 	 * @throws DatabaseException
 	 */
-	//public boolean isSameTree(Node node1, Node node2) throws DatabaseException;
+	public boolean isSameTree(DbNode node1, DbNode node2) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a parent of node2.
@@ -189,7 +189,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	//public boolean isParent(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
+	public boolean isParent(DbNode node1, DbNode node2, boolean fullSearch) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a child of node2.
@@ -208,6 +208,6 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	//public boolean isChild(Node node1, Node node2, boolean fullSearch) throws DatabaseException;
+	public boolean isChild(DbNode node1, DbNode node2, boolean fullSearch) throws DatabaseException;
 	
 }

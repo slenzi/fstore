@@ -296,26 +296,6 @@ public class TreeService {
 	*/
 	
 	/**
-	 * Copy a node and all it's children.
-	 * 
-	 * @param nodeToCopy - the node to copy
-	 * @param copyToNode - where everything is copied to.
-	 * @param copyChildren - true to copy over all the nodes children nodes as well, false to just copy the node.
-	 * @throws ServiceException
-	 */
-	/*
-	public void copyNode(FSNode nodeToCopy, FSNode copyToNode, boolean copyChildren) throws ServiceException {
-		
-		try {
-			closureRepository.copyNode(nodeToCopy.getNodeId(), copyToNode.getNodeId(), copyChildren);
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		
-	}
-	*/
-	
-	/**
 	 * Move a node
 	 * 
 	 * @param nodeToMode - The node to move. Cannot be a root node.
@@ -345,8 +325,7 @@ public class TreeService {
 	 * @return true if node1 and node2 are in the same tree, false if not.
 	 * @throws ServiceException
 	 */
-	/*
-	public boolean isSameTree(FSNode node1, FSNode node2) throws ServiceException {
+	public boolean isSameTree(DbNode node1, DbNode node2) throws ServiceException {
 		
 		try {
 			return closureRepository.isSameTree(node1, node2);
@@ -355,7 +334,6 @@ public class TreeService {
 		}
 		
 	}
-	*/
 	
 	/**
 	 * Check if node1 is a parent of node2.
@@ -373,8 +351,7 @@ public class TreeService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	/*
-	public boolean isParent(FSNode node1, FSNode node2, boolean fullSearch) throws ServiceException {
+	public boolean isParent(DbNode node1, DbNode node2, boolean fullSearch) throws ServiceException {
 		
 		try {
 			return closureRepository.isParent(node1, node2, fullSearch);
@@ -383,7 +360,6 @@ public class TreeService {
 		}
 		
 	}
-	*/
 	
 	/**
 	 * Check if node1 is a child of node2.
@@ -402,8 +378,7 @@ public class TreeService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	/*
-	public boolean isChild(FSNode node1, FSNode node2, boolean fullSearch) throws ServiceException {
+	public boolean isChild(DbNode node1, DbNode node2, boolean fullSearch) throws ServiceException {
 		
 		try {
 			return closureRepository.isChild(node1, node2, fullSearch);
@@ -412,24 +387,6 @@ public class TreeService {
 		}		
 		
 	}
-	*/
-
-	/**
-	 * Builds a non managed tree object from a database FSTree.
-	 * 
-	 * @param treeId - ID of the FSTree.
-	 * @return
-	 * @throws ServiceException
-	 */
-	/*
-	public Tree<TreeMeta> buildTree(Long treeId) throws ServiceException {
-		
-		FSTree fsTree = getTree(treeId);
-		
-		return buildTree(fsTree);
-		
-	}
-	*/
 	
 	/**
 	 * Builds a non manage tree object from a database FSTree.
