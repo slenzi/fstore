@@ -1,6 +1,6 @@
 package org.lenzi.fstore.model.util;
 
-import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 
@@ -10,9 +10,9 @@ import org.slf4j.Logger;
  * 
  * @author sal
  *
- * @param <T> A node object which extends DbNode
+ * @param <N> A node object which extends DbNode
  */
-public abstract class AbstractNodeCopier<N extends DbNode> implements NodeCopier {
+public abstract class AbstractNodeCopier<N extends DBNode> implements NodeCopier {
 
 	@InjectLogger
 	private Logger logger;		
@@ -22,16 +22,16 @@ public abstract class AbstractNodeCopier<N extends DbNode> implements NodeCopier
 	}
 	
 	@SuppressWarnings("rawtypes")
-	protected DbNode createNew() throws ClassNotFoundException, InstantiationException, IllegalAccessException{
+	protected DBNode createNew() throws ClassNotFoundException, InstantiationException, IllegalAccessException{
 		String name = getCanonicalName();
 		Class clazz = Class.forName(name);
-		DbNode node = (DbNode) clazz.newInstance();
+		DBNode node = (DBNode) clazz.newInstance();
 		return node;
 	}	
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public DbNode copy(DbNode node) {
+	public DBNode copy(DBNode node) {
 
 		logger.info("Copying node of type => " + getCanonicalName());
 		
@@ -39,7 +39,7 @@ public abstract class AbstractNodeCopier<N extends DbNode> implements NodeCopier
 			return null;
 		}
 		
-		DbNode newObject = null;
+		DBNode newObject = null;
 		
 		try {
 			newObject = (N)createNew();

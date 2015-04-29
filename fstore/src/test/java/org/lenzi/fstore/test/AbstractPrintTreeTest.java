@@ -4,9 +4,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
-import org.lenzi.fstore.repository.model.DbNode;
-import org.lenzi.fstore.repository.model.DbTree;
-import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
@@ -39,11 +38,9 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		FSTree tree = new FSTree();
-		tree.setName("Sample tree");
-		tree.setDescription("Sample tree description.");
-		
-		DbTree dbTree = treeService.addTree(tree, new FSTestNode("A","Node A"));
+		DBTree dbTree = treeService.addTree(
+				new FSTree("Sample tree","Sample tree description."),
+				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
 		assertNotNull(dbTree.getRootNode());
@@ -52,20 +49,20 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		DbNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
-			DbNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
-				DbNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
-					DbNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
-						DbNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
-						DbNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
-					DbNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
-						DbNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
-						DbNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("I","Node J"));
-					DbNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
-						DbNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
-						DbNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
-						DbNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
-						DbNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
+		DBNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			DBNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				DBNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					DBNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						DBNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						DBNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					DBNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						DBNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						DBNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("J","Node J"));
+					DBNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						DBNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						DBNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						DBNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						DBNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
 		

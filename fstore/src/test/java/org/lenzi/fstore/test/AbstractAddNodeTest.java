@@ -1,5 +1,14 @@
 package org.lenzi.fstore.test;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
+import org.lenzi.fstore.logging.ClosureLogger;
+import org.lenzi.fstore.model.tree.Tree;
+import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.repository.model.DBClosure;
+import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
@@ -14,6 +23,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractAddNodeTest extends AbstractTreeTest {
 	
+	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+	
 	public AbstractAddNodeTest() {
 
 	}
@@ -26,12 +37,22 @@ public abstract class AbstractAddNodeTest extends AbstractTreeTest {
 		logTestTitle("Add root node test");
 		
 		TreeService treeService = getTreeSerive();
+		ClosureLogger closureLogger = getClosureLogger();
 		
-		FSTestNode rootNode = new FSTestNode();
-		rootNode.setName("Sample root node 1");
-		rootNode.setTestValue("Sample root test value 1");
+		DBNode rootNode = treeService.createRootNode(new FSTestNode("Sample root node 1","Sample root test value 1"));
+		assertNotNull(rootNode);
 		
-		treeService.createRootNode(rootNode);
+		List<DBClosure> closureList = treeService.getClosure(rootNode);
+		assertNotNull(closureList);
+		
+		logger.info("Closure:");
+		closureLogger.logClosure(closureList);
+		
+		Tree<TreeMeta> tree = treeService.buildTree(closureList);
+		assertNotNull(tree);
+		
+		logger.info("Tree:");
+		logger.info(tree.printTree());			
 		
 	}
 	
@@ -43,30 +64,28 @@ public abstract class AbstractAddNodeTest extends AbstractTreeTest {
 		logTestTitle("Add node tree");
 		
 		TreeService treeService = getTreeSerive();
+		ClosureLogger closureLogger = getClosureLogger();
 		
-		FSTestNode rootNode = new FSTestNode();
-		rootNode.setName("Sample root node");
-		rootNode.setTestValue("Sample root test value");
+		DBNode rootNode = treeService.createRootNode(new FSTestNode("Sample root node","Sample root test value"));
+			assertNotNull(rootNode);
+			DBNode childNode1 = treeService.createChildNode(rootNode, new FSTestNode("Sample child node 1","Sample child test value 1"));
+			assertNotNull(childNode1);
+			DBNode childNode2 = treeService.createChildNode(rootNode, new FSTestNode("Sample child node 2","Sample child test value 2"));
+			assertNotNull(childNode2);
+				DBNode childNode3 = treeService.createChildNode(childNode2, new FSTestNode("Sample child node 3","Sample child test value 3"));
+				assertNotNull(childNode3);
+				
+		List<DBClosure> closureList = treeService.getClosure(rootNode);
+		assertNotNull(closureList);
 		
-		treeService.createRootNode(rootNode);
+		logger.info("Closure:");
+		closureLogger.logClosure(closureList);
 		
-		FSTestNode childNode1 = new FSTestNode();
-		childNode1.setName("Sample child node 1");
-		childNode1.setTestValue("Sample child test value 1");
+		Tree<TreeMeta> tree = treeService.buildTree(closureList);
+		assertNotNull(tree);
 		
-		treeService.createChildNode(rootNode, childNode1);
-		
-		FSTestNode childNode2 = new FSTestNode();
-		childNode2.setName("Sample child node 2");
-		childNode2.setTestValue("Sample child test value 2");
-		
-		treeService.createChildNode(rootNode, childNode2);
-		
-		FSTestNode childNode3 = new FSTestNode();
-		childNode3.setName("Sample child node 3");
-		childNode3.setTestValue("Sample child test value 3");
-		
-		treeService.createChildNode(childNode2, childNode3);			
+		logger.info("Tree:");
+		logger.info(tree.printTree());			
 		
 	}	
 

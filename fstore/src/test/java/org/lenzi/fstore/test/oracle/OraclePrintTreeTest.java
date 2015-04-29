@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractPrintTreeTest;
@@ -37,6 +38,9 @@ public class OraclePrintTreeTest extends AbstractPrintTreeTest {
 	@Autowired
 	TreeService treeService = null;
 	
+	@Autowired
+	ClosureLogger closureLogger;	
+	
 	public OraclePrintTreeTest() {
 
 	}
@@ -45,6 +49,11 @@ public class OraclePrintTreeTest extends AbstractPrintTreeTest {
 	public TreeService getTreeSerive() {
 		return treeService;
 	}
+	
+	@Override
+	public ClosureLogger getClosureLogger() {
+		return closureLogger;
+	}	
 
 	@Test
 	public void testWiring(){

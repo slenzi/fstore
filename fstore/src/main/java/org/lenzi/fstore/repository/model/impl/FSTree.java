@@ -13,8 +13,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.repository.model.DbNode;
-import org.lenzi.fstore.repository.model.DbTree;
+import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.DBTree;
 
 /**
  * @author sal
@@ -22,7 +22,7 @@ import org.lenzi.fstore.repository.model.DbTree;
  */
 @Entity
 @Table(name = "FS_TREE")
-public class FSTree implements DbTree {
+public class FSTree implements DBTree {
 
 	/**
 	 * 
@@ -51,7 +51,7 @@ public class FSTree implements DbTree {
 	
 	@OneToOne(targetEntity = FSNode.class)
 	@JoinColumn(name = "ROOT_NODE_ID", insertable=false, updatable=false)
-	DbNode rootNode = null;
+	DBNode rootNode = null;
 	
 	/**
 	 * 
@@ -59,6 +59,18 @@ public class FSTree implements DbTree {
 	public FSTree() {
 
 	}
+
+	/**
+	 * @param name
+	 * @param description
+	 */
+	public FSTree(String name, String description) {
+		super();
+		this.name = name;
+		this.description = description;
+	}
+
+
 
 	/**
 	 * @return the treeId
@@ -147,14 +159,14 @@ public class FSTree implements DbTree {
 	/**
 	 * @return the rootNode
 	 */
-	public DbNode getRootNode() {
+	public DBNode getRootNode() {
 		return rootNode;
 	}
 
 	/**
 	 * @param rootNode the rootNode to set
 	 */
-	public void setRootNode(DbNode rootNode) {
+	public void setRootNode(DBNode rootNode) {
 		this.rootNode = rootNode;
 	}
 

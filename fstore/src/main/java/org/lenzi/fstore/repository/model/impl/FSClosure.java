@@ -8,8 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.repository.model.DbClosure;
-import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DBClosure;
+import org.lenzi.fstore.repository.model.DBNode;
 
 /**
  * Database entity for FS_CLOSURE. 
@@ -20,7 +20,7 @@ import org.lenzi.fstore.repository.model.DbNode;
  */
 @Entity
 @Table(name = "FS_CLOSURE")
-public class FSClosure implements DbClosure {
+public class FSClosure implements DBClosure {
 
 	/**
 	 * 
@@ -43,11 +43,11 @@ public class FSClosure implements DbClosure {
 	
 	@ManyToOne(targetEntity = FSNode.class)
 	@JoinColumn(name="PARENT_NODE_ID", referencedColumnName="NODE_ID", insertable=false, updatable=false)	
-	private DbNode parentNode;
+	private DBNode parentNode;
 	
 	@ManyToOne(targetEntity = FSNode.class)
 	@JoinColumn(name="CHILD_NODE_ID", referencedColumnName="NODE_ID", insertable=false, updatable=false)		
-	private DbNode childNode;
+	private DBNode childNode;
 	
 	
 	public FSClosure() {
@@ -85,28 +85,28 @@ public class FSClosure implements DbClosure {
 	/**
 	 * @return the parentNode
 	 */
-	public DbNode getParentNode() {
+	public DBNode getParentNode() {
 		return parentNode;
 	}
 
 	/**
 	 * @param parentNode the parentNode to set
 	 */
-	public void setParentNode(DbNode parentNode) {
+	public void setParentNode(DBNode parentNode) {
 		this.parentNode = parentNode;
 	}
 
 	/**
 	 * @return the childNode
 	 */
-	public DbNode getChildNode() {
+	public DBNode getChildNode() {
 		return childNode;
 	}
 
 	/**
 	 * @param childNode the childNode to set
 	 */
-	public void setChildNode(DbNode childNode) {
+	public void setChildNode(DBNode childNode) {
 		this.childNode = childNode;
 	}
 

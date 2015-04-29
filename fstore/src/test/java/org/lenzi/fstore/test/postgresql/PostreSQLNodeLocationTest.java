@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractNodeLocationTest;
@@ -37,6 +38,9 @@ public class PostreSQLNodeLocationTest extends AbstractNodeLocationTest {
 	@Autowired
 	TreeService treeService = null;
 	
+	@Autowired
+	ClosureLogger closureLogger;		
+	
 	public PostreSQLNodeLocationTest() {
 
 	}
@@ -45,6 +49,11 @@ public class PostreSQLNodeLocationTest extends AbstractNodeLocationTest {
 	public TreeService getTreeSerive() {
 		return treeService;
 	}
+	
+	@Override
+	public ClosureLogger getClosureLogger() {
+		return closureLogger;
+	}	
 
 	@Test
 	public void testWiring(){

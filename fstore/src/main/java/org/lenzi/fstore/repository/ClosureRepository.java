@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.DbClosure;
-import org.lenzi.fstore.repository.model.DbNode;
-import org.lenzi.fstore.repository.model.DbTree;
+import org.lenzi.fstore.repository.model.DBClosure;
+import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.DBTree;
 
 public interface ClosureRepository {
 	
@@ -23,7 +23,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DbNode getNode(Long nodeId) throws DatabaseException;	
+	public DBNode getNode(Long nodeId) throws DatabaseException;	
 	
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
@@ -32,7 +32,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DbNode addRootNode(DbNode newNode) throws DatabaseException;
+	public DBNode addRootNode(DBNode newNode) throws DatabaseException;
 	
 	/**
 	 * Add a new child node under the parent node.
@@ -42,7 +42,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DbNode addChildNode(DbNode parentNode, DbNode newNode) throws DatabaseException;
+	public DBNode addChildNode(DBNode parentNode, DBNode newNode) throws DatabaseException;
 	
 	/**
 	 * Copy a node.
@@ -54,7 +54,7 @@ public interface ClosureRepository {
 	 * @return Reference to the copied node
 	 * @throws DatabaseException
 	 */
-	public DbNode copyNode(DbNode nodeToCopy, DbNode parentNode, boolean copyChildren, NodeCopier copier) throws DatabaseException;
+	public DBNode copyNode(DBNode nodeToCopy, DBNode parentNode, boolean copyChildren, NodeCopier copier) throws DatabaseException;
 	
 	
 	/**
@@ -65,7 +65,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DbTree addTree(DbTree newTree, DbNode newRootNode) throws DatabaseException;
+	public DBTree addTree(DBTree newTree, DBNode newRootNode) throws DatabaseException;
 	
 	/**
 	 * Get a tree with it's root node.
@@ -136,7 +136,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<DbClosure> getClosure(DbNode node) throws DatabaseException;
+	public List<DBClosure> getClosure(DBNode node) throws DatabaseException;
 	
 	/**
 	 * Move a node. The node, plus all its chilren, will be moved to under the new parent node.
@@ -171,7 +171,7 @@ public interface ClosureRepository {
 	 * @return true if node1 and node2 are in the same tree, false if not.
 	 * @throws DatabaseException
 	 */
-	public boolean isSameTree(DbNode node1, DbNode node2) throws DatabaseException;
+	public boolean isSameTree(DBNode node1, DBNode node2) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a parent of node2.
@@ -189,7 +189,7 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isParent(DbNode node1, DbNode node2, boolean fullSearch) throws DatabaseException;
+	public boolean isParent(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a child of node2.
@@ -208,6 +208,6 @@ public interface ClosureRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isChild(DbNode node1, DbNode node2, boolean fullSearch) throws DatabaseException;
+	public boolean isChild(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException;
 	
 }

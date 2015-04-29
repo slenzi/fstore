@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.util.FSTestNodeCopier;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.service.TreeService;
@@ -42,6 +43,9 @@ public class OracleCopyNodeTest extends AbstractCopyNodeTest {
 	@Autowired
 	FSTestNodeCopier testNodeCopier = null;
 	
+	@Autowired
+	ClosureLogger closureLogger;
+	
 	public OracleCopyNodeTest() {
 		
 	}
@@ -49,11 +53,13 @@ public class OracleCopyNodeTest extends AbstractCopyNodeTest {
 	@Override
 	public TreeService getTreeSerive() {
 		return treeService;
+	}
+	
+	@Override
+	public ClosureLogger getClosureLogger() {
+		return closureLogger;
 	}	
 	
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.test.AbstractCopyNodeTest#getNodeCopier()
-	 */
 	@Override
 	public NodeCopier getNodeCopier() {
 		return testNodeCopier;

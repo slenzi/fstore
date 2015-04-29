@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
@@ -39,6 +40,9 @@ public class PostreSQLDeleteTreeTest extends AbstractDeleteTreeTest {
 	@Autowired
 	TreeService treeService = null;
 	
+	@Autowired
+	ClosureLogger closureLogger;		
+	
 	public PostreSQLDeleteTreeTest() {
 
 	}
@@ -47,6 +51,11 @@ public class PostreSQLDeleteTreeTest extends AbstractDeleteTreeTest {
 	public TreeService getTreeSerive() {
 		return treeService;
 	}
+	
+	@Override
+	public ClosureLogger getClosureLogger() {
+		return closureLogger;
+	}	
 
 	@Test
 	public void testWiring(){

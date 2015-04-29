@@ -16,8 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.repository.model.DbClosure;
-import org.lenzi.fstore.repository.model.DbNode;
+import org.lenzi.fstore.repository.model.DBClosure;
+import org.lenzi.fstore.repository.model.DBNode;
 
 /**
  * Database entity for FS_NODE.
@@ -31,7 +31,7 @@ import org.lenzi.fstore.repository.model.DbNode;
 @DiscriminatorColumn(name="NODE_TYPE", discriminatorType=DiscriminatorType.STRING)
 @DiscriminatorValue("BaseNode")
 @Table(name = "FS_NODE")
-public abstract class FSNode implements DbNode {
+public abstract class FSNode implements DBNode {
 
 	/**
 	 * 
@@ -62,11 +62,11 @@ public abstract class FSNode implements DbNode {
 	
 	// Closure entries that give access to the child nodes for this node.
 	@OneToMany(mappedBy="parentNode", targetEntity = FSClosure.class)
-	private Set<DbClosure> childClosure = new HashSet<DbClosure>(0);
+	private Set<DBClosure> childClosure = new HashSet<DBClosure>(0);
 	
 	// Closure entries that give access to the parent nodes for this node.
 	@OneToMany(mappedBy="childNode", targetEntity = FSClosure.class)
-	private Set<DbClosure> parentClosure = new HashSet<DbClosure>(0);
+	private Set<DBClosure> parentClosure = new HashSet<DBClosure>(0);
 	
 	public FSNode() {
 		
@@ -181,28 +181,28 @@ public abstract class FSNode implements DbNode {
 	/**
 	 * @return the childClosure
 	 */
-	public Set<DbClosure> getChildClosure() {
+	public Set<DBClosure> getChildClosure() {
 		return childClosure;
 	}
 
 	/**
 	 * @param childClosure the childClosure to set
 	 */
-	public void setChildClosure(Set<DbClosure> childClosure) {
+	public void setChildClosure(Set<DBClosure> childClosure) {
 		this.childClosure = childClosure;
 	}
 
 	/**
 	 * @return the parentClosure
 	 */
-	public Set<DbClosure> getParentClosure() {
+	public Set<DBClosure> getParentClosure() {
 		return parentClosure;
 	}
 
 	/**
 	 * @param parentClosure the parentClosure to set
 	 */
-	public void setParentClosure(Set<DbClosure> parentClosure) {
+	public void setParentClosure(Set<DBClosure> parentClosure) {
 		this.parentClosure = parentClosure;
 	}
 	

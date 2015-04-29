@@ -2,6 +2,7 @@ package org.lenzi.fstore.test.oracle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractClosureTest;
@@ -32,7 +33,10 @@ public class OracleClosureTest extends AbstractClosureTest {
 	OracleTestConfiguration configuration = null;
 	
 	@Autowired
-	TreeService treeService = null;
+	TreeService treeService;
+	
+	@Autowired
+	ClosureLogger closureLogger;
 	
 	public OracleClosureTest() {
 
@@ -43,6 +47,11 @@ public class OracleClosureTest extends AbstractClosureTest {
 		return treeService;
 	}
 	
+	@Override
+	public ClosureLogger getClosureLogger() {
+		return closureLogger;
+	}
+
 	@Test
 	@Rollback(true)
 	public void fetchClosureDataTest(){

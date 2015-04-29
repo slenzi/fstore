@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.repository.model.DbPrune;
+import org.lenzi.fstore.repository.model.DBPrune;
 
 /**
  * Database entity for FS_PRUNE.
@@ -18,7 +18,7 @@ import org.lenzi.fstore.repository.model.DbPrune;
  */
 @Entity
 @Table(name = "FS_PRUNE")
-public class FSPrune implements DbPrune {
+public class FSPrune implements DBPrune {
 
 	/**
 	 * 
