@@ -5,7 +5,6 @@ package org.lenzi.fstore.test.postgresql;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.logging.LoggerBeanPostProccessor;
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.PostgreSQLClosureRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,6 +29,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
 		basePackages={
+			"org.lenzi.fstore.model.util",
 			"org.lenzi.fstore.repository",
 			"org.lenzi.fstore.repository.model",
 			"org.lenzi.fstore.service",

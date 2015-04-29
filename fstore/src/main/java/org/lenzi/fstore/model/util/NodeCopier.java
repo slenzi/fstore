@@ -19,7 +19,7 @@ public interface NodeCopier {
 	public String getCanonicalName();
 
 	/**
-	 * Copy the node
+	 * Copy a node
 	 * 
 	 * @param node - The node to copy
 	 * @return A new copy of the node

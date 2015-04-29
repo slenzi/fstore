@@ -241,8 +241,8 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			logger.info("Copy node without children");
 			
 			DbNode newCopy = copier.copy(nodeToCopy);
-			newCopy.setChildClosure(null);
-			newCopy.setParentClosure(null);
+			//newCopy.setChildClosure(null);
+			//newCopy.setParentClosure(null);
 			
 			// TODO - persist this copy (remove closure data?)
 			
@@ -310,7 +310,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			List<DbNode> childList = treeMap.get(rootNode.getNodeId());
 			
 			// add the root node of the sub-tree to the new parent node, then walk the tree and add all the children.
-			return copyNodes(nodeToCopy, parentNode, childList, treeMap);			
+			return copyNodes(nodeToCopy, parentNode, childList, treeMap, copier);			
 			
 		}		
 		
@@ -325,7 +325,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 	 * @param treeMap
 	 * @throws DatabaseException
 	 */
-	private DbNode copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, HashMap<Long, List<DbNode>> treeMap) throws DatabaseException {
+	private DbNode copyNodes(DbNode nodeToCopy, DbNode parentNode, List<DbNode> childNodes, HashMap<Long, List<DbNode>> treeMap, NodeCopier copier) throws DatabaseException {
 		
 		Long copyNodeId = nodeToCopy.getNodeId();
 		
@@ -336,12 +336,13 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			logger.info("-Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + " children (including itself, depth-0 link).");
 		}
 		
+		DbNode newCopy = copier.copy(nodeToCopy);
+		
 		// add root node of sub-tree
-		DbNode newCopy = null;
 		if(nodeToCopy.isRootNode()){
-			newCopy = addRootNode(nodeToCopy);
+			newCopy = addRootNode(newCopy);
 		}else{
-			newCopy = addChildNode(parentNode, nodeToCopy);
+			newCopy = addChildNode(parentNode, newCopy);
 		}
 		
 		// the node id of nodeToCopy has changed!
@@ -358,7 +359,7 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 					logger.info("Add next child node " + childNode.getNodeId() + " to newly added parent " + newCopy.getNodeId());
 					
 					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
-					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap);
+					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap, copier);
 					
 				}
 				

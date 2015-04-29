@@ -5,7 +5,6 @@ package org.lenzi.fstore.test.oracle;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.logging.LoggerBeanPostProccessor;
 import org.lenzi.fstore.repository.ClosureRepository;
 import org.lenzi.fstore.repository.OracleClosureRepository;
 import org.slf4j.Logger;
@@ -32,6 +31,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
 		basePackages={
+			"org.lenzi.fstore.model.util",
 			"org.lenzi.fstore.repository",
 			"org.lenzi.fstore.repository.model",
 			"org.lenzi.fstore.service",

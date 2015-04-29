@@ -51,22 +51,35 @@ public abstract class AbstractNodeCopier<N extends DbNode> implements NodeCopier
 			e.printStackTrace();
 		}
 		
+		// copy all attributes from parent class
 		newObject.setNodeId(node.getNodeId());
 		newObject.setNodeType(node.getNodeType());
+		newObject.setName(node.getName());
 		newObject.setParentNodeId(node.getParentNodeId());
 		newObject.setDateCreated(node.getDateCreated());
 		newObject.setDateUpdated(node.getDateUpdated());
 		newObject.setChildClosure(node.getChildClosure());
 		newObject.setParentClosure(node.getParentClosure());
 		
+		// copy all attributes from users child class.
 		newObject = doCopyWork( (N)newObject, (N)node);
 		
 		return newObject;		
 		
 	}
 	
+	/**
+	 * Return the fully qualified name (package + name) of the class being copied.
+	 */
 	public abstract String getCanonicalName();
 	
+	/**
+	 * Override to copy over attributes from child implementation.
+	 * 
+	 * @param newNode - the new copy
+	 * @param node - the node being copied
+	 * @return A reference to the new copy
+	 */
 	public abstract N doCopyWork(N newNode, N node);
 
 }

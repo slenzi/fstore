@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.util.FSTestNodeCopier;
+import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.model.DbNode;
 import org.lenzi.fstore.repository.model.DbTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
@@ -30,6 +31,8 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		
 	}
 	
+	public abstract NodeCopier getNodeCopier();
+	
 	/**
 	 * Build sample tree, copy a node to under a different node in the same tree, excluding children.
 	 * Print tree before and after.
@@ -39,6 +42,7 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logTestTitle("Copy node without children test");
 		
 		TreeService treeService = getTreeSerive();
+		NodeCopier copier = getNodeCopier();
 		
 		logger.info("Creating sample tree");
 		
@@ -80,7 +84,7 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Copying node E to node M (excluding children)...");
-		DbNode copyE = treeService.copyNode(nodeE, nodeM, false, new FSTestNodeCopier());
+		DbNode copyE = treeService.copyNode(nodeE, nodeM, false, copier);
 		
 		logger.info("After copy...");
 		treeMeta = treeService.buildTree(dbTree);
@@ -98,6 +102,7 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		logTestTitle("Copy node with children test");
 		
 		TreeService treeService = getTreeSerive();
+		NodeCopier copier = getNodeCopier();
 		
 		logger.info("Creating sample tree");
 		
@@ -140,7 +145,7 @@ public abstract class AbstractCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Copying node E to node M (excluding children)...");
 		
-		DbNode copyE = treeService.copyNode(nodeE, nodeM, true, new FSTestNodeCopier());
+		DbNode copyE = treeService.copyNode(nodeE, nodeM, true, copier);
 		
 		logger.info("After copy...");
 		treeMeta = treeService.buildTree(dbTree);

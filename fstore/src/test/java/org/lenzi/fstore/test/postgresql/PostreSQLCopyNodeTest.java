@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lenzi.fstore.model.util.FSTestNodeCopier;
+import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractCopyNodeTest;
@@ -37,6 +39,9 @@ public class PostreSQLCopyNodeTest extends AbstractCopyNodeTest {
 	@Autowired
 	TreeService treeService = null;
 	
+	@Autowired
+	FSTestNodeCopier testNodeCopier = null;
+	
 	public PostreSQLCopyNodeTest() {
 		
 	}
@@ -46,6 +51,14 @@ public class PostreSQLCopyNodeTest extends AbstractCopyNodeTest {
 		return treeService;
 	}	
 	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.test.AbstractCopyNodeTest#getNodeCopier()
+	 */
+	@Override
+	public NodeCopier getNodeCopier() {
+		return testNodeCopier;
+	}
+
 	@Test
 	public void testWiring(){
 		
