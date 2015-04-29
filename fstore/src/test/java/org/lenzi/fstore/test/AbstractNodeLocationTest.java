@@ -7,7 +7,11 @@ import static org.junit.Assert.assertNotNull;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.model.util.NodeCopier;
+import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
@@ -34,60 +38,55 @@ public abstract class AbstractNodeLocationTest extends AbstractTreeTest {
 	public void isParent() throws ServiceException {
 		
 		logTestTitle("Node Location Test: Is Parent");
-		/*
-		FSTreeService treeService = getTreeSerive();
-		
+
 		logger.info("Creating sample tree");
-		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
 		
-		assertNotNull(fsTree);
-		assertNotNull(fsTree.getRootNode());
+		TreeService treeService = getTreeSerive();
 		
-		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		DBTree dbTree = treeService.addTree(
+				new FSTree("Sample tree","Sample tree description."),
+				new FSTestNode("A","Node A"));
+		
+		assertNotNull(dbTree);
+		assertNotNull(dbTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + dbTree.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
-			FSNode nodeD = treeService.createNode(nodeB,"D");
-				FSNode nodeE = treeService.createNode(nodeD,"E");
-					FSNode nodeI = treeService.createNode(nodeE,"I");
-					FSNode nodeJ = treeService.createNode(nodeE,"J");
-				FSNode nodeF = treeService.createNode(nodeD,"F");
-			FSNode nodeG = treeService.createNode(nodeB,"G");
-				FSNode nodeH = treeService.createNode(nodeG,"H");
-					FSNode nodeK = treeService.createNode(nodeH,"K");
-					FSNode nodeL = treeService.createNode(nodeH,"L");
-		FSNode nodeM = treeService.createNode(fsTree.getRootNode(), "M");
-			FSNode nodeN = treeService.createNode(nodeM, "N");
-				FSNode nodeO = treeService.createNode(nodeN, "O");
-					FSNode nodeP = treeService.createNode(nodeO, "P");
-						FSNode nodeQ = treeService.createNode(nodeP, "Q");
+		DBNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			DBNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				DBNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					DBNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						DBNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						DBNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					DBNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						DBNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						DBNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("J","Node J"));
+					DBNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						DBNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						DBNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						DBNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						DBNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
-						
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		
-		assertNotNull(tree);
-		
-		logger.info(tree.printTree());
+		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());		
 		
 		boolean isParent = false;
 		
-		logger.info("Check if M is a parent of P. Expected TRUE.");
-		isParent = treeService.isParent(nodeM, nodeP, true);
-		logger.info(" => " + isParent);
-		assertTrue(isParent);
-		
-		logger.info("Check if D is a parent of J. Expected TRUE.");
-		isParent = treeService.isParent(nodeD, nodeJ, true);
+		logger.info("Check if C is a parent of L. Expected TRUE.");
+		isParent = treeService.isParent(nodeC, nodeL, true);
 		logger.info(" => " + isParent);
 		assertTrue(isParent);
 		
 		logger.info("Check if K is a parent of B. Expected FALSE.");
 		isParent = treeService.isParent(nodeK, nodeB, true);
 		logger.info(" => " + isParent);
-		assertFalse(isParent);
-		*/
+		assertFalse(isParent);		
+		
 	}
 	
 	/**
@@ -96,60 +95,55 @@ public abstract class AbstractNodeLocationTest extends AbstractTreeTest {
 	public void isChild() throws ServiceException {
 		
 		logTestTitle("Node Location Test: Is Child");
-		/*
-		FSTreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
-		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
 		
-		assertNotNull(fsTree);
-		assertNotNull(fsTree.getRootNode());
+		TreeService treeService = getTreeSerive();
 		
-		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		DBTree dbTree = treeService.addTree(
+				new FSTree("Sample tree","Sample tree description."),
+				new FSTestNode("A","Node A"));
+		
+		assertNotNull(dbTree);
+		assertNotNull(dbTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + dbTree.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
-			FSNode nodeD = treeService.createNode(nodeB,"D");
-				FSNode nodeE = treeService.createNode(nodeD,"E");
-					FSNode nodeI = treeService.createNode(nodeE,"I");
-					FSNode nodeJ = treeService.createNode(nodeE,"J");
-				FSNode nodeF = treeService.createNode(nodeD,"F");
-			FSNode nodeG = treeService.createNode(nodeB,"G");
-				FSNode nodeH = treeService.createNode(nodeG,"H");
-					FSNode nodeK = treeService.createNode(nodeH,"K");
-					FSNode nodeL = treeService.createNode(nodeH,"L");
-		FSNode nodeM = treeService.createNode(fsTree.getRootNode(), "M");
-			FSNode nodeN = treeService.createNode(nodeM, "N");
-				FSNode nodeO = treeService.createNode(nodeN, "O");
-					FSNode nodeP = treeService.createNode(nodeO, "P");
-						FSNode nodeQ = treeService.createNode(nodeP, "Q");
+		DBNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			DBNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				DBNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					DBNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						DBNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						DBNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					DBNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						DBNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						DBNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("J","Node J"));
+					DBNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						DBNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						DBNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						DBNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						DBNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
-						
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
 		
-		assertNotNull(tree);
+		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());		
 		
-		logger.info(tree.printTree());
+		boolean isChild = false;
 		
-		boolean isParent = false;
+		logger.info("Check if C is a child of L. Expected FALSE.");
+		isChild = treeService.isChild(nodeC, nodeL, true);
+		logger.info(" => " + isChild);
+		assertFalse(isChild);
 		
-		logger.info("Check if P is a child of M. Expected TRUE.");
-		isParent = treeService.isChild(nodeP, nodeM, true);
-		logger.info(" => " + isParent);
-		assertTrue(isParent);
+		logger.info("Check if K is a child of B. Expected TRUE.");
+		isChild = treeService.isChild(nodeK, nodeB, true);
+		logger.info(" => " + isChild);
+		assertTrue(isChild);		
 		
-		logger.info("Check if J is a child of A. Expected TRUE.");
-		isParent = treeService.isChild(nodeJ, fsTree.getRootNode(), true);
-		logger.info(" => " + isParent);
-		assertTrue(isParent);
-		
-		logger.info("Check if A is a child of H. Expected FALSE.");
-		isParent = treeService.isChild(fsTree.getRootNode(), nodeH, true);
-		logger.info(" => " + isParent);
-		assertFalse(isParent);
-		*/
 	}
 	
 	/**
@@ -158,90 +152,103 @@ public abstract class AbstractNodeLocationTest extends AbstractTreeTest {
 	public void isSameTree() throws ServiceException {
 		
 		logTestTitle("Node Location Test: Is Same Tree");
-		/*
-		FSTreeService treeService = getTreeSerive();
+		
+		TreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree 1");
-		FSTree fsTree1 = treeService.createTree("Sample Tree 1", "A sample test tree #1", "A1");
 		
-		assertNotNull(fsTree1);
-		assertNotNull(fsTree1.getRootNode());
+		DBTree dbTree1 = treeService.addTree(
+				new FSTree("Sample tree 1","Sample tree description 1."),
+				new FSTestNode("A1","Node A1"));
 		
-		logger.info("Tree 1 created. root note id => " + fsTree1.getRootNode().getNodeId());
+		assertNotNull(dbTree1);
+		assertNotNull(dbTree1.getRootNode());
+		
+		logger.info("Tree 1 created. root note id => " + dbTree1.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree 1...");
 		
-		FSNode nodeB1 = treeService.createNode(fsTree1.getRootNode(), "B1");
-			FSNode nodeD1 = treeService.createNode(nodeB1,"D1");
-				FSNode nodeE1 = treeService.createNode(nodeD1,"E1");
-					FSNode nodeI1 = treeService.createNode(nodeE1,"I1");
-					FSNode nodeJ1 = treeService.createNode(nodeE1,"J1");
-				FSNode nodeF1 = treeService.createNode(nodeD1,"F1");
-			FSNode nodeG1 = treeService.createNode(nodeB1,"G1");
-				FSNode nodeH1 = treeService.createNode(nodeG1,"H1");
-					FSNode nodeK1 = treeService.createNode(nodeH1,"K1");
-					FSNode nodeL1 = treeService.createNode(nodeH1,"L1");
+		DBNode nodeB1 = treeService.createChildNode(dbTree1.getRootNode(), new FSTestNode("B1","Node B1"));
+			DBNode nodeC1 = treeService.createChildNode(nodeB1, new FSTestNode("C1","Node C1"));
+				DBNode nodeD1 = treeService.createChildNode(nodeC1, new FSTestNode("D1","Node D1"));
+					DBNode nodeE1 = treeService.createChildNode(nodeD1, new FSTestNode("E1","Node E1"));
+						DBNode nodeF1 = treeService.createChildNode(nodeE1, new FSTestNode("F1","Node F1"));
+						DBNode nodeG1 = treeService.createChildNode(nodeE1, new FSTestNode("G1","Node G1"));
+					DBNode nodeH1 = treeService.createChildNode(nodeD1, new FSTestNode("H1","Node H1"));
+						DBNode nodeI1 = treeService.createChildNode(nodeH1, new FSTestNode("I1","Node I1"));
+						DBNode nodeJ1 = treeService.createChildNode(nodeH1, new FSTestNode("J1","Node J1"));
+					DBNode nodeK1 = treeService.createChildNode(nodeD1, new FSTestNode("K1","Node K1"));
+						DBNode nodeL1 = treeService.createChildNode(nodeK1, new FSTestNode("L1","Node L1"));
+						DBNode nodeM1 = treeService.createChildNode(nodeK1, new FSTestNode("M1","Node M1"));
+						DBNode nodeN1 = treeService.createChildNode(nodeK1, new FSTestNode("N1","Node N1"));
+						DBNode nodeO1 = treeService.createChildNode(nodeK1, new FSTestNode("O1","Node O1"));
 		
 		logger.info("Finished adding nodes to tree 1...");
 		
+		logger.info("Creating sample tree 1");
 		
-		logger.info("Creating sample tree 2");
-		FSTree fsTree2 = treeService.createTree("Sample Tree 2", "A sample test tree #2", "A2");
+		DBTree dbTree2 = treeService.addTree(
+				new FSTree("Sample tree 2","Sample tree description 2."),
+				new FSTestNode("A2","Node A2"));
 		
-		assertNotNull(fsTree2);
-		assertNotNull(fsTree2.getRootNode());
+		assertNotNull(dbTree2);
+		assertNotNull(dbTree2.getRootNode());
 		
-		logger.info("Tree 2 created. root note id => " + fsTree2.getRootNode().getNodeId());
+		logger.info("Tree 2 created. root note id => " + dbTree2.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree 2...");
 		
-		FSNode nodeB2 = treeService.createNode(fsTree2.getRootNode(), "B2");
-			FSNode nodeD2 = treeService.createNode(nodeB2,"D2");
-				FSNode nodeE2 = treeService.createNode(nodeD2,"E2");
-					FSNode nodeI2 = treeService.createNode(nodeE2,"I2");
-					FSNode nodeJ2 = treeService.createNode(nodeE2,"J2");
-				FSNode nodeF2 = treeService.createNode(nodeD2,"F2");
-			FSNode nodeG2 = treeService.createNode(nodeB2,"G2");
-				FSNode nodeH2 = treeService.createNode(nodeG2,"H2");
-					FSNode nodeK2 = treeService.createNode(nodeH2,"K2");
-					FSNode nodeL2 = treeService.createNode(nodeH2,"L2");
+		DBNode nodeB2 = treeService.createChildNode(dbTree2.getRootNode(), new FSTestNode("B2","Node B2"));
+			DBNode nodeC2 = treeService.createChildNode(nodeB2, new FSTestNode("C2","Node C2"));
+				DBNode nodeD2 = treeService.createChildNode(nodeC2, new FSTestNode("D2","Node D2"));
+					DBNode nodeE2 = treeService.createChildNode(nodeD2, new FSTestNode("E2","Node E2"));
+						DBNode nodeF2 = treeService.createChildNode(nodeE2, new FSTestNode("F2","Node F2"));
+						DBNode nodeG2 = treeService.createChildNode(nodeE2, new FSTestNode("G2","Node G2"));
+					DBNode nodeH2 = treeService.createChildNode(nodeD2, new FSTestNode("H2","Node H2"));
+						DBNode nodeI2 = treeService.createChildNode(nodeH2, new FSTestNode("I2","Node I2"));
+						DBNode nodeJ2 = treeService.createChildNode(nodeH2, new FSTestNode("J2","Node J2"));
+					DBNode nodeK2 = treeService.createChildNode(nodeD2, new FSTestNode("K2","Node K2"));
+						DBNode nodeL2 = treeService.createChildNode(nodeK2, new FSTestNode("L2","Node L2"));
+						DBNode nodeM2 = treeService.createChildNode(nodeK2, new FSTestNode("M2","Node M2"));
+						DBNode nodeN2 = treeService.createChildNode(nodeK2, new FSTestNode("N2","Node N2"));
+						DBNode nodeO2 = treeService.createChildNode(nodeK2, new FSTestNode("O2","Node O2"));
 		
-		logger.info("Finished adding nodes to tree 2...");
+		logger.info("Finished adding nodes to tree 1...");		
 		
-		Tree<TreeMeta> tree = null;
+		Tree<TreeMeta> treeMeta = null;
 		
-		logger.info("Tree 1");
-		tree = treeService.buildTree(fsTree1);
-		assertNotNull(tree);
-		logger.info(tree.printTree());		
+		logger.info("Tree 1:");
+		treeMeta = treeService.buildTree(dbTree1);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());
 		
-		logger.info("Tree 2");
-		tree = treeService.buildTree(fsTree2);
-		assertNotNull(tree);
-		logger.info(tree.printTree());
+		logger.info("Tree 2:");
+		treeMeta = treeService.buildTree(dbTree2);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());
 		
 		boolean isSameTree = false;
 		
-		logger.info("Check if D1 is in same tree as H1. Expected TRUE.");
-		isSameTree = treeService.isSameTree(nodeD1, nodeH1);
+		logger.info("Check if C1 is in same tree as N1. Expected TRUE.");
+		isSameTree = treeService.isSameTree(nodeC1, nodeN1);
 		logger.info(" => " + isSameTree);
 		assertTrue(isSameTree);
 		
-		logger.info("Check if L1 is in same tree as A1. Expected TRUE.");
-		isSameTree = treeService.isSameTree(nodeL1, fsTree1.getRootNode());
+		logger.info("Check if L1 is in same tree as D1. Expected TRUE.");
+		isSameTree = treeService.isSameTree(nodeL1, nodeD1);
 		logger.info(" => " + isSameTree);
 		assertTrue(isSameTree);
 		
-		logger.info("Check if K1 is in same tree as H2. Expected FALSE.");
-		isSameTree = treeService.isSameTree(nodeK1, nodeH2);
+		logger.info("Check if G1 is in same tree as J2. Expected FALSE.");
+		isSameTree = treeService.isSameTree(nodeG1, nodeJ2);
 		logger.info(" => " + isSameTree);
-		assertFalse(isSameTree);
+		assertFalse(isSameTree);			
 		
-		logger.info("Check if J2 is in same tree as I1. Expected FALSE.");
-		isSameTree = treeService.isSameTree(nodeJ2, nodeI1);
+		logger.info("Check if O2 is in same tree as A1. Expected FALSE.");
+		isSameTree = treeService.isSameTree(nodeO2, dbTree1.getRootNode());
 		logger.info(" => " + isSameTree);
 		assertFalse(isSameTree);		
-		*/
+	
 	}	
 
 }

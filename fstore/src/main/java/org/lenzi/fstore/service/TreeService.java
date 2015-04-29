@@ -420,7 +420,7 @@ public class TreeService {
 			return null;
 		}
 		
-		closureLogger.logClosure(closureList);
+		//closureLogger.logClosure(closureList);
 		
 		HashMap<Long,List<DBNode>> treeMap = new HashMap<Long,List<DBNode>>();
 		
