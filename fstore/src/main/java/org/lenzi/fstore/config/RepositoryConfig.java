@@ -1,8 +1,8 @@
 package org.lenzi.fstore.config;
 
 import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.OracleClosureRepository;
-import org.lenzi.fstore.repository.PostgreSQLClosureRepository;
+import org.lenzi.fstore.repository.OracleTestClosureRepository;
+import org.lenzi.fstore.repository.PostgreSQLTestClosureRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;
@@ -33,8 +33,8 @@ public class RepositoryConfig {
 		
 		logger.info("Creating Oracle Closure Repository");
 		
-		return new OracleClosureRepository();
-		
+		//return new AbstractOracleClosureRepository<DBNode>();
+		return new OracleTestClosureRepository();
 	}
 	
 	/**
@@ -49,7 +49,8 @@ public class RepositoryConfig {
 		
 		logger.info("Creating PostgreSQL Closure Repository");
 		
-		return new PostgreSQLClosureRepository();
+		//return new AbstractPostgreSQLClosureRepository<DBNode>();
+		return new PostgreSQLTestClosureRepository();
 		
 	}
 

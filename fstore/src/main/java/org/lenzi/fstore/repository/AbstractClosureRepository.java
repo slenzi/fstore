@@ -15,7 +15,6 @@ import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
-import org.lenzi.fstore.repository.model.DBPrune;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.stereotype.InjectLogger;
@@ -34,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author sal
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public abstract class AbstractClosureRepository extends AbstractRepository implements ClosureRepository {
+public abstract class AbstractClosureRepository<N extends DBNode> extends AbstractRepository implements ClosureRepository {
 
 	/**
 	 * 
@@ -571,17 +570,22 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		return nodeWithChildClosure;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.repository.ClosureRepository#removeNode(org.lenzi.fstore.repository.model.DBNode)
+	/**
+	 * Removes the node and closure data from the parent tables, then calls removeCustomNode(N node)
+	 * to remove the users custom node implementation.
 	 */
 	@Override
 	public void removeNode(DBNode node) throws DatabaseException {
 		
 		logger.info("remove node " + node.getNodeId());
 		
-		removeNode(node.getNodeId(), true, true);			
+		removeNode(node.getNodeId(), true, true);
+		
+		removeCustomNode( (N)node);
 		
 	}
+	
+	public abstract void removeCustomNode(N node) throws DatabaseException;
 	
 	/**
 	 * Remove node helper function.

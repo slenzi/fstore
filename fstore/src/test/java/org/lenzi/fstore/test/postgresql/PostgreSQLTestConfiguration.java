@@ -6,7 +6,11 @@ package org.lenzi.fstore.test.postgresql;
 import java.io.IOException;
 
 import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.PostgreSQLClosureRepository;
+import org.lenzi.fstore.repository.AbstractPostgreSQLClosureRepository;
+import org.lenzi.fstore.repository.PostgreSQLTestClosureRepository;
+import org.lenzi.fstore.repository.model.DBNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,6 +44,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=true)
 public class PostgreSQLTestConfiguration implements TransactionManagementConfigurer {
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+	
 	// defined in /src/test/resources/META-INF/test-postgresql-persistence.xml
 	private String persistenceUnitName = "FStoreTestPostgreSQLPersistenceUnit";
 	
@@ -58,7 +64,11 @@ public class PostgreSQLTestConfiguration implements TransactionManagementConfigu
 	@Bean
 	@Profile("postgresql")
 	public ClosureRepository getPostgresClosureRepository(){
-		return new PostgreSQLClosureRepository();
+		
+		logger.info("Getting PostgreSQLTestClosureRepository");
+		
+		//return new AbstractPostgreSQLClosureRepository<DBNode>();
+		return new PostgreSQLTestClosureRepository();
 	}
 
 	/**

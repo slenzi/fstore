@@ -6,7 +6,9 @@ package org.lenzi.fstore.test.oracle;
 import java.io.IOException;
 
 import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.OracleClosureRepository;
+import org.lenzi.fstore.repository.AbstractOracleClosureRepository;
+import org.lenzi.fstore.repository.OracleTestClosureRepository;
+import org.lenzi.fstore.repository.model.DBNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -64,9 +66,10 @@ public class OracleTestConfiguration implements TransactionManagementConfigurer 
 	@Profile("oracle")
 	public ClosureRepository getOracleClosureRepository(){
 		
-		logger.info("Getting OracleClosureRepository");
+		logger.info("Getting OracleTestClosureRepository");
 		
-		return new OracleClosureRepository();
+		//return new AbstractOracleClosureRepository<DBNode>();
+		return new OracleTestClosureRepository();
 	}
 
 	/**
