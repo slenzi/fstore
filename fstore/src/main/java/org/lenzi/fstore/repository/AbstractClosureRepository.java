@@ -243,8 +243,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 			newCopy.setChildClosure(null);
 			newCopy.setParentClosure(null);
 			
-			// TODO - persist this copy (remove closure data?)
-			
 			if(nodeToCopy.isRootNode()){
 				return addRootNode(newCopy);
 			}else{
@@ -572,6 +570,89 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 		return nodeWithChildClosure;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.repository.ClosureRepository#removeNode(org.lenzi.fstore.repository.model.DBNode)
+	 */
+	@Override
+	public void removeNode(DBNode node) throws DatabaseException {
+		
+		logger.info("remove node " + node.getNodeId());
+		
+		removeNode(node.getNodeId(), true, true);			
+		
+	}
+	
+	/**
+	 * Remove node helper function.
+	 * 
+	 * @param nodeId The ID of the node to remove.
+	 * @param nodeTable - True to remove the node and all child nodes from the FS_NODE table, false otherwise.
+	 * @param pruneTable - True to remove all closure entries from the FS_CLOSURE table, false otherwise.
+	 */
+	private void removeNode(Long nodeId, boolean nodeTable, boolean pruneTable) throws DatabaseException {
+		
+		logger.info("remove node " + nodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
+		
+		long pruneId = 0;
+		
+		if(pruneTable){
+			//
+			// Get next available prune id from sequence
+			//
+			pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
+			
+			//
+			// Add list of nodes to delete to our prune table
+			//
+			Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneTree());
+			populatePrune.setParameter(1,nodeId);
+			try {
+				executeUpdate(populatePrune);
+			} catch (DatabaseException e) {
+				logger.error("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
+				e.printStackTrace();
+				return;
+			}
+			logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
+		}
+		
+		// this part must happen in the middle. it relies on data in the closure table
+		if(nodeTable){
+			//
+			// Remove node, plus children, from node table. 
+			//
+			Query queryDeleteFsNode = getEntityManager().createNativeQuery(getSqlQueryDeleteFsNodePruneTree());
+			queryDeleteFsNode.setParameter(1,nodeId);
+			try {
+				executeUpdate(queryDeleteFsNode);
+			} catch (DatabaseException e) {
+				logger.error("Failed to remove node " + nodeId + ", plus all children, from FS_NODE. " +  e.getMessage(),e);
+				e.printStackTrace();
+				return;
+			}
+			logger.debug("Deleted node " + nodeId + " from the node table.");
+		}
+		
+		if(pruneTable){
+			//
+			// Remove node depth-0 self link, plus all children links, from closure table.
+			//
+			// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
+			//
+			Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
+			queryDeleteFsClosure.setParameter(1,pruneId);
+			try {
+				executeUpdate(queryDeleteFsClosure);
+			} catch (DatabaseException e) {
+				logger.error("Failed to remove node " + nodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
+				e.printStackTrace();
+				return;
+			}
+			logger.debug("Deleted node " + nodeId + " from the closure table.");
+		}
+		
+	}	
 	
 	/*
 
@@ -904,77 +985,6 @@ public abstract class AbstractClosureRepository extends AbstractRepository imple
 		
 	}
 	*/
-
-	/**
-	 * Remove node helper function.
-	 * 
-	 * @param nodeId The ID of the node to remove.
-	 * @param nodeTable - True to remove the node and all child nodes from the FS_NODE table, false otherwise.
-	 * @param pruneTable - True to remove all closure entries from the FS_CLOSURE table, false otherwise.
-	 */
-	private void removeNode(Long nodeId, boolean nodeTable, boolean pruneTable) throws DatabaseException {
-		
-		logger.debug("remove node " + nodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
-		
-		long pruneId = 0;
-		
-		if(pruneTable){
-			//
-			// Get next available prune id from sequence
-			//
-			pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
-			
-			//
-			// Add list of nodes to delete to our prune table
-			//
-			Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneTree());
-			populatePrune.setParameter(1,nodeId);
-			try {
-				executeUpdate(populatePrune);
-			} catch (DatabaseException e) {
-				logger.error("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
-				e.printStackTrace();
-				return;
-			}
-			logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
-		}
-		
-		// this part must happen in the middle. it relies on data in the closure table
-		if(nodeTable){
-			//
-			// Remove node, plus children, from node table. 
-			//
-			Query queryDeleteFsNode = getEntityManager().createNativeQuery(getSqlQueryDeleteFsNodePruneTree());
-			queryDeleteFsNode.setParameter(1,nodeId);
-			try {
-				executeUpdate(queryDeleteFsNode);
-			} catch (DatabaseException e) {
-				logger.error("Failed to remove node " + nodeId + ", plus all children, from FS_NODE. " +  e.getMessage(),e);
-				e.printStackTrace();
-				return;
-			}
-			logger.debug("Deleted node " + nodeId + " from the node table.");
-		}
-		
-		if(pruneTable){
-			//
-			// Remove node depth-0 self link, plus all children links, from closure table.
-			//
-			// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
-			//
-			Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
-			queryDeleteFsClosure.setParameter(1,pruneId);
-			try {
-				executeUpdate(queryDeleteFsClosure);
-			} catch (DatabaseException e) {
-				logger.error("Failed to remove node " + nodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
-				e.printStackTrace();
-				return;
-			}
-			logger.debug("Deleted node " + nodeId + " from the closure table.");
-		}
-		
-	}
 
 	/**
 	 * Helper function for the move node operation. Re-adds the tree to the new parent node

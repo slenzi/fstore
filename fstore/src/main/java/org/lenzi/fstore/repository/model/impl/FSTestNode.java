@@ -9,13 +9,21 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 /**
  * Node for testing the closure repository code. Also serves as an example custom
  * node which extends FSNode. Other nodes can extends FSNode to link any type of
  * data to a node in a tree.
  * 
+ * The @OnDelete annotation will remove the entry for this entity in the database when
+ * it's parent entity (FSNode) is removed.
+ * 
  * @author slenzi
  */
+
+// @OnDelete(action = OnDeleteAction.CASCADE)
 @Entity
 @DiscriminatorValue("TestNode")
 @Table(name="FS_TEST_NODE")

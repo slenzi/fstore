@@ -64,10 +64,10 @@ public class OracleDeleteNodeTest extends AbstractDeleteNodeTest {
 	}
 	
 	@Test
-	@Rollback(true)	
-	public void deleteNodeTest(){
+	@Rollback(false)	
+	public void deleteLeafNodeTest(){
 		try {
-			deleteNode();
+			deleteLeafNode();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}

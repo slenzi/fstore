@@ -259,21 +259,19 @@ public class TreeService {
 	 * 
 	 * @param node
 	 */
-	/*
-	public void removeNode(FSNode node) throws ServiceException{
+	public void removeNode(DBNode node) throws ServiceException{
 		
 		if(node.getParentNodeId() == 0L){
 			throw new ServiceException("Cannot remove root node of tree. Use removeTree() method.");
 		}		
 		
 		try {
-			closureRepository.removeNode(node.getNodeId());
+			closureRepository.removeNode(node);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 		
 	}
-	*/
 	
 	/**
 	 * Remove children of a node

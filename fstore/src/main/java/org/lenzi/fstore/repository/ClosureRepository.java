@@ -68,6 +68,14 @@ public interface ClosureRepository {
 	public DBTree addTree(DBTree newTree, DBNode newRootNode) throws DatabaseException;
 	
 	/**
+	 * Remove a node
+	 * 
+	 * @param node
+	 * @throws DatabaseException
+	 */
+	public void removeNode(DBNode node) throws DatabaseException;
+	
+	/**
 	 * Get a tree with it's root node.
 	 * 
 	 * @param treeId - The ID of the tree.
