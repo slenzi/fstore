@@ -274,17 +274,15 @@ public class TreeService {
 	 * 
 	 * @param node
 	 */
-	/*
-	public void removeChildren(FSNode node) throws ServiceException {
+	public void removeChildren(DBNode node) throws ServiceException {
 		
 		try {
-			closureRepository.removeChildren(node.getNodeId());
+			treeRepository.removeChildren(node);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 		
 	}
-	*/
 	
 	/**
 	 * Move a node

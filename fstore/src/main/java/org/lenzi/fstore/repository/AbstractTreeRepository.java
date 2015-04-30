@@ -371,8 +371,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * @param treeMap
 	 * @throws DatabaseException
 	 */
-	private DBNode copyNodes(DBNode nodeToCopy, DBNode parentNode, List<DBNode> childNodes, 
-			HashMap<Long, List<DBNode>> treeMap, NodeCopier copier) throws DatabaseException {
+	private DBNode copyNodes(DBNode nodeToCopy, DBNode parentNode, List<DBNode> childNodes, HashMap<Long, List<DBNode>> treeMap, NodeCopier copier) throws DatabaseException {
 		
 		Long copyNodeId = nodeToCopy.getNodeId();
 		
@@ -622,8 +621,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	}
 	
 	/**
-	 * Removes the node and closure data from the parent tables, then calls removeCustomNode(N node)
-	 * to remove the users custom node implementation.
+	 * Removes the node, and all it's children, from the database.
 	 */
 	@Override
 	public void removeNode(DBNode node) throws DatabaseException {
@@ -634,13 +632,63 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Cannot remove root node of tree. Use removeTree() method.");
 		}		
 		
-		// remove data from FS_* tables
 		removeNode(node, true, true);	
-		
-		//logger.info("Remove users custom node, class type => " + node.getClass());
 		
 	}
 	
+	/**
+	 * Removes all the nodes children, but not the node itself.
+	 */
+	@Override
+	public void removeChildren(DBNode node) throws DatabaseException {
+		
+		Long parentNodeId = node.getNodeId();
+		
+		//
+		// Get next available prune id from sequence.
+		//
+		long pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
+		
+		List<N> userNodesToDelete = null;
+		
+		//
+		// Add list of nodes to delete to our prune table
+		//
+		Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneChildren());
+		populatePrune.setParameter(1, parentNodeId);
+		try {
+			executeUpdate(populatePrune);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
+		}
+		logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
+		
+		userNodesToDelete = doCriteriaDeleteNode(node, true);
+		
+		logger.debug("Deleted children of node " + parentNodeId + " from the node table.");	
+		
+		//
+		// Remove children links from closure table.
+		//
+		// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
+		//
+		Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
+		queryDeleteFsClosure.setParameter(1, pruneId);
+		try {
+			executeUpdate(queryDeleteFsClosure);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to remove all children for node " + parentNodeId + ", from FS_CLOSURE. " +  e.getMessage(),e);
+		}
+		logger.debug("Deleted children of node " + parentNodeId + " from the closure table.");
+		
+		// allow user access to each node that was delete so that they may perform post delete cleanup
+		for(N n : userNodesToDelete){
+			//  remove users data
+			postRemove( (N)n);				
+		}		
+		
+	}
+
 	/**
 	 * Remove node helper function.
 	 * 
@@ -673,9 +721,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			try {
 				executeUpdate(populatePrune);
 			} catch (DatabaseException e) {
-				logger.error("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
-				e.printStackTrace();
-				return;
+				throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
 			}
 			logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
 			
@@ -684,78 +730,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		// this part must happen in the middle. it relies on data in the closure table
 		if(nodeTable){
 			
-			// the equivalent SQL query we are executing.
-			/*
-			delete
-			from fs_node n
-			where n.node_id in (
-			  select c.child_node_id
-			  from fs_closure c
-			  where c.parent_node_id = ?
-			)			 
-			 */
-			
-			CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-			
-			//
-			// create sub query to get list of all child nodes
-			//
-			CriteriaQuery<Long> childQuery = criteriaBuilder.createQuery(Long.class);
-			Root<FSClosure> closureRoot = childQuery.from(FSClosure.class);
-			childQuery.select(closureRoot.<Long>get(FSClosure_.childNodeId));
-			childQuery.where(criteriaBuilder.equal(closureRoot.get(FSClosure_.parentNodeId), deleteNodeId));
-			
-			List<Long> childNodeIdList = getEntityManager().createQuery(childQuery).getResultList();
-			if(CollectionUtil.isEmpty(childNodeIdList)){
-				throw new DatabaseException("Cannot delete node " + deleteNodeId + ". Failed to get list of child nodes from closure table. "
-						+ "	Should at the very least have the depth-0 selft links.");
-			}			
-			
-			//
-			// Query to get all nodes to delete. Fetch their closure data with their parent and child node data.
-			//
-			CriteriaQuery selectNodesToDelete = criteriaBuilder.createQuery(node.getClass());
-			Root nodeSelectRoot = selectNodesToDelete.from(node.getClass());
-			
-			SetJoin childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
-			SetJoin parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
-			
-			Fetch childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
-			Fetch parentClosureFetch =  nodeSelectRoot.fetch(FSNode_.parentClosure, JoinType.LEFT);
-			Fetch childClosureParentNodeFetch =  childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
-			Fetch childClosureChildNodeFetch =  childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
-			Fetch parentClosureParentNodeFetch =  parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
-			Fetch parentClosureChildNodeFetch =  parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
-			
-			Path<FSClosure> closureChildNodeId = childClosureJoin.get(FSClosure_.childNodeId);
-			Path<FSClosure> closureParentNodeId = childClosureJoin.get(FSClosure_.parentNodeId);
-			//List<Predicate> andPredicates = new ArrayList<Predicate>();
-			//andPredicates.add(criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), closureChildNodeId));
-			//andPredicates.add(criteriaBuilder.equal(closureParentNodeId, deleteNodeId));
-			selectNodesToDelete.distinct(true);
-			selectNodesToDelete.select(nodeSelectRoot);
-			selectNodesToDelete.where(
-					nodeSelectRoot.get(FSNode_.nodeId).in(childNodeIdList)
-					);
-			userNodesToDelete = getEntityManager().createQuery(selectNodesToDelete).getResultList();
-			if(CollectionUtil.isEmpty(userNodesToDelete)){
-				throw new DatabaseException("Failed to get list of nodes to delete.");
-			}else{
-				for(N n : userNodesToDelete){
-					logger.info("Need to delete node => " + n.getNodeId() + " which has parent node " + n.getParentNodeId());
-				}
-			}
-			
-			//
-			// create delete query which uses the list of child node ID we just retrieved.
-			//
-			CriteriaDelete criteriaDelete = criteriaBuilder.createCriteriaDelete(node.getClass());
-			Root nodeDeleteRoot = criteriaDelete.from(node.getClass());
-			criteriaDelete.where(
-					nodeDeleteRoot.get(FSNode_.nodeId).in(childNodeIdList)
-				);
-			
-			getEntityManager().createQuery(criteriaDelete).executeUpdate();
+			userNodesToDelete = doCriteriaDeleteNode(node, false);
 			
 			logger.debug("Deleted node " + deleteNodeId + " from the node table.");
 			
@@ -773,9 +748,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			try {
 				executeUpdate(queryDeleteFsClosure);
 			} catch (DatabaseException e) {
-				logger.error("Failed to remove node " + deleteNodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
-				e.printStackTrace();
-				return;
+				throw new DatabaseException("Failed to remove node " + deleteNodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
 			}
 			logger.debug("Deleted node " + deleteNodeId + " from the closure table.");
 		}
@@ -783,10 +756,120 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		// allow user access to each node that was delete so that they may perform post delete cleanup
 		for(N n : userNodesToDelete){
 			//  remove users data
-			postRemove( (N)node);				
+			postRemove( (N)n);				
 		}
 		
-	}	
+	}
+	
+	/**
+	 * Delete the node and all its children, or just its children.
+	 * 
+	 * // delete node and all children SQL
+		delete
+		from fs_node n
+		where n.node_id in (
+		  select c.child_node_id
+		  from fs_closure c
+		  where c.parent_node_id = ?
+		)
+		
+		// delete children of node SQL
+		delete
+		from fs_node n
+		where n.node_id in (
+		  select c.child_node_id
+		  from fs_closure c
+		  where c.parent_node_id = ?
+		  and c.depth > 0
+		)
+	 * 
+	 * @param node Will delete this node and all its children, or just its children if 'onlyChildren' is true
+	 * @param onlyChildren - false to delete the node and all its children, or true to delete all the children but keep the node itself.
+	 * @return A list of all the nodes that were deleted.
+	 * @throws DatabaseException
+	 */
+	private List<N> doCriteriaDeleteNode(DBNode node, boolean onlyChildren) throws DatabaseException {
+		
+		Long nodeId = node.getNodeId();
+		List<N> userNodesToDelete = null;
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		//
+		// create sub query to get list of all child nodes (excluding the node itself, the depth-0 self link entry in the closure)
+		//
+		CriteriaQuery<Long> childQuery = criteriaBuilder.createQuery(Long.class);
+		Root<FSClosure> closureRoot = childQuery.from(FSClosure.class);	
+		childQuery.select(closureRoot.<Long>get(FSClosure_.childNodeId));
+		
+		// if only children, add the greater than depth 0 condition.
+		if(onlyChildren){
+			List<Predicate> andPredicates = new ArrayList<Predicate>();
+			andPredicates.add( criteriaBuilder.equal(closureRoot.get(FSClosure_.parentNodeId), nodeId) );
+			andPredicates.add( criteriaBuilder.greaterThan(closureRoot.get(FSClosure_.depth), 0) );			
+			childQuery.where(
+					criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+					);
+		}else{
+			childQuery.where(
+					criteriaBuilder.equal(closureRoot.get(FSClosure_.parentNodeId), nodeId)
+					);
+		}
+		
+		List<Long> childNodeIdList = getEntityManager().createQuery(childQuery).getResultList();
+		if(CollectionUtil.isEmpty(childNodeIdList)){
+			throw new DatabaseException("Cannot delete " + ((onlyChildren) ? "children of" : "") + " node " + nodeId + ". Failed to get list of child nodes IDs.");
+		}			
+		
+		//
+		// Query to get all nodes to delete. Fetch their closure data with their parent and child node data.
+		//
+		CriteriaQuery selectNodesToDelete = criteriaBuilder.createQuery(node.getClass());
+		Root nodeSelectRoot = selectNodesToDelete.from(node.getClass());
+		
+		SetJoin childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
+		SetJoin parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
+		
+		Fetch childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
+		Fetch parentClosureFetch =  nodeSelectRoot.fetch(FSNode_.parentClosure, JoinType.LEFT);
+		Fetch childClosureParentNodeFetch =  childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		Fetch childClosureChildNodeFetch =  childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		Fetch parentClosureParentNodeFetch =  parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		Fetch parentClosureChildNodeFetch =  parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		Path<FSClosure> closureChildNodeId = childClosureJoin.get(FSClosure_.childNodeId);
+		Path<FSClosure> closureParentNodeId = childClosureJoin.get(FSClosure_.parentNodeId);
+		selectNodesToDelete.distinct(true);
+		selectNodesToDelete.select(nodeSelectRoot);
+		selectNodesToDelete.where(
+				nodeSelectRoot.get(FSNode_.nodeId).in(childNodeIdList)
+				);
+		userNodesToDelete = getEntityManager().createQuery(selectNodesToDelete).getResultList();
+		if(CollectionUtil.isEmpty(userNodesToDelete)){
+			throw new DatabaseException("Failed to get list of nodes to delete.");
+		}
+		/*
+		else{
+			for(N n : userNodesToDelete){
+				logger.info("Need to delete child node => " + n.getNodeId() + " which has parent node " + n.getParentNodeId());
+			}
+		}
+		*/
+		
+		//
+		// create delete query which uses the list of child node ID we just retrieved.
+		//
+		CriteriaDelete criteriaDelete = criteriaBuilder.createCriteriaDelete(node.getClass());
+		Root nodeDeleteRoot = criteriaDelete.from(node.getClass());
+		criteriaDelete.where(
+				nodeDeleteRoot.get(FSNode_.nodeId).in(childNodeIdList)
+			);
+		
+		getEntityManager().createQuery(criteriaDelete).executeUpdate();
+		
+		return userNodesToDelete;
+		
+	}
 	
 	/*
 

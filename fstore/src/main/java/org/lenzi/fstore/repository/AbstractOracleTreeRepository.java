@@ -145,6 +145,7 @@ public abstract class AbstractOracleTreeRepository<N extends FSNode> extends Abs
 	 * You still need to delete the parent-child links in the FS_CLOSURE table.
 	 * 
 	 * @param1 The ID of the node to delete
+	 * @deprecated - replaced with a jpa criteria query
 	 */
 	private String SQL_DELETE_FS_NODE_PRUNE_TREE =
 		"delete " +
@@ -336,8 +337,9 @@ public abstract class AbstractOracleTreeRepository<N extends FSNode> extends Abs
 		return SQL_INSERT_PRUNE_CHILDREN;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getSqlQueryDeleteFsNodePruneTree()
+	 * @deprecated - replaced with a jpa criteria query
 	 */
 	@Override
 	protected String getSqlQueryDeleteFsNodePruneTree() {

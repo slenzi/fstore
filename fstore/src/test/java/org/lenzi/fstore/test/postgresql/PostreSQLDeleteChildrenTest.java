@@ -64,7 +64,7 @@ public class PostreSQLDeleteChildrenTest extends AbstractDeleteChildrenTest {
 	}
 	
 	@Test
-	@Rollback(true)	
+	@Rollback(false)	
 	public void deleteChildrenTest(){
 		try {
 			deleteChildren();

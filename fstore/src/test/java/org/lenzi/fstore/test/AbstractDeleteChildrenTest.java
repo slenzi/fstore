@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
-import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.DBTree;
+import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
@@ -30,54 +32,56 @@ public abstract class AbstractDeleteChildrenTest extends AbstractTreeTest {
 	 * Build sample tree, print before, delete children of node, then print after.
 	 */
 	public void deleteChildren() throws ServiceException {
-		/*
+
 		logTestTitle("Delete children test");
 		
-		FSTreeService treeService = getTreeSerive();
+		TreeService treeService = getTreeSerive();
 		
 		logger.info("Creating sample tree");
-		FSTree fsTree = treeService.createTree("Sample Tree", "A sample test tree", "A");
 		
-		assertNotNull(fsTree);
-		assertNotNull(fsTree.getRootNode());
+		DBTree dbTree = treeService.addTree(
+				new FSTree("Sample tree","Sample tree description."),
+				new FSTestNode("A","Node A"));
 		
-		logger.info("Tree created. root note id => " + fsTree.getRootNode().getNodeId());
+		assertNotNull(dbTree);
+		assertNotNull(dbTree.getRootNode());
+		
+		logger.info("Tree created. root note id => " + dbTree.getRootNode().getNodeId());
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSNode nodeB = treeService.createNode(fsTree.getRootNode(), "B");
-			FSNode nodeD = treeService.createNode(nodeB,"D");
-				FSNode nodeE = treeService.createNode(nodeD,"E");
-					FSNode nodeI = treeService.createNode(nodeE,"I");
-					FSNode nodeJ = treeService.createNode(nodeE,"J");
-				FSNode nodeF = treeService.createNode(nodeD,"F");
-			FSNode nodeG = treeService.createNode(nodeB,"G");
-				FSNode nodeH = treeService.createNode(nodeG,"H");
-					FSNode nodeK = treeService.createNode(nodeH,"K");
-					FSNode nodeL = treeService.createNode(nodeH,"L");
-		FSNode nodeM = treeService.createNode(fsTree.getRootNode(), "M");
-			FSNode nodeN = treeService.createNode(nodeM, "N");
-				FSNode nodeO = treeService.createNode(nodeN, "O");
-					FSNode nodeP = treeService.createNode(nodeO, "P");
-						FSNode nodeQ = treeService.createNode(nodeP, "Q");
+		DBNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			DBNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				DBNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					DBNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						DBNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						DBNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					DBNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						DBNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						DBNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("J","Node J"));
+					DBNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						DBNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						DBNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						DBNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						DBNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		logger.info("Before deleting children of node D");
-		Tree<TreeMeta> tree = treeService.buildTree(fsTree);
-		assertNotNull(tree);
-		logger.info(tree.printTree());
+		Tree<TreeMeta> treeMeta = null;
 		
-		logger.info("Removing children of node D...");
+		logger.info("Tree before...");
+		treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());
+		
+		logger.info("Delete children of node D");
 		treeService.removeChildren(nodeD);
 		
-		logger.info("After deleting children of node D");
-		tree = treeService.buildTree(fsTree);
-		assertNotNull(tree);
-		logger.info(tree.printTree());
+		logger.info("Tree after...");
+		treeMeta = treeService.buildTree(dbTree);
+		assertNotNull(treeMeta);
+		logger.info(treeMeta.printTree());
 		
-		logger.info("Done.");
-		*/
 	}
 
 }

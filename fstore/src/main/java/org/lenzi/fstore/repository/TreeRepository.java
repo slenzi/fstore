@@ -68,12 +68,20 @@ public interface TreeRepository {
 	public DBTree addTree(DBTree newTree, DBNode newRootNode) throws DatabaseException;
 	
 	/**
-	 * Remove a node
+	 * Remove a node, plus all its children.
 	 * 
 	 * @param node
 	 * @throws DatabaseException
 	 */
 	public void removeNode(DBNode node) throws DatabaseException;
+	
+	/**
+	 * Remove all children of a node, but not the node itself.
+	 * 
+	 * @param node
+	 * @throws DatabaseException
+	 */
+	public void removeChildren(DBNode node) throws DatabaseException;	
 	
 	/**
 	 * Get a tree with it's root node.

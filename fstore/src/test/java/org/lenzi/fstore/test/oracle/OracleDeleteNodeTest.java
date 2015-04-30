@@ -66,13 +66,11 @@ public class OracleDeleteNodeTest extends AbstractDeleteNodeTest {
 	@Test
 	@Rollback(false)	
 	public void deleteLeafNodeTest(){
-		/*
 		try {
 			deleteLeafNode();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}
-		*/
 	}
 	
 	@Test
