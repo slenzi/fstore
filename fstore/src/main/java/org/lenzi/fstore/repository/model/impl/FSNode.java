@@ -22,7 +22,8 @@ import org.lenzi.fstore.repository.model.DBNode;
 /**
  * Database entity for FS_NODE.
  * 
- * FS_NODE contains master list of all nodes.
+ * FS_NODE contains master list of all nodes. Extend this node to implement your own custom node
+ * for storing in the tree.
  * 
  * @author slenzi
  */
