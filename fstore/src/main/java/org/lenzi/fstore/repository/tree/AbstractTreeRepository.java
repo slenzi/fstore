@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.repository;
+package org.lenzi.fstore.repository.tree;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import javax.persistence.criteria.SetJoin;
 
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.util.NodeCopier;
+import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
@@ -41,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Where all the work happens. Contains all code, minus specific database queries, for maintaining tree like
  * structures in a database using a closure table.
  * 
- * See OracleClosureRepository and PostgreSQLClosureRepository for database specific code.
+ * See AbstractOracleTreeRepository and AbstractPostgreSQLTreeRepository for database specific code.
  * 
  * @author sal
  *
@@ -105,7 +106,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	/**
 	 * Fetch node, just meta data. No closure data with parent child relationships is fetched.
 	 * 
-	 * @see org.lenzi.fstore.repository.TreeRepository#getNode(java.lang.Long)
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getNode(java.lang.Long)
 	 */
 	@Override
 	public DBNode getNode(Long nodeId) throws DatabaseException {
@@ -124,7 +125,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
 	 * 
-	 * @see org.lenzi.fstore.repository.TreeRepository#addRootNode(org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#addRootNode(org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public DBNode addRootNode(DBNode newNode) throws DatabaseException {
@@ -143,7 +144,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * @param parentNode - The parent node under which the new node will be added.
 	 * @param newNode - The new node to add.
 	 * 
-	 * @see org.lenzi.fstore.repository.TreeRepository#addChildNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#addChildNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public DBNode addChildNode(DBNode parentNode, DBNode newNode) throws DatabaseException {
@@ -232,7 +233,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 
-	 * @see org.lenzi.fstore.repository.TreeRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public List<DBClosure> getClosure(DBNode node) throws DatabaseException {
@@ -264,7 +265,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	/**
 	 * Copy a node.
 	 * 
-	 * @see org.lenzi.fstore.repository.TreeRepository#copyNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode, boolean)
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#copyNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode, boolean)
 	 */
 	@Override
 	public DBNode copyNode(DBNode nodeToCopy, DBNode parentNode, boolean copyChildren, NodeCopier copier) throws DatabaseException {
@@ -429,7 +430,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	/**
 	 * Add a tree.
 	 * 
-	 * @see org.lenzi.fstore.repository.TreeRepository#addTree(org.lenzi.fstore.repository.model.DBTree, org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#addTree(org.lenzi.fstore.repository.model.DBTree, org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public DBTree addTree(DBTree newTree, DBNode newRootNode) throws DatabaseException {

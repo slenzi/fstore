@@ -1,6 +1,6 @@
-package org.lenzi.fstore.repository;
+package org.lenzi.fstore.repository.tree;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 import javax.persistence.Query;
 
@@ -12,21 +12,19 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Code for maintaining tree structures within a PostgreSQL database using a closure table.
+ * Code for maintaining tree structures within an Oracle database using a closure table.
  * 
  * @author sal
  *
  * @param <N>
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends AbstractTreeRepository<N> {
+public abstract class AbstractOracleTreeRepository<N extends FSNode> extends AbstractTreeRepository<N> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7800560911360236185L;
-	
-	private String SCHEMA = "TEST.";
 
 	@InjectLogger
 	private Logger logger;
@@ -93,13 +91,13 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	 */	
 	private String SQL_INSERT_MAKE_PARENT =
 		"insert " +
-		"	into " + SCHEMA + "fs_closure (link_id,parent_node_id, child_node_id, depth) " + 
+		"	into fs_closure (link_id,parent_node_id, child_node_id, depth) " + 
 		"select " +
-		"	nextval('" + SCHEMA + "FS_LINK_ID_SEQUENCE'), p.parent_node_id, c.child_node_id, (p.depth + c.depth + 1) as depth " +
+		"	FS_LINK_ID_SEQUENCE.nextval, p.parent_node_id, c.child_node_id, (p.depth + c.depth + 1) as depth " +
 		"from " +
-		"	" + SCHEMA + "fs_closure p, " + SCHEMA + "fs_closure c " +
+		"	fs_closure p, fs_closure c " +
 		"where " +
-		"	p.child_node_id = ? and c.parent_node_id = ?";
+		"	p.child_node_id = ? and c.parent_node_id = ?";	
 	
 	/**
 	 * Add nodes to prune table. These are the nodes to delete during a delete operation
@@ -111,14 +109,14 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	 * be deleted.
 	 */
 	private String SQL_INSERT_PRUNE_TREE =
-		"insert into " + SCHEMA + "fs_prune " +
-		"select currval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE') as prune_id, child_to_delete from ( " +
+		"insert into fs_prune " +
+		"select FS_PRUNE_ID_SEQUENCE.currval as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
-		"  from " + SCHEMA + "fs_closure c  " +
-		"  inner join " + SCHEMA + "fs_node n  " +
+		"  from fs_closure c  " +
+		"  inner join fs_node n  " +
 		"  on c.child_node_id = n.node_id " + 
 		"  where c.parent_node_id = ? " +
-		") as treeDeleteTable";
+		")";
 	
 	/**
 	 * Add nodes to prune table. These are the nodes to delete during a delete operation
@@ -130,15 +128,15 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	 * deleted from the closure table.
 	 */
 	private String SQL_INSERT_PRUNE_CHILDREN =
-		"insert into " + SCHEMA + "fs_prune " +
-		"select currval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE') as prune_id, child_to_delete from ( " +
+		"insert into fs_prune " +
+		"select FS_PRUNE_ID_SEQUENCE.currval as prune_id, child_to_delete from ( " +
 		"  select distinct c.child_node_id as child_to_delete  " +
-		"  from " + SCHEMA + "fs_closure c  " +
-		"  inner join " + SCHEMA + "fs_node n  " +
+		"  from fs_closure c  " +
+		"  inner join fs_node n  " +
 		"  on c.child_node_id = n.node_id " + 
 		"  where c.parent_node_id = ? " +
 		"  and c.depth > 0 " +
-		") as childDeleteTable";	
+		")";	
 	
 	/**
 	 * Will delete the node from the FS_NODE table, as well as all children
@@ -151,10 +149,10 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	 */
 	private String SQL_DELETE_FS_NODE_PRUNE_TREE =
 		"delete " +
-		"from " + SCHEMA + "fs_node n " +
+		"from fs_node n " +
 		"where n.node_id in ( " +
 		"  select c.child_node_id " +
-		"  from " + SCHEMA + "fs_closure c " +
+		"  from fs_closure c " +
 		"  where c.parent_node_id = ? " +
 		")";
 	
@@ -169,10 +167,10 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	 */
 	private String SQL_DELETE_FS_NODE_PRUNE_CHILDREN =
 		"delete " +
-		"from " + SCHEMA + "fs_node n " +
+		"from fs_node n " +
 		"where n.node_id in ( " +
 		"  select c.child_node_id " +
-		"  from " + SCHEMA + "fs_closure c " +
+		"  from fs_closure c " +
 		"  where c.parent_node_id = ? " +
 		"  and c.depth > 0 " +
 		")";	
@@ -184,15 +182,15 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	 */
 	private String SQL_DELETE_FS_CLOSURE_PRUNE =
 		"delete " +
-		"from  " + SCHEMA + "fs_closure " +
+		"  fs_closure " +
 		"where link_id in ( " +
 		"  select l.link_id " +
-		"  from " + SCHEMA + "fs_closure p " +
-		"  inner join " + SCHEMA + "fs_closure l " +
+		"  from fs_closure p " +
+		"  inner join fs_closure l " +
 		"    on p.parent_node_id = l.parent_node_id " +
-		"  inner join " + SCHEMA + "fs_closure c " +
+		"  inner join fs_closure c " +
 		"    on c.child_node_id = l.child_node_id " +
-		"  inner join " + SCHEMA + "fs_closure to_delete " +
+		"  inner join fs_closure to_delete " +
 		"  on " +
 		"    p.child_node_id = to_delete.parent_node_id " +
 		"    and c.parent_node_id = to_delete.child_node_id " +
@@ -201,9 +199,9 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 		"  ( " +
 		/* select the IDs of the node we are deleting from our prune table */
 		"        select p.node_id as child_to_delete " +
-		"        from " + SCHEMA + "fs_prune p " +
+		"        from fs_prune p " +
 		"        where p.prune_id = ?  " +
-		"  ) as pruneTable " +
+		"  ) pruneTable " +
 		"  on " +
 		"    ( " +
 		/* for all nodes in the prune table, delete any parent node links and and child node links */
@@ -211,35 +209,35 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 		"      or " +
 		"      to_delete.child_node_id = pruneTable.child_to_delete " +
 		"    ) " +
-		")";
+		")";	
 	
 	private String HQL_GET_TREE_BY_ID =
 		"select t from FSTree as t " +
 		"left join fetch t.rootNode " +
-		"where t.treeId = :treeid";	
+		"where t.treeId = :treeid";
 	
 	/**
 	 * Select next available prune ID from sequence. Used in FS_PRUNE table.
 	 */
-	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE')";
+	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT FS_PRUNE_ID_SEQUENCE.nextval from DUAL";
 	
 	/**
 	 * Select next available node ID from sequence. Used in FS_NODE table.
 	 */
-	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_NODE_ID_SEQUENCE')";
+	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT FS_NODE_ID_SEQUENCE.nextval from DUAL";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_CLOSURE table.
 	 */
-	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_LINK_ID_SEQUENCE')";
+	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT FS_LINK_ID_SEQUENCE.nextval from DUAL";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_TREE table.
 	 */
-	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_TREE_ID_SEQUENCE')";
+	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT FS_TREE_ID_SEQUENCE.nextval from DUAL";	
 	
 	
-	public AbstractPostgreSQLTreeRepository() {
+	public AbstractOracleTreeRepository() {
 		
 	}
 	
@@ -273,7 +271,7 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	@Override
 	protected String getSqlQueryTreeIdSequence() {
 		return SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE;
-	}	
+	}
 
 	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getHqlQueryNodeById()
@@ -306,7 +304,7 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	protected String getHqlQueryNodeWithChildClosure() {
 		return HQL_NODE_WITH_CHILDREN_CLOSURE;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getHqlQueryClosureByNodeId()
 	 */
@@ -314,7 +312,7 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	protected String getHqlQueryClosureByNodeId() {
 		return HQL_CLOSURE_BY_NODE_ID;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getSqlQueryInsertMakeParent()
 	 */
@@ -370,25 +368,24 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends
 	@Override
 	public String getRepositoryName() {
 		
-		logger.info(AbstractPostgreSQLTreeRepository.class.getName() + "getRepositoryName() called");
+		logger.info(AbstractOracleTreeRepository.class.getName() + "getRepositoryName() called");
 		
-		return AbstractPostgreSQLTreeRepository.class.getName();
+		return AbstractOracleTreeRepository.class.getName();
 	}	
-	
+
 	/**
 	 * Get value from sequence
 	 * 
 	 * @param nativeSequenceQuery - a native SQL query which returns either nextval or currval from a sequence
-	 * @see org.lenzi.fstore.repository.AbstractTreeRepository#getSequenceVal(java.lang.String)
+	 * @see org.lenzi.fstore.repository.tree.AbstractTreeRepository#getSequenceVal(java.lang.String)
 	 */
 	@Override
 	protected long getSequenceVal(String nativeSequenceQuery) throws DatabaseException {
 
 		Query queryPruneSequence = getEntityManager().createNativeQuery(nativeSequenceQuery);
-		//BigInteger result = (BigInteger)queryPruneSequence.getSingleResult();
-		BigInteger result = (BigInteger)getSingleResult(queryPruneSequence);
+		BigDecimal result = (BigDecimal)getSingleResult(queryPruneSequence);
 		long sequenceId = result.longValue();
-		return sequenceId;		
+		return sequenceId;			
 		
 	}
 

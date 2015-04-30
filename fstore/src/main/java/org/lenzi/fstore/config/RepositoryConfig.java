@@ -1,8 +1,8 @@
 package org.lenzi.fstore.config;
 
-import org.lenzi.fstore.repository.TreeRepository;
-import org.lenzi.fstore.repository.OracleTestTreeRepository;
-import org.lenzi.fstore.repository.PostgreSQLTestTreeRepository;
+import org.lenzi.fstore.repository.tree.TreeRepository;
+import org.lenzi.fstore.repository.tree.test.OracleTestTreeRepository;
+import org.lenzi.fstore.repository.tree.test.PostgreSQLTestTreeRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;

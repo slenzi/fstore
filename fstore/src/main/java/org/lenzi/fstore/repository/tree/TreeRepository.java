@@ -1,4 +1,4 @@
-package org.lenzi.fstore.repository;
+package org.lenzi.fstore.repository.tree;
 
 import java.util.List;
 

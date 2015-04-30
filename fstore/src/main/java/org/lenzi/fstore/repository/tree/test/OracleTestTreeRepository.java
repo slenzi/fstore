@@ -1,29 +1,30 @@
-package org.lenzi.fstore.repository;
+package org.lenzi.fstore.repository.tree.test;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.impl.FSTestNode;
+import org.lenzi.fstore.repository.tree.AbstractOracleTreeRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Provides PostgresSQL specific code for working with our sample FSTestNode.
+ * Provides Oracle specific code for working with our sample FSTestNode.
  * 
  * @author sal
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public class PostgreSQLTestTreeRepository extends AbstractPostgreSQLTreeRepository<FSTestNode> {
+public class OracleTestTreeRepository extends AbstractOracleTreeRepository<FSTestNode> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3961163035798204009L;
+	private static final long serialVersionUID = 1L;
 
 	@InjectLogger
-	private Logger logger;	
-	
+	private Logger logger;
+
 	
 	@Override
 	public DBNode postAdd(FSTestNode node) throws DatabaseException {
@@ -60,5 +61,5 @@ public class PostgreSQLTestTreeRepository extends AbstractPostgreSQLTreeReposito
 		return null;
 		
 	}
-
+	
 }

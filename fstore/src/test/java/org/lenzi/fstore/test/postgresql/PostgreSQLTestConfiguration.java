@@ -5,8 +5,8 @@ package org.lenzi.fstore.test.postgresql;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.repository.TreeRepository;
-import org.lenzi.fstore.repository.PostgreSQLTestTreeRepository;
+import org.lenzi.fstore.repository.tree.TreeRepository;
+import org.lenzi.fstore.repository.tree.test.PostgreSQLTestTreeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
