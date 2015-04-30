@@ -1,6 +1,7 @@
 package org.lenzi.fstore.model.util;
 
 import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 
@@ -12,7 +13,7 @@ import org.slf4j.Logger;
  *
  * @param <N> A node object which extends DbNode
  */
-public abstract class AbstractNodeCopier<N extends DBNode> implements NodeCopier {
+public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier {
 
 	@InjectLogger
 	private Logger logger;		
@@ -25,7 +26,7 @@ public abstract class AbstractNodeCopier<N extends DBNode> implements NodeCopier
 	protected DBNode createNew() throws ClassNotFoundException, InstantiationException, IllegalAccessException{
 		String name = getCanonicalName();
 		Class clazz = Class.forName(name);
-		DBNode node = (DBNode) clazz.newInstance();
+		DBNode node = (N) clazz.newInstance();
 		return node;
 	}	
 
@@ -76,10 +77,10 @@ public abstract class AbstractNodeCopier<N extends DBNode> implements NodeCopier
 	/**
 	 * Override to copy over attributes from child implementation.
 	 * 
-	 * @param newNode - the new copy
-	 * @param node - the node being copied
+	 * @param copyTo - the new copy
+	 * @param copyFrom - the node being copied
 	 * @return A reference to the new copy
 	 */
-	public abstract N doCopyWork(N newNode, N node);
+	public abstract N doCopyWork(N copyTo, N copyFrom);
 
 }

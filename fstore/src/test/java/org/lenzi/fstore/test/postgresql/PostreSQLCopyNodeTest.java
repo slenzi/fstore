@@ -75,7 +75,7 @@ public class PostreSQLCopyNodeTest extends AbstractCopyNodeTest {
 	
 	@Test
 	@Rollback(true)	
-	public void copyNodeButNodeChildrenTest(){
+	public void copyNodeWithoutChildrenTest(){
 		try {
 			copyNodeWithoutChildren();
 		} catch (ServiceException e) {

@@ -208,5 +208,17 @@ public class AbstractRepository implements Serializable {
 		}
 		
 	}
+	
+	protected void remove(Object entity)  throws DatabaseException {
+		
+		try {
+			getEntityManager().remove(entity);
+		}catch(TransactionRequiredException e){
+			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
+		}catch(IllegalArgumentException e){
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}		
+		
+	}
 
 }

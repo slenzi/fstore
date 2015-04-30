@@ -5,10 +5,8 @@ package org.lenzi.fstore.test.oracle;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.AbstractOracleClosureRepository;
-import org.lenzi.fstore.repository.OracleTestClosureRepository;
-import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.TreeRepository;
+import org.lenzi.fstore.repository.OracleTestTreeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -64,12 +62,11 @@ public class OracleTestConfiguration implements TransactionManagementConfigurer 
 	 */
 	@Bean
 	@Profile("oracle")
-	public ClosureRepository getOracleClosureRepository(){
+	public TreeRepository getOracleTreeRepository(){
 		
-		logger.info("Getting OracleTestClosureRepository");
+		logger.info("Getting OracleTestTreeRepository");
 		
-		//return new AbstractOracleClosureRepository<DBNode>();
-		return new OracleTestClosureRepository();
+		return new OracleTestTreeRepository();
 	}
 
 	/**
@@ -98,11 +95,4 @@ public class OracleTestConfiguration implements TransactionManagementConfigurer 
     	return emf; 
     }
     
-    // added "org.lenzi.fstore.logging" package to @ComponentScan
-    /*
-    @Bean
-    public LoggerBeanPostProccessor getLoggerBeanPostProcessor(){
-    	return new LoggerBeanPostProccessor();
-    }
-	*/
 }

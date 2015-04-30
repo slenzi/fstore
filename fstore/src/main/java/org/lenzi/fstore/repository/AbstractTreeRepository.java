@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
 
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.util.NodeCopier;
@@ -17,7 +22,12 @@ import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSClosure;
+import org.lenzi.fstore.repository.model.impl.FSClosure_;
+import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSNode_;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +41,11 @@ import org.springframework.transaction.annotation.Transactional;
  * See OracleClosureRepository and PostgreSQLClosureRepository for database specific code.
  * 
  * @author sal
+ *
+ * @param <N>
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public abstract class AbstractClosureRepository<N extends DBNode> extends AbstractRepository implements ClosureRepository {
+public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractRepository implements TreeRepository {
 
 	/**
 	 * 
@@ -49,14 +61,48 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 	/**
 	 * 
 	 */
-	public AbstractClosureRepository() {
+	public AbstractTreeRepository() {
 	
 	}
 	
 	/**
+	 * Implement to perform an necessary logic when a node is added.
+	 * 
+	 * @param node - The node that was added.
+	 * @throws DatabaseException
+	 */
+	public abstract DBNode addCustomNode(N node) throws DatabaseException;
+	
+	/**
+	 * Implement to perform an necessary logic when a node is moved.
+	 * 
+	 * @param node - The node that was moved.
+	 * @throws DatabaseException
+	 */
+	public abstract DBNode moveCustomNode(N node) throws DatabaseException;
+	
+	/**
+	 * Implement to perform an necessary logic when a node is removed.
+	 * 
+	 * @param node - The node that was removed.
+	 * @throws DatabaseException
+	 */
+	public abstract void removeCustomNode(N node) throws DatabaseException;
+	
+	/**
+	 * Implement to perform an necessary logic when a node is copied.
+	 * 
+	 * @param originalNode - The original node
+	 * @param newCopyNode - The copy of the new node.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public abstract DBNode copyCustomNode(N originalNode, N newCopyNode) throws DatabaseException;
+	
+	/**
 	 * Fetch node, just meta data. No closure data with parent child relationships is fetched.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#getNode(java.lang.Long)
+	 * @see org.lenzi.fstore.repository.TreeRepository#getNode(java.lang.Long)
 	 */
 	@Override
 	public DBNode getNode(Long nodeId) throws DatabaseException {
@@ -75,7 +121,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addRootNode(org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.TreeRepository#addRootNode(org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public DBNode addRootNode(DBNode newNode) throws DatabaseException {
@@ -83,8 +129,6 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 		if(newNode == null){
 			throw new DatabaseException("Cannot add new node. Node object is null.");
 		}
-		
-		//logger.info("Add root node");
 		
 		return addNode(0L, newNode);
 		
@@ -96,7 +140,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 	 * @param parentNode - The parent node under which the new node will be added.
 	 * @param newNode - The new node to add.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addChildNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.TreeRepository#addChildNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public DBNode addChildNode(DBNode parentNode, DBNode newNode) throws DatabaseException {
@@ -107,8 +151,6 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 		if(parentNode.getNodeId() == null){
 			throw new DatabaseException("Cannot add new node. Parent node ID is null. This information is needed.");
 		}
-		
-		//logger.info("Add child node");
 		
 		return addNode(parentNode.getNodeId(), newNode);
 		
@@ -134,7 +176,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 		// Get next available node id from sequence
 		long nodeId = getSequenceVal(getSqlQueryNodeIdSequence());
 		
-		// Set node id and parent nod id
+		// Set node id and parent node id
 		newNode.setNodeId(nodeId);
 		newNode.setParentNodeId(parentNodeId);
 		
@@ -176,6 +218,9 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 		getEntityManager().flush();
 		getEntityManager().clear();
 		
+		// call users custom add node method
+		addCustomNode( (N)newNode );
+		
 		return newNode;		
 		
 	}
@@ -184,7 +229,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.TreeRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public List<DBClosure> getClosure(DBNode node) throws DatabaseException {
@@ -216,7 +261,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 	/**
 	 * Copy a node.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#copyNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode, boolean)
+	 * @see org.lenzi.fstore.repository.TreeRepository#copyNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode, boolean)
 	 */
 	@Override
 	public DBNode copyNode(DBNode nodeToCopy, DBNode parentNode, boolean copyChildren, NodeCopier copier) throws DatabaseException {
@@ -243,10 +288,12 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 			newCopy.setParentClosure(null);
 			
 			if(nodeToCopy.isRootNode()){
-				return addRootNode(newCopy);
+				newCopy = addRootNode(newCopy);
 			}else{
-				return addChildNode(parentNode, newCopy);
+				newCopy = addChildNode(parentNode, newCopy);
 			}
+			copyCustomNode( (N)nodeToCopy, (N)newCopy);
+			return newCopy;
 			
 		// copy the node and all children	
 		}else{
@@ -349,6 +396,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 		}else{
 			newCopy = addChildNode(parentNode, newCopy);
 		}
+		copyCustomNode( (N)nodeToCopy, (N)newCopy);
 		
 		// the node id of nodeToCopy has changed!
 		
@@ -379,7 +427,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 	/**
 	 * Add a tree.
 	 * 
-	 * @see org.lenzi.fstore.repository.ClosureRepository#addTree(org.lenzi.fstore.repository.model.DBTree, org.lenzi.fstore.repository.model.DBNode)
+	 * @see org.lenzi.fstore.repository.TreeRepository#addTree(org.lenzi.fstore.repository.model.DBTree, org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public DBTree addTree(DBTree newTree, DBNode newRootNode) throws DatabaseException {
@@ -579,13 +627,16 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 		
 		logger.info("remove node " + node.getNodeId());
 		
-		removeNode(node.getNodeId(), true, true);
+		if(node.getParentNodeId() == 0L){
+			throw new DatabaseException("Cannot remove root node of tree. Use removeTree() method.");
+		}		
 		
-		removeCustomNode( (N)node);
+		// remove data from FS_* tables
+		removeNode(node, true, true);	
+		
+		//logger.info("Remove users custom node, class type => " + node.getClass());
 		
 	}
-	
-	public abstract void removeCustomNode(N node) throws DatabaseException;
 	
 	/**
 	 * Remove node helper function.
@@ -594,9 +645,11 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 	 * @param nodeTable - True to remove the node and all child nodes from the FS_NODE table, false otherwise.
 	 * @param pruneTable - True to remove all closure entries from the FS_CLOSURE table, false otherwise.
 	 */
-	private void removeNode(Long nodeId, boolean nodeTable, boolean pruneTable) throws DatabaseException {
+	private void removeNode(DBNode node, boolean nodeTable, boolean pruneTable) throws DatabaseException {
 		
-		logger.info("remove node " + nodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
+		Long deleteNodeId = node.getNodeId();
+		
+		logger.info("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
 		
 		long pruneId = 0;
 		
@@ -610,7 +663,7 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 			// Add list of nodes to delete to our prune table
 			//
 			Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneTree());
-			populatePrune.setParameter(1,nodeId);
+			populatePrune.setParameter(1, deleteNodeId);
 			try {
 				executeUpdate(populatePrune);
 			} catch (DatabaseException e) {
@@ -623,19 +676,68 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 		
 		// this part must happen in the middle. it relies on data in the closure table
 		if(nodeTable){
+			
+			// the equivalent SQL query we are executing.
+			/*
+			delete
+			from fs_node n
+			where n.node_id in (
+			  select c.child_node_id
+			  from fs_closure c
+			  where c.parent_node_id = ?
+			)			 
+			 */
+			
+			CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+			
+			//
+			// create sub query to get list of all child nodes
+			//
+			CriteriaQuery<Long> childQuery = criteriaBuilder.createQuery(Long.class);
+			Root<FSClosure> closureRoot = childQuery.from(FSClosure.class);
+			childQuery.select(closureRoot.<Long>get(FSClosure_.childNodeId));
+			childQuery.where(criteriaBuilder.equal(closureRoot.get(FSClosure_.parentNodeId), deleteNodeId));
+			
+			List<Long> childNodeIdList = getEntityManager().createQuery(childQuery).getResultList();
+			if(CollectionUtil.isEmpty(childNodeIdList)){
+				throw new DatabaseException("Cannot delete node " + deleteNodeId + ". Failed to get list of child nodes from closure table. "
+						+ "	Should at the very least have the depth-0 selft links.");
+			}
+			
+			// TODO - call users custom remove node method for each node that was deleted!
+			//  remove users data
+			removeCustomNode( (N)node);	
+			
+			//
+			// create delete query which uses the list of child node ID we just retrieved.
+			//
+			CriteriaDelete criteriaDelete = criteriaBuilder.createCriteriaDelete(node.getClass());			
+			Root nodeRoot = criteriaDelete.from(node.getClass());
+			criteriaDelete.where(
+					nodeRoot.get(FSNode_.nodeId).in(childNodeIdList)
+				);
+			
+			getEntityManager().createQuery(criteriaDelete).executeUpdate();
+			
+			// This code deleted from FS_NODE. Doesn't work because we have to execute the delete from
+			// the users custom node table.
 			//
 			// Remove node, plus children, from node table. 
 			//
+			/*
 			Query queryDeleteFsNode = getEntityManager().createNativeQuery(getSqlQueryDeleteFsNodePruneTree());
-			queryDeleteFsNode.setParameter(1,nodeId);
+			queryDeleteFsNode.setParameter(1, deleteNodeId);
 			try {
 				executeUpdate(queryDeleteFsNode);
 			} catch (DatabaseException e) {
-				logger.error("Failed to remove node " + nodeId + ", plus all children, from FS_NODE. " +  e.getMessage(),e);
+				logger.error("Failed to remove node " + deleteNodeId + ", plus all children, from FS_NODE. " +  e.getMessage(),e);
 				e.printStackTrace();
 				return;
 			}
-			logger.debug("Deleted node " + nodeId + " from the node table.");
+			*/
+			
+			logger.debug("Deleted node " + deleteNodeId + " from the node table.");
+			
 		}
 		
 		if(pruneTable){
@@ -649,11 +751,11 @@ public abstract class AbstractClosureRepository<N extends DBNode> extends Abstra
 			try {
 				executeUpdate(queryDeleteFsClosure);
 			} catch (DatabaseException e) {
-				logger.error("Failed to remove node " + nodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
+				logger.error("Failed to remove node " + deleteNodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
 				e.printStackTrace();
 				return;
 			}
-			logger.debug("Deleted node " + nodeId + " from the closure table.");
+			logger.debug("Deleted node " + deleteNodeId + " from the closure table.");
 		}
 		
 	}	

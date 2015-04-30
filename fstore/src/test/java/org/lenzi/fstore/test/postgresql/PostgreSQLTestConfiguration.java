@@ -5,10 +5,8 @@ package org.lenzi.fstore.test.postgresql;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.AbstractPostgreSQLClosureRepository;
-import org.lenzi.fstore.repository.PostgreSQLTestClosureRepository;
-import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.TreeRepository;
+import org.lenzi.fstore.repository.PostgreSQLTestTreeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,12 +61,11 @@ public class PostgreSQLTestConfiguration implements TransactionManagementConfigu
 	 */
 	@Bean
 	@Profile("postgresql")
-	public ClosureRepository getPostgresClosureRepository(){
+	public TreeRepository getPostgresTreeRepository(){
 		
-		logger.info("Getting PostgreSQLTestClosureRepository");
+		logger.info("Getting PostgreSQLTestTreeRepository");
 		
-		//return new AbstractPostgreSQLClosureRepository<DBNode>();
-		return new PostgreSQLTestClosureRepository();
+		return new PostgreSQLTestTreeRepository();
 	}
 
 	/**

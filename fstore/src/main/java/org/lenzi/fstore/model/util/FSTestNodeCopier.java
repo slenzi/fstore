@@ -22,11 +22,11 @@ public class FSTestNodeCopier extends AbstractNodeCopier<FSTestNode> {
 	}
 
 	@Override
-	public FSTestNode doCopyWork(FSTestNode newNode, FSTestNode node) {
+	public FSTestNode doCopyWork(FSTestNode copyTo, FSTestNode copyFrom) {
 		
-		newNode.setTestValue(node.getTestValue());
+		copyTo.setTestValue(copyFrom.getTestValue());
 		
-		return newNode;
+		return copyTo;
 	}
 
 }

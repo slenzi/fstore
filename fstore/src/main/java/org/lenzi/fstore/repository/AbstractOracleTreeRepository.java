@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
  * Code for maintaining tree structures within an Oracle database using a closure table.
  * 
  * @author sal
+ *
+ * @param <N>
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public abstract class AbstractOracleClosureRepository<N extends DBNode> extends AbstractClosureRepository<N> {
+public abstract class AbstractOracleTreeRepository<N extends FSNode> extends AbstractTreeRepository<N> {
 
 	/**
 	 * 
@@ -234,7 +236,7 @@ public abstract class AbstractOracleClosureRepository<N extends DBNode> extends 
 	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT FS_TREE_ID_SEQUENCE.nextval from DUAL";	
 	
 	
-	public AbstractOracleClosureRepository() {
+	public AbstractOracleTreeRepository() {
 		
 	}
 	
@@ -364,16 +366,16 @@ public abstract class AbstractOracleClosureRepository<N extends DBNode> extends 
 	@Override
 	public String getRepositoryName() {
 		
-		logger.info(AbstractOracleClosureRepository.class.getName() + "getRepositoryName() called");
+		logger.info(AbstractOracleTreeRepository.class.getName() + "getRepositoryName() called");
 		
-		return AbstractOracleClosureRepository.class.getName();
+		return AbstractOracleTreeRepository.class.getName();
 	}	
 
 	/**
 	 * Get value from sequence
 	 * 
 	 * @param nativeSequenceQuery - a native SQL query which returns either nextval or currval from a sequence
-	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getSequenceVal(java.lang.String)
+	 * @see org.lenzi.fstore.repository.AbstractTreeRepository#getSequenceVal(java.lang.String)
 	 */
 	@Override
 	protected long getSequenceVal(String nativeSequenceQuery) throws DatabaseException {

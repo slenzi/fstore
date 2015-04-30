@@ -1,8 +1,8 @@
 package org.lenzi.fstore.config;
 
-import org.lenzi.fstore.repository.ClosureRepository;
-import org.lenzi.fstore.repository.OracleTestClosureRepository;
-import org.lenzi.fstore.repository.PostgreSQLTestClosureRepository;
+import org.lenzi.fstore.repository.TreeRepository;
+import org.lenzi.fstore.repository.OracleTestTreeRepository;
+import org.lenzi.fstore.repository.PostgreSQLTestTreeRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;
@@ -22,35 +22,33 @@ public class RepositoryConfig {
 	private Logger logger;
 
 	/**
-	 * Create instance of OracleClosureRepository. Will only be created when
+	 * Create instance of OracleTestTreeRepository. Will only be created when
 	 * the "oracle" Spring Profile is active.
 	 * 
-	 * @return Instance of an OracleClosureRepository.
+	 * @return Instance of an OracleTestTreeRepository.
 	 */
 	@Bean
 	@Profile("oracle")
-	public ClosureRepository getOracleClosureRepository(){
+	public TreeRepository getOracleTreeRepository(){
 		
-		logger.info("Creating Oracle Closure Repository");
+		logger.info("Creating Oracle Tree Repository");
 		
-		//return new AbstractOracleClosureRepository<DBNode>();
-		return new OracleTestClosureRepository();
+		return new OracleTestTreeRepository();
 	}
 	
 	/**
-	 * Create instance of PostgresClosureRepository. Will only be created when
+	 * Create instance of PostgreSQLTestTreeRepository. Will only be created when
 	 * the "postgresql" Spring Profile is active.
 	 * 
-	 * @return Instance of an PostgresClosureRepository.
+	 * @return Instance of an PostgreSQLTestTreeRepository.
 	 */
 	@Bean
 	@Profile("postgresql")
-	public ClosureRepository getPostgresClosureRepository(){
+	public TreeRepository getPostgresTreeRepository(){
 		
-		logger.info("Creating PostgreSQL Closure Repository");
+		logger.info("Creating PostgreSQL Tree Repository");
 		
-		//return new AbstractPostgreSQLClosureRepository<DBNode>();
-		return new PostgreSQLTestClosureRepository();
+		return new PostgreSQLTestTreeRepository();
 		
 	}
 

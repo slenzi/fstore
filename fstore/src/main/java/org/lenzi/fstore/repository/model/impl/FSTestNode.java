@@ -9,9 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 /**
  * Node for testing the closure repository code. Also serves as an example custom
  * node which extends FSNode. Other nodes can extends FSNode to link any type of

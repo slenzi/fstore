@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
  * Code for maintaining tree structures within a PostgreSQL database using a closure table.
  * 
  * @author sal
+ *
+ * @param <N>
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public abstract class AbstractPostgreSQLClosureRepository<N extends DBNode> extends AbstractClosureRepository<N> {
+public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode> extends AbstractTreeRepository<N> {
 
 	/**
 	 * 
@@ -236,7 +238,7 @@ public abstract class AbstractPostgreSQLClosureRepository<N extends DBNode> exte
 	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_TREE_ID_SEQUENCE')";
 	
 	
-	public AbstractPostgreSQLClosureRepository() {
+	public AbstractPostgreSQLTreeRepository() {
 		
 	}
 	
@@ -366,16 +368,16 @@ public abstract class AbstractPostgreSQLClosureRepository<N extends DBNode> exte
 	@Override
 	public String getRepositoryName() {
 		
-		logger.info(AbstractPostgreSQLClosureRepository.class.getName() + "getRepositoryName() called");
+		logger.info(AbstractPostgreSQLTreeRepository.class.getName() + "getRepositoryName() called");
 		
-		return AbstractPostgreSQLClosureRepository.class.getName();
+		return AbstractPostgreSQLTreeRepository.class.getName();
 	}	
 	
 	/**
 	 * Get value from sequence
 	 * 
 	 * @param nativeSequenceQuery - a native SQL query which returns either nextval or currval from a sequence
-	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getSequenceVal(java.lang.String)
+	 * @see org.lenzi.fstore.repository.AbstractTreeRepository#getSequenceVal(java.lang.String)
 	 */
 	@Override
 	protected long getSequenceVal(String nativeSequenceQuery) throws DatabaseException {

@@ -8,7 +8,7 @@ import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.DBTree;
 
-public interface ClosureRepository {
+public interface TreeRepository {
 	
 	/**
 	 * Get name of repository.

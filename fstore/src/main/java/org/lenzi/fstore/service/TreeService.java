@@ -11,7 +11,7 @@ import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.model.util.NodeCopier;
-import org.lenzi.fstore.repository.ClosureRepository;
+import org.lenzi.fstore.repository.TreeRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
@@ -36,14 +36,14 @@ public class TreeService {
 	private Logger logger;
 	
 	@Autowired
-	ClosureRepository closureRepository;
+	TreeRepository treeRepository;
 	
 	@Autowired
 	ClosureLogger closureLogger;
 	
 	// debug method for testing factory generation
 	public String getClosureRepoType(){
-		return closureRepository.getRepositoryName();
+		return treeRepository.getRepositoryName();
 	}
 	
 	/**
@@ -80,7 +80,7 @@ public class TreeService {
 		
 		DBTree newTree = null;
 		try {
-			newTree = closureRepository.addTree(tree, rootNode);
+			newTree = treeRepository.addTree(tree, rootNode);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -165,7 +165,7 @@ public class TreeService {
 		
 		DBNode addedNode = null;
 		try {
-			addedNode = closureRepository.addRootNode(newNode);
+			addedNode = treeRepository.addRootNode(newNode);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -185,7 +185,7 @@ public class TreeService {
 		
 		DBNode addedNode = null;
 		try {
-			addedNode = closureRepository.addChildNode(parentNode, newNode);
+			addedNode = treeRepository.addChildNode(parentNode, newNode);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -207,7 +207,7 @@ public class TreeService {
 		
 		DBNode newCopy = null;
 		try {
-			newCopy = closureRepository.copyNode(nodeToCopy, parentNode, copyChildren, copier);
+			newCopy = treeRepository.copyNode(nodeToCopy, parentNode, copyChildren, copier);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -226,7 +226,7 @@ public class TreeService {
 		
 		List<DBClosure> closure = null;
 		try {
-			closure = closureRepository.getClosure(node);
+			closure = treeRepository.getClosure(node);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -246,7 +246,7 @@ public class TreeService {
 		
 		DBTree tree = null;
 		try {
-			tree = closureRepository.addTree(newTree, newRootNode);
+			tree = treeRepository.addTree(newTree, newRootNode);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -261,12 +261,8 @@ public class TreeService {
 	 */
 	public void removeNode(DBNode node) throws ServiceException{
 		
-		if(node.getParentNodeId() == 0L){
-			throw new ServiceException("Cannot remove root node of tree. Use removeTree() method.");
-		}		
-		
 		try {
-			closureRepository.removeNode(node);
+			treeRepository.removeNode(node);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -323,7 +319,7 @@ public class TreeService {
 	public boolean isSameTree(DBNode node1, DBNode node2) throws ServiceException {
 		
 		try {
-			return closureRepository.isSameTree(node1, node2);
+			return treeRepository.isSameTree(node1, node2);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -349,7 +345,7 @@ public class TreeService {
 	public boolean isParent(DBNode node1, DBNode node2, boolean fullSearch) throws ServiceException {
 		
 		try {
-			return closureRepository.isParent(node1, node2, fullSearch);
+			return treeRepository.isParent(node1, node2, fullSearch);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -376,7 +372,7 @@ public class TreeService {
 	public boolean isChild(DBNode node1, DBNode node2, boolean fullSearch) throws ServiceException {
 		
 		try {
-			return closureRepository.isChild(node1, node2, fullSearch);
+			return treeRepository.isChild(node1, node2, fullSearch);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}		
@@ -397,7 +393,7 @@ public class TreeService {
 		
 		List<DBClosure> closure = null;
 		try {
-			closure = closureRepository.getClosure(tree.getRootNode());
+			closure = treeRepository.getClosure(tree.getRootNode());
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
