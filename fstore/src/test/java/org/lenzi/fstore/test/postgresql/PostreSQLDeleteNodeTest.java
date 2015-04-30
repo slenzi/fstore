@@ -72,5 +72,15 @@ public class PostreSQLDeleteNodeTest extends AbstractDeleteNodeTest {
 			logger.error(e.getMessage());
 		}
 	}
+	
+	@Test
+	@Rollback(false)	
+	public void deleteNonLeafNodeTest(){
+		try {
+			deleteNonLeafNode();
+		} catch (ServiceException e) {
+			logger.error(e.getMessage());
+		}
+	}
 
 }

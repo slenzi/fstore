@@ -26,41 +26,34 @@ public class OracleTestTreeRepository extends AbstractOracleTreeRepository<FSTes
 
 	
 	@Override
-	public DBNode addCustomNode(FSTestNode node) throws DatabaseException {
+	public DBNode postAdd(FSTestNode node) throws DatabaseException {
 		
-		logger.info("Add custom node => " + node.getClass().getCanonicalName());
-		logger.info("Is root node => " + node.isRootNode());
-		
-		return null;
-		
-	}
-
-	@Override
-	public DBNode moveCustomNode(FSTestNode node) throws DatabaseException {
-		
-		logger.info("Move custom node => " + node.getClass().getCanonicalName());
-		logger.info("Is root node => " + node.isRootNode());
+		logger.info("Post add node => " + node.getClass().getCanonicalName() + ", is root => " + node.isRootNode());
 		
 		return null;
 		
 	}
 
 	@Override
-	public void removeCustomNode(FSTestNode node) throws DatabaseException {
+	public DBNode postMove(FSTestNode node) throws DatabaseException {
 		
-		// remove the node and anything under it
+		logger.info("Post move node => " + node.getClass().getCanonicalName() + ", is root => " + node.isRootNode());
 		
-		logger.info("Remove custom node => " + node.getClass().getCanonicalName());
-		logger.info("Is root node => " + node.isRootNode());
-		
-		remove(node);
+		return null;
 		
 	}
 
 	@Override
-	public DBNode copyCustomNode(FSTestNode originalNode, FSTestNode newCopyNode) throws DatabaseException {
+	public void postRemove(FSTestNode node) throws DatabaseException {
 		
-		logger.info("Copy node.");
+		logger.info("Post remove node => " + node.getClass().getCanonicalName() + ", is root => " + node.isRootNode());
+		
+	}
+
+	@Override
+	public DBNode postCopy(FSTestNode originalNode, FSTestNode newCopyNode) throws DatabaseException {
+		
+		logger.info("Post copy node");
 		
 		return null;
 		
