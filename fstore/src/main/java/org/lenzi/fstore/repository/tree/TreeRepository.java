@@ -91,7 +91,16 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<DBClosure> getClosure(DBNode node) throws DatabaseException;	
+	public List<DBClosure> getClosure(DBNode node) throws DatabaseException;
+	
+	/**
+	 * Move a node
+	 * 
+	 * @param nodeToMode
+	 * @param newParentNode
+	 * @throws DatabaseException
+	 */
+	public void moveNode(DBNode nodeToMode, DBNode newParentNode)  throws DatabaseException;
 	
 	/**
 	 * Get a tree with it's root node.

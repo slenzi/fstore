@@ -290,21 +290,15 @@ public class TreeService {
 	 * @param nodeToMode - The node to move. Cannot be a root node.
 	 * @param newParentNode - The new parent node. Can be in a different tree.
 	 */
-	/*
-	public void moveNode(FSNode nodeToMode, FSNode newParentNode) throws ServiceException {
-		
-		if(nodeToMode.getParentNodeId() == 0L){
-			throw new ServiceException("Cannot move root node of tree. Use rootToLeaf() method.");
-		}
+	public void moveNode(DBNode nodeToMode, DBNode newParentNode) throws ServiceException {
 		
 		try {
-			closureRepository.moveNode(nodeToMode.getNodeId(), newParentNode.getNodeId());
+			treeRepository.moveNode(nodeToMode, newParentNode);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
 		
 	}
-	*/
 	
 	/**
 	 * Check if two nodes are in the same tree. Returns true if they are, false if they are not.

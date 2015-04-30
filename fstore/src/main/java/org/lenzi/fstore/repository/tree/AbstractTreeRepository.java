@@ -358,6 +358,169 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	}
 	
 	/**
+	 * Move a node
+	 */
+	@Override
+	public void moveNode(DBNode nodeToMode, DBNode newParentNode) throws DatabaseException {
+		
+		Long moveNodeId = nodeToMode.getNodeId();
+		Long newParentNodeId = newParentNode.getNodeId();
+		
+		// make sure node being moved is not a root node.
+		if(nodeToMode.getParentNodeId() == 0L){
+			throw new DatabaseException("Cannot move a root node. Use future rootToLeaf() method...coming soon...");
+		}
+		
+		// make sure new parent node is not a current child of the node that's being moved. you
+		// cannot move a tree to under itself! we don't need to worry about this for the copy operation.
+		if(isChild(newParentNode, nodeToMode, true)){
+			throw new DatabaseException("Cannot move node " + moveNodeId + " to under node " + newParentNodeId + 
+					". Node " + newParentNodeId + " is a child of node " + moveNodeId);
+		}
+		
+		logger.info("Moving node => " + moveNodeId + " to new parent node => " + newParentNodeId);
+		
+		// Get tree structure for the  branch / tree section we are moving.
+		List<DBClosure> closureList = getClosure(nodeToMode);
+		
+		if(closureList == null || closureList.size() == 0){
+			throw new DatabaseException("Move error. No closure list for node " + moveNodeId);
+		}
+		
+		logger.info("Fetched tree data for moving.");
+		closureLogger.logClosure(closureList);
+		
+		// Prune the existing data
+		logger.info("Pruning existing tree/branch node " + moveNodeId);
+		// when performing a move we don't need (or want) to remove the nodes from the fs_node table. we will simply update the parent_ids.
+		// we do want to remove the data from the closure table because the data gets rebuilt correctly during the insert operation.
+		removeNode(nodeToMode, false, true);
+		// necessary?
+		getEntityManager().flush();
+		
+		HashMap<Long,List<DBNode>> treeMap = new HashMap<Long,List<DBNode>>();
+		
+		// get the root node of the sub-tree we are copying.
+		DBNode rootNode = null;
+		for(DBClosure c : closureList){
+			if(c.hasParent() && c.hasChild()){
+				rootNode = c.getParentNode();
+				break;
+			}
+		}
+		
+		// loop through closure list and build tree map
+		DBClosure closure = null;
+		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
+			closure = closureList.get(closureIndex);
+			if(closure.hasParent() && closure.hasChild()){
+				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
+					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
+				}else{
+					List<DBNode> childList = new ArrayList<DBNode>();
+					childList.add(closure.getChildNode());
+					treeMap.put(closure.getParentNode().getNodeId(), childList);
+				}
+			}
+		}
+		
+		// get children for root node of sub-tree
+		List<DBNode> childList = treeMap.get(rootNode.getNodeId());		
+	
+		// add the root node to the new parent node, then walk the tree and add all the children.
+		moveNodes(rootNode, newParentNode, childList, treeMap, DateUtil.getCurrentTime());	
+		
+	}
+	
+	/**
+	 * Helper method for the move nodes operation.
+	 * 
+	 * @param rootNode
+	 * @param parentNode
+	 * @param childNodes
+	 * @param treeMap
+	 * @param dateUpdated
+	 * @throws DatabaseException
+	 */
+	private void moveNodes(DBNode rootNode, DBNode parentNode, List<DBNode> childNodes, HashMap<Long,List<DBNode>> treeMap, Timestamp dateUpdated) throws DatabaseException {
+		
+		Long rootNodeId = rootNode.getNodeId();
+		Long parentNodeNodeId = parentNode.getNodeId();		
+		
+		logger.info("Adding " + rootNodeId + " (" + rootNode.getName() + ") to parent " + parentNodeNodeId);
+		
+		// re-add node
+		rootNode.setParentNodeId(parentNodeNodeId);
+		rootNode.setDateUpdated(dateUpdated);
+		reAddNode(rootNode);
+		
+		if(childNodes != null && childNodes.size() > 0){
+			
+			logger.info("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
+			
+			for(DBNode childNode : childNodes){
+				
+				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
+				if(childNode.getNodeId() != rootNodeId){
+					
+					// recursively add child nodes, and all their children. The next child node becomes the current root node.
+					moveNodes(childNode, rootNode, treeMap.get(childNode.getNodeId()), treeMap, dateUpdated);
+					
+				}
+				
+			}
+		}
+		
+	}
+	
+	/**
+	 * Merge the node with the updated data, and add new closure links.
+	 * 
+	 * @param node - the updated node to re-add/merge in the database.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private DBNode reAddNode(DBNode node) throws DatabaseException{
+		
+		// re-add node to database
+		getEntityManager().merge(node);
+		
+		// Get next available link id from sequence
+		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
+		
+		// add depth-0 self link to closure table
+		FSClosure selfLink = new FSClosure();
+		selfLink.setLinkId(linkId);
+		selfLink.setChildNodeId(node.getNodeId());
+		selfLink.setParentNodeId(node.getNodeId());	
+		selfLink.setDepth(0);
+		
+		// save closure self link to database
+		getEntityManager().persist(selfLink);
+		
+		// necessary?
+		getEntityManager().flush();
+		
+		// add parent-child links to closure table
+		Query queryInsertLinks = getEntityManager().createNativeQuery(getSqlQueryInsertMakeParent());
+		queryInsertLinks.setParameter(1, node.getParentNodeId());
+		queryInsertLinks.setParameter(2, node.getNodeId());		
+		try {
+			executeUpdate(queryInsertLinks);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to add parent-child links FS_CLOSURE for node "
+					+ "(id = " + node.getNodeId() + ", name = " + node.getName() + "). " +  e.getMessage(), e);
+		}
+		
+		// these two calls are required ( definitely the clear() call )
+		getEntityManager().flush();
+		getEntityManager().clear();
+		
+		return node;		
+		
+	}	
+
+	/**
 	 * Helper function for the copy node operation.
 	 * 
 	 * @param nodeToCopy
@@ -686,7 +849,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		Long deleteNodeId = node.getNodeId();
 		
-		//logger.info("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
+		logger.info("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
 		
 		long pruneId = 0;
 		
@@ -733,10 +896,12 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			
 		}
 		
-		// allow user access to each node that was delete so that they may perform post delete cleanup
-		for(N n : userNodesToDelete){
-			//  remove users data
-			postRemove( (N)n);				
+		if(nodeTable){
+			// allow user access to each node that was delete so that they may perform post delete cleanup
+			for(N n : userNodesToDelete){
+				//  remove users data
+				postRemove( (N)n);				
+			}
 		}
 		
 	}
