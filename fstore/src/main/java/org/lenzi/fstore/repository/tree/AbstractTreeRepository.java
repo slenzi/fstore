@@ -14,7 +14,6 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
@@ -302,15 +301,10 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		// copy the node and all children	
 		}else{
 			
-			//logger.info("Copy node with children");
-			
-			//
 			// Get closure data for the sub-tree we are copying
-			//
 			List<DBClosure> closureList = getClosure(nodeToCopy);
 			
 			//logger.info("Fetched closure data for node => " + nodeToCopy.getNodeId());
-			
 			//closureLogger.logClosure(closureList);
 			
 			if(closureList == null || closureList.size() == 0){
@@ -376,17 +370,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		Long copyNodeId = nodeToCopy.getNodeId();
 		
-		/*
-		logger.info("Adding " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") to parent " + 
-				parentNode.getNodeId() + " (" + parentNode.getName() + ")");
-		
-		if(childNodes != null && childNodes.size() > 0){
-			logger.info("Before copy:");
-			logger.info("-Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + 
-					" children (including itself, depth-0 link).");
-		}
-		*/
-		
 		DBNode newCopy = copier.copy(nodeToCopy);
 		newCopy.setNodeId(null);
 		newCopy.setParentNodeId(null);
@@ -405,15 +388,10 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		if(childNodes != null && childNodes.size() > 0){
 			
-			//logger.info("Node " + nodeToCopy.getNodeId() + " (" + nodeToCopy.getName() + ") has " + childNodes.size() + " children (including itself, depth-0 link).");
-			
 			for(DBNode childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
 				if(childNode.getNodeId() != copyNodeId){
-					
-					//logger.info("Add next child node " + childNode.getNodeId() + " (" + childNode.getName() + 
-					//		") to newly added parent " + newCopy.getNodeId() + " (" + newCopy.getName() + ")");
 					
 					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
 					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap, copier);
@@ -473,8 +451,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isSameTree(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode)
+	/**
+	 * Are two nodes in the same tree
 	 */
 	@Override
 	public boolean isSameTree(DBNode node1, DBNode node2) throws DatabaseException {
@@ -533,8 +511,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isParent(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode, boolean)
+	/**
+	 * Is node1 a parent of node2
 	 */
 	@Override
 	public boolean isParent(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException {
@@ -562,8 +540,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.repository.ClosureRepository#isChild(org.lenzi.fstore.repository.model.DbNode, org.lenzi.fstore.repository.model.DbNode, boolean)
+	/**
+	 * Is node1 a child of node2
 	 */
 	@Override
 	public boolean isChild(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException {
@@ -591,6 +569,13 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 	}
 	
+	/**
+	 * Get a node with its parent closure data
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public DBNode getNodeWithParentClosure(DBNode node) throws DatabaseException {
 		
 		Query query = null;
@@ -606,6 +591,13 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		return nodeWithParentClosure;
 	}
 
+	/**
+	 * Get a node with its child closure data
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public DBNode getNodeWithChildClosure(DBNode node) throws DatabaseException {
 		
 		Query query = null;
@@ -622,7 +614,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	}
 	
 	/**
-	 * Removes the node, and all it's children, from the database.
+	 * Removes the node and all it's children from the database.
 	 */
 	@Override
 	public void removeNode(DBNode node) throws DatabaseException {
@@ -638,23 +630,19 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	}
 	
 	/**
-	 * Removes all the nodes children, but not the node itself.
+	 * Removes all the children of the node, but not the node itself.
 	 */
 	@Override
 	public void removeChildren(DBNode node) throws DatabaseException {
 		
-		Long parentNodeId = node.getNodeId();
-		
-		//
-		// Get next available prune id from sequence.
-		//
-		long pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
-		
 		List<N> userNodesToDelete = null;
 		
-		//
+		Long parentNodeId = node.getNodeId();
+		
+		// Get next available prune id from sequence.
+		long pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
+		
 		// Add list of nodes to delete to our prune table
-		//
 		Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneChildren());
 		populatePrune.setParameter(1, parentNodeId);
 		try {
@@ -668,11 +656,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		logger.debug("Deleted children of node " + parentNodeId + " from the node table.");	
 		
-		//
 		// Remove children links from closure table.
-		//
 		// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
-		//
 		Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
 		queryDeleteFsClosure.setParameter(1, pruneId);
 		try {
@@ -701,7 +686,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		Long deleteNodeId = node.getNodeId();
 		
-		logger.info("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
+		//logger.info("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
 		
 		long pruneId = 0;
 		
@@ -709,14 +694,10 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		if(pruneTable){
 			
-			//
 			// Get next available prune id from sequence
-			//
 			pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
 			
-			//
 			// Add list of nodes to delete to our prune table
-			//
 			Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneTree());
 			populatePrune.setParameter(1, deleteNodeId);
 			try {
@@ -739,11 +720,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		if(pruneTable){
 			
-			//
 			// Remove node depth-0 self link, plus all children links, from closure table.
-			//
 			// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
-			//
 			Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
 			queryDeleteFsClosure.setParameter(1,pruneId);
 			try {
@@ -752,6 +730,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 				throw new DatabaseException("Failed to remove node " + deleteNodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
 			}
 			logger.debug("Deleted node " + deleteNodeId + " from the closure table.");
+			
 		}
 		
 		// allow user access to each node that was delete so that they may perform post delete cleanup
@@ -796,9 +775,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		
-		//
 		// create sub query to get list of all child nodes (excluding the node itself, the depth-0 self link entry in the closure)
-		//
 		CriteriaQuery<Long> childQuery = criteriaBuilder.createQuery(Long.class);
 		Root<FSClosure> closureRoot = childQuery.from(FSClosure.class);	
 		childQuery.select(closureRoot.<Long>get(FSClosure_.childNodeId));
@@ -822,24 +799,17 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Cannot delete " + ((onlyChildren) ? "children of" : "") + " node " + nodeId + ". Failed to get list of child nodes IDs.");
 		}			
 		
-		//
 		// Query to get all nodes to delete. Fetch their closure data with their parent and child node data.
-		//
 		CriteriaQuery selectNodesToDelete = criteriaBuilder.createQuery(node.getClass());
 		Root nodeSelectRoot = selectNodesToDelete.from(node.getClass());
-		
 		SetJoin childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
 		SetJoin parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
-		
 		Fetch childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
 		Fetch parentClosureFetch =  nodeSelectRoot.fetch(FSNode_.parentClosure, JoinType.LEFT);
-		Fetch childClosureParentNodeFetch =  childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
-		Fetch childClosureChildNodeFetch =  childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
-		Fetch parentClosureParentNodeFetch =  parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
-		Fetch parentClosureChildNodeFetch =  parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
-		
-		Path<FSClosure> closureChildNodeId = childClosureJoin.get(FSClosure_.childNodeId);
-		Path<FSClosure> closureParentNodeId = childClosureJoin.get(FSClosure_.parentNodeId);
+		childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
 		selectNodesToDelete.distinct(true);
 		selectNodesToDelete.select(nodeSelectRoot);
 		selectNodesToDelete.where(
@@ -849,17 +819,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		if(CollectionUtil.isEmpty(userNodesToDelete)){
 			throw new DatabaseException("Failed to get list of nodes to delete.");
 		}
-		/*
-		else{
-			for(N n : userNodesToDelete){
-				logger.info("Need to delete child node => " + n.getNodeId() + " which has parent node " + n.getParentNodeId());
-			}
-		}
-		*/
 		
-		//
 		// create delete query which uses the list of child node ID we just retrieved.
-		//
 		CriteriaDelete criteriaDelete = criteriaBuilder.createCriteriaDelete(node.getClass());
 		Root nodeDeleteRoot = criteriaDelete.from(node.getClass());
 		criteriaDelete.where(

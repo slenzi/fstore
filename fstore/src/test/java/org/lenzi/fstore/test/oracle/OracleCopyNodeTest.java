@@ -76,13 +76,11 @@ public class OracleCopyNodeTest extends AbstractCopyNodeTest {
 	@Test
 	@Rollback(true)	
 	public void copyNodeWithoutChildrenTest(){
-		/*
 		try {
 			copyNodeWithoutChildren();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}
-		*/
 	}	
 	
 	@Test
@@ -98,25 +96,21 @@ public class OracleCopyNodeTest extends AbstractCopyNodeTest {
 	@Test
 	@Rollback(true)	
 	public void copyNodeDifferentTreeTest(){
-		/*
 		try {
 			copyNodeDifferentTree();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}
-		*/
 	}
 	
 	@Test
 	@Rollback(true)	
 	public void multiCopySameTreeTest(){
-		/*
 		try {
 			multiCopySameTree();
 		} catch (ServiceException e) {
 			logger.error(e.getMessage());
 		}
-		*/
 	}	
 		
 }

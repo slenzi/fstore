@@ -84,6 +84,16 @@ public interface TreeRepository {
 	public void removeChildren(DBNode node) throws DatabaseException;	
 	
 	/**
+	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
+	 * Usually you would do this for a root node of a tree.
+	 * 
+	 * @param node - The node to fetch closure data for. Most likely you want this to be a root node of a tree.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public List<DBClosure> getClosure(DBNode node) throws DatabaseException;	
+	
+	/**
 	 * Get a tree with it's root node.
 	 * 
 	 * @param treeId - The ID of the tree.
@@ -117,15 +127,6 @@ public interface TreeRepository {
 	//public Tree addTree(String treeName, String treeDesc, Node existingNode) throws DatabaseException;
 	
 	/**
-	 * Copy a the node, and optionally all it's children.
-	 * 
-	 * @param nodeId - the id of the node to copy.
-	 * @param parentNodeId - the parent node where all the new copy node will be placed under.
-	 * @param copyChildren - true to copy over all the nodes children nodes as well, false to just copy the node.
-	 */
-	//public void copyNode(Long nodeId, Long parentNodeId, boolean copyChildren) throws DatabaseException;
-	
-	/**
 	 * Remove a tree
 	 * 
 	 * @param treeId
@@ -145,16 +146,6 @@ public interface TreeRepository {
 	//public void removeTree(Tree tree, Node newParentNode)  throws DatabaseException;
 	
 	/**
-	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
-	 * Usually you would do this for a root node of a tree.
-	 * 
-	 * @param node - The node to fetch closure data for. Most likely you want this to be a root node of a tree.
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public List<DBClosure> getClosure(DBNode node) throws DatabaseException;
-	
-	/**
 	 * Move a node. The node, plus all its chilren, will be moved to under the new parent node.
 	 * 
 	 * @param nodeId - the id of the node to move
@@ -162,22 +153,6 @@ public interface TreeRepository {
 	 * @throws DatabaseException
 	 */
 	//public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException;
-	
-	/**
-	 * Remove a node and all its children.
-	 * 
-	 * @param nodeId - the id of the node to remove
-	 * @throws DatabaseException
-	 */
-	//public void removeNode(Long nodeId) throws DatabaseException;
-	
-	/**
-	 * Remove all children of a node. The node itself is not removed
-	 * 
-	 * @param nodeId - the id of the node, all its children will be removed.
-	 * @throws DatabaseException
-	 */
-	//public void removeChildren(Long nodeId) throws DatabaseException;
 	
 	/**
 	 * Check if two nodes are in the same tree. Returns true if they are, false if they are not.
