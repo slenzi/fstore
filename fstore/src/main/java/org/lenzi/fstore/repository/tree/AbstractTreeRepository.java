@@ -115,7 +115,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			query = getEntityManager().createQuery(getHqlQueryNodeById());
 			query.setParameter("nodeId", nodeId);
 		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}		
 		
 		return (DBNode)getSingleResult(query);	
@@ -133,7 +133,12 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Cannot add new node. Node object is null.");
 		}
 		
-		return addNode(0L, newNode);
+		DBNode addedNode = addNode(0L, newNode);
+		
+		// call users custom add node method
+		postAdd( (N)addedNode );
+		
+		return addedNode;		
 		
 	}
 
@@ -155,7 +160,12 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Cannot add new node. Parent node ID is null. This information is needed.");
 		}
 		
-		return addNode(parentNode.getNodeId(), newNode);
+		DBNode addedNode = addNode(parentNode.getNodeId(), newNode);
+		
+		// call users custom add node method
+		postAdd( (N)addedNode );
+		
+		return addedNode;
 		
 	}
 	
@@ -164,6 +174,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * 
 	 * @param parentNodeId - The ID of the parent node under which the new new will be added.
 	 * @param newNode - The new node to add.
+	 * @param isCopy - True to trigger the postCopy() method, false to trigger to postAdd() method.
 	 * @return
 	 * @throws DatabaseException
 	 */
@@ -183,7 +194,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		newNode.setNodeId(nodeId);
 		newNode.setParentNodeId(parentNodeId);
 		
-		//logger.info("Adding node " + nodeId + " (" + newNode.getName() + ") to parent node " + parentNodeId);
+		//logger.debug("Adding node " + nodeId + " (" + newNode.getName() + ") to parent node " + parentNodeId);
 		
 		// Save node to database
 		getEntityManager().persist(newNode);
@@ -221,12 +232,79 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		getEntityManager().flush();
 		getEntityManager().clear();
 		
-		// call users custom add node method
-		postAdd( (N)newNode );
-		
 		return newNode;		
 		
 	}
+	
+	/**
+	 * Copy the child node, and add the copy to the specified parent.
+	 * 
+	 * @param parentNodeId - The ID of the parent node where the copy of the new node will be placed under.
+	 * @param nodeToCopy - The node to copy
+	 * @param copier - The copier which knows how to copy the node.
+	 * @return - A reference to the new copy.
+	 * @throws DatabaseException
+	 */
+	private DBNode addChildNodeCopy(DBNode parentNode, DBNode nodeToCopy, NodeCopier copier) throws DatabaseException {
+		
+		if(parentNode == null || nodeToCopy == null){
+			throw new DatabaseException("Cannot copy child node. Parent node and/or child node objects are null.");
+		}
+		if(parentNode.getNodeId() == null){
+			throw new DatabaseException("Cannot copy child node. Parent node ID is null. This information is needed.");
+		}		
+		
+		// copy node
+		DBNode newCopy = copier.copy(nodeToCopy);
+		
+		// clear any data that will be set by the insert process.
+		newCopy.setNodeId(null);
+		newCopy.setParentNodeId(null);
+		newCopy.setChildClosure(null);
+		newCopy.setParentClosure(null);
+		
+		// add new copy
+		newCopy = addNode(parentNode.getNodeId(), newCopy);
+		
+		// call the post copy method
+		postCopy( (N)nodeToCopy, (N)newCopy);		
+		
+		return newCopy;
+		
+	}
+	
+	/**
+	 * Copy the root node.
+	 * 
+	 * @param nodeToCopy - The root node to copy.
+	 * @param copier - The copier which knows how to copy the node.
+	 * @return - A reference to the new copy.
+	 * @throws DatabaseException
+	 */
+	private DBNode addRootNodeCopy(DBNode nodeToCopy, NodeCopier copier) throws DatabaseException {
+		
+		if(nodeToCopy == null){
+			throw new DatabaseException("Cannot copy root node. Node object is null.");
+		}		
+		
+		// copy node
+		DBNode newCopy = copier.copy(nodeToCopy);
+		
+		// clear any data that will be set by the insert process.
+		newCopy.setNodeId(null);
+		newCopy.setParentNodeId(null);
+		newCopy.setChildClosure(null);
+		newCopy.setParentClosure(null);
+		
+		// add new copy
+		newCopy = addNode(0L, newCopy);
+		
+		// call the post copy method
+		postCopy( (N)nodeToCopy, (N)newCopy);		
+		
+		return newCopy;
+		
+	}	
 	
 	/**
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
@@ -244,7 +322,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
 		}
 		
-		//logger.info("Fetching closure data for node id => " + node.getNodeId());
+		//logger.debug("Fetching closure data for node id => " + node.getNodeId());
 		
 		List<DBClosure> results = null;
 		Query query = null;
@@ -253,7 +331,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			query.setParameter(1, node.getNodeId());
 			query.setParameter(2, node.getNodeId());			
 		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}
 		results = getResultList(query);
 		
@@ -282,8 +360,16 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		// copy just the node
 		if(!copyChildren){
 			
-			//logger.info("Copy node without children");
+			DBNode newCopy = null;
+			if(nodeToCopy.isRootNode()){
+				newCopy = addRootNodeCopy(nodeToCopy, copier);
+			}else{
+				newCopy = addChildNodeCopy(parentNode, nodeToCopy, copier);
+			}
+			return newCopy;
 			
+			//logger.debug("Copy node without children");
+			/*
 			DBNode newCopy = copier.copy(nodeToCopy);
 			newCopy.setNodeId(null);
 			newCopy.setParentNodeId(null);
@@ -296,7 +382,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 				newCopy = addChildNode(parentNode, newCopy);
 			}
 			postCopy( (N)nodeToCopy, (N)newCopy);
-			return newCopy;
+			*/
+			
+			
 			
 		// copy the node and all children	
 		}else{
@@ -304,7 +392,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			// Get closure data for the sub-tree we are copying
 			List<DBClosure> closureList = getClosure(nodeToCopy);
 			
-			//logger.info("Fetched closure data for node => " + nodeToCopy.getNodeId());
+			//logger.debug("Fetched closure data for node => " + nodeToCopy.getNodeId());
 			//closureLogger.logClosure(closureList);
 			
 			if(closureList == null || closureList.size() == 0){
@@ -361,14 +449,14 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for node being moved => " + moveNodeId);
 			}
-			logger.info("Fetched closure data for node being moved => " + moveNodeId);
+			logger.debug("Fetched closure data for node being moved => " + moveNodeId);
 			closureLogger.logClosure(closureList);
 			
 			closureList = getClosure(newParentNode);
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for new parent node => " + newParentNodeId);
 			}
-			logger.info("Fetched closure data for new parent node => " + newParentNodeId);
+			logger.debug("Fetched closure data for new parent node => " + newParentNodeId);
 			closureLogger.logClosure(closureList);
 			
 		} // END
@@ -381,18 +469,18 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 					". Node " + newParentNodeId + " is a child of node " + moveNodeId);
 		}
 		
-		logger.info("Moving node => " + moveNodeId + " to new parent node => " + newParentNodeId);
+		logger.debug("Moving node => " + moveNodeId + " to new parent node => " + newParentNodeId);
 		
 		// Get tree structure for the  branch / tree section we are moving.
 		List<DBClosure> closureList = getClosure(nodeToMode);
 		if(closureList == null || closureList.size() == 0){
 			throw new DatabaseException("Move error. No closure list for node " + moveNodeId);
 		}
-		logger.info("Fetched tree data for moving.");
-		closureLogger.logClosure(closureList);
+		logger.debug("Fetched tree data for moving.");
+		//closureLogger.logClosure(closureList);
 		
 		// Prune the existing data
-		logger.info("Pruning existing tree/branch node " + moveNodeId);
+		logger.debug("Pruning existing tree/branch node " + moveNodeId);
 		// when performing a move we don't need (or want) to remove the nodes from the fs_node table. we will simply update the parent_ids.
 		// we do want to remove the data from the closure table because the data gets rebuilt correctly during the insert operation.
 		removeNode(nodeToMode, false, true);
@@ -466,16 +554,18 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		Long rootNodeId = rootNode.getNodeId();
 		Long parentNodeNodeId = parentNode.getNodeId();		
 		
-		logger.info("Adding " + rootNodeId + " (" + rootNode.getName() + ") to parent " + parentNodeNodeId);
+		logger.debug("Adding " + rootNodeId + " (" + rootNode.getName() + ") to parent " + parentNodeNodeId);
 		
 		// re-add node
 		rootNode.setParentNodeId(parentNodeNodeId);
 		rootNode.setDateUpdated(dateUpdated);
 		DBNode updatedRootNode = reAddNode(rootNode);
 		
+		postMove( (N)updatedRootNode );
+		
 		if(childNodes != null && childNodes.size() > 0){
 			
-			logger.info("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
+			logger.debug("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
 			
 			for(DBNode childNode : childNodes){
 				
@@ -486,7 +576,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 					moveNodes(childNode, rootNode, treeMap.get(childNode.getNodeId()), treeMap, dateUpdated);
 					
 				}else{
-					logger.info("Child node is the depth-0 self link. Skipping move.");
+					logger.debug("Child node is the depth-0 self link. Skipping move.");
 				}
 				
 			}
@@ -556,6 +646,14 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		Long copyNodeId = nodeToCopy.getNodeId();
 		
+		DBNode newCopy = null;
+		if(nodeToCopy.isRootNode()){
+			newCopy = addRootNodeCopy(nodeToCopy, copier);
+		}else{
+			newCopy = addChildNodeCopy(parentNode, nodeToCopy, copier);
+		}	
+		
+		/*
 		DBNode newCopy = copier.copy(nodeToCopy);
 		newCopy.setNodeId(null);
 		newCopy.setParentNodeId(null);
@@ -569,6 +667,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			newCopy = addChildNode(parentNode, newCopy);
 		}
 		postCopy( (N)nodeToCopy, (N)newCopy);
+		*/
 		
 		// the node id of nodeToCopy has changed!
 		
@@ -583,7 +682,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap, copier);
 					
 				}else{
-					logger.info("Child node is the depth-0 self link. Skipping copy.");
+					logger.debug("Child node is the depth-0 self link. Skipping copy.");
 				}
 				
 			}
@@ -654,9 +753,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			return true;
 		}
 		
-		logger.info("Getting parent data for node1 => " + node1.getNodeId());
+		logger.debug("Getting parent data for node1 => " + node1.getNodeId());
 		DBNode parentNode1 = getNodeWithParentClosure(node1);
-		logger.info("Getting parent data for node2 => " + node2.getNodeId());
+		logger.debug("Getting parent data for node2 => " + node2.getNodeId());
 		DBNode parentNode2 = getNodeWithParentClosure(node2);
 		
 		if(parentNode1 == null || parentNode1.getParentClosure() == null || parentNode1.getParentClosure().size() == 0){
@@ -669,14 +768,14 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		DBNode rootNode1 = null;
 		DBNode rootNode2 = null;
 		
-		logger.info("Iterating through node1 parent data to find tree root node");
+		logger.debug("Iterating through node1 parent data to find tree root node");
 		for(DBClosure c : parentNode1.getParentClosure()){
 			if(c.getParentNode().getParentNodeId() == 0L){
 				rootNode1 = c.getParentNode();
 				break;
 			}
 		}
-		logger.info("Iterating through node2 parent data to find tree root node");
+		logger.debug("Iterating through node2 parent data to find tree root node");
 		for(DBClosure c : parentNode2.getParentClosure()){
 			if(c.getParentNode().getParentNodeId() == 0L){
 				rootNode2 = c.getParentNode();
@@ -735,7 +834,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	public boolean isChild(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException {
 
 		if(node2.getNodeId() == node1.getParentNodeId()){
-			//logger.info("Node " + node2.getNodeId() + " is and immediate parent of node " + node1.getNodeId());
+			//logger.debug("Node " + node2.getNodeId() + " is and immediate parent of node " + node1.getNodeId());
 			return true;
 		}
 		if(!fullSearch){
@@ -747,9 +846,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			if(node2Children == null || node2Children.getParentClosure() == null || node2Children.getParentClosure().size() == 0){
 				throw new DatabaseException("Failed to get child closure and child node data for node " + node2.getNodeId());
 			}
-			//logger.info("Searching all children of node2 => " + node2.getNodeId() + " to see if node " + node1.getNodeId() + " exists");
+			//logger.debug("Searching all children of node2 => " + node2.getNodeId() + " to see if node " + node1.getNodeId() + " exists");
 			for(DBClosure c : node2Children.getChildClosure()){
-				//logger.info("Child found of node " + node2.getNodeId() + " => " + c.getChildNode().getNodeId());
+				//logger.debug("Child found of node " + node2.getNodeId() + " => " + c.getChildNode().getNodeId());
 				if(c.getChildNode().getNodeId() == node1.getNodeId()){
 					return true;
 				}
@@ -774,7 +873,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			query = getEntityManager().createQuery(getHqlQueryNodeWithParentClosure());
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}		
 		
 		DBNode nodeWithParentClosure = (DBNode)getSingleResult(query);		
@@ -796,7 +895,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			query = getEntityManager().createQuery(getHqlQueryNodeWithChildClosure());
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}		
 		
 		DBNode nodeWithChildClosure = (DBNode)getSingleResult(query);		
@@ -810,7 +909,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	@Override
 	public void removeNode(DBNode node) throws DatabaseException {
 		
-		logger.info("remove node " + node.getNodeId());
+		logger.debug("remove node " + node.getNodeId());
 		
 		if(node.getParentNodeId() == 0L){
 			throw new DatabaseException("Cannot remove root node of tree. Use removeTree() method.");
@@ -839,7 +938,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		try {
 			executeUpdate(populatePrune);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
+			throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(), e);
 		}
 		logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
 		
@@ -854,11 +953,11 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		try {
 			executeUpdate(queryDeleteFsClosure);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to remove all children for node " + parentNodeId + ", from FS_CLOSURE. " +  e.getMessage(),e);
+			throw new DatabaseException("Failed to remove all children for node " + parentNodeId + ", from FS_CLOSURE. " +  e.getMessage(), e);
 		}
 		logger.debug("Deleted children of node " + parentNodeId + " from the closure table.");
 		
-		// allow user access to each node that was delete so that they may perform post delete cleanup
+		// allow user access to each node that was deleted so that they may perform post delete cleanup
 		for(N n : userNodesToDelete){
 			//  remove users data
 			postRemove( (N)n);				
@@ -877,7 +976,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		Long deleteNodeId = node.getNodeId();
 		
-		logger.info("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
+		logger.debug("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
 		
 		long pruneId = 0;
 		
@@ -894,7 +993,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			try {
 				executeUpdate(populatePrune);
 			} catch (DatabaseException e) {
-				throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
+				throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(), e);
 			}
 			logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
 			
@@ -918,7 +1017,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			try {
 				executeUpdate(queryDeleteFsClosure);
 			} catch (DatabaseException e) {
-				throw new DatabaseException("Failed to remove node " + deleteNodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(),e);
+				throw new DatabaseException("Failed to remove node " + deleteNodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(), e);
 			}
 			logger.debug("Deleted node " + deleteNodeId + " from the closure table.");
 			
@@ -1183,18 +1282,18 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	@Override
 	public void removeTree(FSTree tree, FSNode newParentNode) throws DatabaseException {
 
-		logger.info("Remove tree but keeps nodes.");
+		logger.debug("Remove tree but keeps nodes.");
 		
 		if(isSameTree(tree.getRootNode(), newParentNode)){
 			throw new DatabaseException("You cannot move the root node of the existing tree to another node under the "
 					+ "same tree. New parent node must be a node in a different tree.");			
 		}
 		
-		logger.info("Not same tree, may proceed with move.");
+		logger.debug("Not same tree, may proceed with move.");
 		
 		moveNode(tree.getRootNode().getNodeId(), newParentNode.getNodeId());
 		
-		logger.info("Moved nodes...Now deleting old tree");
+		logger.debug("Moved nodes...Now deleting old tree");
 		
 		FSTree treeToDelete = getEntityManager().find(FSTree.class, tree.getTreeId());
 		
