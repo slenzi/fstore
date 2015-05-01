@@ -386,6 +386,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			}
 			
 			// needed for copy node with children?
+			// TODO - probably not necessary
 			getEntityManager().flush();
 			getEntityManager().clear();
 			
@@ -538,7 +539,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			for(DBNode childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
-				if(childNode.getNodeId() != rootNodeId){
+				//if(childNode.getNodeId() != rootNodeId){
+				if(!childNode.getNodeId().equals(rootNodeId)){
 					
 					// recursively add child nodes, and all their children. The next child node becomes the current root node.
 					moveNodes(childNode, rootNode, treeMap.get(childNode.getNodeId()), treeMap, dateUpdated);
@@ -615,13 +617,16 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	private DBNode copyNodes(DBNode nodeToCopy, DBNode parentNode, List<DBNode> childNodes, HashMap<Long, List<DBNode>> treeMap, NodeCopier copier) throws DatabaseException {
 		
 		Long copyNodeId = nodeToCopy.getNodeId();
+		logger.info("id of node we are copying => " + copyNodeId);
 		
 		DBNode newCopy = null;
 		if(nodeToCopy.isRootNode()){
 			newCopy = addRootNodeCopy(nodeToCopy, copier);
 		}else{
 			newCopy = addChildNodeCopy(parentNode, nodeToCopy, copier);
-		}	
+		}
+		
+		logger.info("id of new copy => " + newCopy.getNodeId());
 		
 		// the node id of nodeToCopy has changed!
 		
@@ -630,13 +635,14 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			for(DBNode childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
-				if(childNode.getNodeId() != copyNodeId){
+				//if(childNode.getNodeId() != copyNodeId){
+				if(!childNode.getNodeId().equals(copyNodeId)){
 					
 					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
 					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap, copier);
 					
 				}else{
-					logger.debug("Child node is the depth-0 self link. Skipping copy.");
+					logger.info("Child node is the depth-0 self link. Skipping copy.");
 				}
 				
 			}
@@ -703,7 +709,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			return false;
 		}
 		// both are not root nodes, but both have the same parent. they are in the same tree
-		if( (node1.getParentNodeId() != 0L && node2.getParentNodeId() != 0L) && (node1.getParentNodeId() == node2.getParentNodeId())){
+		if( (node1.getParentNodeId() != 0L && node2.getParentNodeId() != 0L) && (node1.getParentNodeId().equals(node2.getParentNodeId()))){
 			return true;
 		}
 		
@@ -744,7 +750,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		}
 		
 		// they have the same parent most node. they are in the same tree.
-		if(rootNode1.getNodeId() == rootNode2.getNodeId()){
+		//if(rootNode1.getNodeId() == rootNode2.getNodeId()){
+		if(rootNode1.getNodeId().equals(rootNode2.getNodeId())){
 			return true;
 		}
 		
@@ -758,7 +765,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	@Override
 	public boolean isParent(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException {
 
-		if(node2.getParentNodeId() == node1.getNodeId()){
+		//if(node2.getParentNodeId() == node1.getNodeId()){
+		if(node2.getParentNodeId().equals(node1.getNodeId())){
 			return true;
 		}
 		if(!fullSearch){
@@ -771,7 +779,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 				throw new DatabaseException("Failed to get parent closure and parent node data for node " + node2.getNodeId());
 			}
 			for(DBClosure c : node2Parents.getParentClosure()){
-				if(c.getParentNode().getNodeId() == node1.getNodeId()){
+				//if(c.getParentNode().getNodeId() == node1.getNodeId()){
+				if(c.getParentNode().getNodeId().equals(node1.getNodeId())){
 					return true;
 				}
 			}			
@@ -787,7 +796,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	@Override
 	public boolean isChild(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException {
 
-		if(node2.getNodeId() == node1.getParentNodeId()){
+		//if(node2.getNodeId() == node1.getParentNodeId()){
+		if(node2.getNodeId().equals(node1.getParentNodeId())){
 			//logger.debug("Node " + node2.getNodeId() + " is and immediate parent of node " + node1.getNodeId());
 			return true;
 		}
@@ -803,7 +813,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			//logger.debug("Searching all children of node2 => " + node2.getNodeId() + " to see if node " + node1.getNodeId() + " exists");
 			for(DBClosure c : node2Children.getChildClosure()){
 				//logger.debug("Child found of node " + node2.getNodeId() + " => " + c.getChildNode().getNodeId());
-				if(c.getChildNode().getNodeId() == node1.getNodeId()){
+				//if(c.getChildNode().getNodeId() == node1.getNodeId()){
+				if(c.getChildNode().getNodeId().equals(node1.getNodeId())){
 					return true;
 				}
 			}			
