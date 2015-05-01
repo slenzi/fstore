@@ -935,8 +935,47 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 */
 	private List<N> doCriteriaDeleteNode(DBNode node, boolean onlyChildren) throws DatabaseException {
 		
+		List<Long> nodeIdList = getNodeIdList(node, onlyChildren);
+		
+		if(CollectionUtil.isEmpty(nodeIdList)){
+			throw new DatabaseException("Failed to get list of node IDs for the " + ((onlyChildren) ? "child" : "") + " nodes. Cannot delete.");
+		}
+		
+		List<N> userNodesToDelete = getNodes(nodeIdList, node.getClass());
+		
+		if(CollectionUtil.isEmpty(userNodesToDelete)){
+			throw new DatabaseException("Failed to get " + ((onlyChildren) ? "child" : "") + " node data in preparation for deletion. Cannot delete");
+		}
+		
+		// create delete query which uses the list of child node ID we just retrieved.
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaDelete criteriaDelete = criteriaBuilder.createCriteriaDelete(node.getClass());
+		Root nodeDeleteRoot = criteriaDelete.from(node.getClass());
+		criteriaDelete.where(
+				nodeDeleteRoot.get(FSNode_.nodeId).in(nodeIdList)
+			);
+		
+		getEntityManager().createQuery(criteriaDelete).executeUpdate();
+		
+		return userNodesToDelete;
+		
+	}
+	
+	/**
+	 * Get the IDs of all the child nodes under the node. Optionally include the ID of the node
+	 * itself in the list if 'onlyChildren' is set to false.
+	 * 
+	 * @param node The parent node. Will get the IDs of all nodes under this node. Set 'onlyChildren' to false
+	 * 	to include the ID of this node in the list.
+	 * @param onlyChildren true to only retrieve the IDs of the child nodes, false to also include the ID of
+	 * 	the node you passes in.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public List<Long> getNodeIdList(DBNode node, boolean onlyChildren) throws DatabaseException {
+		
 		Long nodeId = node.getNodeId();
-		List<N> userNodesToDelete = null;
+		List<Long> nodeIdList = null;
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		
@@ -959,14 +998,49 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 					);
 		}
 		
-		List<Long> childNodeIdList = getEntityManager().createQuery(childQuery).getResultList();
-		if(CollectionUtil.isEmpty(childNodeIdList)){
-			throw new DatabaseException("Cannot delete " + ((onlyChildren) ? "children of" : "") + " node " + nodeId + ". Failed to get list of child nodes IDs.");
-		}			
+		nodeIdList = getEntityManager().createQuery(childQuery).getResultList();
 		
-		// Query to get all nodes to delete. Fetch their closure data with their parent and child node data.
-		CriteriaQuery selectNodesToDelete = criteriaBuilder.createQuery(node.getClass());
-		Root nodeSelectRoot = selectNodesToDelete.from(node.getClass());
+		return nodeIdList;
+		
+	}
+	
+	/**
+	 * Retrieve the node, and all nodes under it, along with the nodes closure data, and
+	 * the parent and child nodes for the closure data. Set 'onlyChildren' to true to only get
+	 * the child nodes.
+	 * 
+	 * @param node The node to fetch, plus all child nodes.
+	 * @param onlyChildren - true to only get the child nodes, false to include the node you passes in.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	protected List<N> getNodes(DBNode node, boolean onlyChildren) throws DatabaseException {
+	
+		List<Long> nodeIdList = getNodeIdList(node, onlyChildren);
+		
+		List<N> nodeList = getNodes(nodeIdList, node.getClass());
+		
+		return nodeList;
+		
+	}
+	
+	/**
+	 * Get all nodes of the specified type, whose IDs are in the list
+	 * 
+	 * @param nodeIdList - The list of node IDs
+	 * @param c The class type of the node which extends from FSNode
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private List<N> getNodes(List<Long> nodeIdList, Class c) throws DatabaseException {
+		
+		List<N> nodeList = null;
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery selectNodesToDelete = criteriaBuilder.createQuery(c);
+		Root nodeSelectRoot = selectNodesToDelete.from(c);
+		
 		SetJoin childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
 		SetJoin parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
 		Fetch childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
@@ -978,23 +1052,11 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		selectNodesToDelete.distinct(true);
 		selectNodesToDelete.select(nodeSelectRoot);
 		selectNodesToDelete.where(
-				nodeSelectRoot.get(FSNode_.nodeId).in(childNodeIdList)
+				nodeSelectRoot.get(FSNode_.nodeId).in(nodeIdList)
 				);
-		userNodesToDelete = getEntityManager().createQuery(selectNodesToDelete).getResultList();
-		if(CollectionUtil.isEmpty(userNodesToDelete)){
-			throw new DatabaseException("Failed to get list of nodes to delete.");
-		}
+		nodeList = getEntityManager().createQuery(selectNodesToDelete).getResultList();
 		
-		// create delete query which uses the list of child node ID we just retrieved.
-		CriteriaDelete criteriaDelete = criteriaBuilder.createCriteriaDelete(node.getClass());
-		Root nodeDeleteRoot = criteriaDelete.from(node.getClass());
-		criteriaDelete.where(
-				nodeDeleteRoot.get(FSNode_.nodeId).in(childNodeIdList)
-			);
-		
-		getEntityManager().createQuery(criteriaDelete).executeUpdate();
-		
-		return userNodesToDelete;
+		return nodeList;
 		
 	}
 	
