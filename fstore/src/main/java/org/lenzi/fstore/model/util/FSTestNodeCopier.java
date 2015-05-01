@@ -3,7 +3,7 @@
  */
 package org.lenzi.fstore.model.util;
 
-import org.lenzi.fstore.repository.model.impl.FSTestNode;
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.springframework.stereotype.Service;
 
 /**

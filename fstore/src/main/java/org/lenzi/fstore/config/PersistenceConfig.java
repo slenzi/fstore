@@ -50,7 +50,10 @@ public class PersistenceConfig {
 		
 		em.setDataSource(primaryDataSource);
 		
-		em.setPackagesToScan(new String[] { "org.lenzi.fstore.repository.model.impl" });
+		em.setPackagesToScan(new String[] {
+				"org.lenzi.fstore.repository.model.impl",
+				"org.lenzi.fstore.example.repository.model.impl"
+				});
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);

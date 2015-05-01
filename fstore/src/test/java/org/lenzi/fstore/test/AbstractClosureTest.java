@@ -4,12 +4,12 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
-import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;

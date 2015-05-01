@@ -1,8 +1,8 @@
-package org.lenzi.fstore.repository.tree.test;
+package org.lenzi.fstore.example.repository.tree;
 
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBNode;
-import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.tree.AbstractPostgreSQLTreeRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;

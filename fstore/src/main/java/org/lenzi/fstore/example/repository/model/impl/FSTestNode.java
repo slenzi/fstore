@@ -1,13 +1,15 @@
 /**
  * 
  */
-package org.lenzi.fstore.repository.model.impl;
+package org.lenzi.fstore.example.repository.model.impl;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.lenzi.fstore.repository.model.impl.FSNode;
 
 /**
  * Node for testing the closure repository code. Also serves as an example custom

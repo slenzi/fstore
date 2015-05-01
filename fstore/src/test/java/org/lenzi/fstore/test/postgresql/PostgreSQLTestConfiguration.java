@@ -5,8 +5,8 @@ package org.lenzi.fstore.test.postgresql;
 
 import java.io.IOException;
 
+import org.lenzi.fstore.example.repository.tree.PostgreSQLTestTreeRepository;
 import org.lenzi.fstore.repository.tree.TreeRepository;
-import org.lenzi.fstore.repository.tree.test.PostgreSQLTestTreeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,11 +31,13 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
 		basePackages={
-			"org.lenzi.fstore.model.util",
-			"org.lenzi.fstore.repository",
-			"org.lenzi.fstore.repository.model",
-			"org.lenzi.fstore.service",
-			"org.lenzi.fstore.logging"
+				"org.lenzi.fstore.model.util",
+				"org.lenzi.fstore.repository",
+				"org.lenzi.fstore.repository.model",
+				"org.lenzi.fstore.repository.model.impl",
+				"org.lenzi.fstore.service",
+				"org.lenzi.fstore.logging",
+				"org.lenzi.fstore.example.repository.model.impl"
 		}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)

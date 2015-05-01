@@ -3,12 +3,12 @@ package org.lenzi.fstore.test;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.DBTree;
-import org.lenzi.fstore.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;

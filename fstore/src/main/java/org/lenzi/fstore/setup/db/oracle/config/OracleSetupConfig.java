@@ -59,7 +59,10 @@ public class OracleSetupConfig {
 		
 		em.setDataSource(getDriverManagerDataSource());
 		
-		em.setPackagesToScan(new String[] { "org.lenzi.fstore.repository.model" });
+		em.setPackagesToScan(new String[] { 
+				"org.lenzi.fstore.repository.model",
+				"org.lenzi.fstore.example.repository.model"
+				});
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);

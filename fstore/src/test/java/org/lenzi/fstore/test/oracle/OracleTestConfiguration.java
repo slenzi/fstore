@@ -5,8 +5,8 @@ package org.lenzi.fstore.test.oracle;
 
 import java.io.IOException;
 
+import org.lenzi.fstore.example.repository.tree.OracleTestTreeRepository;
 import org.lenzi.fstore.repository.tree.TreeRepository;
-import org.lenzi.fstore.repository.tree.test.OracleTestTreeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,8 +34,10 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 			"org.lenzi.fstore.model.util",
 			"org.lenzi.fstore.repository",
 			"org.lenzi.fstore.repository.model",
+			"org.lenzi.fstore.repository.model.impl",
 			"org.lenzi.fstore.service",
-			"org.lenzi.fstore.logging"
+			"org.lenzi.fstore.logging",
+			"org.lenzi.fstore.example.repository.model.impl"
 		}
 )
 // "org.lenzi.fstore.service"
