@@ -84,7 +84,7 @@ public class OracleMoveNodeTest extends AbstractMoveNodeTest {
 	}
 	
 	@Test
-	@Rollback(true)	
+	@Rollback(false)	
 	public void multiMoveSameTreeTest(){
 		try {
 			multiMoveSameTree();

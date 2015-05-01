@@ -254,6 +254,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Cannot copy child node. Parent node ID is null. This information is needed.");
 		}		
 		
+		logger.info("Add copy of child node => " + nodeToCopy.getNodeId() + " under parent node " + parentNode.getNodeId());
+		
 		// copy node
 		DBNode newCopy = copier.copy(nodeToCopy);
 		
@@ -285,7 +287,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		if(nodeToCopy == null){
 			throw new DatabaseException("Cannot copy root node. Node object is null.");
-		}		
+		}
+		
+		logger.info("Add copy of root node => " + nodeToCopy.getNodeId());
 		
 		// copy node
 		DBNode newCopy = copier.copy(nodeToCopy);
@@ -368,40 +372,22 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			}
 			return newCopy;
 			
-			//logger.debug("Copy node without children");
-			/*
-			DBNode newCopy = copier.copy(nodeToCopy);
-			newCopy.setNodeId(null);
-			newCopy.setParentNodeId(null);
-			newCopy.setChildClosure(null);
-			newCopy.setParentClosure(null);
-			
-			if(nodeToCopy.isRootNode()){
-				newCopy = addRootNode(newCopy);
-			}else{
-				newCopy = addChildNode(parentNode, newCopy);
-			}
-			postCopy( (N)nodeToCopy, (N)newCopy);
-			*/
-			
-			
-			
 		// copy the node and all children	
 		}else{
 			
 			// Get closure data for the sub-tree we are copying
 			List<DBClosure> closureList = getClosure(nodeToCopy);
 			
-			//logger.debug("Fetched closure data for node => " + nodeToCopy.getNodeId());
-			//closureLogger.logClosure(closureList);
+			logger.debug("Fetched closure data for node => " + nodeToCopy.getNodeId());
+			closureLogger.logClosure(closureList);
 			
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for node " + nodeToCopy.getNodeId());
 			}
 			
-			// needed for copy node with children...
-			//getEntityManager().flush();
-			//getEntityManager().clear();
+			// needed for copy node with children?
+			getEntityManager().flush();
+			getEntityManager().clear();
 			
 			// get the root node of the sub-tree we are copying.
 			DBNode rootNode = null;
@@ -413,9 +399,15 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			}
 			
 			HashMap<Long,List<DBNode>> treeMap = buildMapFromClosure(closureList);
-			
+			for(Long nextNodeId : treeMap.keySet()){
+				logger.info("Children of node = > " + nextNodeId);
+				for(DBNode nextNode : CollectionUtil.emptyIfNull(treeMap.get(nextNodeId))){
+					logger.info("Node " + nextNode.getNodeId() + "(" + nextNode.getName() + ")" + " is a child of " + nextNodeId);
+				}
+			}
+
 			// get children for root node of sub-tree
-			List<DBNode> childList = treeMap.get(rootNode.getNodeId());
+			List<DBNode> childList = treeMap.get(rootNode.getNodeId());	
 			
 			// add the root node of the sub-tree to the new parent node, then walk the tree and add all the children.
 			return copyNodes(nodeToCopy, parentNode, childList, treeMap, copier);			
@@ -437,30 +429,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		if(nodeToMode.getParentNodeId() == 0L){
 			throw new DatabaseException("Cannot move a root node. Use future rootToLeaf() method...coming soon...");
 		}
-		
-		//TODO - REMOVE THIS BLOCK
-		/*
-		if(true){
-			
-			List<DBClosure> closureList = null;
-			
-			// Get tree structure for the  branch / tree section we are moving.
-			closureList = getClosure(nodeToMode);
-			if(closureList == null || closureList.size() == 0){
-				throw new DatabaseException("Move error. No closure list for node being moved => " + moveNodeId);
-			}
-			logger.debug("Fetched closure data for node being moved => " + moveNodeId);
-			closureLogger.logClosure(closureList);
-			
-			closureList = getClosure(newParentNode);
-			if(closureList == null || closureList.size() == 0){
-				throw new DatabaseException("Move error. No closure list for new parent node => " + newParentNodeId);
-			}
-			logger.debug("Fetched closure data for new parent node => " + newParentNodeId);
-			closureLogger.logClosure(closureList);
-			
-		} // END
-		*/
 		
 		// make sure new parent node is not a current child of the node that's being moved. you
 		// cannot move a tree to under itself! we don't need to worry about this for the copy operation.
@@ -640,6 +608,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * @param parentNode
 	 * @param childNodes
 	 * @param treeMap
+	 * @param copier
+	 * @return
 	 * @throws DatabaseException
 	 */
 	private DBNode copyNodes(DBNode nodeToCopy, DBNode parentNode, List<DBNode> childNodes, HashMap<Long, List<DBNode>> treeMap, NodeCopier copier) throws DatabaseException {
@@ -652,22 +622,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		}else{
 			newCopy = addChildNodeCopy(parentNode, nodeToCopy, copier);
 		}	
-		
-		/*
-		DBNode newCopy = copier.copy(nodeToCopy);
-		newCopy.setNodeId(null);
-		newCopy.setParentNodeId(null);
-		newCopy.setChildClosure(null);
-		newCopy.setParentClosure(null);
-		
-		// add root node of sub-tree
-		if(nodeToCopy.isRootNode()){
-			newCopy = addRootNode(newCopy);
-		}else{
-			newCopy = addChildNode(parentNode, newCopy);
-		}
-		postCopy( (N)nodeToCopy, (N)newCopy);
-		*/
 		
 		// the node id of nodeToCopy has changed!
 		
