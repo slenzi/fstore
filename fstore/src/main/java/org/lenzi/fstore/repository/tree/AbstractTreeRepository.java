@@ -315,10 +315,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			//getEntityManager().flush();
 			//getEntityManager().clear();
 			
-			//logger.info("Cleared entity manager.");
-			
-			HashMap<Long,List<DBNode>> treeMap = new HashMap<Long,List<DBNode>>();
-			
 			// get the root node of the sub-tree we are copying.
 			DBNode rootNode = null;
 			for(DBClosure c : closureList){
@@ -328,24 +324,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 				}
 			}
 			
-			//logger.info("Found root node for sub-tree id => " + rootNode.getNodeId());
-			
-			// loop through closure list and build tree map
-			DBClosure closure = null;
-			for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
-				closure = closureList.get(closureIndex);
-				if(closure.hasParent() && closure.hasChild()){
-					if(treeMap.containsKey(closure.getParentNode().getNodeId())){
-						treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
-					}else{
-						List<DBNode> childList = new ArrayList<DBNode>();
-						childList.add(closure.getChildNode());
-						treeMap.put(closure.getParentNode().getNodeId(), childList);
-					}
-				}
-			}
-			
-			//logger.info("Built tree map in preparation for copy.");
+			HashMap<Long,List<DBNode>> treeMap = buildMapFromClosure(closureList);
 			
 			// get children for root node of sub-tree
 			List<DBNode> childList = treeMap.get(rootNode.getNodeId());
@@ -361,7 +340,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * Move a node
 	 */
 	@Override
-	public void moveNode(DBNode nodeToMode, DBNode newParentNode) throws DatabaseException {
+	public DBNode moveNode(DBNode nodeToMode, DBNode newParentNode) throws DatabaseException {
 		
 		Long moveNodeId = nodeToMode.getNodeId();
 		Long newParentNodeId = newParentNode.getNodeId();
@@ -370,6 +349,30 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		if(nodeToMode.getParentNodeId() == 0L){
 			throw new DatabaseException("Cannot move a root node. Use future rootToLeaf() method...coming soon...");
 		}
+		
+		//TODO - REMOVE THIS BLOCK
+		/*
+		if(true){
+			
+			List<DBClosure> closureList = null;
+			
+			// Get tree structure for the  branch / tree section we are moving.
+			closureList = getClosure(nodeToMode);
+			if(closureList == null || closureList.size() == 0){
+				throw new DatabaseException("Move error. No closure list for node being moved => " + moveNodeId);
+			}
+			logger.info("Fetched closure data for node being moved => " + moveNodeId);
+			closureLogger.logClosure(closureList);
+			
+			closureList = getClosure(newParentNode);
+			if(closureList == null || closureList.size() == 0){
+				throw new DatabaseException("Move error. No closure list for new parent node => " + newParentNodeId);
+			}
+			logger.info("Fetched closure data for new parent node => " + newParentNodeId);
+			closureLogger.logClosure(closureList);
+			
+		} // END
+		*/
 		
 		// make sure new parent node is not a current child of the node that's being moved. you
 		// cannot move a tree to under itself! we don't need to worry about this for the copy operation.
@@ -382,11 +385,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		// Get tree structure for the  branch / tree section we are moving.
 		List<DBClosure> closureList = getClosure(nodeToMode);
-		
 		if(closureList == null || closureList.size() == 0){
 			throw new DatabaseException("Move error. No closure list for node " + moveNodeId);
 		}
-		
 		logger.info("Fetched tree data for moving.");
 		closureLogger.logClosure(closureList);
 		
@@ -398,8 +399,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		// necessary?
 		getEntityManager().flush();
 		
-		HashMap<Long,List<DBNode>> treeMap = new HashMap<Long,List<DBNode>>();
-		
 		// get the root node of the sub-tree we are copying.
 		DBNode rootNode = null;
 		for(DBClosure c : closureList){
@@ -409,27 +408,47 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			}
 		}
 		
-		// loop through closure list and build tree map
-		DBClosure closure = null;
-		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
-			closure = closureList.get(closureIndex);
-			if(closure.hasParent() && closure.hasChild()){
-				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
-					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
-				}else{
-					List<DBNode> childList = new ArrayList<DBNode>();
-					childList.add(closure.getChildNode());
-					treeMap.put(closure.getParentNode().getNodeId(), childList);
-				}
-			}
-		}
+		HashMap<Long,List<DBNode>> treeMap = buildMapFromClosure(closureList);
 		
 		// get children for root node of sub-tree
 		List<DBNode> childList = treeMap.get(rootNode.getNodeId());		
 	
 		// add the root node to the new parent node, then walk the tree and add all the children.
-		moveNodes(rootNode, newParentNode, childList, treeMap, DateUtil.getCurrentTime());	
+		return moveNodes(rootNode, newParentNode, childList, treeMap, DateUtil.getCurrentTime());	
 		
+	}
+	
+	/**
+	 * Builds a map where the keys are node IDs, and the values are Lists of DBNode objects.
+	 * 
+	 * map.get(nodeId) will return a list containing all the child nodes for that node.
+	 * 
+	 * @param closureList
+	 * @return
+	 */
+	private HashMap<Long,List<DBNode>> buildMapFromClosure(List<DBClosure> closureList) {
+		
+		if(CollectionUtil.isEmpty(closureList)){
+			return null;
+		}
+		
+		DBClosure closure = null;
+		HashMap<Long,List<DBNode>> map = new HashMap<Long,List<DBNode>>();
+		
+		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
+			closure = closureList.get(closureIndex);
+			if(closure.hasParent() && closure.hasChild()){
+				if(map.containsKey(closure.getParentNode().getNodeId())){
+					map.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
+				}else{
+					List<DBNode> childList = new ArrayList<DBNode>();
+					childList.add(closure.getChildNode());
+					map.put(closure.getParentNode().getNodeId(), childList);
+				}
+			}
+		}
+		
+		return map;
 	}
 	
 	/**
@@ -442,7 +461,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * @param dateUpdated
 	 * @throws DatabaseException
 	 */
-	private void moveNodes(DBNode rootNode, DBNode parentNode, List<DBNode> childNodes, HashMap<Long,List<DBNode>> treeMap, Timestamp dateUpdated) throws DatabaseException {
+	private DBNode moveNodes(DBNode rootNode, DBNode parentNode, List<DBNode> childNodes, HashMap<Long,List<DBNode>> treeMap, Timestamp dateUpdated) throws DatabaseException {
 		
 		Long rootNodeId = rootNode.getNodeId();
 		Long parentNodeNodeId = parentNode.getNodeId();		
@@ -452,7 +471,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		// re-add node
 		rootNode.setParentNodeId(parentNodeNodeId);
 		rootNode.setDateUpdated(dateUpdated);
-		reAddNode(rootNode);
+		DBNode updatedRootNode = reAddNode(rootNode);
 		
 		if(childNodes != null && childNodes.size() > 0){
 			
@@ -466,10 +485,14 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 					// recursively add child nodes, and all their children. The next child node becomes the current root node.
 					moveNodes(childNode, rootNode, treeMap.get(childNode.getNodeId()), treeMap, dateUpdated);
 					
+				}else{
+					logger.info("Child node is the depth-0 self link. Skipping move.");
 				}
 				
 			}
 		}
+		
+		return updatedRootNode;
 		
 	}
 	
@@ -483,7 +506,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	private DBNode reAddNode(DBNode node) throws DatabaseException{
 		
 		// re-add node to database
-		getEntityManager().merge(node);
+		DBNode updatedEntity = getEntityManager().merge(node);
 		
 		// Get next available link id from sequence
 		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
@@ -516,7 +539,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		getEntityManager().flush();
 		getEntityManager().clear();
 		
-		return node;		
+		return updatedEntity;		
 		
 	}	
 
@@ -559,6 +582,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
 					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap, copier);
 					
+				}else{
+					logger.info("Child node is the depth-0 self link. Skipping copy.");
 				}
 				
 			}
@@ -710,6 +735,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	public boolean isChild(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException {
 
 		if(node2.getNodeId() == node1.getParentNodeId()){
+			//logger.info("Node " + node2.getNodeId() + " is and immediate parent of node " + node1.getNodeId());
 			return true;
 		}
 		if(!fullSearch){
@@ -721,7 +747,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			if(node2Children == null || node2Children.getParentClosure() == null || node2Children.getParentClosure().size() == 0){
 				throw new DatabaseException("Failed to get child closure and child node data for node " + node2.getNodeId());
 			}
+			//logger.info("Searching all children of node2 => " + node2.getNodeId() + " to see if node " + node1.getNodeId() + " exists");
 			for(DBClosure c : node2Children.getChildClosure()){
+				//logger.info("Child found of node " + node2.getNodeId() + " => " + c.getChildNode().getNodeId());
 				if(c.getChildNode().getNodeId() == node1.getNodeId()){
 					return true;
 				}

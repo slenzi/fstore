@@ -100,7 +100,7 @@ public interface TreeRepository {
 	 * @param newParentNode
 	 * @throws DatabaseException
 	 */
-	public void moveNode(DBNode nodeToMode, DBNode newParentNode)  throws DatabaseException;
+	public DBNode moveNode(DBNode nodeToMode, DBNode newParentNode)  throws DatabaseException;
 	
 	/**
 	 * Get a tree with it's root node.

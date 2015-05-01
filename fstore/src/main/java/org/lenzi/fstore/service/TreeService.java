@@ -290,13 +290,15 @@ public class TreeService {
 	 * @param nodeToMode - The node to move. Cannot be a root node.
 	 * @param newParentNode - The new parent node. Can be in a different tree.
 	 */
-	public void moveNode(DBNode nodeToMode, DBNode newParentNode) throws ServiceException {
+	public DBNode moveNode(DBNode nodeToMode, DBNode newParentNode) throws ServiceException {
 		
+		DBNode updatedNode = null;
 		try {
-			treeRepository.moveNode(nodeToMode, newParentNode);
+			updatedNode = treeRepository.moveNode(nodeToMode, newParentNode);
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
+		return updatedNode;
 		
 	}
 	
