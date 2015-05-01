@@ -164,6 +164,7 @@ public abstract class AbstractOracleTreeRepository<N extends FSNode> extends Abs
 	 * 
 	 * @param1 The ID of the parent node for which you want to delete all children of. The
 	 * parent node itrself will not be deleted.
+	 * @deprecated - replaced with a jpa criteria query
 	 */
 	private String SQL_DELETE_FS_NODE_PRUNE_CHILDREN =
 		"delete " +
@@ -346,8 +347,9 @@ public abstract class AbstractOracleTreeRepository<N extends FSNode> extends Abs
 		return SQL_DELETE_FS_NODE_PRUNE_TREE;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getSqlQueryDeleteFsNodePruneChildren()
+	 * @deprecated - replaced with a jpa criteria query
 	 */
 	@Override
 	protected String getSqlQueryDeleteFsNodePruneChildren() {

@@ -1173,265 +1173,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		getEntityManager().remove(treeToDelete);
 
 	}
-
-	@Override
-	public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException {
-
-		// TODO - make sure node being moved is not a root node.
-		// FSTreeService currently performs this check, but it would be better here.
-		
-		// make sure new parent node is not a current child of the node that's being moved. you
-		// cannot move a tree to under itself! we don't need to worry about this for the copy operation.
-		if(isChild(getNode(newParentNodeId), getNode(nodeId), true)){
-			throw new DatabaseException("Cannot move node " + nodeId + " to under node " + newParentNodeId + 
-					". Node " + newParentNodeId + " is a child of node " + nodeId);
-		}
-		
-		logger.debug("Moving node => " + nodeId + " to new parent node => " + newParentNodeId);
-		
-		//
-		// Get tree structure for the  branch / tree section we are moving.
-		//
-		List<FSClosure> closureList = getClosureByNodeId(nodeId);
-		
-		if(closureList == null || closureList.size() == 0){
-			throw new DatabaseException("Move error. No closure list for node " + nodeId);
-		}
-		
-		logger.debug("Fetched tree data for moving.");
-		//LogUtil.logClosure(closureList);
-		
-		//
-		// Prune the existing data
-		//
-		logger.debug("Pruning existing tree/branch node " + nodeId);
-		// when performing a move we don't need (or want) to remove the nodes from the fs_node table. we will simply update the parent_ids.
-		// we do want to remove the data from the closure table because the data gets rebuilt correctly during the insert operation.
-		removeNode(nodeId, false, true);
-		// necessary?
-		getEntityManager().flush();
-		//Tree<FSMeta> treeAfterPune = getTree(1);
-		//logger.info("After prune: " + treeAfterPune.toString());		
-		logger.debug("Prune operation complete");
-		
-		HashMap<Long,List<FSNode>> treeMap = new HashMap<Long,List<FSNode>>();
-		
-		// the child node of the first FSClosure object in the closureList is the root node of the tree that is being moved
-		FSNode rootNode = null;
-		for(FSClosure c : closureList){
-			if(c.hasParent() && c.hasChild()){
-				rootNode = c.getParentNode();  // was c.getChildNode()
-				break;
-			}
-		}
-		logger.debug("Have root node for tree being moved? => " + ((rootNode != null) ? true : false));
-		logger.debug("root => " + LogUtil.getNodeString(rootNode));
-		
-		//
-		// loop through closure list and build tree map
-		//
-		FSClosure closure = null;
-		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
-			closure = closureList.get(closureIndex);
-			if(closure.hasParent() && closure.hasChild()){
-				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
-					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
-				}else{
-					List<FSNode> childList = new ArrayList<FSNode>();
-					childList.add(closure.getChildNode());
-					treeMap.put(closure.getParentNode().getNodeId(), childList);
-				}
-			}
-		}
-		
-		logger.debug("Tree map size => " + treeMap.size());
-		for(Long parentNodeId : treeMap.keySet()){
-			logger.debug("Tree map children for node " + parentNodeId + " => " + ((treeMap.get(parentNodeId).size() > 0) ? treeMap.get(parentNodeId).size() : "0"));
-			for(FSNode node : treeMap.get(parentNodeId)){
-				logger.debug(" child: " + LogUtil.getNodeString(node));
-			}
-		}
-		
-		List<FSNode> childList = treeMap.get(rootNode.getNodeId());
-		
-		//
-		// add the root node to the new parent node, then walk the tree and add all the children.
-		//
-		moveNodes(rootNode, newParentNodeId, childList, treeMap, DateUtil.getCurrentTime());
-
-	}
-
-	@Override
-	public void removeNode(Long nodeId) throws DatabaseException {
-
-		logger.debug("remove node " + nodeId);
-		
-		removeNode(nodeId, true, true);	
-
-	}
-
-	@Override
-	public void removeChildren(Long nodeId) throws DatabaseException {
-		
-		logger.debug("remove children of " + nodeId);
-		
-		//
-		// Get next available prune id from sequence.
-		//
-		long pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
-		
-		//
-		// Add list of nodes to delete to our prune table
-		//
-		Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneChildren());
-		populatePrune.setParameter(1,nodeId);
-		try {
-			executeUpdate(populatePrune);
-		} catch (DatabaseException e) {
-			logger.error("Failed populate prune table with list of nodes to delete. " +  e.getMessage(),e);
-			e.printStackTrace();
-			return;
-		}
-		logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
-		
-		//
-		// Remove children from node table. 
-		//
-		Query queryDeleteFsNode = getEntityManager().createNativeQuery(getSqlQueryDeleteFsNodePruneChildren());
-		queryDeleteFsNode.setParameter(1,nodeId);
-		try {
-			executeUpdate(queryDeleteFsNode);
-		} catch (DatabaseException e) {
-			logger.error("Failed to remove all children for node " + nodeId + ", from FS_NODE. " +  e.getMessage(),e);
-			e.printStackTrace();
-			return;
-		}
-		logger.debug("Deleted children of node " + nodeId + " from the node table.");			
-		
-		//
-		// Remove children links from closure table.
-		//
-		// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
-		//
-		Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
-		queryDeleteFsClosure.setParameter(1,pruneId);
-		try {
-			executeUpdate(queryDeleteFsClosure);
-		} catch (DatabaseException e) {
-			logger.error("Failed to remove all children for node " + nodeId + ", from FS_CLOSURE. " +  e.getMessage(),e);
-			e.printStackTrace();
-			return;
-		}
-		logger.debug("Deleted children of node " + nodeId + " from the closure table.");		
-
-	}
-	
-	
-	// --------------------------------------------------------------------------------------------------------
-	// private helper methods
-	// --------------------------------------------------------------------------------------------------------	
-	
-	/**
-	 * Re-add node. Called during move operation. Uses merge() because we re-use the same node ids.
-	 * 
-	 * @param nodeId
-	 * @param parentNodeId - 
-	 * @param name
-	 * @param dateCreated
-	 * @param dateUpdated
-	 */
-	/*
-	private FSNode reAddNode(Long nodeId, Long parentNodeId, String name, Timestamp dateCreated, Timestamp dateUpdated) throws DatabaseException{
-		
-		// create new node
-		FSNode reAddNode = new FSNode();
-		reAddNode.setNodeId(nodeId);
-		reAddNode.setParentNodeId(parentNodeId);
-		reAddNode.setName(name);
-		reAddNode.setDateCreated(dateCreated);
-		reAddNode.setDateUpdated(dateUpdated);
-		
-		// re-add node to database
-		getEntityManager().merge(reAddNode);
-		
-		// Get next available link id from sequence
-		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
-		
-		// add depth-0 self link to closure table
-		FSClosure selfLink = new FSClosure();
-		selfLink.setLinkId(linkId);
-		selfLink.setChildNodeId(nodeId);
-		selfLink.setParentNodeId(nodeId);	
-		selfLink.setDepth(0);
-		
-		// save closure self link to database
-		getEntityManager().persist(selfLink);
-		
-		// necessary?
-		getEntityManager().flush();
-		
-		// add parent-child links to closure table
-		Query queryInsertLinks = getEntityManager().createNativeQuery(getSqlQueryInsertMakeParent());
-		queryInsertLinks.setParameter(1,parentNodeId);
-		queryInsertLinks.setParameter(2,nodeId);		
-		try {
-			executeUpdate(queryInsertLinks);
-		} catch (DatabaseException e) {
-			logger.error("Failed to add parent-child links FS_CLOSURE for node "
-					+ "(id = " + nodeId + ", name = " + name + "). " +  e.getMessage(),e);
-			e.printStackTrace();
-			return null;
-		}
-		
-		// these two calls are required ( definitely the clear() call )
-		getEntityManager().flush();
-		getEntityManager().clear();
-		
-		return reAddNode;		
-		
-	}
 	*/
+	
 
-	/**
-	 * Helper function for the move node operation. Re-adds the tree to the new parent node
-	 * 
-	 * @param rootNode - The root node of the sub tree that is being moved
-	 * @param newParentId - The new parent node for the root node
-	 * @param childNodes - The set of child nodes for the current root node
-	 * @param treeMap - The rest of the tree data that we iterate over.
-	 * @param dateUpdated - The updated data that will be set on all the nodes being moved.
-	 */
-	/*
-	private void moveNodes(Node rootNode, Long newParentId, List<Node> childNodes, HashMap<Long,List<Node>> treeMap, Timestamp dateUpdated) throws DatabaseException {
-		
-		logger.debug("Adding " + rootNode.getNodeId() + " (" + rootNode.getName() + ") to parent " + newParentId);
-		
-		// add root node
-		reAddNode(rootNode.getNodeId(), newParentId, rootNode.getName(), rootNode.getDateCreated(), dateUpdated);
-		
-		if(childNodes != null && childNodes.size() > 0){
-			
-			logger.debug("Node " + rootNode.getNodeId() + " (" + rootNode.getName() + ") has " + childNodes.size() + " children.");
-			
-			for(Node childNode : childNodes){
-				
-				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
-				if(childNode.getNodeId() != rootNode.getNodeId()){
-					
-					// recursively add child nodes, and all their children. The next child node becomes the current root node.
-					moveNodes(childNode, rootNode.getNodeId(), treeMap.get(childNode.getNodeId()), treeMap, dateUpdated);
-					
-				}
-				
-			}
-		}
-		
-	}
-	*/
-
-	
-	
-	
 	
 	
 	// --------------------------------------------------------------------------------------------------------
@@ -1475,10 +1219,20 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	// SQL_INSERT_PRUNE_CHILDREN
 	protected abstract String getSqlQueryInsertPruneChildren();
 	
-	// SQL_DELETE_FS_NODE_PRUNE_TREE
+	/**
+	 * SQL_DELETE_FS_NODE_PRUNE_TREE
+	 * 
+	 * @deprecated - replaced with a jpa criteria query
+	 * @return
+	 */
 	protected abstract String getSqlQueryDeleteFsNodePruneTree();
 	
-	// SQL_DELETE_FS_NODE_PRUNE_CHILDREN
+	/**
+	 * SQL_DELETE_FS_NODE_PRUNE_CHILDREN
+	 * 
+	 * @deprecated - replaced with a jpa criteria query
+	 * @return
+	 */	
 	protected abstract String getSqlQueryDeleteFsNodePruneChildren();
 	
 	// SQL_DELETE_FS_CLOSURE_PRUNE
