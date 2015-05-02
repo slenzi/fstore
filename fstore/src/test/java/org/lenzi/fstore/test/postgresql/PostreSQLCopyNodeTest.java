@@ -84,7 +84,7 @@ public class PostreSQLCopyNodeTest extends AbstractCopyNodeTest {
 	}		
 	
 	@Test
-	@Rollback(true)	
+	@Rollback(false)	
 	public void copyNodeWithChildrenTest(){
 		try {
 			copyNodeWithChildren();

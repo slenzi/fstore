@@ -10,6 +10,7 @@ import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author sal
  */
-public abstract class AbstractAddNodeTest extends AbstractTreeTest {
+public abstract class AbstractAddNodeTest<N extends FSNode> extends AbstractTreeTest {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -36,10 +37,10 @@ public abstract class AbstractAddNodeTest extends AbstractTreeTest {
 		
 		logTestTitle("Add root node test");
 		
-		TreeService treeService = getTreeSerive();
-		ClosureLogger closureLogger = getClosureLogger();
+		TreeService<N> treeService = getTreeSerive();
+		ClosureLogger<N> closureLogger = getClosureLogger();
 		
-		DBNode rootNode = treeService.createRootNode(new FSTestNode("Sample root node 1","Sample root test value 1"));
+		N rootNode = treeService.createRootNode( new FSTestNode("Sample root node 1","Sample root test value 1"));
 		assertNotNull(rootNode);
 		
 		List<DBClosure> closureList = treeService.getClosure(rootNode);

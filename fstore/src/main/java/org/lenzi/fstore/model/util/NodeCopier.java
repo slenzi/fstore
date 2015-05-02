@@ -1,7 +1,5 @@
 package org.lenzi.fstore.model.util;
 
-import org.lenzi.fstore.repository.model.DBNode;
-
 /**
  * Provides specification for copying nodes.
  * 
@@ -9,7 +7,7 @@ import org.lenzi.fstore.repository.model.DBNode;
  *
  * @param <T>
  */
-public interface NodeCopier {
+public interface NodeCopier<N> {
 
 	/**
 	 * Get the fully qualified name (package + name) for the node being copied.
@@ -24,6 +22,6 @@ public interface NodeCopier {
 	 * @param node - The node to copy
 	 * @return A new copy of the node
 	 */
-	public DBNode copy(DBNode node);
+	public N copy(N node);
 	
 }

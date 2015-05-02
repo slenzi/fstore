@@ -4,12 +4,13 @@ import java.util.List;
 
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
+import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClosureLogger {
+public class ClosureLogger<N extends FSNode> {
 
 	@InjectLogger
 	private Logger logger;

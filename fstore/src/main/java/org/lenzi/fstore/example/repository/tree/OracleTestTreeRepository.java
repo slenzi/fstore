@@ -2,7 +2,6 @@ package org.lenzi.fstore.example.repository.tree;
 
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.tree.AbstractOracleTreeRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ public class OracleTestTreeRepository extends AbstractOracleTreeRepository<FSTes
 
 	
 	@Override
-	public DBNode postAdd(FSTestNode node) throws DatabaseException {
+	public FSTestNode postAdd(FSTestNode node) throws DatabaseException {
 		
 		logger.info("Post add node => " + node.getClass().getCanonicalName() + ", id => " + node.getNodeId() + ", is root => " + node.isRootNode());
 		
@@ -36,7 +35,7 @@ public class OracleTestTreeRepository extends AbstractOracleTreeRepository<FSTes
 	}
 
 	@Override
-	public DBNode postMove(FSTestNode node) throws DatabaseException {
+	public FSTestNode postMove(FSTestNode node) throws DatabaseException {
 		
 		logger.info("Post move node => " + node.getClass().getCanonicalName() + ", id => " + node.getNodeId() + ", is root => " + node.isRootNode());
 		
@@ -52,7 +51,7 @@ public class OracleTestTreeRepository extends AbstractOracleTreeRepository<FSTes
 	}
 
 	@Override
-	public DBNode postCopy(FSTestNode originalNode, FSTestNode newCopyNode) throws DatabaseException {
+	public FSTestNode postCopy(FSTestNode originalNode, FSTestNode newCopyNode) throws DatabaseException {
 		
 		logger.info("Post copy node");
 		logger.info("Original Node => " + originalNode.getClass().getCanonicalName() + ", id => " + originalNode.getNodeId() + ", is root => " + originalNode.isRootNode());

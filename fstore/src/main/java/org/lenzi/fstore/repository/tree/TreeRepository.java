@@ -7,8 +7,9 @@ import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.DBTree;
+import org.lenzi.fstore.repository.model.impl.FSNode;
 
-public interface TreeRepository {
+public interface TreeRepository<N> {
 	
 	/**
 	 * Get name of repository.
@@ -23,7 +24,7 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DBNode getNode(Long nodeId) throws DatabaseException;	
+	public N getNode(Long nodeId) throws DatabaseException;	
 	
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
@@ -32,7 +33,7 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DBNode addRootNode(DBNode newNode) throws DatabaseException;
+	public N addRootNode(N newNode) throws DatabaseException;
 	
 	/**
 	 * Add a new child node under the parent node.
@@ -42,7 +43,7 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DBNode addChildNode(DBNode parentNode, DBNode newNode) throws DatabaseException;
+	public N addChildNode(N parentNode, N newNode) throws DatabaseException;
 	
 	/**
 	 * Copy a node.
@@ -54,7 +55,7 @@ public interface TreeRepository {
 	 * @return Reference to the copied node
 	 * @throws DatabaseException
 	 */
-	public DBNode copyNode(DBNode nodeToCopy, DBNode parentNode, boolean copyChildren, NodeCopier copier) throws DatabaseException;
+	public N copyNode(N nodeToCopy, N parentNode, boolean copyChildren, NodeCopier<N> copier) throws DatabaseException;
 	
 	
 	/**
@@ -65,7 +66,7 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DBTree addTree(DBTree newTree, DBNode newRootNode) throws DatabaseException;
+	public DBTree addTree(DBTree newTree, N newRootNode) throws DatabaseException;
 	
 	/**
 	 * Remove a node, plus all its children.
@@ -73,7 +74,7 @@ public interface TreeRepository {
 	 * @param node
 	 * @throws DatabaseException
 	 */
-	public void removeNode(DBNode node) throws DatabaseException;
+	public void removeNode(N node) throws DatabaseException;
 	
 	/**
 	 * Remove all children of a node, but not the node itself.
@@ -81,7 +82,7 @@ public interface TreeRepository {
 	 * @param node
 	 * @throws DatabaseException
 	 */
-	public void removeChildren(DBNode node) throws DatabaseException;	
+	public void removeChildren(N node) throws DatabaseException;	
 	
 	/**
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
@@ -91,7 +92,7 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<DBClosure> getClosure(DBNode node) throws DatabaseException;
+	public List<DBClosure> getClosure(N node) throws DatabaseException;
 	
 	/**
 	 * Move a node
@@ -100,7 +101,7 @@ public interface TreeRepository {
 	 * @param newParentNode
 	 * @throws DatabaseException
 	 */
-	public DBNode moveNode(DBNode nodeToMode, DBNode newParentNode)  throws DatabaseException;
+	public N moveNode(N nodeToMode, N newParentNode)  throws DatabaseException;
 	
 	/**
 	 * Get a tree with it's root node.
@@ -171,7 +172,7 @@ public interface TreeRepository {
 	 * @return true if node1 and node2 are in the same tree, false if not.
 	 * @throws DatabaseException
 	 */
-	public boolean isSameTree(DBNode node1, DBNode node2) throws DatabaseException;
+	public boolean isSameTree(N node1, N node2) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a parent of node2.
@@ -189,7 +190,7 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isParent(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException;
+	public boolean isParent(N node1, N node2, boolean fullSearch) throws DatabaseException;
 	
 	/**
 	 * Check if node1 is a child of node2.
@@ -208,6 +209,6 @@ public interface TreeRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isChild(DBNode node1, DBNode node2, boolean fullSearch) throws DatabaseException;
+	public boolean isChild(N node1, N node2, boolean fullSearch) throws DatabaseException;
 	
 }

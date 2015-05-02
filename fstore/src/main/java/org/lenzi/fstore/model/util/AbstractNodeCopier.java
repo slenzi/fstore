@@ -1,6 +1,5 @@
 package org.lenzi.fstore.model.util;
 
-import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -13,7 +12,7 @@ import org.slf4j.Logger;
  *
  * @param <N> A node object which extends DbNode
  */
-public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier {
+public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier<N> {
 
 	@InjectLogger
 	private Logger logger;		
@@ -23,16 +22,16 @@ public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier
 	}
 	
 	@SuppressWarnings("rawtypes")
-	protected DBNode createNew() throws ClassNotFoundException, InstantiationException, IllegalAccessException{
+	protected N createNew() throws ClassNotFoundException, InstantiationException, IllegalAccessException{
 		String name = getCanonicalName();
 		Class clazz = Class.forName(name);
-		DBNode node = (N) clazz.newInstance();
+		N node = (N) clazz.newInstance();
 		return node;
 	}	
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public DBNode copy(DBNode node) {
+	public N copy(N node) {
 
 		logger.info("Copying node of type => " + getCanonicalName());
 		
@@ -40,7 +39,7 @@ public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier
 			return null;
 		}
 		
-		DBNode newObject = null;
+		N newObject = null;
 		
 		try {
 			newObject = (N)createNew();
@@ -63,7 +62,7 @@ public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier
 		newObject.setParentClosure(node.getParentClosure());
 		
 		// copy all attributes from users child class.
-		newObject = doCopyWork( (N)newObject, (N)node);
+		newObject = doCopyWork( newObject, node);
 		
 		return newObject;		
 		

@@ -1,5 +1,6 @@
 package org.lenzi.fstore.config;
 
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.repository.tree.OracleTestTreeRepository;
 import org.lenzi.fstore.example.repository.tree.PostgreSQLTestTreeRepository;
 import org.lenzi.fstore.repository.tree.TreeRepository;
