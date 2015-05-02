@@ -658,7 +658,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#addTree(org.lenzi.fstore.repository.model.DBTree, org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
-	public DBTree addTree(DBTree newTree, N newRootNode) throws DatabaseException {
+	public DBTree<N> addTree(DBTree<N> newTree, N newRootNode) throws DatabaseException {
 
 		if(newTree == null || newRootNode == null){
 			throw new DatabaseException("Cannot add tree. Tree object is null, and/or root node object is null.");

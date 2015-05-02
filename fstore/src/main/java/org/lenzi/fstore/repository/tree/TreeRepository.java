@@ -5,11 +5,10 @@ import java.util.List;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 
-public interface TreeRepository<N> {
+public interface TreeRepository<N extends FSNode> {
 	
 	/**
 	 * Get name of repository.
@@ -66,7 +65,7 @@ public interface TreeRepository<N> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DBTree addTree(DBTree newTree, N newRootNode) throws DatabaseException;
+	public DBTree<N> addTree(DBTree<N> newTree, N newRootNode) throws DatabaseException;
 	
 	/**
 	 * Remove a node, plus all its children.

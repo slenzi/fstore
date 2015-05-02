@@ -63,7 +63,7 @@ public class OracleReRootTest extends AbstractTreeTest {
 		/*
 		
 		logger.info("Creating sample tree 1");
-		DBTree fsTree1 = treeService.createTree("Sample Tree 1", "A sample test tree #1", "A1");
+		DBTree<FSTestNode> fsTree1 = treeService.createTree("Sample Tree 1", "A sample test tree #1", "A1");
 		
 		assertNotNull(fsTree1);
 		assertNotNull(fsTree1.getRootNode());

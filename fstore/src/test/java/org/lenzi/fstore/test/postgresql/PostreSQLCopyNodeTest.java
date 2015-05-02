@@ -71,8 +71,8 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree dbTree = treeService.addTree(
-				new FSTree("Sample tree","Sample tree description."),
+		DBTree<FSTestNode> dbTree = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
@@ -82,20 +82,20 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		DBNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
-			DBNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
-				DBNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
-					DBNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
-						DBNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
-						DBNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
-					DBNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
-						DBNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
-						DBNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("J","Node J"));
-					DBNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
-						DBNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
-						DBNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
-						DBNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
-						DBNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
+		FSTestNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
+			FSTestNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+				FSTestNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+					FSTestNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+						FSTestNode nodeF = treeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+						FSTestNode nodeG = treeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+					FSTestNode nodeH = treeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+						FSTestNode nodeI = treeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+						FSTestNode nodeJ = treeService.createChildNode(nodeH, new FSTestNode("J","Node J"));
+					FSTestNode nodeK = treeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+						FSTestNode nodeL = treeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+						FSTestNode nodeM = treeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+						FSTestNode nodeN = treeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+						FSTestNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
 			
@@ -108,7 +108,7 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Copying node E to node M (excluding children)...");
-		DBNode copyE = treeService.copyNode(nodeE, nodeM, false, testNodeCopier);
+		FSTestNode copyE = treeService.copyNode(nodeE, nodeM, false, testNodeCopier);
 		
 		logger.info("After copy...");
 		treeMeta = treeService.buildTree(dbTree);
@@ -126,8 +126,8 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree dbTree = treeService.addTree(
-				new FSTree("Sample tree","Sample tree description."),
+		DBTree<FSTestNode> dbTree = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
@@ -138,7 +138,7 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		logger.info("Adding additional nodes to tree...");
 		
 		// TODO - Think about creating FSTestTree so you don't have to cast
-		FSTestNode nodeB = treeService.createChildNode((FSTestNode) dbTree.getRootNode(), new FSTestNode("B","Node B"));
+		FSTestNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
 			FSTestNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
 				FSTestNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
 					FSTestNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
@@ -181,8 +181,8 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree 1");
 		
-		DBTree dbTree1 = treeService.addTree(
-				new FSTree("Sample tree 1","Sample tree description 1."),
+		DBTree<FSTestNode> dbTree1 = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree 1","Sample tree description 1."),
 				new FSTestNode("A1","Node A1"));
 		
 		assertNotNull(dbTree1);
@@ -211,8 +211,8 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree 1");
 		
-		DBTree dbTree2 = treeService.addTree(
-				new FSTree("Sample tree 2","Sample tree description 2."),
+		DBTree<FSTestNode> dbTree2 = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree 2","Sample tree description 2."),
 				new FSTestNode("A2","Node A2"));
 		
 		assertNotNull(dbTree2);
@@ -274,8 +274,8 @@ public class PostreSQLCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree dbTree = treeService.addTree(
-				new FSTree("Sample tree","Sample tree description."),
+		DBTree<FSTestNode> dbTree = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);

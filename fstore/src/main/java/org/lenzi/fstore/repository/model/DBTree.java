@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  * 
  * @author slenzi
  */
-public interface DBTree extends Serializable {
+public interface DBTree<N extends DBNode> extends Serializable {
 
 	public Long getTreeId();
 	
@@ -36,8 +36,8 @@ public interface DBTree extends Serializable {
 	
 	public void setDateUpdated(Timestamp dateUpdated);
 	
-	public DBNode getRootNode();
+	public N getRootNode();
 	
-	public void setRootNode(DBNode rootNode);
+	public void setRootNode(N rootNode);
 	
 }

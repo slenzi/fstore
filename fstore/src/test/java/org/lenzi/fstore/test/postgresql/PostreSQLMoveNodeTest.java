@@ -66,8 +66,8 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree dbTree = treeService.addTree(
-				new FSTree("Sample tree","Sample tree description."),
+		DBTree<FSTestNode> dbTree = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
@@ -77,7 +77,7 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSTestNode nodeB = treeService.createChildNode((FSTestNode)dbTree.getRootNode(), new FSTestNode("B","Node B"));
+		FSTestNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
 			FSTestNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
 				FSTestNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
 					FSTestNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
@@ -94,8 +94,7 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		FSTestNode testNode = (FSTestNode)nodeO;
-		logger.info("Node 0 test value => " + testNode.getTestValue());
+		logger.info("Node 0 test value => " + nodeO.getTestValue());
 		
 		Tree<TreeMeta> treeMeta = null;
 		
@@ -122,8 +121,8 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree 1");
 		
-		DBTree dbTree1 = treeService.addTree(
-				new FSTree("Sample tree 1","Sample tree description 1."),
+		DBTree<FSTestNode> dbTree1 = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree 1","Sample tree description 1."),
 				new FSTestNode("A1","Node A1"));
 		
 		assertNotNull(dbTree1);
@@ -133,7 +132,7 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree 1...");
 		
-		FSTestNode nodeB1 = treeService.createChildNode((FSTestNode)dbTree1.getRootNode(), new FSTestNode("B1","Node B1"));
+		FSTestNode nodeB1 = treeService.createChildNode(dbTree1.getRootNode(), new FSTestNode("B1","Node B1"));
 			FSTestNode nodeC1 = treeService.createChildNode(nodeB1, new FSTestNode("C1","Node C1"));
 				FSTestNode nodeD1 = treeService.createChildNode(nodeC1, new FSTestNode("D1","Node D1"));
 					FSTestNode nodeE1 = treeService.createChildNode(nodeD1, new FSTestNode("E1","Node E1"));
@@ -152,8 +151,8 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree 1");
 		
-		DBTree dbTree2 = treeService.addTree(
-				new FSTree("Sample tree 2","Sample tree description 2."),
+		DBTree<FSTestNode> dbTree2 = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree 2","Sample tree description 2."),
 				new FSTestNode("A2","Node A2"));
 		
 		assertNotNull(dbTree2);
@@ -163,7 +162,7 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree 2...");
 		
-		FSTestNode nodeB2 = treeService.createChildNode((FSTestNode)dbTree2.getRootNode(), new FSTestNode("B2","Node B2"));
+		FSTestNode nodeB2 = treeService.createChildNode(dbTree2.getRootNode(), new FSTestNode("B2","Node B2"));
 			FSTestNode nodeC2 = treeService.createChildNode(nodeB2, new FSTestNode("C2","Node C2"));
 				FSTestNode nodeD2 = treeService.createChildNode(nodeC2, new FSTestNode("D2","Node D2"));
 					FSTestNode nodeE2 = treeService.createChildNode(nodeD2, new FSTestNode("E2","Node E2"));
@@ -215,8 +214,8 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree dbTree = treeService.addTree(
-				new FSTree("Sample tree","Sample tree description."),
+		DBTree<FSTestNode> dbTree = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
@@ -226,7 +225,7 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSTestNode nodeB = treeService.createChildNode((FSTestNode)dbTree.getRootNode(), new FSTestNode("B","Node B"));
+		FSTestNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
 			FSTestNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
 				FSTestNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
 					FSTestNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
@@ -243,8 +242,7 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		FSTestNode testNode = (FSTestNode)nodeO;
-		logger.info("Node 0 test value => " + testNode.getTestValue());
+		logger.info("Node 0 test value => " + nodeO.getTestValue());
 		
 		Tree<TreeMeta> treeMeta = null;
 		

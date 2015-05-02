@@ -77,9 +77,9 @@ public class TreeService<N extends FSNode> {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public DBTree createTree(DBTree tree, N rootNode) throws ServiceException {
+	public DBTree<N> createTree(DBTree<N> tree, N rootNode) throws ServiceException {
 		
-		DBTree newTree = null;
+		DBTree<N> newTree = null;
 		try {
 			newTree = treeRepository.addTree(tree, rootNode);
 		} catch (DatabaseException e) {
@@ -243,9 +243,9 @@ public class TreeService<N extends FSNode> {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public DBTree addTree(DBTree newTree, N newRootNode) throws ServiceException {
+	public DBTree<N> addTree(DBTree<N> newTree, N newRootNode) throws ServiceException {
 		
-		DBTree tree = null;
+		DBTree<N> tree = null;
 		try {
 			tree = treeRepository.addTree(newTree, newRootNode);
 		} catch (DatabaseException e) {
@@ -380,7 +380,7 @@ public class TreeService<N extends FSNode> {
 	 * @param tree The FSTree entity
 	 * @return
 	 */
-	public Tree<TreeMeta> buildTree(DBTree tree) throws ServiceException {
+	public Tree<TreeMeta> buildTree(DBTree<N> tree) throws ServiceException {
 		
 		if(tree == null || tree.getRootNode() == null){
 			return null;
@@ -390,7 +390,7 @@ public class TreeService<N extends FSNode> {
 		
 		List<DBClosure> closure = null;
 		try {
-			closure = treeRepository.getClosure((N)tree.getRootNode());
+			closure = treeRepository.getClosure(tree.getRootNode());
 		} catch (DatabaseException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}

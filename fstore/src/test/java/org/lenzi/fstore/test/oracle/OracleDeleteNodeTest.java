@@ -66,8 +66,8 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree dbTree = treeService.addTree(
-				new FSTree("Sample tree","Sample tree description."),
+		DBTree<FSTestNode> dbTree = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
@@ -77,7 +77,7 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSTestNode nodeB = treeService.createChildNode((FSTestNode)dbTree.getRootNode(), new FSTestNode("B","Node B"));
+		FSTestNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
 			FSTestNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
 				FSTestNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
 					FSTestNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
@@ -119,8 +119,8 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree dbTree = treeService.addTree(
-				new FSTree("Sample tree","Sample tree description."),
+		DBTree<FSTestNode> dbTree = treeService.addTree(
+				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
 		assertNotNull(dbTree);
@@ -130,7 +130,7 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		
 		logger.info("Adding additional nodes to tree...");
 		
-		FSTestNode nodeB = treeService.createChildNode((FSTestNode)dbTree.getRootNode(), new FSTestNode("B","Node B"));
+		FSTestNode nodeB = treeService.createChildNode(dbTree.getRootNode(), new FSTestNode("B","Node B"));
 			FSTestNode nodeC = treeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
 				FSTestNode nodeD = treeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
 					FSTestNode nodeE = treeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
