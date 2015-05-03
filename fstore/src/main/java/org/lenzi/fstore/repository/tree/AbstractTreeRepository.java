@@ -23,7 +23,6 @@ import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.repository.model.impl.FSClosure_;
@@ -1102,7 +1101,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @return
 	 * @throws DatabaseException
 	 */
-	protected List<N> getNodes(N node, boolean onlyChildren) throws DatabaseException {
+	public List<N> getNodes(N node, boolean onlyChildren) throws DatabaseException {
 	
 		List<Long> nodeIdList = getNodeIdList(node, onlyChildren);
 		
@@ -1110,6 +1109,116 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		return nodeList;
 		
+	}
+	
+	/**
+	 * Get a node with it's parent and child closure data, and fetch the parent and child nodes for the closure entries
+	 * 
+	 * @param node - The node to fetch (with node ID set)
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public N getNodeWithClosureCriteria(N node) throws DatabaseException {
+		
+		Class<N> type = (Class<N>) node.getClass();
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<N> nodeSelect = criteriaBuilder.createQuery(type);
+		Root<N> nodeSelectRoot = nodeSelect.from(type);
+		
+		SetJoin<N, FSClosure> childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
+		SetJoin<N, FSClosure> parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
+		
+		Fetch<N, FSClosure> childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
+		Fetch<N, FSClosure> parentClosureFetch =  nodeSelectRoot.fetch(FSNode_.parentClosure, JoinType.LEFT);
+		
+		childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
+		andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
+		andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
+		
+		nodeSelect.select(nodeSelectRoot);
+		nodeSelect.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		return null;
+	}
+	
+	/**
+	 * Get a node with it's child closure data, and fetch the parent and child nodes for the closure entries
+	 * 
+	 * @param node - The node to fetch (with node ID set)
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public N getNodeWithChildClosureCriteria(N node) throws DatabaseException {
+		
+		Class<N> type = (Class<N>) node.getClass();
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<N> nodeSelect = criteriaBuilder.createQuery(type);
+		Root<N> nodeSelectRoot = nodeSelect.from(type);
+		
+		SetJoin<N, FSClosure> childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
+		
+		Fetch<N, FSClosure> childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
+		
+		childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
+		andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
+		
+		nodeSelect.select(nodeSelectRoot);
+		nodeSelect.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		return null;
+	}
+	
+	/**
+	 * Get a node with it's parent closure data, and fetch the parent and child nodes for the closure entries.
+	 * 
+	 * @param node - The node to fetch (with node ID set)
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public N getNodeWithParentClosureCriteria(N node) throws DatabaseException {
+		
+		Class<N> type = (Class<N>) node.getClass();
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<N> nodeSelect = criteriaBuilder.createQuery(type);
+		Root<N> nodeSelectRoot = nodeSelect.from(type);
+		
+		SetJoin<N, FSClosure> parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
+		
+		Fetch<N, FSClosure> parentClosureFetch =  nodeSelectRoot.fetch(FSNode_.parentClosure, JoinType.LEFT);
+		
+		parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
+		andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
+		
+		nodeSelect.select(nodeSelectRoot);
+		nodeSelect.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		return null;
 	}
 	
 	/**
@@ -1126,8 +1235,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		
-		CriteriaQuery selectNodesToDelete = criteriaBuilder.createQuery(c);
-		Root nodeSelectRoot = selectNodesToDelete.from(c);
+		CriteriaQuery selectNodes = criteriaBuilder.createQuery(c);
+		Root nodeSelectRoot = selectNodes.from(c);
 		/*
 		CriteriaQuery<N> selectNodesToDelete = criteriaBuilder.createQuery(c);
 		Root<N> nodeSelectRoot = selectNodesToDelete.from(c);
@@ -1140,12 +1249,12 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
 		parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
 		parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
-		selectNodesToDelete.distinct(true);
-		selectNodesToDelete.select(nodeSelectRoot);
-		selectNodesToDelete.where(
+		selectNodes.distinct(true);
+		selectNodes.select(nodeSelectRoot);
+		selectNodes.where(
 				nodeSelectRoot.get(FSNode_.nodeId).in(nodeIdList)
 				);
-		nodeList = getEntityManager().createQuery(selectNodesToDelete).getResultList();
+		nodeList = getEntityManager().createQuery(selectNodes).getResultList();
 		
 		return nodeList;
 		
