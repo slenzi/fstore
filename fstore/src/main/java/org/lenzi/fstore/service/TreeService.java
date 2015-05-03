@@ -46,6 +46,55 @@ public class TreeService<N extends FSNode<N>> {
 		return treeRepository.getRepositoryName();
 	}
 	
+	public N getNode(N node) throws ServiceException {
+		
+		N entity = null;
+		try {
+			entity = treeRepository.getNode(node);
+		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return entity;
+		
+	}
+	
+	public N getNodeWithChild(N node) throws ServiceException {
+		
+		N entity = null;
+		try {
+			entity = treeRepository.getNodeWithChild(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return entity;
+		
+	}
+	
+	public N getNodeWithParent(N node) throws ServiceException {
+		
+		N entity = null;
+		try {
+			entity = treeRepository.getNodeWithParent(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return entity;
+		
+	}
+	
+	public N getNodeWithParentChild(N node) throws ServiceException {
+		
+		N entity = null;
+		try {
+			entity = treeRepository.getNodewithParentChild(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return entity;
+		
+	}
+	
 	/**
 	 * Get tree by id
 	 * 

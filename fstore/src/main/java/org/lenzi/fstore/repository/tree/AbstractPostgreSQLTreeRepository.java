@@ -31,6 +31,9 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode<N>> exte
 	@InjectLogger
 	private Logger logger;
 	
+	/**
+	 * @deprecated - replaced with jpa criteria query
+	 */
 	private String HQL_GET_NODE_BY_ID =
 		"select n from FSNode n where n.nodeId = :nodeId";	
 	
@@ -275,7 +278,8 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode<N>> exte
 		return SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE;
 	}	
 
-	/* (non-Javadoc)
+	/**
+	 * @deprecated - replaced with jpa criteria query
 	 * @see org.lenzi.fstore.repository.AbstractClosureRepository#getHqlQueryNodeById()
 	 */
 	@Override

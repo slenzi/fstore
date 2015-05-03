@@ -3,17 +3,21 @@ package org.lenzi.fstore.test.postgresql;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Set;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
+import org.lenzi.fstore.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +104,32 @@ public class PostreSQLPrintTreeTest extends AbstractTreeTest {
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
+		
+		logger.info("Fetching root node with all closure data");
+		FSTestNode rootWithClosure = treeService.getNodeWithChild(dbTree.getRootNode());
+		assertNotNull(rootWithClosure);
+		
+		logNodeWithClosure("",rootWithClosure);
+		
+	}
+	
+	private void logNodeWithClosure(String s, FSTestNode node){
+		Set<DBClosure<FSTestNode>> childClosureSet = node.getChildClosure();
+		for(DBClosure<FSTestNode> closure : CollectionUtil.emptyIfNull(childClosureSet)){
+			logger.info(
+					s + 
+					"Parent => " + ((closure.getParentNode() != null) ? closure.getParentNode().toString() : "") + ", " +
+					"Child => " + ((closure.getChildNode() != null) ? closure.getChildNode().toString() : "") + ", " +
+					"Depth => " + closure.getDepth()
+				);
+		}
+		s = s + " ";
+		for(DBClosure<FSTestNode> closure : CollectionUtil.emptyIfNull(childClosureSet)){
+			// make sure to skip depth-0 closure entries where a node is a child of itself.
+			if(!closure.getParentNode().getNodeId().equals(closure.getChildNode().getNodeId())){
+				logNodeWithClosure( s , closure.getChildNode());
+			}
+		}
 	}
 
 }

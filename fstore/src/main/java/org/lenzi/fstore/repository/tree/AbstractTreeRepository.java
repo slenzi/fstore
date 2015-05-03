@@ -107,18 +107,37 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getNode(java.lang.Long)
 	 */
 	@Override
-	public N getNode(Long nodeId) throws DatabaseException {
+	public N getNode(N node) throws DatabaseException {
 		
+		return getNodeCriteria(node);
+		
+		/*
 		Query query = null;
 		try {
 			query = getEntityManager().createQuery(getHqlQueryNodeById());
-			query.setParameter("nodeId", nodeId);
+			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}		
 		
-		return (N)getSingleResult(query);	
+		return (N)getSingleResult(query);
+		*/	
 	}	
+
+	@Override
+	public N getNodeWithParent(N node) throws DatabaseException {
+		return getNodeWithParentClosureCriteria(node);
+	}
+
+	@Override
+	public N getNodeWithChild(N node) throws DatabaseException {
+		return getNodeWithChildClosureCriteria(node);
+	}
+
+	@Override
+	public N getNodewithParentChild(N node) throws DatabaseException {
+		return getNodeWithParentChildClosureCriteria(node);
+	}
 
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
@@ -1118,7 +1137,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public N getNodeWithClosureCriteria(N node) throws DatabaseException {
+	private N getNodeWithParentChildClosureCriteria(N node) throws DatabaseException {
 		
 		Class<N> type = (Class<N>) node.getClass();
 		
@@ -1143,6 +1162,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
 		andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
 		
+		nodeSelect.distinct(true);
 		nodeSelect.select(nodeSelectRoot);
 		nodeSelect.where(
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
@@ -1158,7 +1178,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public N getNodeWithChildClosureCriteria(N node) throws DatabaseException {
+	private N getNodeWithChildClosureCriteria(N node) throws DatabaseException {
 		
 		Class<N> type = (Class<N>) node.getClass();
 		
@@ -1178,12 +1198,15 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
 		andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
 		
+		nodeSelect.distinct(true);
 		nodeSelect.select(nodeSelectRoot);
 		nodeSelect.where(
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		return null;
+		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		return result;
 	}
 	
 	/**
@@ -1193,7 +1216,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public N getNodeWithParentClosureCriteria(N node) throws DatabaseException {
+	private N getNodeWithParentClosureCriteria(N node) throws DatabaseException {
 		
 		Class<N> type = (Class<N>) node.getClass();
 		
@@ -1213,12 +1236,42 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
 		andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
 		
+		nodeSelect.distinct(true);
 		nodeSelect.select(nodeSelectRoot);
 		nodeSelect.where(
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		return null;
+		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		return result;
+	}
+	
+	/**
+	 * Get a node without fetching closure data. Just retieve the main node data.
+	 * 
+	 * @param node - The node to fetch (with node ID set)
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private N getNodeCriteria(N node) throws DatabaseException {
+		
+		Class<N> type = (Class<N>) node.getClass();
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<N> nodeSelect = criteriaBuilder.createQuery(type);
+		Root<N> nodeSelectRoot = nodeSelect.from(type);
+		
+		//nodeSelect.distinct(true);
+		nodeSelect.select(nodeSelectRoot);
+		nodeSelect.where(
+				criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId())
+				);
+		
+		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		return result;
 	}
 	
 	/**
