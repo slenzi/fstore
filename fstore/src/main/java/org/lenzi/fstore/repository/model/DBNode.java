@@ -11,7 +11,7 @@ import java.util.Set;
  * 
  * @author slenzi
  */
-public interface DBNode extends Serializable {
+public interface DBNode<N extends DBNode<N>> extends Serializable {
 
 	public Long getNodeId();
 	
@@ -25,13 +25,13 @@ public interface DBNode extends Serializable {
 	
 	public void setNodeType(String nodeType);
 	
-	public Set<DBClosure> getChildClosure();
+	public Set<DBClosure<N>> getChildClosure();
 	
-	public void setChildClosure(Set<DBClosure> childClosure);
+	public void setChildClosure(Set<DBClosure<N>> childClosure);
 	
-	public Set<DBClosure> getParentClosure();
+	public Set<DBClosure<N>> getParentClosure();
 	
-	public void setParentClosure(Set<DBClosure> parentClosure);
+	public void setParentClosure(Set<DBClosure<N>> parentClosure);
 	
 	public boolean isRootNode();
 	

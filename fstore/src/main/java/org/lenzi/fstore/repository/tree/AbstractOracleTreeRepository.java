@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @param <N>
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public abstract class AbstractOracleTreeRepository<N extends FSNode> extends AbstractTreeRepository<N> {
+public abstract class AbstractOracleTreeRepository<N extends FSNode<N>> extends AbstractTreeRepository<N> {
 
 	/**
 	 * 

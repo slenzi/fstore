@@ -32,7 +32,7 @@ import org.lenzi.fstore.repository.model.DBNode;
 @DiscriminatorColumn(name="NODE_TYPE", discriminatorType=DiscriminatorType.STRING)
 @DiscriminatorValue("BaseNode")
 @Table(name = "FS_NODE")
-public abstract class FSNode implements DBNode {
+public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 
 	/**
 	 * 
@@ -63,11 +63,11 @@ public abstract class FSNode implements DBNode {
 	
 	// Closure entries that give access to the child nodes for this node.
 	@OneToMany(mappedBy="parentNode", targetEntity = FSClosure.class)
-	private Set<DBClosure> childClosure = new HashSet<DBClosure>(0);
+	private Set<DBClosure<N>> childClosure = new HashSet<DBClosure<N>>(0);
 	
 	// Closure entries that give access to the parent nodes for this node.
 	@OneToMany(mappedBy="childNode", targetEntity = FSClosure.class)
-	private Set<DBClosure> parentClosure = new HashSet<DBClosure>(0);
+	private Set<DBClosure<N>> parentClosure = new HashSet<DBClosure<N>>(0);
 	
 	public FSNode() {
 		
@@ -182,28 +182,28 @@ public abstract class FSNode implements DBNode {
 	/**
 	 * @return the childClosure
 	 */
-	public Set<DBClosure> getChildClosure() {
+	public Set<DBClosure<N>> getChildClosure() {
 		return childClosure;
 	}
 
 	/**
 	 * @param childClosure the childClosure to set
 	 */
-	public void setChildClosure(Set<DBClosure> childClosure) {
+	public void setChildClosure(Set<DBClosure<N>> childClosure) {
 		this.childClosure = childClosure;
 	}
 
 	/**
 	 * @return the parentClosure
 	 */
-	public Set<DBClosure> getParentClosure() {
+	public Set<DBClosure<N>> getParentClosure() {
 		return parentClosure;
 	}
 
 	/**
 	 * @param parentClosure the parentClosure to set
 	 */
-	public void setParentClosure(Set<DBClosure> parentClosure) {
+	public void setParentClosure(Set<DBClosure<N>> parentClosure) {
 		this.parentClosure = parentClosure;
 	}
 	
@@ -236,7 +236,7 @@ public abstract class FSNode implements DBNode {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FSNode other = (FSNode) obj;
+		FSNode<N> other = (FSNode<N>) obj;
 		if (nodeId == null) {
 			if (other.nodeId != null)
 				return false;

@@ -13,7 +13,6 @@ import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.tree.TreeRepository;
@@ -31,7 +30,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Transactional
-public class TreeService<N extends FSNode> {
+public class TreeService<N extends FSNode<N>> {
 
 	@InjectLogger
 	private Logger logger;
@@ -223,9 +222,9 @@ public class TreeService<N extends FSNode> {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public List<DBClosure> getClosure(N node) throws ServiceException {
+	public List<DBClosure<N>> getClosure(N node) throws ServiceException {
 		
-		List<DBClosure> closure = null;
+		List<DBClosure<N>> closure = null;
 		try {
 			closure = treeRepository.getClosure(node);
 		} catch (DatabaseException e) {
@@ -388,7 +387,7 @@ public class TreeService<N extends FSNode> {
 		
 		// TODO - test this, when we get closure we need to fetch from N (FSTestNode). The HQL query currently fetches from parent FSNode
 		
-		List<DBClosure> closure = null;
+		List<DBClosure<N>> closure = null;
 		try {
 			closure = treeRepository.getClosure(tree.getRootNode());
 		} catch (DatabaseException e) {
@@ -405,7 +404,7 @@ public class TreeService<N extends FSNode> {
 	 * @param closureList
 	 * @return
 	 */
-	public Tree<TreeMeta> buildTree(List<DBClosure> closureList){
+	public Tree<TreeMeta> buildTree(List<DBClosure<N>> closureList){
 		
 		if(closureList == null || closureList.size() == 0){
 			return null;
@@ -413,11 +412,11 @@ public class TreeService<N extends FSNode> {
 		
 		//closureLogger.logClosure(closureList);
 		
-		HashMap<Long,List<DBNode>> treeMap = new HashMap<Long,List<DBNode>>();
+		HashMap<Long,List<N>> treeMap = new HashMap<Long,List<N>>();
 		
 		// get root node of tree
-		DBNode rootNode = null;
-		for(DBClosure c : closureList){
+		N rootNode = null;
+		for(DBClosure<N> c : closureList){
 			if(c.hasParent() && c.hasChild()){
 				rootNode = c.getParentNode();
 				break;
@@ -429,14 +428,14 @@ public class TreeService<N extends FSNode> {
 		//
 		// loop through closure list and build tree map
 		//
-		DBClosure closure = null;
+		DBClosure<N> closure = null;
 		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
 			closure = closureList.get(closureIndex);
 			if(closure.hasParent() && closure.hasChild()){
 				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
 					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
 				}else{
-					List<DBNode> childList = new ArrayList<DBNode>();
+					List<N> childList = new ArrayList<N>();
 					childList.add(closure.getChildNode());
 					treeMap.put(closure.getParentNode().getNodeId(), childList);
 				}
@@ -471,11 +470,11 @@ public class TreeService<N extends FSNode> {
 	}
 	
 	// walk the data in the tree map and add children to parentNode
-	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<DBNode>> treeMap){
+	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<N>> treeMap){
 		
 		TreeNode<TreeMeta> childTreeNode = null;
 		
-		for(DBNode childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getId()))){
+		for(N childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getId()))){
 			
 			// closure table contains entries where a node is a parent of itself at depth 0. we
 			// need to skip over these entries otherwise we'll go into an infinite loop and exhaust the
@@ -495,7 +494,7 @@ public class TreeService<N extends FSNode> {
 	}
 	
 	// build TreeMeta object from FSNode object
-	private TreeMeta getMeta(DBNode node){
+	private TreeMeta getMeta(N node){
 		TreeMeta meta = new TreeMeta();
 		meta.setId(node.getNodeId());
 		meta.setName(node.getName());

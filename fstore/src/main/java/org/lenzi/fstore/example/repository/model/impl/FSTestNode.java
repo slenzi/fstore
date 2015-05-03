@@ -26,7 +26,7 @@ import org.lenzi.fstore.repository.model.impl.FSNode;
 @Entity
 @DiscriminatorValue("TestNode")
 @Table(name="FS_TEST_NODE")
-public class FSTestNode extends FSNode {
+public class FSTestNode extends FSNode<FSTestNode> {
 
 	/**
 	 * 

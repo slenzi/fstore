@@ -8,7 +8,7 @@ import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 
-public interface TreeRepository<N extends FSNode> {
+public interface TreeRepository<N extends FSNode<N>> {
 	
 	/**
 	 * Get name of repository.
@@ -91,7 +91,7 @@ public interface TreeRepository<N extends FSNode> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<DBClosure> getClosure(N node) throws DatabaseException;
+	public List<DBClosure<N>> getClosure(N node) throws DatabaseException;
 	
 	/**
 	 * Move a node

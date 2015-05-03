@@ -9,7 +9,7 @@ import java.io.Serializable;
  * 
  * @author slenzi
  */
-public interface DBClosure extends Serializable {
+public interface DBClosure<N extends DBNode<N>> extends Serializable {
 
 	public Long getLinkId();
 	
@@ -27,13 +27,13 @@ public interface DBClosure extends Serializable {
 	
 	public void setDepth(Integer depth);
 	
-	public DBNode getParentNode();
+	public N getParentNode();
 	
-	public void setParentNode(DBNode parentNode);
+	public void setParentNode(N parentNode);
 	
-	public DBNode getChildNode();
+	public N getChildNode();
 	
-	public void setChildNode(DBNode child);
+	public void setChildNode(N child);
 	
 	public boolean hasChild();
 	

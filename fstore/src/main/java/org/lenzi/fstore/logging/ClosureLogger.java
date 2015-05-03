@@ -3,28 +3,27 @@ package org.lenzi.fstore.logging;
 import java.util.List;
 
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.DBNode;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClosureLogger<N extends FSNode> {
+public class ClosureLogger<N extends FSNode<N>> {
 
 	@InjectLogger
 	private Logger logger;
 
 	public ClosureLogger(){}
 	
-	public void logClosure(List<DBClosure> closureList){
+	public void logClosure(List<DBClosure<N>> closureList){
 		if(closureList == null){
 			return;
 		}
 		logger.info("Closure list size => " + closureList.size());
-		DBNode parent = null, child = null;
+		N parent = null, child = null;
 		Integer depth = 0;
-		for(DBClosure c : closureList){
+		for(DBClosure<N> c : closureList){
 			parent = c.getParentNode();
 			child = c.getChildNode();
 			depth = c.getDepth();
@@ -40,7 +39,7 @@ public class ClosureLogger<N extends FSNode> {
 			}
 		}
 	}
-	public String getNodeString(DBNode n){
+	public String getNodeString(N n){
 		if(n == null){
 			return "null";
 		}

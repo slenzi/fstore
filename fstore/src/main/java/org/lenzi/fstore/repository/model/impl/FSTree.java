@@ -21,7 +21,7 @@ import org.lenzi.fstore.repository.model.DBTree;
  */
 @Entity
 @Table(name = "FS_TREE")
-public class FSTree<N extends FSNode> implements DBTree<N> {
+public class FSTree<N extends FSNode<N>> implements DBTree<N> {
 
 	/**
 	 * 

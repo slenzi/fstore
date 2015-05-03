@@ -30,7 +30,7 @@ public class RepositoryConfig {
 	 */
 	@Bean
 	@Profile("oracle")
-	public TreeRepository getOracleTreeRepository(){
+	public TreeRepository<FSTestNode> getOracleTreeRepository(){
 		
 		logger.info("Creating Oracle Tree Repository");
 		
@@ -45,7 +45,7 @@ public class RepositoryConfig {
 	 */
 	@Bean
 	@Profile("postgresql")
-	public TreeRepository getPostgresTreeRepository(){
+	public TreeRepository<FSTestNode> getPostgresTreeRepository(){
 		
 		logger.info("Creating PostgreSQL Tree Repository");
 		

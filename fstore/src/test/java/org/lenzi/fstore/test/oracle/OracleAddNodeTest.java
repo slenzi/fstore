@@ -68,7 +68,7 @@ public class OracleAddNodeTest extends AbstractTreeTest {
 		FSTestNode rootNode = treeService.createRootNode( new FSTestNode("Sample root node 1","Sample root test value 1"));
 		assertNotNull(rootNode);
 		
-		List<DBClosure> closureList = treeService.getClosure(rootNode);
+		List<DBClosure<FSTestNode>> closureList = treeService.getClosure(rootNode);
 		assertNotNull(closureList);
 		
 		logger.info("Closure:");
@@ -100,7 +100,7 @@ public class OracleAddNodeTest extends AbstractTreeTest {
 				FSTestNode childNode3 = treeService.createChildNode(childNode2, new FSTestNode("Sample child node 3","Sample child test value 3"));
 				assertNotNull(childNode3);
 				
-		List<DBClosure> closureList = treeService.getClosure(rootNode);
+		List<DBClosure<FSTestNode>> closureList = treeService.getClosure(rootNode);
 		assertNotNull(closureList);
 		
 		logger.info("Closure:");

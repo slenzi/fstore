@@ -48,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @param <N>
  */
 @Transactional(propagation=Propagation.REQUIRED)
-public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractRepository implements TreeRepository<N> {
+public abstract class AbstractTreeRepository<N extends FSNode<N>> extends AbstractRepository implements TreeRepository<N> {
 
 	/**
 	 * 
@@ -203,7 +203,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
 		
 		// Add depth-0 self link to closure table
-		DBClosure selfLink = new FSClosure();
+		DBClosure<N> selfLink = new FSClosure<N>();
 		selfLink.setLinkId(linkId);
 		selfLink.setChildNodeId(newNode.getNodeId());
 		selfLink.setParentNodeId(newNode.getNodeId());
@@ -317,7 +317,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
-	public List<DBClosure> getClosure(N node) throws DatabaseException {
+	public List<DBClosure<N>> getClosure(N node) throws DatabaseException {
 
 		if(node == null){
 			throw new DatabaseException("Cannot fetch closure data for node. Node object is null.");
@@ -326,11 +326,10 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
 		}
 		
-		// TODO - change this to a criteria query which fetches from the user node table, N!!! it currently fetches from FSNode
-		
-		List<DBClosure> results = null;
+		List<DBClosure<N>> results = null;
 		Query query = null;
 		try {
+			// TODO - change this to a criteria query which fetches from the user node table, N!!! it currently fetches from FSNode
 			query = getEntityManager().createQuery(getHqlQueryClosureByNodeId());
 			query.setParameter(1, node.getNodeId());
 			query.setParameter(2, node.getNodeId());			
@@ -376,7 +375,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		}else{
 			
 			// Get closure data for the sub-tree we are copying
-			List<DBClosure> closureList = getClosure(nodeToCopy);
+			List<DBClosure<N>> closureList = getClosure(nodeToCopy);
 			
 			logger.debug("Fetched closure data for node => " + nodeToCopy.getNodeId());
 			closureLogger.logClosure(closureList);
@@ -392,9 +391,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			
 			// get the root node of the sub-tree we are copying.
 			N rootNode = null;
-			for(DBClosure c : closureList){
+			for(DBClosure<N> c : closureList){
 				if(c.hasParent() && c.hasChild()){
-					rootNode = (N) c.getParentNode();
+					rootNode = c.getParentNode();
 					break;
 				}
 			}
@@ -441,7 +440,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		logger.debug("Moving node => " + moveNodeId + " to new parent node => " + newParentNodeId);
 		
 		// Get tree structure for the  branch / tree section we are moving.
-		List<DBClosure> closureList = getClosure(nodeToMode);
+		List<DBClosure<N>> closureList = getClosure(nodeToMode);
 		if(closureList == null || closureList.size() == 0){
 			throw new DatabaseException("Move error. No closure list for node " + moveNodeId);
 		}
@@ -458,9 +457,9 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		// get the root node of the sub-tree we are copying.
 		N rootNode = null;
-		for(DBClosure c : closureList){
+		for(DBClosure<N> c : closureList){
 			if(c.hasParent() && c.hasChild()){
-				rootNode = (N) c.getParentNode();
+				rootNode = c.getParentNode();
 				break;
 			}
 		}
@@ -483,23 +482,23 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	 * @param closureList
 	 * @return
 	 */
-	private HashMap<Long,List<N>> buildMapFromClosure(List<DBClosure> closureList) {
+	private HashMap<Long,List<N>> buildMapFromClosure(List<DBClosure<N>> closureList) {
 		
 		if(CollectionUtil.isEmpty(closureList)){
 			return null;
 		}
 		
-		DBClosure closure = null;
+		DBClosure<N> closure = null;
 		HashMap<Long,List<N>> map = new HashMap<Long,List<N>>();
 		
 		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
 			closure = closureList.get(closureIndex);
 			if(closure.hasParent() && closure.hasChild()){
 				if(map.containsKey(closure.getParentNode().getNodeId())){
-					map.get(closure.getParentNode().getNodeId()).add((N) closure.getChildNode());
+					map.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
 				}else{
 					List<N> childList = new ArrayList<N>();
-					childList.add((N) closure.getChildNode());
+					childList.add(closure.getChildNode());
 					map.put(closure.getParentNode().getNodeId(), childList);
 				}
 			}
@@ -572,7 +571,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
 		
 		// add depth-0 self link to closure table
-		FSClosure selfLink = new FSClosure();
+		FSClosure<N> selfLink = new FSClosure<N>();
 		selfLink.setLinkId(linkId);
 		selfLink.setChildNodeId(node.getNodeId());
 		selfLink.setParentNodeId(node.getNodeId());	
@@ -725,18 +724,18 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
 		}
 		
-		DBNode rootNode1 = null;
-		DBNode rootNode2 = null;
+		N rootNode1 = null;
+		N rootNode2 = null;
 		
 		logger.debug("Iterating through node1 parent data to find tree root node");
-		for(DBClosure c : parentNode1.getParentClosure()){
+		for(DBClosure<N> c : parentNode1.getParentClosure()){
 			if(c.getParentNode().getParentNodeId() == 0L){
 				rootNode1 = c.getParentNode();
 				break;
 			}
 		}
 		logger.debug("Iterating through node2 parent data to find tree root node");
-		for(DBClosure c : parentNode2.getParentClosure()){
+		for(DBClosure<N> c : parentNode2.getParentClosure()){
 			if(c.getParentNode().getParentNodeId() == 0L){
 				rootNode2 = c.getParentNode();
 				break;
@@ -750,7 +749,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		}
 		
 		// they have the same parent most node. they are in the same tree.
-		//if(rootNode1.getNodeId() == rootNode2.getNodeId()){
 		if(rootNode1.getNodeId().equals(rootNode2.getNodeId())){
 			return true;
 		}
@@ -765,7 +763,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	@Override
 	public boolean isParent(N node1, N node2, boolean fullSearch) throws DatabaseException {
 
-		//if(node2.getParentNodeId() == node1.getNodeId()){
 		if(node2.getParentNodeId().equals(node1.getNodeId())){
 			return true;
 		}
@@ -778,8 +775,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 			if(node2Parents == null || node2Parents.getParentClosure() == null || node2Parents.getParentClosure().size() == 0){
 				throw new DatabaseException("Failed to get parent closure and parent node data for node " + node2.getNodeId());
 			}
-			for(DBClosure c : node2Parents.getParentClosure()){
-				//if(c.getParentNode().getNodeId() == node1.getNodeId()){
+			for(DBClosure<N> c : node2Parents.getParentClosure()){
 				if(c.getParentNode().getNodeId().equals(node1.getNodeId())){
 					return true;
 				}
@@ -796,7 +792,6 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 	@Override
 	public boolean isChild(N node1, N node2, boolean fullSearch) throws DatabaseException {
 
-		//if(node2.getNodeId() == node1.getParentNodeId()){
 		if(node2.getNodeId().equals(node1.getParentNodeId())){
 			//logger.debug("Node " + node2.getNodeId() + " is and immediate parent of node " + node1.getNodeId());
 			return true;
@@ -811,9 +806,8 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 				throw new DatabaseException("Failed to get child closure and child node data for node " + node2.getNodeId());
 			}
 			//logger.debug("Searching all children of node2 => " + node2.getNodeId() + " to see if node " + node1.getNodeId() + " exists");
-			for(DBClosure c : node2Children.getChildClosure()){
+			for(DBClosure<N> c : node2Children.getChildClosure()){
 				//logger.debug("Child found of node " + node2.getNodeId() + " => " + c.getChildNode().getNodeId());
-				//if(c.getChildNode().getNodeId() == node1.getNodeId()){
 				if(c.getChildNode().getNodeId().equals(node1.getNodeId())){
 					return true;
 				}
@@ -835,6 +829,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		Query query = null;
 		try {
+			// TODO - query needs to pull from N node, not FSNode
 			query = getEntityManager().createQuery(getHqlQueryNodeWithParentClosure());
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
@@ -857,6 +852,7 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		Query query = null;
 		try {
+			// TODO - query needs to pull from N node, not FSNode
 			query = getEntityManager().createQuery(getHqlQueryNodeWithChildClosure());
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
@@ -1132,7 +1128,10 @@ public abstract class AbstractTreeRepository<N extends FSNode> extends AbstractR
 		
 		CriteriaQuery selectNodesToDelete = criteriaBuilder.createQuery(c);
 		Root nodeSelectRoot = selectNodesToDelete.from(c);
-		
+		/*
+		CriteriaQuery<N> selectNodesToDelete = criteriaBuilder.createQuery(c);
+		Root<N> nodeSelectRoot = selectNodesToDelete.from(c);
+		*/
 		SetJoin childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
 		SetJoin parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
 		Fetch childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);

@@ -62,7 +62,7 @@ public class PostreSQLClosureTest extends AbstractTreeTest {
 			FSTestNode childNode2 = treeService.createChildNode(rootNode, new FSTestNode("Sample child node 2","Sample child test value 2"));
 				FSTestNode childNode3 = treeService.createChildNode(childNode2, new FSTestNode("Sample child node 3","Sample child test value 3"));
 		
-		List<DBClosure> closureList = treeService.getClosure(rootNode);
+		List<DBClosure<FSTestNode>> closureList = treeService.getClosure(rootNode);
 		assertNotNull(closureList);
 		
 		logger.info("Closure:");
