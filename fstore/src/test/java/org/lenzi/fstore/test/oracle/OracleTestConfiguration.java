@@ -5,6 +5,7 @@ package org.lenzi.fstore.test.oracle;
 
 import java.io.IOException;
 
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.repository.tree.OracleTestTreeRepository;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class OracleTestConfiguration implements TransactionManagementConfigurer 
 	 */
 	@Bean
 	@Profile("oracle")
-	public TreeRepository getOracleTreeRepository(){
+	public TreeRepository<FSTestNode> getOracleTreeRepository(){
 		
 		logger.info("Getting OracleTestTreeRepository");
 		

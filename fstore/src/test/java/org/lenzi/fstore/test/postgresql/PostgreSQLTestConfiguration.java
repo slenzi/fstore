@@ -5,6 +5,7 @@ package org.lenzi.fstore.test.postgresql;
 
 import java.io.IOException;
 
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.repository.tree.PostgreSQLTestTreeRepository;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class PostgreSQLTestConfiguration implements TransactionManagementConfigu
 	 */
 	@Bean
 	@Profile("postgresql")
-	public TreeRepository getPostgresTreeRepository(){
+	public TreeRepository<FSTestNode> getPostgresTreeRepository(){
 		
 		logger.info("Getting PostgreSQLTestTreeRepository");
 		

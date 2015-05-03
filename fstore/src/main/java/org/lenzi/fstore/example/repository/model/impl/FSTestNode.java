@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.util.DateUtil;
 
 /**
  * Node for testing the closure repository code. Also serves as an example custom
@@ -64,6 +65,25 @@ public class FSTestNode extends FSNode<FSTestNode> {
 	 */
 	public void setTestValue(String testValue) {
 		this.testValue = testValue;
+	}
+	
+	public String toString(){
+		
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append("[");
+		buf.append("id = '" + getNodeId() + "'");
+		buf.append(", parent id = '" + getParentNodeId() + "'");
+		buf.append(", is root = '" + isRootNode() + "'");
+		buf.append(", name = '" + getName() + "'");
+		buf.append(", type = '" + getNodeType() + "'");
+		buf.append(", test value = '" + getTestValue() + "'");
+		buf.append(", date created = '" + DateUtil.defaultFormat(getDateCreated()) + "'");
+		buf.append(", date updated = '" + DateUtil.defaultFormat(getDateUpdated()) + "'");
+		buf.append("]");
+		
+		return buf.toString();
+		
 	}
 	
 }

@@ -94,13 +94,10 @@ public class PostreSQLPrintTreeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		FSTestNode testNode = (FSTestNode)nodeO;
-		logger.info("Node 0 test value => " + testNode.getTestValue());
+		logger.info("Node O test value => " + nodeO.getTestValue());
 						
 		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
-		
 		assertNotNull(treeMeta);
-	
 		logger.info(treeMeta.printTree());
 		
 	}

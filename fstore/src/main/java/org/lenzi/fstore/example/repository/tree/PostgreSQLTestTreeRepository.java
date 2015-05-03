@@ -28,7 +28,7 @@ public class PostgreSQLTestTreeRepository extends AbstractPostgreSQLTreeReposito
 	@Override
 	public FSTestNode postAdd(FSTestNode node) throws DatabaseException {
 		
-		logger.info("Post add node => " + node.getClass().getCanonicalName() + ", id => " + node.getNodeId() + ", is root => " + node.isRootNode());
+		logger.info("Post add node => " + node);
 		
 		return null;
 		
@@ -37,7 +37,7 @@ public class PostgreSQLTestTreeRepository extends AbstractPostgreSQLTreeReposito
 	@Override
 	public FSTestNode postMove(FSTestNode node) throws DatabaseException {
 		
-		logger.info("Post move node => " + node.getClass().getCanonicalName() + ", id => " + node.getNodeId() + ", is root => " + node.isRootNode());
+		logger.info("Post move node => " + node);
 		
 		return null;
 		
@@ -46,7 +46,7 @@ public class PostgreSQLTestTreeRepository extends AbstractPostgreSQLTreeReposito
 	@Override
 	public void postRemove(FSTestNode node) throws DatabaseException {
 		
-		logger.info("Post remove node => " + node.getClass().getCanonicalName() + ", id => " + node.getNodeId() + ", is root => " + node.isRootNode());
+		logger.info("Post remove node => " + node);
 		
 	}
 
@@ -54,8 +54,8 @@ public class PostgreSQLTestTreeRepository extends AbstractPostgreSQLTreeReposito
 	public FSTestNode postCopy(FSTestNode originalNode, FSTestNode newCopyNode) throws DatabaseException {
 		
 		logger.info("Post copy node");
-		logger.info("Original Node => " + originalNode.getClass().getCanonicalName() + ", id => " + originalNode.getNodeId() + ", is root => " + originalNode.isRootNode());
-		logger.info("New Copy Node => " + newCopyNode.getClass().getCanonicalName() + ", id => " + newCopyNode.getNodeId() + ", is root => " + newCopyNode.isRootNode());
+		logger.info("Original Node => " + originalNode);
+		logger.info("New Copy Node => " + newCopyNode);
 		
 		return null;
 		

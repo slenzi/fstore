@@ -33,7 +33,7 @@ public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier
 	@Override
 	public N copy(N node) {
 
-		logger.info("Copying node of type => " + getCanonicalName());
+		logger.debug("Copying node of type => " + getCanonicalName());
 		
 		if(node == null){
 			return null;
