@@ -13,7 +13,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -112,32 +111,36 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		return getNodeCriteria(node);
 		
-		/*
-		Query query = null;
-		try {
-			query = getEntityManager().createQuery(getHqlQueryNodeById());
-			query.setParameter("nodeId", node.getNodeId());
-		} catch (IllegalArgumentException e) {
-			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
-		}		
-		
-		return (N)getSingleResult(query);
-		*/	
 	}	
 
+	/**
+	 * Fetch a node with it's parent closure data, plus parent and child nodes for all closure entries.
+	 */
 	@Override
 	public N getNodeWithParent(N node) throws DatabaseException {
+		
 		return getNodeWithParentClosureCriteria(node);
+		
 	}
 
+	/**
+	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries.
+	 */
 	@Override
 	public N getNodeWithChild(N node) throws DatabaseException {
+		
 		return getNodeWithChildClosureCriteria(node);
+		
 	}
 
+	/**
+	 * Fetch a node with its parent and child closure data, plus parent and child nodes for all closure entries.
+	 */
 	@Override
 	public N getNodewithParentChild(N node) throws DatabaseException {
+		
 		return getNodeWithParentChildClosureCriteria(node);
+		
 	}
 
 	/**
@@ -333,6 +336,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 
+	 * @deprecated - need to check how this function correctly pulls from the N nodes table (e.g. FSTestNode). The
+	 * target entity in FSClosure is FSNode... We do use this in moveNodes and Copy Nodes... It seems to work.
+	 * 
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
@@ -361,6 +367,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 	}
 	
+	// a newer version of the deprecated getClosure method. this function is not complete... still not exactly sure how
+	// to make it work
 	private List<DBClosure<N>> getClosureCriteria(N node) throws DatabaseException {
 		
 		if(node == null){
@@ -385,8 +393,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	
 	/**
 	 * Copy a node.
-	 * 
-	 * @see org.lenzi.fstore.repository.tree.TreeRepository#copyNode(org.lenzi.fstore.repository.model.DBNode, org.lenzi.fstore.repository.model.DBNode, boolean)
 	 */
 	@Override
 	public N copyNode(N nodeToCopy, N parentNode, boolean copyChildren, NodeCopier<N> copier) throws DatabaseException {
@@ -1070,7 +1076,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Failed to get list of node IDs for the " + ((onlyChildren) ? "child" : "") + " nodes. Cannot delete.");
 		}
 		
-		List<N> userNodesToDelete = getNodes(nodeIdList, node.getClass());
+		List<N> userNodesToDelete = getNodesCriteria(nodeIdList, node.getClass());
 		
 		if(CollectionUtil.isEmpty(userNodesToDelete)){
 			throw new DatabaseException("Failed to get " + ((onlyChildren) ? "child" : "") + " node data in preparation for deletion. Cannot delete");
@@ -1138,6 +1144,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * the parent and child nodes for the closure data. Set 'onlyChildren' to true to only get
 	 * the child nodes.
 	 * 
+	 * @deprecated - not used anywhere...
 	 * @param node The node to fetch, plus all child nodes.
 	 * @param onlyChildren - true to only get the child nodes, false to include the node you passes in.
 	 * @return
@@ -1147,7 +1154,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	
 		List<Long> nodeIdList = getNodeIdList(node, onlyChildren);
 		
-		List<N> nodeList = getNodes(nodeIdList, node.getClass());
+		List<N> nodeList = getNodesCriteria(nodeIdList, node.getClass());
 		
 		return nodeList;
 		
@@ -1305,7 +1312,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private List<N> getNodes(List<Long> nodeIdList, Class c) throws DatabaseException {
+	private List<N> getNodesCriteria(List<Long> nodeIdList, Class c) throws DatabaseException {
 		
 		List<N> nodeList = null;
 		
@@ -1471,7 +1478,12 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	
 	protected abstract String getSqlQueryTreeIdSequence();
 	
-	// HQL_GET_NODE_BY_ID
+	/**
+	 * HQL_GET_NODE_BY_ID
+	 * 
+	 * @deprecated - replaced with criteria query
+	 * @return
+	 */
 	protected abstract String getHqlQueryNodeById();
 	
 	// HQL_GET_TREE_BY_ID
