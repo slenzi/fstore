@@ -353,7 +353,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
 		}
 		
-		logger.debug("GET CLOSURE FOR NODE, ID => " + node.getNodeId() + ", NAME => " + node.getName() + ", CLASS => " + node.getClass().getCanonicalName());
+		logger.info("GET CLOSURE FOR NODE, ID => " + node.getNodeId() + ", NAME => " + node.getName() + ", CLASS => " + node.getClass().getCanonicalName());
 		
 		List<DBClosure<N>> results = null;
 		Query query = null;
@@ -1129,7 +1129,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		if(onlyChildren){
 			List<Predicate> andPredicates = new ArrayList<Predicate>();
 			andPredicates.add( criteriaBuilder.equal(closureRoot.get(FSClosure_.parentNodeId), nodeId) );
-			andPredicates.add( criteriaBuilder.greaterThan(closureRoot.get(FSClosure_.depth), 0) );			
+			andPredicates.add( criteriaBuilder.greaterThan(closureRoot.get(FSClosure_.depth), 0) );
+			//andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(closureRoot.get(FSClosure_.depth), 0) );
 			childQuery.where(
 					criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 					);
@@ -1195,8 +1196,10 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
-		andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
-		andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
+		//andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
+		//andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(parentClosureJoin.get(FSClosure_.depth), 0) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );		
 		
 		nodeSelect.distinct(true);
 		nodeSelect.select(nodeSelectRoot);
@@ -1216,6 +1219,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 */
 	private N getNodeWithChildClosureCriteria(N node) throws DatabaseException {
 		
+		logger.info("Getting node with child closure criteria => " + node.getNodeId());
+		
 		Class<N> type = (Class<N>) node.getClass();
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -1232,7 +1237,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
-		andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
+		//andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );
 		
 		nodeSelect.distinct(true);
 		nodeSelect.select(nodeSelectRoot);
@@ -1270,7 +1276,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
-		andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
+		//andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(parentClosureJoin.get(FSClosure_.depth), 0) );
 		
 		nodeSelect.distinct(true);
 		nodeSelect.select(nodeSelectRoot);
