@@ -49,6 +49,9 @@
         <mapping class="org.lenzi.fstore.repository.model.impl.FSPrune"/>
         <mapping class="org.lenzi.fstore.repository.model.impl.FSTree"/>
         <mapping class="org.lenzi.fstore.example.repository.model.impl.FSTestNode"/>       
+      	<mapping class="org.lenzi.fstore.example.repository.model.impl.FSDirectoryNode"/>
+      	<mapping class="org.lenzi.fstore.example.repository.model.impl.FSFileEntry"/>
+      	<mapping class="org.lenzi.fstore.example.repository.model.impl.FSFile"/>   
     
     </session-factory>
     

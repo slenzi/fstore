@@ -22,7 +22,6 @@ import org.lenzi.fstore.util.DateUtil;
  * 
  * @author slenzi
  */
-
 // @OnDelete(action = OnDeleteAction.CASCADE)
 @Entity
 @DiscriminatorValue("TestNode")

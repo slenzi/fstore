@@ -1,0 +1,120 @@
+/**
+ * 
+ */
+package org.lenzi.fstore.example.repository.model.impl;
+
+import java.io.Serializable;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+
+/**
+ * @author sal
+ *
+ */
+@Entity
+@Table(name="FS_FILE_ENTRY")
+public class FSFileEntry implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2945275457068233067L;
+	
+	@Id
+	@Column(name = "FILE_ID", updatable = false, nullable = false)
+	private Long fileId = 0L;	
+	
+	@Column(name = "FILE_NAME", nullable = false)
+	private String fileName;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
+	private FSFile file;
+
+	/**
+	 * 
+	 */
+	public FSFileEntry() {
+		
+	}
+
+	/**
+	 * @return the fileId
+	 */
+	public Long getFileId() {
+		return fileId;
+	}
+
+	/**
+	 * @param fileId the fileId to set
+	 */
+	public void setFileId(Long fileId) {
+		this.fileId = fileId;
+	}
+
+	/**
+	 * @return the fileName
+	 */
+	public String getFileName() {
+		return fileName;
+	}
+
+	/**
+	 * @param fileName the fileName to set
+	 */
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	/**
+	 * @return the file
+	 */
+	public FSFile getFile() {
+		return file;
+	}
+
+	/**
+	 * @param file the file to set
+	 */
+	public void setFile(FSFile file) {
+		this.file = file;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((fileId == null) ? 0 : fileId.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FSFileEntry other = (FSFileEntry) obj;
+		if (fileId == null) {
+			if (other.fileId != null)
+				return false;
+		} else if (!fileId.equals(other.fileId))
+			return false;
+		return true;
+	}
+
+}

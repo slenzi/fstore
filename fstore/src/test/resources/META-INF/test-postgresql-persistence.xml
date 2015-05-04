@@ -17,7 +17,10 @@
       	<class>org.lenzi.fstore.repository.model.impl.FSClosure</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSPrune</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSTree</class>
-      	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>  	      	
+      	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>
+      	<class>org.lenzi.fstore.example.repository.model.impl.FSDirectoryNode</class>
+      	<class>org.lenzi.fstore.example.repository.model.impl.FSFileEntry</class>
+      	<class>org.lenzi.fstore.example.repository.model.impl.FSFile</class>	 	      	
     
         <properties>
         

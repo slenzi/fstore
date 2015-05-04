@@ -46,10 +46,32 @@ create table TEST.FS_TREE (
 	PRIMARY KEY (TREE_ID) 
 );
 
+/* test node table */
 create table TEST.FS_TEST_NODE ( 
 	NODE_ID NUMERIC(15,0) NOT NULL, 
 	TEST_VALUE CHARACTER VARYING(250), 
 	PRIMARY KEY (NODE_ID) 
+);
+
+/* example node for modeling a directory */
+create table FS_DIRECTORY_NODE ( 
+	NODE_ID NUMERIC(15,0) NOT NULL, 
+	DIR_NAME CHARACTER VARYING(250),  
+	PRIMARY KEY (NODE_ID) 
+);
+
+/* for storing file meta */
+create table FS_FILE_ENTRY ( 
+	FILE_ID NUMERIC(15,0) NOT NULL,
+	FILE_NAME CHARACTER VARYING(250),
+	PRIMARY KEY (FILE_ID) 
+);
+
+/* for storing binary data  */
+create table FS_FILE ( 
+	FILE_ID NUMERIC(15,0) NOT NULL,
+	FILE_DATA BYTEA NOT NULL,
+	PRIMARY KEY (FILE_ID) 
 );
 
 create unique index fs_parent_depth_child_idx on TEST.fs_closure(parent_node_id,depth,child_node_id);

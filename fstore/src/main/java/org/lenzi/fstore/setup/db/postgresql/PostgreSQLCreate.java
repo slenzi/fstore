@@ -81,6 +81,33 @@ public class PostgreSQLCreate {
 		"	TEST_VALUE CHARACTER VARYING(250), " +
 		"	PRIMARY KEY (NODE_ID) " +
 		")";
+	
+	private String SQL_DROP_TABLE_FS_DIRECTORY_NODE =
+		"drop table " + SCHEMA + "FS_DIRECTORY_NODE";	
+	private String SQL_CREATE_TABLE_FS_DIRECTORY_NODE =
+		"create table " + SCHEMA + "FS_DIRECTORY_NODE ( " + 
+		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	DIR_NAME CHARACTER VARYING(250) NOT NULL, " + 
+		"	PRIMARY KEY (NODE_ID) " + 
+		")";
+	
+	private String SQL_DROP_TABLE_FS_FILE_ENTRY =
+		"drop table " + SCHEMA + "FS_FILE_ENTRY";	
+	private String SQL_CREATE_TABLE_FS_FILE_ENTRY =
+		"create table " + SCHEMA + "FS_FILE_ENTRY ( " +  
+		"	FILE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	FILE_NAME CHARACTER VARYING(250) NOT NULL, " +  
+		"	PRIMARY KEY (FILE_ID) " +  
+		")";
+	
+	private String SQL_DROP_TABLE_FS_FILE =
+		"drop table " + SCHEMA + "FS_FILE";	
+	private String SQL_CREATE_TABLE_FS_FILE =
+		"create table " + SCHEMA + "FS_FILE ( " +  
+		"	FILE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	FILE_DATA BYTEA NOT NULL, " + 
+		"	PRIMARY KEY (FILE_ID) " + 
+		")";	
 		
 	private String SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD =
 		"drop index " + SCHEMA + "fs_parent_depth_child_idx";
@@ -151,11 +178,15 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_TREE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_NODE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TREE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();		
+		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
+		// test tables
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_ENTRY).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_NODE).executeUpdate();		
 		
 	}
 	
@@ -175,9 +206,13 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();		
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
+		// test tables
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_ENTRY).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_NODE).executeUpdate();			
 		
 	}
 	
