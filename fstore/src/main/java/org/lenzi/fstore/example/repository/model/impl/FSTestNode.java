@@ -72,14 +72,13 @@ public class FSTestNode extends FSNode<FSTestNode> {
 		StringBuffer buf = new StringBuffer();
 		
 		buf.append("[");
-		buf.append("id = '" + getNodeId() + "'");
-		buf.append(", parent id = '" + getParentNodeId() + "'");
-		buf.append(", is root = '" + isRootNode() + "'");
-		buf.append(", name = '" + getName() + "'");
-		buf.append(", type = '" + getNodeType() + "'");
-		buf.append(", test value = '" + getTestValue() + "'");
-		buf.append(", date created = '" + DateUtil.defaultFormat(getDateCreated()) + "'");
-		buf.append(", date updated = '" + DateUtil.defaultFormat(getDateUpdated()) + "'");
+		buf.append("name => '" + getName() + "'");
+		buf.append(", id => '" + getNodeId() + "'");
+		buf.append(", parent_id => '" + getParentNodeId() + "'");
+		buf.append(", root => '" + isRootNode() + "'");
+		buf.append(", test_value => '" + getTestValue() + "'");
+		buf.append(", dt_created => '" + DateUtil.defaultFormat(getDateCreated()) + "'");
+		buf.append(", dt_updated => '" + DateUtil.defaultFormat(getDateUpdated()) + "'");
 		buf.append("]");
 		
 		return buf.toString();

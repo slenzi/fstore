@@ -336,14 +336,16 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 
-	 * @deprecated - need to check how this function correctly pulls from the N nodes table (e.g. FSTestNode). The
+	 * @deprecated - Need to check how this function correctly pulls from the N nodes table (e.g. FSTestNode). The
 	 * target entity in FSClosure is FSNode... We do use this in moveNodes and Copy Nodes... It seems to work.
+	 * 
+	 * UPDATE - Confirmed, the query does properly pull from type N (e.g. FSTestNode, or other). Hibernate magic!
 	 * 
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
 	public List<DBClosure<N>> getClosure(N node) throws DatabaseException {
-
+		
 		if(node == null){
 			throw new DatabaseException("Cannot fetch closure data for node. Node object is null.");
 		}
@@ -351,10 +353,11 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
 		}
 		
+		logger.debug("GET CLOSURE FOR NODE, ID => " + node.getNodeId() + ", NAME => " + node.getName() + ", CLASS => " + node.getClass().getCanonicalName());
+		
 		List<DBClosure<N>> results = null;
 		Query query = null;
 		try {
-			// TODO - change this to a criteria query which fetches from the user node table, N!!! it currently fetches from FSNode
 			query = getEntityManager().createQuery(getHqlQueryClosureByNodeId());
 			query.setParameter(1, node.getNodeId());
 			query.setParameter(2, node.getNodeId());			
@@ -424,8 +427,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			// Get closure data for the sub-tree we are copying
 			List<DBClosure<N>> closureList = getClosure(nodeToCopy);
 			
-			logger.debug("Fetched closure data for node => " + nodeToCopy.getNodeId());
-			closureLogger.logClosure(closureList);
+			//logger.debug("Fetched closure data for node => " + nodeToCopy.getNodeId());
+			//closureLogger.logClosure(closureList);
 			
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for node " + nodeToCopy.getNodeId());
@@ -446,12 +449,15 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			}
 			
 			HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
+			
+			/*
 			for(Long nextNodeId : treeMap.keySet()){
 				logger.info("Children of node = > " + nextNodeId);
 				for(N nextNode : CollectionUtil.emptyIfNull(treeMap.get(nextNodeId))){
 					logger.info("Node " + nextNode.getNodeId() + "(" + nextNode.getName() + ")" + " is a child of " + nextNodeId);
 				}
 			}
+			*/
 
 			// get children for root node of sub-tree
 			List<N> childList = treeMap.get(rootNode.getNodeId());	
@@ -491,7 +497,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		if(closureList == null || closureList.size() == 0){
 			throw new DatabaseException("Move error. No closure list for node " + moveNodeId);
 		}
-		logger.debug("Fetched tree data for moving.");
+		//logger.debug("Fetched tree data for moving.");
 		//closureLogger.logClosure(closureList);
 		
 		// Prune the existing data
@@ -663,7 +669,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	private N copyNodes(N nodeToCopy, N parentNode, List<N> childNodes, HashMap<Long, List<N>> treeMap, NodeCopier<N> copier) throws DatabaseException {
 		
 		Long copyNodeId = nodeToCopy.getNodeId();
-		logger.info("id of node we are copying => " + copyNodeId);
+		logger.debug("id of node we are copying => " + copyNodeId);
 		
 		N newCopy = null;
 		if(nodeToCopy.isRootNode()){
@@ -672,7 +678,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			newCopy = addChildNodeCopy(parentNode, nodeToCopy, copier);
 		}
 		
-		logger.info("id of new copy => " + newCopy.getNodeId());
+		logger.debug("id of new copy => " + newCopy.getNodeId());
 		
 		// the node id of nodeToCopy has changed!
 		
@@ -688,7 +694,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 					copyNodes(childNode, newCopy, treeMap.get(childNode.getNodeId()), treeMap, copier);
 					
 				}else{
-					logger.info("Child node is the depth-0 self link. Skipping copy.");
+					logger.debug("Child node is the depth-0 self link. Skipping copy.");
 				}
 				
 			}

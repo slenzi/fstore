@@ -20,7 +20,7 @@ public class ClosureLogger<N extends FSNode<N>> {
 		if(closureList == null){
 			return;
 		}
-		logger.info("Closure list size => " + closureList.size());
+		logger.debug("Closure list size => " + closureList.size());
 		N parent = null, child = null;
 		Integer depth = 0;
 		for(DBClosure<N> c : closureList){
@@ -43,8 +43,7 @@ public class ClosureLogger<N extends FSNode<N>> {
 		if(n == null){
 			return "null";
 		}
-		return "{id = " + n.getNodeId() + ", name = " + n.getName() + ", paren Id = " + n.getParentNodeId() + 
-				", dt created = " + n.getDateCreated() + ", dt updated = " + n.getDateUpdated() + "}";
+		return n.toString();
 	}
 	private String padLeft(String s, int n){
 		return String.format("%1$" + n + "s", s); 
