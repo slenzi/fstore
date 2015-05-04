@@ -97,7 +97,7 @@ public class OraclePrintTreeTest extends AbstractTreeTest {
 		FSTestNode testNode = (FSTestNode)nodeO;
 		logger.info("Node 0 test value => " + testNode.getTestValue());
 						
-		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
+		Tree<TreeMeta> treeMeta = treeService.buildTreeOld(dbTree);
 		
 		assertNotNull(treeMeta);
 	

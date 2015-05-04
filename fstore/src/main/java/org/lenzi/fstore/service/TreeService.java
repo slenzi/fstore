@@ -3,6 +3,7 @@ package org.lenzi.fstore.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -422,13 +423,81 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
+	public Tree<N> buildTree(N node) throws ServiceException {
+		
+		// initial error checking
+		if(node == null || node.getNodeId() == null){
+			throw new ServiceException("Cannont build tree. Node object is null, or node is is null.");
+		}
+		
+		// fetch node with child closure, and child node data
+		N n = null;
+		try {
+			n = treeRepository.getNodeWithChild(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching node with child closure, and child node data.", e);
+		}
+		
+		// error checking
+		if(n == null){
+			throw new ServiceException("Error, node not found. Fetched node object was null.");
+		}
+		Set<DBClosure<N>> childClosure = n.getChildClosure();
+		if(childClosure == null || childClosure.size() == 0){
+			throw new ServiceException("Error, node was fetched, but no closure data...");
+		}
+		
+		// convert closure data to map. loop through child nodes of child closure
+		HashMap<Long,List<N>> treeMap = new HashMap<Long,List<N>>();
+		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(childClosure)){
+			if(treeMap.containsKey(closure.getChildNode().getParentNodeId())){
+				treeMap.get(closure.getChildNode().getParentNodeId()).add(closure.getChildNode());
+			}else{
+				List<N> childList = new ArrayList<N>();
+				childList.add(closure.getChildNode());
+				treeMap.put(closure.getChildNode().getParentNodeId(), childList);
+			}
+		}
+		
+		// create root node of tree
+		TreeNode<N> rootNode = new TreeNode<N>();
+		rootNode.setData(n);
+		
+		// add all children under root node
+		addChildNodesFromMap(rootNode,treeMap);
+		
+		// create tree and set root node
+		Tree<N> tree = new Tree<N>();
+		tree.setRootNode(rootNode);
+		
+		return tree;
+		
+	}
+	
+	private void addChildNodesFromMap(TreeNode<N> parentNode, HashMap<Long, List<N>> treeMap) {
+		
+		TreeNode<N> childTreeNode = null;
+		
+		for(N childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getNodeId()))){
+			
+			childTreeNode = new TreeNode<N>();
+			childTreeNode.setData(childNode);
+			childTreeNode.setParent(parentNode);
+			parentNode.addChildNode(childTreeNode);
+				
+			addChildNodesFromMap(childTreeNode, treeMap);
+	
+		}
+		
+	}
+
 	/**
 	 * Builds a non manage tree object from a database FSTree.
 	 * 
 	 * @param tree The FSTree entity
 	 * @return
 	 */
-	public Tree<TreeMeta> buildTree(DBTree<N> tree) throws ServiceException {
+	public Tree<TreeMeta> buildTreeOld(DBTree<N> tree) throws ServiceException {
 		
 		if(tree == null || tree.getRootNode() == null){
 			return null;
@@ -443,7 +512,7 @@ public class TreeService<N extends FSNode<N>> {
 			throw new ServiceException(e.getMessage(), e);
 		}
 		
-		return buildTree(closure);
+		return buildTreeOld(closure);
 		
 	}
 	
@@ -453,7 +522,7 @@ public class TreeService<N extends FSNode<N>> {
 	 * @param closureList
 	 * @return
 	 */
-	public Tree<TreeMeta> buildTree(List<DBClosure<N>> closureList){
+	public Tree<TreeMeta> buildTreeOld(List<DBClosure<N>> closureList){
 		
 		if(closureList == null || closureList.size() == 0){
 			return null;
@@ -510,7 +579,7 @@ public class TreeService<N extends FSNode<N>> {
 		//
 		// recursively build out the tree
 		//
-		addChildren(treeRootNode, treeMap);
+		addChildrenOld(treeRootNode, treeMap);
 		
 		Tree<TreeMeta> tree = new Tree<TreeMeta>();
 		tree.setRootNode(treeRootNode);
@@ -519,7 +588,7 @@ public class TreeService<N extends FSNode<N>> {
 	}
 	
 	// walk the data in the tree map and add children to parentNode
-	private void addChildren(TreeNode<TreeMeta> parentNode, HashMap<Long,List<N>> treeMap){
+	private void addChildrenOld(TreeNode<TreeMeta> parentNode, HashMap<Long,List<N>> treeMap){
 		
 		TreeNode<TreeMeta> childTreeNode = null;
 		
@@ -531,19 +600,19 @@ public class TreeService<N extends FSNode<N>> {
 			if(parentNode.getData().getId() != childNode.getNodeId()){
 			
 				childTreeNode = new TreeNode<TreeMeta>();
-				childTreeNode.setData(getMeta(childNode));
+				childTreeNode.setData(getMetaOld(childNode));
 				
 				childTreeNode.setParent(parentNode);
 				parentNode.addChildNode(childTreeNode);
 				
-				addChildren(childTreeNode, treeMap);
+				addChildrenOld(childTreeNode, treeMap);
 			}
 		}
 		
 	}
 	
 	// build TreeMeta object from FSNode object
-	private TreeMeta getMeta(N node){
+	private TreeMeta getMetaOld(N node){
 		TreeMeta meta = new TreeMeta();
 		meta.setId(node.getNodeId());
 		meta.setName(node.getName());

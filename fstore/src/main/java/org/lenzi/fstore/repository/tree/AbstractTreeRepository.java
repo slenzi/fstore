@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -357,6 +358,28 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		results = getResultList(query);
 		
 		return results;			
+		
+	}
+	
+	private List<DBClosure<N>> getClosureCriteria(N node) throws DatabaseException {
+		
+		if(node == null){
+			throw new DatabaseException("Cannot fetch closure data for node. Node object is null.");
+		}
+		if(node.getNodeId() == null){
+			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
+		}
+		
+		Class<FSClosure> type = (Class<FSClosure>) FSClosure.class;
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<FSClosure> nodeSelect = criteriaBuilder.createQuery(type);
+		Root<FSClosure> nodeSelectRoot = nodeSelect.from(type);
+		
+		//Join<FSClosure,N> childClosureJoin = nodeSelectRoot.join(FSClosure_.childNode, JoinType.LEFT);
+		
+		return null;
 		
 	}
 	

@@ -98,38 +98,44 @@ public class PostreSQLPrintTreeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		logger.info("Node O test value => " + nodeO.getTestValue());
-						
-		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
+		//logger.info("Node O test value => " + nodeO.getTestValue());
+		
+		logger.info("Tree Old Way:");
+		Tree<TreeMeta> treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
+		logger.info("Tree New Way:");
+		Tree<FSTestNode> tree = treeService.buildTree(dbTree.getRootNode());
+		assertNotNull(tree);
+		logger.info(tree.printTree());
 		
+		/*
 		logger.info("Fetching root node with all closure data");
 		FSTestNode rootWithClosure = treeService.getNodeWithChild(dbTree.getRootNode());
 		assertNotNull(rootWithClosure);
 		
-		logNodeWithClosure("",rootWithClosure);
+		logNodeWithClosure(rootWithClosure);
+		*/
 		
 	}
 	
-	private void logNodeWithClosure(String s, FSTestNode node){
+	private void logNodeWithClosure(FSTestNode node){
+		
 		Set<DBClosure<FSTestNode>> childClosureSet = node.getChildClosure();
-		for(DBClosure<FSTestNode> closure : CollectionUtil.emptyIfNull(childClosureSet)){
-			logger.info(
-					s + 
-					"Parent => " + ((closure.getParentNode() != null) ? closure.getParentNode().toString() : "") + ", " +
-					"Child => " + ((closure.getChildNode() != null) ? closure.getChildNode().toString() : "") + ", " +
-					"Depth => " + closure.getDepth()
-				);
-		}
-		s = s + " ";
 		for(DBClosure<FSTestNode> closure : CollectionUtil.emptyIfNull(childClosureSet)){
 			// make sure to skip depth-0 closure entries where a node is a child of itself.
 			if(!closure.getParentNode().getNodeId().equals(closure.getChildNode().getNodeId())){
-				logNodeWithClosure( s , closure.getChildNode());
+				logger.info( getLogString(closure) );
 			}
-		}
+		}	
+	}
+	
+	private String getLogString(DBClosure<FSTestNode> closure){
+		return
+			"Depth => " + closure.getDepth() + ", " +
+			"Parent => " + ((closure.getParentNode() != null) ? closure.getParentNode().toString() : "") + ", " +
+			"Child => " + ((closure.getChildNode() != null) ? closure.getChildNode().toString() : "");
 	}
 
 }

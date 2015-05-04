@@ -96,7 +96,7 @@ public class OracleNodeLocationTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
+		Tree<TreeMeta> treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());		
 		
@@ -149,7 +149,7 @@ public class OracleNodeLocationTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);
+		Tree<TreeMeta> treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());		
 		
@@ -235,12 +235,12 @@ public class OracleNodeLocationTest extends AbstractTreeTest {
 		Tree<TreeMeta> treeMeta = null;
 		
 		logger.info("Tree 1:");
-		treeMeta = treeService.buildTree(dbTree1);
+		treeMeta = treeService.buildTreeOld(dbTree1);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Tree 2:");
-		treeMeta = treeService.buildTree(dbTree2);
+		treeMeta = treeService.buildTreeOld(dbTree2);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		

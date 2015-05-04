@@ -251,49 +251,49 @@ public class PostreSQLMoveNodeTest extends AbstractTreeTest {
 		//
 		
 		logger.info("Tree before move...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Moving F to A");
 		FSTestNode updatedF = treeService.moveNode(nodeF, (FSTestNode)dbTree.getRootNode());
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Moving E to A");
 		FSTestNode updatedE = treeService.moveNode(nodeE, (FSTestNode)dbTree.getRootNode());
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Moving C to A");
 		FSTestNode updatedC = treeService.moveNode(nodeC, (FSTestNode)dbTree.getRootNode());
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Moving H to C");
 		FSTestNode updatedH = treeService.moveNode(nodeH, updatedC);
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Moving B to I");
 		FSTestNode updatedB = treeService.moveNode(nodeB, nodeI);
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Moving F to B");
 		updatedF = treeService.moveNode(updatedF, updatedB);
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Moving E to F");
 		updatedE = treeService.moveNode(updatedE, updatedF);
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 	

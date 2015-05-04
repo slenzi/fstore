@@ -97,7 +97,7 @@ public class PostreSQLDeleteChildrenTest extends AbstractTreeTest {
 		Tree<TreeMeta> treeMeta = null;
 		
 		logger.info("Tree before...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -105,7 +105,7 @@ public class PostreSQLDeleteChildrenTest extends AbstractTreeTest {
 		treeService.removeChildren(nodeD);
 		
 		logger.info("Tree after...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTreeOld(dbTree);
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		

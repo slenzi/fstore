@@ -67,7 +67,7 @@ public class OracleClosureTest extends AbstractTreeTest {
 		logger.info("Closure:");
 		closureLogger.logClosure(closureList);
 		
-		Tree<TreeMeta> tree = treeService.buildTree(closureList);
+		Tree<TreeMeta> tree = treeService.buildTreeOld(closureList);
 		assertNotNull(tree);
 		
 		logger.info("Tree:");
