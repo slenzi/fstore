@@ -423,6 +423,13 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
+	/**
+	 * Build an unmanaged tree object from a node. ALl children of the node will be added to the tree.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws ServiceException
+	 */
 	public Tree<N> buildTree(N node) throws ServiceException {
 		
 		// initial error checking
@@ -474,6 +481,12 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
+	/**
+	 * Helper method for buildTree(N node)
+	 * 
+	 * @param parentNode
+	 * @param treeMap
+	 */
 	private void addChildNodesFromMap(TreeNode<N> parentNode, HashMap<Long, List<N>> treeMap) {
 		
 		TreeNode<N> childTreeNode = null;
@@ -490,8 +503,19 @@ public class TreeService<N extends FSNode<N>> {
 		}
 		
 	}
+	
+	
+	/*
+	 * ----------------- old code below -------------------
+	 */
+	
+	
+	
+	
+	
 
 	/**
+	 * @deprecated - old code
 	 * Builds a non manage tree object from a database FSTree.
 	 * 
 	 * @param tree The FSTree entity
@@ -517,6 +541,7 @@ public class TreeService<N extends FSNode<N>> {
 	}
 	
 	/**
+	 * @deprecated - old code
 	 * Builds a GenericTree from a list of closure data.
 	 * 
 	 * @param closureList
@@ -587,7 +612,12 @@ public class TreeService<N extends FSNode<N>> {
 		return tree;
 	}
 	
-	// walk the data in the tree map and add children to parentNode
+	/**
+	 * @deprecated - old code
+	 * 
+	 * @param parentNode
+	 * @param treeMap
+	 */
 	private void addChildrenOld(TreeNode<TreeMeta> parentNode, HashMap<Long,List<N>> treeMap){
 		
 		TreeNode<TreeMeta> childTreeNode = null;
@@ -611,7 +641,12 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
-	// build TreeMeta object from FSNode object
+	/**
+	 * @deprecated - old code
+	 * 
+	 * @param node
+	 * @return
+	 */
 	private TreeMeta getMetaOld(N node){
 		TreeMeta meta = new TreeMeta();
 		meta.setId(node.getNodeId());

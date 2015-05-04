@@ -94,10 +94,10 @@ public class OracleDeleteChildrenTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Tree before...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -105,7 +105,7 @@ public class OracleDeleteChildrenTest extends AbstractTreeTest {
 		treeService.removeChildren(nodeD);
 		
 		logger.info("Tree after...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		

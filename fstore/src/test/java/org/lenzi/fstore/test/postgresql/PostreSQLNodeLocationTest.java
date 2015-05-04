@@ -96,7 +96,7 @@ public class PostreSQLNodeLocationTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = treeService.buildTreeOld(dbTree);
+		Tree<FSTestNode> treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());		
 		
@@ -149,7 +149,7 @@ public class PostreSQLNodeLocationTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = treeService.buildTreeOld(dbTree);
+		Tree<FSTestNode> treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());		
 		
@@ -232,15 +232,15 @@ public class PostreSQLNodeLocationTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree 1...");		
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Tree 1:");
-		treeMeta = treeService.buildTreeOld(dbTree1);
+		treeMeta = treeService.buildTree(dbTree1.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Tree 2:");
-		treeMeta = treeService.buildTreeOld(dbTree2);
+		treeMeta = treeService.buildTree(dbTree2.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		

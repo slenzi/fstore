@@ -94,10 +94,10 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Tree before...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -105,7 +105,7 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		treeService.removeNode(nodeN);
 		
 		logger.info("Tree after...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -147,10 +147,10 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Tree before...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -158,7 +158,7 @@ public class OracleDeleteNodeTest extends AbstractTreeTest {
 		treeService.removeNode(nodeK);
 		
 		logger.info("Tree after...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		

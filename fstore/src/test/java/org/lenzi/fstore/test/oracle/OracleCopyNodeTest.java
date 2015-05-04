@@ -155,10 +155,10 @@ public class OracleCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Before copy...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -167,7 +167,7 @@ public class OracleCopyNodeTest extends AbstractTreeTest {
 		FSTestNode copyE = treeService.copyNode(nodeE, nodeM, true, testNodeCopier);
 		
 		logger.info("After copy...");
-		treeMeta = treeService.buildTreeOld(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
