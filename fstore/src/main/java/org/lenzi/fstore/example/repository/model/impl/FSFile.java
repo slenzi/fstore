@@ -29,10 +29,12 @@ public class FSFile implements Serializable  {
 	@Column(name = "FILE_ID", updatable = false, nullable = false)
 	private Long fileId = 0L;
 	
+	// binary file data
 	@Lob
 	@Column(name = "FILE_DATA", nullable = false)
 	private byte[] fileData;
 	
+	// file meta data object
 	@OneToOne(mappedBy = "file")
 	private FSFileEntry fileEntry;
 

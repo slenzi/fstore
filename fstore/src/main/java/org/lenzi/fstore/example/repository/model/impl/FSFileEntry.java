@@ -9,6 +9,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -33,6 +36,16 @@ public class FSFileEntry implements Serializable {
 	@Column(name = "FILE_NAME", nullable = false)
 	private String fileName;
 	
+	// files belong to one directory
+	@ManyToOne
+	@JoinTable(
+	    name="FS_DIR_FILE_LINK",
+	    joinColumns = @JoinColumn( name="FILE_ID"),
+	    inverseJoinColumns = @JoinColumn( name="NODE_ID")
+    )
+	private FSDirectoryNode directory;
+	
+	// the binary data for the file
 	@OneToOne(cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
 	private FSFile file;

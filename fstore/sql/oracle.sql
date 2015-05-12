@@ -2,6 +2,8 @@ drop sequence FS_NODE_ID_SEQUENCE;
 drop sequence FS_LINK_ID_SEQUENCE;
 drop sequence FS_PRUNE_ID_SEQUENCE;
 drop sequence FS_TREE_ID_SEQUENCE;
+/* test sequence */
+drop sequence FS_FILE_ID_SEQUENCE;
 
 drop index fs_parent_depth_child_idx;
 drop index fs_child_parent_depth_idx;
@@ -10,12 +12,17 @@ drop table FS_NODE;
 drop table FS_CLOSURE;
 drop table FS_PRUNE;
 drop table FS_TREE;
+/* test tables */
 drop table FS_TEST_NODE;
+drop table FS_FILE;
+drop table FS_FILE_ENTRY;
+drop table FS_DIRECTORY_NODE;
+drop table FS_DIR_FILE_LINK;
 
 create table FS_NODE ( 
 	NODE_ID NUMBER(15,0) NOT NULL, 
 	PARENT_NODE_ID NUMBER(15,0) NOT NULL, 
-   NODE_TYPE VARCHAR2(100) NOT NULL, 
+	NODE_TYPE VARCHAR2(100) NOT NULL, 
 	NAME VARCHAR2(250) NOT NULL, 
 	CREATION_DATE date NOT NULL, 
 	UPDATED_DATE date NOT NULL, 
@@ -58,6 +65,13 @@ create table FS_DIRECTORY_NODE (
 	NODE_ID NUMBER(15,0) NOT NULL, 
 	DIR_NAME VARCHAR2(250) NOT NULL, 
 	PRIMARY KEY (NODE_ID) 
+);
+
+/* link file to directory */
+create table FS_DIR_FILE_LINK (
+	NODE_ID NUMBER(15,0) NOT NULL,
+	FILE_ID NUMBER(15,0) NOT NULL,
+	PRIMARY KEY(NODE_ID,FILE_ID)
 );
 
 /* for storing file meta */
@@ -105,6 +119,15 @@ ORDER
 NOCYCLE;
 
 CREATE SEQUENCE FS_TREE_ID_SEQUENCE  
+MINVALUE 1 
+MAXVALUE 999999999999999999999999999  
+INCREMENT BY 1 
+START WITH 1 
+CACHE 10  
+ORDER  
+NOCYCLE;
+
+CREATE SEQUENCE FS_FILE_ID_SEQUENCE  
 MINVALUE 1 
 MAXVALUE 999999999999999999999999999  
 INCREMENT BY 1 

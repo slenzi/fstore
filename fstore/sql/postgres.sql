@@ -2,6 +2,8 @@ drop sequence TEST.FS_NODE_ID_SEQUENCE;
 drop sequence TEST.FS_LINK_ID_SEQUENCE;	
 drop sequence TEST.FS_PRUNE_ID_SEQUENCE;
 drop sequence TEST.FS_TREE_ID_SEQUENCE;
+/* test sequence */
+drop sequence TEST.FS_FILE_ID_SEQUENCE;
 
 drop index TEST.fs_parent_depth_child_idx;
 drop index TEST.fs_child_parent_depth_idx;	
@@ -10,12 +12,17 @@ drop table TEST.FS_NODE;
 drop table TEST.FS_CLOSURE;	
 drop table TEST.FS_PRUNE;
 drop table TEST.FS_TREE;
+/* test tables */
 drop table TEST.FS_TEST_NODE;
+drop table TEST.FS_FILE;
+drop table TEST.FS_FILE_ENTRY;
+drop table TEST.FS_DIRECTORY_NODE;
+drop table TEST.FS_DIR_FILE_LINK;
 
 create table TEST.FS_NODE ( 
 	NODE_ID NUMERIC(15,0) NOT NULL, 
 	PARENT_NODE_ID NUMERIC(15,0) NOT NULL, 
-   NODE_TYPE CHARACTER VARYING(100) NOT NULL, 
+	NODE_TYPE CHARACTER VARYING(100) NOT NULL, 
 	NAME CHARACTER VARYING(250) NOT NULL, 
 	CREATION_DATE TIMESTAMP NOT NULL, 
 	UPDATED_DATE TIMESTAMP NOT NULL, 
@@ -54,21 +61,28 @@ create table TEST.FS_TEST_NODE (
 );
 
 /* example node for modeling a directory */
-create table FS_DIRECTORY_NODE ( 
+create table TEST.FS_DIRECTORY_NODE ( 
 	NODE_ID NUMERIC(15,0) NOT NULL, 
 	DIR_NAME CHARACTER VARYING(250),  
 	PRIMARY KEY (NODE_ID) 
 );
 
+/* link file to directory */
+create table TEST.FS_DIR_FILE_LINK (
+	NODE_ID NUMERIC(15,0) NOT NULL,
+	FILE_ID NUMERIC(15,0) NOT NULL,
+	PRIMARY KEY(NODE_ID,FILE_ID)
+);
+
 /* for storing file meta */
-create table FS_FILE_ENTRY ( 
+create table TEST.FS_FILE_ENTRY ( 
 	FILE_ID NUMERIC(15,0) NOT NULL,
 	FILE_NAME CHARACTER VARYING(250),
 	PRIMARY KEY (FILE_ID) 
 );
 
 /* for storing binary data  */
-create table FS_FILE ( 
+create table TEST.FS_FILE ( 
 	FILE_ID NUMERIC(15,0) NOT NULL,
 	FILE_DATA BYTEA NOT NULL,
 	PRIMARY KEY (FILE_ID) 
@@ -96,6 +110,12 @@ CACHE 10
 NO CYCLE;
 
 CREATE SEQUENCE TEST.FS_TREE_ID_SEQUENCE  
+INCREMENT BY 1 
+START WITH 1 
+CACHE 10  
+NO CYCLE;
+
+CREATE SEQUENCE TEST.FS_FILE_ID_SEQUENCE  
 INCREMENT BY 1 
 START WITH 1 
 CACHE 10  

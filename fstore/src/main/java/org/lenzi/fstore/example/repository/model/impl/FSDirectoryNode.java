@@ -3,9 +3,13 @@
  */
 package org.lenzi.fstore.example.repository.model.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -30,6 +34,10 @@ public class FSDirectoryNode extends FSNode<FSDirectoryNode> {
 	
 	@Column(name = "DIR_NAME", nullable = false)
 	private String dirName;
+	
+	// link directory to files
+	@OneToMany(mappedBy="directory")
+	private Set<FSFileEntry> fileEntries = new HashSet<FSFileEntry>(0);
 
 	/**
 	 * 
