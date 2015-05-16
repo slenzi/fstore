@@ -25,6 +25,10 @@ import org.lenzi.fstore.repository.model.DBNode;
  * FS_NODE contains master list of all nodes. Extend this node to implement your own custom node
  * for storing in the tree.
  * 
+ * Elements from this base class are persisted to FS_NODE. Child nodes that extends from
+ * this class will have their attributes persisted to their own table, using the same
+ * primary key (NODE_ID)
+ * 
  * @author slenzi
  */
 @Entity

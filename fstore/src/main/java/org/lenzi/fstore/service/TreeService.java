@@ -16,6 +16,7 @@ import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
@@ -126,9 +127,10 @@ public class TreeService<N extends FSNode<N>> {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public DBTree<N> createTree(DBTree<N> tree, N rootNode) throws ServiceException {
+	/*
+	public FSTree<N> createTree(FSTree<N> tree, N rootNode) throws ServiceException {
 		
-		DBTree<N> newTree = null;
+		FSTree<N> newTree = null;
 		try {
 			newTree = treeRepository.addTree(tree, rootNode);
 		} catch (DatabaseException e) {
@@ -137,6 +139,7 @@ public class TreeService<N extends FSNode<N>> {
 		
 		return newTree;
 	}
+	*/
 	
 	/**
 	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
@@ -292,9 +295,9 @@ public class TreeService<N extends FSNode<N>> {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public DBTree<N> addTree(DBTree<N> newTree, N newRootNode) throws ServiceException {
+	public FSTree<N> addTree(FSTree<N> newTree, N newRootNode) throws ServiceException {
 		
-		DBTree<N> tree = null;
+		FSTree<N> tree = null;
 		try {
 			tree = treeRepository.addTree(newTree, newRootNode);
 		} catch (DatabaseException e) {

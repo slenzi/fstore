@@ -28,6 +28,7 @@ import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.repository.model.impl.FSClosure_;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSNode_;
+import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
@@ -710,7 +711,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#addTree(org.lenzi.fstore.repository.model.DBTree, org.lenzi.fstore.repository.model.DBNode)
 	 */
 	@Override
-	public DBTree<N> addTree(DBTree<N> newTree, N newRootNode) throws DatabaseException {
+	public FSTree<N> addTree(FSTree<N> newTree, N newRootNode) throws DatabaseException {
 
 		if(newTree == null || newRootNode == null){
 			throw new DatabaseException("Cannot add tree. Tree object is null, and/or root node object is null.");

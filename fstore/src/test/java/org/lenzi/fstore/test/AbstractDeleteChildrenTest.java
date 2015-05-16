@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
@@ -47,7 +46,7 @@ public class AbstractDeleteChildrenTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree<FSTestNode> dbTree = treeService.addTree(
+		FSTree<FSTestNode> dbTree = treeService.addTree(
 				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		

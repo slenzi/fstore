@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.TreeService;
 import org.lenzi.fstore.service.exception.ServiceException;
@@ -37,7 +36,7 @@ public class AbstractMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree<FSTestNode> dbTree = treeService.addTree(
+		FSTree<FSTestNode> dbTree = treeService.addTree(
 				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		
@@ -92,7 +91,7 @@ public class AbstractMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree 1");
 		
-		DBTree<FSTestNode> dbTree1 = treeService.addTree(
+		FSTree<FSTestNode> dbTree1 = treeService.addTree(
 				new FSTree<FSTestNode>("Sample tree 1","Sample tree description 1."),
 				new FSTestNode("A1","Node A1"));
 		
@@ -122,7 +121,7 @@ public class AbstractMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree 1");
 		
-		DBTree<FSTestNode> dbTree2 = treeService.addTree(
+		FSTree<FSTestNode> dbTree2 = treeService.addTree(
 				new FSTree<FSTestNode>("Sample tree 2","Sample tree description 2."),
 				new FSTestNode("A2","Node A2"));
 		
@@ -185,7 +184,7 @@ public class AbstractMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Creating sample tree");
 		
-		DBTree<FSTestNode> dbTree = treeService.addTree(
+		FSTree<FSTestNode> dbTree = treeService.addTree(
 				new FSTree<FSTestNode>("Sample tree","Sample tree description."),
 				new FSTestNode("A","Node A"));
 		

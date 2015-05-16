@@ -7,6 +7,7 @@ import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
+import org.lenzi.fstore.repository.model.impl.FSTree;
 
 public interface TreeRepository<N extends FSNode<N>> {
 	
@@ -71,7 +72,7 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DBTree<N> addTree(DBTree<N> newTree, N newRootNode) throws DatabaseException;
+	public FSTree<N> addTree(FSTree<N> newTree, N newRootNode) throws DatabaseException;
 	
 	/**
 	 * Remove a node, plus all its children.
