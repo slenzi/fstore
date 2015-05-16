@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -29,6 +30,7 @@ import org.lenzi.fstore.repository.model.impl.FSClosure_;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSNode_;
 import org.lenzi.fstore.repository.model.impl.FSTree;
+import org.lenzi.fstore.repository.model.impl.FSTree_;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
@@ -703,10 +705,53 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		return newCopy;
 		
-	}	
+	}
+	
+
+	/**
+	 * Fetch a tree
+	 * 
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getTree(org.lenzi.fstore.repository.model.impl.FSTree)
+	 */
+	@Override
+	public FSTree<N> getTree(FSTree<N> tree) throws DatabaseException {
+		
+		if(tree == null){
+			throw new DatabaseException("Cannot fetch tree. Tree object passed in is null.");
+		}
+		if(tree.getTreeId() == null){
+			throw new DatabaseException("Cannot fetch tree. Tree object contains null tree ID. This value is required.");
+		}
+		
+		
+		
+		return null;
+	}
+	
+	private FSTree<N> getTreeByIdCriteria(FSTree<N> tree, Class<N> nodeType) throws DatabaseException {
+		
+		logger.info("Getting tree by id, with root node, criteria => " + tree.getTreeId());
+		
+		Class<FSTree<N>> type = (Class<FSTree<N>>) tree.getClass();
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<FSTree<N>> nodeSelect = criteriaBuilder.createQuery(type);
+		Root<FSTree<N>> nodeSelectRoot = nodeSelect.from(type);
+		//nodeSelectRoot.
+		
+		//Join<FSTree, N> childClosureJoin = nodeSelectRoot.join(FSTree_.rootNode, JoinType.LEFT);
+		
+		return null;
+		
+	}
 
 	/**
 	 * Add a tree.
+	 * 
+	 * Tree object should contain name.
+	 * Root node object should also contain a name.
+	 * That is all that is required.
 	 * 
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#addTree(org.lenzi.fstore.repository.model.DBTree, org.lenzi.fstore.repository.model.DBNode)
 	 */
@@ -1371,37 +1416,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}		
 		
 		FSTree tree = (FSTree)getSingleResult(query);
-		
-		return tree;		
-		
-	}
-
-	@Override
-	public FSTree addTree(String treeName, String treeDesc, String rootNodeName) throws DatabaseException {
-
-		FSNode rootNode = addNode(0L, rootNodeName);
-		Long rootNodeId = rootNode.getNodeId();
-		
-		// Get next available tree id from sequence
-		long treeId = getSequenceVal(getSqlQueryTreeIdSequence());
-	
-		Timestamp now = DateUtil.getCurrentTime();
-		
-		FSTree tree = new FSTree();
-		tree.setTreeId(treeId);
-		tree.setName(treeName);
-		tree.setDescription(treeDesc);
-		tree.setDateCreated(now);
-		tree.setDateUpdated(now);
-		tree.setRootNodeId(rootNodeId);
-		tree.setRootNode(rootNode); // adds node to database
-		
-		// save node to database
-		//getEntityManager().persist(tree);
-		persist(tree);
-		
-		getEntityManager().flush();
-		getEntityManager().clear();		
 		
 		return tree;		
 		

@@ -50,7 +50,7 @@ public class FSTree<N extends FSNode<N>> implements DBTree<N> {
 	
 	@OneToOne(targetEntity = FSNode.class)
 	@JoinColumn(name = "ROOT_NODE_ID", insertable=false, updatable=false)
-	N rootNode = null;
+	private N rootNode = null;
 	
 	/**
 	 * 

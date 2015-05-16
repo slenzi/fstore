@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -64,6 +65,11 @@ public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 	
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;
+	
+	// The associated tree if this node is a root node. if this is not a root
+	// node then the tree object will be null
+	@OneToOne(mappedBy="rootNode")
+	private FSTree<N> tree = null;
 	
 	// Closure entries that give access to the child nodes for this node.
 	@OneToMany(mappedBy="parentNode", targetEntity = FSClosure.class)
@@ -181,6 +187,20 @@ public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 	 */
 	public void setDateUpdated(Timestamp dateUpdated) {
 		this.dateUpdated = dateUpdated;
+	}
+
+	/**
+	 * @return the tree
+	 */
+	public FSTree<N> getTree() {
+		return tree;
+	}
+
+	/**
+	 * @param tree the tree to set
+	 */
+	public void setTree(FSTree<N> tree) {
+		this.tree = tree;
 	}
 
 	/**

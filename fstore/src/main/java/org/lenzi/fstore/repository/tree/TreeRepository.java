@@ -63,12 +63,20 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 */
 	public N copyNode(N nodeToCopy, N parentNode, boolean copyChildren, NodeCopier<N> copier) throws DatabaseException;
 	
+	/**
+	 * Get a tree with it's root node.
+	 * 
+	 * @param tree - a tree object with the tree ID set.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FSTree<N> getTree(FSTree<N> tree) throws DatabaseException;
 	
 	/**
 	 * Add a tree.
 	 * 
-	 * @param newTree
-	 * @param newRootNode
+	 * @param newTree - a tree object with the tree name set
+	 * @param newRootNode - a node object with the node name set.
 	 * @return
 	 * @throws DatabaseException
 	 */
@@ -108,15 +116,6 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 * @throws DatabaseException
 	 */
 	public N moveNode(N nodeToMode, N newParentNode)  throws DatabaseException;
-	
-	/**
-	 * Get a tree with it's root node.
-	 * 
-	 * @param treeId - The ID of the tree.
-	 * @return
-	 * @throws DatabaseException
-	 */
-	//public Tree getTree(Long treeId) throws DatabaseException;
 	
 	/**
 	 * Add a new tree.
