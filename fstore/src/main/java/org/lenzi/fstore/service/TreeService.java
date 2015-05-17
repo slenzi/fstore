@@ -97,6 +97,17 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
+	public FSTree<N> geTreeById(FSTree<N> tree) throws ServiceException {
+		
+		FSTree<N> result = null;
+		try {
+			result = treeRepository.getTree(tree);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return result;
+	}
+	
 	/**
 	 * Get tree by id
 	 * 

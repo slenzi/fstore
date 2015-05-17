@@ -723,26 +723,33 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Cannot fetch tree. Tree object contains null tree ID. This value is required.");
 		}
 		
-		
-		
-		return null;
+		return getTreeByIdCriteria(tree, null);
 	}
 	
-	private FSTree<N> getTreeByIdCriteria(FSTree<N> tree, Class<N> nodeType) throws DatabaseException {
+	public FSTree<N> getTreeByIdCriteria(FSTree<N> tree, Class<N> nodeType) throws DatabaseException {
 		
 		logger.info("Getting tree by id, with root node, criteria => " + tree.getTreeId());
 		
-		Class<FSTree<N>> type = (Class<FSTree<N>>) tree.getClass();
+		Class<FSTree<N>> treeType = (Class<FSTree<N>>) tree.getClass();
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		
-		CriteriaQuery<FSTree<N>> nodeSelect = criteriaBuilder.createQuery(type);
-		Root<FSTree<N>> nodeSelectRoot = nodeSelect.from(type);
-		//nodeSelectRoot.
+		CriteriaQuery<FSTree<N>> treeSelect = criteriaBuilder.createQuery(treeType);
 		
-		//Join<FSTree, N> childClosureJoin = nodeSelectRoot.join(FSTree_.rootNode, JoinType.LEFT);
+		Root<FSTree<N>> treeRoot = treeSelect.from(treeType);
+		//Root<N>  nodeRoot = treeSelect.from(nodeType);
 		
-		return null;
+		Join<FSTree<N>,N> rootNodeJoin = treeRoot.join("rootNode");
+		Fetch<FSTree<N>,N> rootNodeFetch =  treeRoot.fetch("rootNode", JoinType.LEFT);
+		
+		treeSelect.select(treeRoot);
+		treeSelect.where(
+				criteriaBuilder.equal(treeRoot.get("treeId"), tree.getTreeId())
+				);
+		
+		FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
+		
+		return result;
 		
 	}
 
@@ -1253,7 +1260,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		return null;
+		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		return result;
 	}
 	
 	/**
