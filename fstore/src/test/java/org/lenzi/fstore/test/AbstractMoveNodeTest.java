@@ -86,7 +86,7 @@ public class AbstractMoveNodeTest extends AbstractTreeTest {
 	@Test
 	@Rollback(true)	
 	public void moveNodeDifferentTreeTest() throws ServiceException {
-		/*
+	
 		logTestTitle("Move node test: different tree");
 		
 		logger.info("Creating sample tree 1");
@@ -149,15 +149,15 @@ public class AbstractMoveNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree 1...");
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Tree 1 before move...");
-		treeMeta = treeService.buildTree(dbTree1);
+		treeMeta = treeService.buildTree(dbTree1.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Tree 2 before move...");
-		treeMeta = treeService.buildTree(dbTree2);
+		treeMeta = treeService.buildTree(dbTree2.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -165,15 +165,15 @@ public class AbstractMoveNodeTest extends AbstractTreeTest {
 		treeService.moveNode(nodeD1, nodeK2);
 		
 		logger.info("Tree 1 after move...");
-		treeMeta = treeService.buildTree(dbTree1);
+		treeMeta = treeService.buildTree(dbTree1.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Tree 2 after move...");
-		treeMeta = treeService.buildTree(dbTree2);
+		treeMeta = treeService.buildTree(dbTree2.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());		
-		*/
+		
 	}
 	
 	@Test

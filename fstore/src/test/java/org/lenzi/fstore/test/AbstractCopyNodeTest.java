@@ -46,7 +46,6 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 	@Rollback(true)	
 	public void copyNodeWithoutChildrenTest() throws ServiceException {
 
-		/*
 		logTestTitle("Copy node without children test");
 		
 		logger.info("Creating sample tree");
@@ -78,12 +77,11 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 						FSTestNode nodeO = treeService.createChildNode(nodeK, new FSTestNode("O","Node O"));
 		
 		logger.info("Finished adding nodes to tree...");
-			
-		Tree<TreeMeta> treeMeta = treeService.buildTree(dbTree);	
-		assertNotNull(treeMeta);
+		
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Before copy...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -91,10 +89,9 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 		FSTestNode copyE = treeService.copyNode(nodeE, nodeM, false, testNodeCopier);
 		
 		logger.info("After copy...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
-		logger.info(treeMeta.printTree());		
-		*/
+		logger.info(treeMeta.printTree());
 		
 	}	
 	
@@ -156,7 +153,7 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 	@Test
 	@Rollback(true)	
 	public void copyNodeDifferentTreeTest() throws ServiceException {
-		/*
+		
 		logTestTitle("Copy node test: different tree");
 		
 		logger.info("Creating sample tree 1");
@@ -219,15 +216,15 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree 1...");		
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Tree 1 before...");
-		treeMeta = treeService.buildTree(dbTree1);
+		treeMeta = treeService.buildTree(dbTree1.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Tree 2 before...");
-		treeMeta = treeService.buildTree(dbTree2);
+		treeMeta = treeService.buildTree(dbTree2.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());		
 		
@@ -235,21 +232,21 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 		FSTestNode copyD1 = treeService.copyNode(nodeD1, nodeN2, true, testNodeCopier);
 		
 		logger.info("Tree 1 After...");
-		treeMeta = treeService.buildTree(dbTree1);
+		treeMeta = treeService.buildTree(dbTree1.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
 		logger.info("Tree 2 After...");
-		treeMeta = treeService.buildTree(dbTree2);
+		treeMeta = treeService.buildTree(dbTree2.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
-		*/
+	
 	}
 	
 	@Test
 	@Rollback(true)	
 	public void multiCopySameTreeTest() throws ServiceException {
-		/*
+		
 		logTestTitle("Multi-copy test: same tree");
 		
 		logger.info("Creating sample tree");
@@ -282,10 +279,10 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 		
 		logger.info("Finished adding nodes to tree...");
 		
-		Tree<TreeMeta> treeMeta = null;
+		Tree<FSTestNode> treeMeta = null;
 		
 		logger.info("Before copy...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());
 		
@@ -293,7 +290,7 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 		FSTestNode copyE = treeService.copyNode(nodeE, nodeM, true, testNodeCopier);
 		
 		logger.info("After copy E to M...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());			
 		
@@ -301,7 +298,7 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 		FSTestNode copyH = treeService.copyNode(nodeH, nodeO, true, testNodeCopier);
 		
 		logger.info("After copy H to O...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());			
 		
@@ -309,9 +306,9 @@ public class AbstractCopyNodeTest extends AbstractTreeTest {
 		FSTestNode copyD = treeService.copyNode(nodeD, copyH, true, testNodeCopier);
 		
 		logger.info("After copy D to newly create copy of H...");
-		treeMeta = treeService.buildTree(dbTree);
+		treeMeta = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(treeMeta);
 		logger.info(treeMeta.printTree());	
-		*/
+		
 	}
 }
