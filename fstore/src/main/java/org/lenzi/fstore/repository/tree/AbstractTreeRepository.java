@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
@@ -710,7 +711,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	
 
 	/**
-	 * Fetch a tree
+	 * Fetch a tree, including it's root node data.
 	 * 
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getTree(org.lenzi.fstore.repository.model.impl.FSTree)
 	 */
@@ -727,7 +728,36 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		return getTreeByIdCriteria(tree);
 	}
 	
-	public FSTree<N> getTreeByIdCriteria(FSTree<N> tree) throws DatabaseException {
+	/**
+	 * Fetch a tree, including it's root node data. Also specify the type of the nodes in the tree when performing the join.
+	 * 
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getTree(org.lenzi.fstore.repository.model.impl.FSTree, java.lang.Class)
+	 */
+	@Override
+	public FSTree<N> getTree(FSTree<N> tree, Class<N> nodeClass) throws DatabaseException {
+
+		if(tree == null){
+			throw new DatabaseException("Cannot fetch tree. Tree object passed in is null.");
+		}
+		if(tree.getTreeId() == null){
+			throw new DatabaseException("Cannot fetch tree. Tree object contains null tree ID. This value is required.");
+		}
+		if(nodeClass == null){
+			throw new DatabaseException("Cannot fetch tree. Node class type was not provided.");
+		}
+		
+		return getTreeByIdCriteriaNodeSpecific(tree, nodeClass);		
+		
+	}
+
+	/**
+	 * Fetch a tree using a criteria query. This does not specify the type of node to join on...
+	 * 
+	 * @param tree - tree object with ID set.
+	 * @return A tree with it's root node.
+	 * @throws DatabaseException
+	 */
+	private FSTree<N> getTreeByIdCriteria(FSTree<N> tree) throws DatabaseException {
 		
 		logger.info("Getting tree by id, with root node, criteria => " + tree.getTreeId());
 		
@@ -754,6 +784,52 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		return result;
 		
 	}
+	
+	/**
+	 * Fetch a tree using a criteria query, and specify the type of nodes when performing the join.
+	 * 
+	 * @param tree - tree object with ID set.
+	 * @param nodeClass - the type of the node in the tree, used when performing the join.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private FSTree<N> getTreeByIdCriteriaNodeSpecific(FSTree<N> tree, Class<N> nodeClass) throws DatabaseException {
+		
+		logger.info("Getting tree by id, with root node, criteria => " + tree.getTreeId());
+		
+		Class<FSTree<N>> treeType = (Class<FSTree<N>>) tree.getClass();
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<FSTree<N>> treeSelect = criteriaBuilder.createQuery(treeType);
+		
+		Root<FSTree<N>> treeRoot = treeSelect.from(treeType);
+		//Root<N>  nodeRoot = treeSelect.from(nodeClass);
+		
+		Join<FSTree<N>,N> rootNodeJoin = treeRoot.join("rootNode" /*, JoinType.LEFT*/);
+		
+		//Path<N> rootNodePath = treeRoot.get("rootNode");
+		
+		Fetch<FSTree<N>,N> rootNodeFetch =  treeRoot.fetch("rootNode"/*, JoinType.LEFT*/);
+		
+		// all AND conditions
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		// where tree id => id the user passed in
+		andPredicates.add( criteriaBuilder.equal(treeRoot.get("treeId"), tree.getTreeId()) );
+		// add root node type => the class type of the node the user passed in
+		//andPredicates.add( criteriaBuilder.equal(rootNodeJoin.type(), criteriaBuilder.literal(nodeClass) ) );		
+		
+		
+		treeSelect.select(treeRoot);
+		treeSelect.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
+		
+		return result;
+		
+	}	
 
 	/**
 	 * Add a tree.

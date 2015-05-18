@@ -54,11 +54,47 @@ public class TreeService<N extends FSNode<N>> {
 		try {
 			entity = treeRepository.getNode(node);
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ServiceException(e.getMessage(), e);
 		}
 		return entity;
 		
+	}
+	
+	/**
+	 * Retrieve the immediate parent
+	 * 
+	 * @param node - a node of some tree.
+	 * @return The nodes parent node.
+	 * @throws ServiceException
+	 */
+	public N getParentNode(N node) throws ServiceException {
+		// TODO - implement
+		return null;
+	}
+	
+	/**
+	 * Retrieve the immediate (first level) children.
+	 * 
+	 * @param node - a node of some tree.
+	 * @return The first level children of the node (not the children's children, etc.)
+	 * 	If this is a leaf node (no children) then null is returned.
+	 * @throws ServiceException
+	 */
+	public List<N> getChildNodes(N node) throws ServiceException {
+		// TODO - implement
+		return null;
+	}
+	
+	/**
+	 * Retrieve the root node of the tree that this node belongs too.
+	 * 
+	 * @param node - a node of some tree.
+	 * @return - the root node of the tree that the child node belongs to.
+	 * @throws ServiceException
+	 */
+	public N getRootNode(N node)  throws ServiceException {
+		// TODO - implement
+		return null;		
 	}
 	
 	public N getNodeWithChild(N node) throws ServiceException {
@@ -107,6 +143,17 @@ public class TreeService<N extends FSNode<N>> {
 		}
 		return result;
 	}
+	
+	public FSTree<N> geTreeById(FSTree<N> tree, Class<N> nodeType) throws ServiceException {
+		
+		FSTree<N> result = null;
+		try {
+			result = treeRepository.getTree(tree, nodeType);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return result;
+	}	
 	
 	/**
 	 * Get tree by id

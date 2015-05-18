@@ -71,6 +71,8 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 * @throws DatabaseException
 	 */
 	public FSTree<N> getTree(FSTree<N> tree) throws DatabaseException;
+	// specify the class type of the node
+	public FSTree<N> getTree(FSTree<N> tree, Class<N> nodeClass) throws DatabaseException;
 	
 	/**
 	 * Add a tree.
