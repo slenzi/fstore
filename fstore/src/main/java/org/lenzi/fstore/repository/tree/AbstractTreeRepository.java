@@ -178,6 +178,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
 		}
 		
+		closureLogger.logClosure(parentClosure);
+		
 		// loop through closure data and locate the depth-1 entry. this is the closure entry that specifies the node's immediate parent.
 		N parentNode = null;
 		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(parentClosure)){
@@ -188,7 +190,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}
 		
 		if(parentNode == null){
-			throw new DatabaseException("Failed to locate parent node from closure data. Depth-1 entry not found...");
+			throw new DatabaseException("Failed to locate parent node from parent closure data. Depth-1 entry not found...");
 		}
 		
 		return parentNode;
@@ -245,9 +247,38 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}
 		if(node.getNodeId() == null){
 			throw new DatabaseException("Node ID of node parameter is null");
-		}		
+		}
 		
-		return null;
+		logger.info("Get parent node for node => " + node.getNodeId());
+		
+		N thisNode = getNodeWithParentClosureCriteria(node);
+		if(thisNode == null){
+			throw new DatabaseException("Failed to fetch node with it's parent closure data");
+		}
+		if(thisNode.isRootNode()){
+			return null;
+		}
+		Set<DBClosure<N>> parentClosure = thisNode.getParentClosure();
+		if(parentClosure == null || parentClosure.size() == 0){
+			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
+		}
+		
+		closureLogger.logClosure(parentClosure);
+		
+		// loop through closure data and locate the the node where isRootNode() is true.
+		N rootNode = null;
+		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(parentClosure)){
+			if(closure.getParentNode().isRootNode()){
+				rootNode = closure.getParentNode();
+				break;
+			}
+		}
+		
+		if(rootNode == null){
+			throw new DatabaseException("Failed to locate root node from parent closure data...");
+		}
+		
+		return rootNode;
 	}
 
 	/**
