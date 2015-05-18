@@ -154,138 +154,6 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
-	public FSTree<N> geTreeById(FSTree<N> tree) throws ServiceException {
-		
-		FSTree<N> result = null;
-		try {
-			result = treeRepository.getTree(tree);
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		return result;
-	}
-	
-	public FSTree<N> geTreeById(FSTree<N> tree, Class<N> nodeType) throws ServiceException {
-		
-		FSTree<N> result = null;
-		try {
-			result = treeRepository.getTree(tree, nodeType);
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		return result;
-	}	
-	
-	/**
-	 * Get tree by id
-	 * 
-	 * @param treeId
-	 * @return
-	 * @throws ServiceException
-	 */
-	/*
-	public FSTree getTree(Long treeId) throws ServiceException {
-		
-		FSTree fsTree = null;
-		try {
-			fsTree = closureRepository.getTree(treeId);
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-			logger.error("Error creating new tree. " + e.getMessage());
-		}
-		
-		return fsTree;
-	}
-	*/
-	
-	/**
-	 * Create a new tree
-	 * 
-	 * @param tree - Tree data
-	 * @param rootNode - Root node for the tree
-	 * @return
-	 * @throws ServiceException
-	 */
-	/*
-	public FSTree<N> createTree(FSTree<N> tree, N rootNode) throws ServiceException {
-		
-		FSTree<N> newTree = null;
-		try {
-			newTree = treeRepository.addTree(tree, rootNode);
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		
-		return newTree;
-	}
-	*/
-	
-	/**
-	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
-	 * All children of the existing node are also moved over.
-	 * 
-	 * @param treeName - name of the new tree
-	 * @param treeDesc - description of the new tree
-	 * @param existingNode - a non-root node of an existing tree which will become the root node of 
-	 * 	the new tree. All child nodes will be moved over as well.
-	 */
-	/*
-	public DBTree createTree(DBTree tree, DBNode existingNode) throws ServiceException {
-		
-		if(existingNode.getParentNodeId() == 0L){
-			throw new ServiceException("Existing node is a root node. Cannot make this node a root node of a new tree.");
-		}
-		DBTree newTree = null;
-		try {
-			newTree = closureRepository.addTree(tree, existingNode);
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		
-		return newTree;
-		
-	}
-	*/
-	
-	/**
-	 * Remove a tree
-	 * 
-	 * @param tree
-	 * @throws ServiceException
-	 */
-	/*
-	public void removeTree(FSTree tree) throws ServiceException {
-		
-		try {
-			closureRepository.removeTree(tree.getTreeId());
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		
-	}
-	*/
-	
-	/**
-	 * Take the root node of an tree you want to delete, and move it plus all children to under any node
-	 * of some other tree. Then delete the old tree. 
-	 * 
-	 * @param tree - The tree you want to delete (but keep all nodes under it.)
-	 * @param newParentNode - The root node (plus all children) of the tree being deleted will be moved to
-	 * 	under this node. This node must be a node in a different tree.
-	 * @return
-	 */
-	/*
-	public void removeTree(FSTree tree, FSNode newParentNode) throws ServiceException {
-		
-		try {
-			closureRepository.removeTree(tree, newParentNode);
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		
-	}
-	*/
-	
 	/**
 	 * Add a new root node.
 	 * 
@@ -367,26 +235,6 @@ public class TreeService<N extends FSNode<N>> {
 	}
 	
 	/**
-	 * Add a tree.
-	 * 
-	 * @param newTree - The new tree to add
-	 * @param newRootNode - The root node for the new tree.
-	 * @return
-	 * @throws ServiceException
-	 */
-	public FSTree<N> addTree(FSTree<N> newTree, N newRootNode) throws ServiceException {
-		
-		FSTree<N> tree = null;
-		try {
-			tree = treeRepository.addTree(newTree, newRootNode);
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		
-		return tree;
-	}
-	
-	/**
 	 * Remove a node
 	 * 
 	 * @param node
@@ -433,6 +281,115 @@ public class TreeService<N extends FSNode<N>> {
 		return updatedNode;
 		
 	}
+	
+	public FSTree<N> geTreeById(FSTree<N> tree) throws ServiceException {
+		
+		FSTree<N> result = null;
+		try {
+			result = treeRepository.getTree(tree);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return result;
+	}
+	
+	// not needed, or working...
+	public FSTree<N> geTreeById(FSTree<N> tree, Class<N> nodeType) throws ServiceException {
+		
+		FSTree<N> result = null;
+		try {
+			result = treeRepository.getTree(tree, nodeType);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return result;
+	}	
+	
+	/**
+	 * Add a tree.
+	 * 
+	 * @param newTree - The new tree to add
+	 * @param newRootNode - The root node for the new tree.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FSTree<N> addTree(FSTree<N> newTree, N newRootNode) throws ServiceException {
+		
+		FSTree<N> tree = null;
+		try {
+			tree = treeRepository.addTree(newTree, newRootNode);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+		return tree;
+	}
+	
+	/**
+	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
+	 * All children of the existing node are also moved over.
+	 * 
+	 * @param treeName - name of the new tree
+	 * @param treeDesc - description of the new tree
+	 * @param existingNode - a non-root node of an existing tree which will become the root node of 
+	 * 	the new tree. All child nodes will be moved over as well.
+	 */
+	/*
+	public DBTree createTree(DBTree tree, DBNode existingNode) throws ServiceException {
+		
+		if(existingNode.getParentNodeId() == 0L){
+			throw new ServiceException("Existing node is a root node. Cannot make this node a root node of a new tree.");
+		}
+		DBTree newTree = null;
+		try {
+			newTree = closureRepository.addTree(tree, existingNode);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+		return newTree;
+		
+	}
+	*/
+	
+	/**
+	 * Remove a tree
+	 * 
+	 * @param tree
+	 * @throws ServiceException
+	 */
+	/*
+	public void removeTree(FSTree tree) throws ServiceException {
+		
+		try {
+			closureRepository.removeTree(tree.getTreeId());
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+	}
+	*/
+	
+	/**
+	 * Take the root node of an tree you want to delete, and move it plus all children to under any node
+	 * of some other tree. Then delete the old tree. 
+	 * 
+	 * @param tree - The tree you want to delete (but keep all nodes under it.)
+	 * @param newParentNode - The root node (plus all children) of the tree being deleted will be moved to
+	 * 	under this node. This node must be a node in a different tree.
+	 * @return
+	 */
+	/*
+	public void removeTree(FSTree tree, FSNode newParentNode) throws ServiceException {
+		
+		try {
+			closureRepository.removeTree(tree, newParentNode);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+	}
+	*/		
 	
 	/**
 	 * Check if two nodes are in the same tree. Returns true if they are, false if they are not.
@@ -585,158 +542,5 @@ public class TreeService<N extends FSNode<N>> {
 		}
 		
 	}
-	
-	
-	/*
-	 * ----------------- old code below -------------------
-	 */
-	
-	
-	
-	
-	
-
-	/**
-	 * @deprecated - old code
-	 * Builds a non manage tree object from a database FSTree.
-	 * 
-	 * @param tree The FSTree entity
-	 * @return
-	 */
-	public Tree<TreeMeta> buildTreeOld(DBTree<N> tree) throws ServiceException {
-		
-		if(tree == null || tree.getRootNode() == null){
-			return null;
-		}
-		
-		// TODO - test this, when we get closure we need to fetch from N (FSTestNode). The HQL query currently fetches from parent FSNode
-		
-		List<DBClosure<N>> closure = null;
-		try {
-			closure = treeRepository.getClosure(tree.getRootNode());
-		} catch (DatabaseException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		
-		return buildTreeOld(closure);
-		
-	}
-	
-	/**
-	 * @deprecated - old code
-	 * Builds a GenericTree from a list of closure data.
-	 * 
-	 * @param closureList
-	 * @return
-	 */
-	public Tree<TreeMeta> buildTreeOld(List<DBClosure<N>> closureList){
-		
-		if(closureList == null || closureList.size() == 0){
-			return null;
-		}
-		
-		//closureLogger.logClosure(closureList);
-		
-		HashMap<Long,List<N>> treeMap = new HashMap<Long,List<N>>();
-		
-		// get root node of tree
-		N rootNode = null;
-		for(DBClosure<N> c : closureList){
-			if(c.hasParent() && c.hasChild()){
-				rootNode = c.getParentNode();
-				break;
-			}
-		}
-		
-		logger.debug("Build tree, root node => " + closureLogger.getNodeString(rootNode));
-		
-		//
-		// loop through closure list and build tree map
-		//
-		DBClosure<N> closure = null;
-		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
-			closure = closureList.get(closureIndex);
-			if(closure.hasParent() && closure.hasChild()){
-				if(treeMap.containsKey(closure.getParentNode().getNodeId())){
-					treeMap.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
-				}else{
-					List<N> childList = new ArrayList<N>();
-					childList.add(closure.getChildNode());
-					treeMap.put(closure.getParentNode().getNodeId(), childList);
-				}
-			}
-		}
-		
-		logger.debug("Build tree, map size => " + treeMap.size());
-		
-		//
-		// Build meta for root node
-		//
-		TreeNode<TreeMeta> treeRootNode = new TreeNode<TreeMeta>();
-		TreeMeta meta = new TreeMeta();
-		meta.setId(rootNode.getNodeId());
-		meta.setName(rootNode.getName());
-		//meta.setParentId(rootNode.getParentNodeId());
-		meta.setCreationDate(rootNode.getDateCreated());
-		meta.setUpdatedDate(rootNode.getDateUpdated());
-		treeRootNode.setData(meta);
-		
-		logger.debug("Build tree, created meta for root node");
-		
-		//
-		// recursively build out the tree
-		//
-		addChildrenOld(treeRootNode, treeMap);
-		
-		Tree<TreeMeta> tree = new Tree<TreeMeta>();
-		tree.setRootNode(treeRootNode);
-		
-		return tree;
-	}
-	
-	/**
-	 * @deprecated - old code
-	 * 
-	 * @param parentNode
-	 * @param treeMap
-	 */
-	private void addChildrenOld(TreeNode<TreeMeta> parentNode, HashMap<Long,List<N>> treeMap){
-		
-		TreeNode<TreeMeta> childTreeNode = null;
-		
-		for(N childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getId()))){
-			
-			// closure table contains entries where a node is a parent of itself at depth 0. we
-			// need to skip over these entries otherwise we'll go into an infinite loop and exhaust the
-			// memory stack.
-			if(parentNode.getData().getId() != childNode.getNodeId()){
-			
-				childTreeNode = new TreeNode<TreeMeta>();
-				childTreeNode.setData(getMetaOld(childNode));
-				
-				childTreeNode.setParent(parentNode);
-				parentNode.addChildNode(childTreeNode);
-				
-				addChildrenOld(childTreeNode, treeMap);
-			}
-		}
-		
-	}
-	
-	/**
-	 * @deprecated - old code
-	 * 
-	 * @param node
-	 * @return
-	 */
-	private TreeMeta getMetaOld(N node){
-		TreeMeta meta = new TreeMeta();
-		meta.setId(node.getNodeId());
-		meta.setName(node.getName());
-		//meta.setParentId(node.getParentNodeId());
-		meta.setCreationDate(node.getDateCreated());
-		meta.setUpdatedDate(node.getDateUpdated());
-		return meta;
-	}	
 
 }
