@@ -68,8 +68,15 @@ public class TreeService<N extends FSNode<N>> {
 	 * @throws ServiceException
 	 */
 	public N getParentNode(N node) throws ServiceException {
-		// TODO - implement
-		return null;
+
+		N entity = null;
+		try {
+			entity = treeRepository.getParentNode(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return entity;		
+		
 	}
 	
 	/**
@@ -81,20 +88,34 @@ public class TreeService<N extends FSNode<N>> {
 	 * @throws ServiceException
 	 */
 	public List<N> getChildNodes(N node) throws ServiceException {
-		// TODO - implement
-		return null;
+
+		List<N> entityList = null;
+		try {
+			entityList = treeRepository.getChildNodes(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return entityList;			
+		
 	}
 	
 	/**
 	 * Retrieve the root node of the tree that this node belongs too.
 	 * 
 	 * @param node - a node of some tree.
-	 * @return - the root node of the tree that the child node belongs to.
+	 * @return - the root node of the tree that this node belongs to.
 	 * @throws ServiceException
 	 */
 	public N getRootNode(N node)  throws ServiceException {
-		// TODO - implement
-		return null;		
+
+		N entity = null;
+		try {
+			entity = treeRepository.getRootNode(node);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		return entity;			
+		
 	}
 	
 	public N getNodeWithChild(N node) throws ServiceException {
@@ -532,7 +553,7 @@ public class TreeService<N extends FSNode<N>> {
 		rootNode.setData(n);
 		
 		// add all children under root node
-		addChildNodesFromMap(rootNode,treeMap);
+		addChildNodesFromMap(rootNode, treeMap);
 		
 		// create tree and set root node
 		Tree<N> tree = new Tree<N>();

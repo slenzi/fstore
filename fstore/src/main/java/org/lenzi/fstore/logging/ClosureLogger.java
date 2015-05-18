@@ -1,6 +1,7 @@
 package org.lenzi.fstore.logging;
 
 import java.util.List;
+import java.util.Set;
 
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.impl.FSNode;
@@ -31,14 +32,39 @@ public class ClosureLogger<N extends FSNode<N>> {
 				logger.warn("link id: " + c.getLinkId() + ", parent: null, child: null");
 			}
 			if(parent != null && child != null){
-				logger.info("link id: " + c.getLinkId() + ", parent: " + getNodeString(parent) + ", child: " + getNodeString(child));
+				logger.info("link id: " + c.getLinkId() + ", depth: " + depth + ", parent: " + getNodeString(parent) + ", child: " + getNodeString(child));
 			}else if(parent != null){
-				logger.info("link id: " + c.getLinkId() + ", parent: " + getNodeString(parent));
+				logger.info("link id: " + c.getLinkId() + ", depth: " + depth + ", parent: " + getNodeString(parent));
 			}else if(child != null){
-				logger.info("link id: " + c.getLinkId() + ", child: " + getNodeString(child));
+				logger.info("link id: " + c.getLinkId() + ", depth: " + depth + ", child: " + getNodeString(child));
 			}
 		}
 	}
+	
+	public void logClosure(Set<DBClosure<N>> closureList){
+		if(closureList == null){
+			return;
+		}
+		logger.debug("Closure list size => " + closureList.size());
+		N parent = null, child = null;
+		Integer depth = 0;
+		for(DBClosure<N> c : closureList){
+			parent = c.getParentNode();
+			child = c.getChildNode();
+			depth = c.getDepth();
+			if(parent == null && child == null){
+				logger.warn("link id: " + c.getLinkId() + ", parent: null, child: null");
+			}
+			if(parent != null && child != null){
+				logger.info("link id: " + c.getLinkId() + ", depth: " + depth + ", parent: " + getNodeString(parent) + ", child: " + getNodeString(child));
+			}else if(parent != null){
+				logger.info("link id: " + c.getLinkId() + ", depth: " + depth + ", parent: " + getNodeString(parent));
+			}else if(child != null){
+				logger.info("link id: " + c.getLinkId() + ", depth: " + depth + ", child: " + getNodeString(child));
+			}
+		}
+	}	
+	
 	public String getNodeString(N n){
 		if(n == null){
 			return "null";

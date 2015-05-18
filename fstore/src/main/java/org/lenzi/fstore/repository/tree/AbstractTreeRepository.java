@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -146,6 +147,107 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		return getNodeWithParentChildClosureCriteria(node);
 		
+	}
+	
+	/**
+	 * Fetch the node's parent node. If this node is a root node then null is returned.
+	 * 
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getParentNode(org.lenzi.fstore.repository.model.impl.FSNode)
+	 */
+	@Override
+	public N getParentNode(N node) throws DatabaseException {
+		
+		if(node == null){
+			throw new DatabaseException("Node parameter is null");
+		}
+		if(node.getNodeId() == null){
+			throw new DatabaseException("Node ID of node parameter is null");
+		}
+		
+		logger.info("Get parent node for node => " + node.getNodeId());
+		
+		N thisNode = getNodeWithParentClosureCriteria(node);
+		if(thisNode == null){
+			throw new DatabaseException("Failed to fetch node with it's parent closure data");
+		}
+		if(thisNode.isRootNode()){
+			return null;
+		}
+		Set<DBClosure<N>> parentClosure = thisNode.getParentClosure();
+		if(parentClosure == null || parentClosure.size() == 0){
+			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
+		}
+		
+		// loop through closure data and locate the depth-1 entry. this is the closure entry that specifies the node's immediate parent.
+		N parentNode = null;
+		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(parentClosure)){
+			if(closure.getDepth() == 1){
+				parentNode = closure.getParentNode();
+				break;
+			}
+		}
+		
+		if(parentNode == null){
+			throw new DatabaseException("Failed to locate parent node from closure data. Depth-1 entry not found...");
+		}
+		
+		return parentNode;
+	}
+
+	/**
+	 * Fetch the first level children of the node (does not include the children's children, etc). If the
+	 * node is a leaf node (has no children) then null is returned.
+	 * 
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getChildNodes(org.lenzi.fstore.repository.model.impl.FSNode)
+	 */
+	@Override
+	public List<N> getChildNodes(N node) throws DatabaseException {
+
+		if(node == null){
+			throw new DatabaseException("Node parameter is null");
+		}
+		if(node.getNodeId() == null){
+			throw new DatabaseException("Node ID of node parameter is null");
+		}
+		
+		logger.info("Get child nodes for node => " + node.getNodeId());
+		
+		N thisNode = getNodeWithChildClosureCriteria(node);
+		if(thisNode == null){
+			throw new DatabaseException("Failed to fetch node with it's child closure data");
+		}
+		Set<DBClosure<N>> childClosure = thisNode.getChildClosure();
+		if(childClosure == null || childClosure.size() == 0){
+			throw new DatabaseException("Failed to fetch child closure data for node => " + thisNode.getNodeId());
+		}
+		
+		// loop through closure data and locate all depth-1 entries. these are the closure entries that contain the first level child nodes
+		List<N> children = new ArrayList<N>();
+		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(childClosure)){
+			if(closure.getDepth() == 1){
+				children.add(closure.getChildNode());
+			}
+		}		
+		
+		return children.size() > 0 ? children : null;
+	}
+
+	/**
+	 * Retrieve the root node of the tree that this node belongs too.
+	 * 
+	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getRootNode(org.lenzi.fstore.repository.model.impl.FSNode)
+	 */
+	@Override
+	public N getRootNode(N node) throws DatabaseException {
+
+		if(node == null){
+			throw new DatabaseException("Node parameter is null");
+		}
+		if(node.getNodeId() == null){
+			throw new DatabaseException("Node ID of node parameter is null");
+		}		
+		
+		return null;
 	}
 
 	/**
@@ -386,7 +488,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Cannot fetch closure data for node. Node ID is null. This value is needed.");
 		}
 		
-		Class<FSClosure> type = (Class<FSClosure>) FSClosure.class;
+		Class<FSClosure> type = (Class<FSClosure>)FSClosure.class;
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		

@@ -5,7 +5,6 @@ import java.util.List;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 
@@ -31,6 +30,34 @@ public interface TreeRepository<N extends FSNode<N>> {
 	public N getNodeWithChild(N node) throws DatabaseException;
 	// inlcude both parent and child closure data, with nodes
 	public N getNodewithParentChild(N node) throws DatabaseException;
+	
+	/**
+	 * Fetch the node's parent node. If this node is a root node then null is returned.
+	 * 
+	 * @param node - a node in some tree
+	 * @return The node's parent, or null if the node is a root node (root nodes have no parent)
+	 * @throws DatabaseException
+	 */
+	public N getParentNode(N node) throws DatabaseException;
+	
+	/**
+	 * Fetch the first level children of the node (does not include the children's children, etc). If the
+	 * node is a leaf node (has no children) then null is returned.
+	 * 
+	 * @param node - a node in some tree
+	 * @return The first level children of the node, or null if a leaf node.
+	 * @throws DatabaseException
+	 */
+	public List<N> getChildNodes(N node) throws DatabaseException;
+	
+	/**
+	 * Retrieve the root node of the tree that this node belongs too.
+	 * 
+	 * @param node - a node in some tree
+	 * @return - the root node of the tree that this node belongs to.
+	 * @throws DatabaseException
+	 */
+	public N getRootNode(N node) throws DatabaseException;
 	
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
