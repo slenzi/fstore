@@ -18,6 +18,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.util.NodeCopier;
@@ -723,10 +724,10 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Cannot fetch tree. Tree object contains null tree ID. This value is required.");
 		}
 		
-		return getTreeByIdCriteria(tree, null);
+		return getTreeByIdCriteria(tree);
 	}
 	
-	public FSTree<N> getTreeByIdCriteria(FSTree<N> tree, Class<N> nodeType) throws DatabaseException {
+	public FSTree<N> getTreeByIdCriteria(FSTree<N> tree) throws DatabaseException {
 		
 		logger.info("Getting tree by id, with root node, criteria => " + tree.getTreeId());
 		
@@ -740,6 +741,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		//Root<N>  nodeRoot = treeSelect.from(nodeType);
 		
 		Join<FSTree<N>,N> rootNodeJoin = treeRoot.join("rootNode");
+		
 		Fetch<FSTree<N>,N> rootNodeFetch =  treeRoot.fetch("rootNode", JoinType.LEFT);
 		
 		treeSelect.select(treeRoot);
