@@ -9,12 +9,10 @@ import javax.transaction.Transactional;
 
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.DBTree;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.TreeRepository;
@@ -42,6 +40,9 @@ public class TreeService<N extends FSNode<N>> {
 	
 	@Autowired
 	ClosureLogger<N> closureLogger;
+	
+	@Autowired
+	TreeBuilder<N> treeBuilder;
 	
 	// debug method for testing factory generation
 	public String getClosureRepoType(){
@@ -497,65 +498,15 @@ public class TreeService<N extends FSNode<N>> {
 		try {
 			n = treeRepository.getNodeWithChild(node);
 		} catch (DatabaseException e) {
-			throw new ServiceException("Error fetching node with child closure, and child node data.", e);
+			throw new ServiceException("Cannont build tree, error fetching node with child closure and child node data.", e);
 		}
 		
 		// error checking
 		if(n == null){
-			throw new ServiceException("Error, node not found. Fetched node object was null.");
-		}
-		Set<DBClosure<N>> childClosure = n.getChildClosure();
-		if(childClosure == null || childClosure.size() == 0){
-			throw new ServiceException("Error, node was fetched, but no closure data...");
+			throw new ServiceException("Cannont build tree, node not found. Fetched node object was null.");
 		}
 		
-		// convert closure data to map. loop through child nodes of child closure
-		HashMap<Long,List<N>> treeMap = new HashMap<Long,List<N>>();
-		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(childClosure)){
-			if(treeMap.containsKey(closure.getChildNode().getParentNodeId())){
-				treeMap.get(closure.getChildNode().getParentNodeId()).add(closure.getChildNode());
-			}else{
-				List<N> childList = new ArrayList<N>();
-				childList.add(closure.getChildNode());
-				treeMap.put(closure.getChildNode().getParentNodeId(), childList);
-			}
-		}
-		
-		// create root node of tree
-		TreeNode<N> rootNode = new TreeNode<N>();
-		rootNode.setData(n);
-		
-		// add all children under root node
-		addChildNodesFromMap(rootNode, treeMap);
-		
-		// create tree and set root node
-		Tree<N> tree = new Tree<N>();
-		tree.setRootNode(rootNode);
-		
-		return tree;
-		
-	}
-	
-	/**
-	 * Helper method for buildTree(N node)
-	 * 
-	 * @param parentNode
-	 * @param treeMap
-	 */
-	private void addChildNodesFromMap(TreeNode<N> parentNode, HashMap<Long, List<N>> treeMap) {
-		
-		TreeNode<N> childTreeNode = null;
-		
-		for(N childNode : CollectionUtil.emptyIfNull(treeMap.get(parentNode.getData().getNodeId()))){
-			
-			childTreeNode = new TreeNode<N>();
-			childTreeNode.setData(childNode);
-			childTreeNode.setParent(parentNode);
-			parentNode.addChildNode(childTreeNode);
-				
-			addChildNodesFromMap(childTreeNode, treeMap);
-	
-		}
+		return treeBuilder.buildTree(n);
 		
 	}
 

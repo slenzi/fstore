@@ -23,6 +23,8 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.lenzi.fstore.logging.ClosureLogger;
+import org.lenzi.fstore.model.tree.Tree;
+import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
@@ -34,6 +36,8 @@ import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSNode_;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.model.impl.FSTree_;
+import org.lenzi.fstore.service.TreeBuilder;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
@@ -65,6 +69,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	
 	@Autowired
 	ClosureLogger<N> closureLogger;
+	
+	@Autowired
+	TreeBuilder<N> treeBuilder;
 	
 	/**
 	 * 
@@ -1281,7 +1288,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		logger.debug("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
 		
 		long pruneId = 0;
-		
+		N rootDeleteNode = null;
+		Tree<N> treeToDelete = null;
 		List<N> userNodesToDelete = null;
 		
 		if(pruneTable){
@@ -1304,6 +1312,17 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		// this part must happen in the middle. it relies on data in the closure table
 		if(nodeTable){
 			
+			// Fetch the node with all it's child closure data. We need this data so we can construct a tree model, and perform
+			// a "post-order" traversal of the tree (traverse the tree backwards from the furthest leaf nodes, all the way up to
+			// the root node.)
+			rootDeleteNode = getNodeWithChild(node);
+			try {
+				treeToDelete = treeBuilder.buildTree(rootDeleteNode);
+			} catch (ServiceException e1) {
+				throw new DatabaseException("Falied to build tree for the node that is being deleted. Need tree for post-order traveral.");
+			}			
+			
+			// TODO = we can get this data from the 'treeToDelete' object.... redundant. 
 			userNodesToDelete = doCriteriaDeleteNode(node, false);
 			
 			logger.debug("Deleted node " + deleteNodeId + " from the node table.");
@@ -1326,13 +1345,37 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}
 		
 		if(nodeTable){
+			
 			// allow user access to each node that was delete so that they may perform post delete cleanup
+			
+			postOrderTraversalDelete(treeToDelete);
+			
+			/* pre-order traversal
 			for(N n : userNodesToDelete){
 				//  remove users data
 				postRemove( n );				
 			}
+			*/
 		}
 		
+	}
+	
+	private void postOrderTraversalDelete(Tree<N> treeToDelete) throws DatabaseException {
+		if(treeToDelete == null){
+			throw new DatabaseException("Cannot perform post-order traversal of tree to delete nodes. Tree object is null.");
+		}
+		logger.info("Peforming post-order traversal to delete nodes in tree:\n" + treeToDelete.printTree());
+		postOrderTraversalDelete(treeToDelete.getRootNode());
+	}
+	private void postOrderTraversalDelete(TreeNode<N> nodeToDelete) throws DatabaseException {
+		if(nodeToDelete.hasChildren()){
+			for(TreeNode<N> childNode : nodeToDelete.getChildren()){
+				postOrderTraversalDelete(childNode);
+			}
+			postRemove(nodeToDelete.getData());
+		}else{
+			postRemove(nodeToDelete.getData());
+		}
 	}
 	
 	/**
