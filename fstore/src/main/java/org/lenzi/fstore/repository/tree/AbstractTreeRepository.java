@@ -1360,11 +1360,17 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 	}
 	
+	/**
+	 * Perform a post-order traversal of the tree and call the postRemove(node) method for every node.
+	 * 
+	 * @param treeToDelete
+	 * @throws DatabaseException
+	 */
 	private void postOrderTraversalDelete(Tree<N> treeToDelete) throws DatabaseException {
 		if(treeToDelete == null){
 			throw new DatabaseException("Cannot perform post-order traversal of tree to delete nodes. Tree object is null.");
 		}
-		logger.info("Peforming post-order traversal to delete nodes in tree:\n" + treeToDelete.printTree());
+		//logger.info("Peforming post-order traversal to delete nodes in tree:\n" + treeToDelete.printTree());
 		postOrderTraversalDelete(treeToDelete.getRootNode());
 	}
 	private void postOrderTraversalDelete(TreeNode<N> nodeToDelete) throws DatabaseException {

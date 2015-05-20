@@ -13,6 +13,7 @@
 	
 	<properties>
 		<version.junit>4.12</version.junit>
+		<version.mockito>1.9.5</version.mockito>
 		<version.aspectj>1.8.5</version.aspectj>
 		<version.logback>1.1.2</version.logback>
 		<version.joda.time>2.7</version.joda.time>
@@ -72,6 +73,13 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<!-- unit test mocking -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>${version.mockito}</version>
+		</dependency>		
+				
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
