@@ -112,6 +112,14 @@ public interface TreeRepository<N extends FSNode<N>> {
 	public FSTree<N> addTree(FSTree<N> newTree, N newRootNode) throws DatabaseException;
 	
 	/**
+	 * Remove a tree
+	 * 
+	 * @param tree - a tree object with the ID set.
+	 * @throws DatabaseException
+	 */
+	public void removeTree(FSTree<N> tree) throws DatabaseException;
+	
+	/**
 	 * Remove a node, plus all its children.
 	 * 
 	 * @param node

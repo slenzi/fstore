@@ -326,6 +326,22 @@ public class TreeService<N extends FSNode<N>> {
 	}
 	
 	/**
+	 * Remove a tree
+	 * 
+	 * @param tree - tree object with the tree ID set.
+	 * @throws ServiceException
+	 */
+	public void removeTree(FSTree<N> tree) throws ServiceException {
+		
+		try {
+			treeRepository.removeTree(tree);
+		} catch (DatabaseException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+		
+	}
+	
+	/**
 	 * Create a new tree by taking a non-root node of an existing tree and making it the root node of the new tree.
 	 * All children of the existing node are also moved over.
 	 * 

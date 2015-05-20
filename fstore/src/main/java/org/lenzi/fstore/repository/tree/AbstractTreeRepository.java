@@ -1015,6 +1015,30 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	}
 	
 	/**
+	 * Remove a tree
+	 * 
+	 * @param tree - tree object with a valid tree ID
+	 * @throws DatabaseException
+	 */
+	public void removeTree(FSTree<N> tree) throws DatabaseException {
+
+		if(tree == null){
+			throw new DatabaseException("Cannot delete tree. Tree parameter is null.");
+		}
+		if(tree.getTreeId() == null){
+			throw new DatabaseException("Cannot delete tree. Tree parameter contains null tree ID. This value is required.");
+		}
+		
+		FSTree<N> treeToDelete = this.getTree(tree);
+		N rootNode = treeToDelete.getRootNode();
+		
+		removeNode(rootNode, true, true);
+		
+		getEntityManager().remove(treeToDelete);
+		
+	}
+	
+	/**
 	 * Are two nodes in the same tree
 	 */
 	@Override
