@@ -16,14 +16,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * 
  * Component scanning notes:
  * -- org.lenzi.fstore.controller : test spring controllers for fstore
- * -- org.lenzi.cms.controller : controllers for the CMS (Content Management System)
+ * -- org.lenzi.fstore.cms.controller : controllers for the CMS (Content Management System)
  * -- org.lenzi.fstore.logging : custom LoggerBeanPostProccessor which enables us to inject a logger using @InjectLogger annotation.
  * 
  * @author slenzi
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"org.lenzi.fstore.controller","org.lenzi.cms.controller","org.lenzi.fstore.logging"})
+@ComponentScan(basePackages = {"org.lenzi.fstore.controller","org.lenzi.fstore.cms.controller","org.lenzi.fstore.logging"})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	/* (non-Javadoc)

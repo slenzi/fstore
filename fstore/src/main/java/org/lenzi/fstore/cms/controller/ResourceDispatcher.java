@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.cms.controller;
+package org.lenzi.fstore.cms.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
