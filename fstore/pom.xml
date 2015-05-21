@@ -12,6 +12,10 @@
 	<url>http://maven.apache.org</url>
 	
 	<properties>
+	
+		<java.version.source>1.8</java.version.source>
+		<java.version.target>1.8</java.version.target>
+	
 		<version.junit>4.12</version.junit>
 		<version.mockito>1.9.5</version.mockito>
 		<version.aspectj>1.8.5</version.aspectj>
@@ -295,8 +299,8 @@
 			    <artifactId>maven-compiler-plugin</artifactId>
 			    <version>3.1</version>
 			    <configuration>
-			        <source>1.7</source>
-			        <target>1.7</target>
+			        <source>${java.version.source}</source>
+			        <target>${java.version.target}</target>
 			        <!-- need this line for maven processor plugin to correctly generate metamodels without complaining of duplicate classes -->
 			        <compilerArgument>-proc:none</compilerArgument>
 			    </configuration>
@@ -344,7 +348,7 @@
 								src/generated/java
 							</outputDirectory>
 							<compilerArguments>
-								-source 1.7 -target 1.7
+								-source ${java.version.source} -target ${java.version.target}
 							</compilerArguments>
 						</configuration>
 					</execution>
