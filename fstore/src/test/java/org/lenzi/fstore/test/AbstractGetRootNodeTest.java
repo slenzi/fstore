@@ -56,16 +56,18 @@ public class AbstractGetRootNodeTest extends AbstractTreeTest {
 		FSTestNode rootForChild2 = treeService.getRootNode(childNode2);
 		FSTestNode rootForChild3 = treeService.getRootNode(childNode3);
 				
-		assertNull(rootForRoot);
+		assertNotNull(rootForRoot);
 		assertNotNull(rootForChild1);
 		assertNotNull(rootForChild2);
 		assertNotNull(rootForChild3);
 
 		// all should be the same
+		assertEquals(rootForRoot.getNodeId(), rootNode.getNodeId());
 		assertEquals(rootForChild1.getNodeId(), rootNode.getNodeId());
 		assertEquals(rootForChild2.getNodeId(), rootNode.getNodeId());
 		assertEquals(rootForChild3.getNodeId(), rootNode.getNodeId());
 		
+		logger.info("Root of root => " + rootForRoot.toString());
 		logger.info("Root of child 1 => " + rootForChild1.toString());
 		logger.info("Root of child 2 => " + rootForChild2.toString());
 		logger.info("Root of child 3 => " + rootForChild3.toString());
