@@ -1224,6 +1224,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Cannot remove root node of tree. Use removeTree() method.");
 		}		
 		
+		// remove node data from main node table, and closure table.
 		removeNode(node, true, true);	
 		
 	}
@@ -1234,9 +1235,21 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	@Override
 	public void removeChildren(N node) throws DatabaseException {
 		
+		N rootDeleteNode = null;
+		Tree<N> treeToDelete = null;
 		List<N> userNodesToDelete = null;
 		
 		Long parentNodeId = node.getNodeId();
+		
+		// Fetch the node with all it's child closure data. We need this data so we can construct a tree model, and perform
+		// a "post-order" traversal of the tree (traverse the tree backwards from the furthest leaf nodes, all the way up to
+		// the root node.)
+		rootDeleteNode = getNodeWithChild(node);
+		try {
+			treeToDelete = treeBuilder.buildTree(rootDeleteNode);
+		} catch (ServiceException e1) {
+			throw new DatabaseException("Falied to build tree for the node that is being deleted. Need tree for post-order traveral.");
+		}
 		
 		// Get next available prune id from sequence.
 		long pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
@@ -1267,10 +1280,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		logger.debug("Deleted children of node " + parentNodeId + " from the closure table.");
 		
 		// allow user access to each node that was deleted so that they may perform post delete cleanup
-		for(N n : userNodesToDelete){
-			//  remove users data
-			postRemove( n );				
-		}		
+		postOrderTraversalDelete(treeToDelete, true);		
 		
 	}
 
@@ -1345,17 +1355,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}
 		
 		if(nodeTable){
-			
-			// allow user access to each node that was delete so that they may perform post delete cleanup
-			
-			postOrderTraversalDelete(treeToDelete);
-			
-			/* pre-order traversal
-			for(N n : userNodesToDelete){
-				//  remove users data
-				postRemove( n );				
-			}
-			*/
+			// allow user access to each node that was deleted so that they may perform post delete cleanup
+			postOrderTraversalDelete(treeToDelete, false);
 		}
 		
 	}
@@ -1364,14 +1365,20 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * Perform a post-order traversal of the tree and call the postRemove(node) method for every node.
 	 * 
 	 * @param treeToDelete
+	 * @param childrenOnly - true to delete just the children of the node. False to delete all children, plus the node itself.
 	 * @throws DatabaseException
 	 */
-	private void postOrderTraversalDelete(Tree<N> treeToDelete) throws DatabaseException {
+	private void postOrderTraversalDelete(Tree<N> treeToDelete, boolean childrenOnly) throws DatabaseException {
 		if(treeToDelete == null){
 			throw new DatabaseException("Cannot perform post-order traversal of tree to delete nodes. Tree object is null.");
 		}
-		//logger.info("Peforming post-order traversal to delete nodes in tree:\n" + treeToDelete.printTree());
-		postOrderTraversalDelete(treeToDelete.getRootNode());
+		if(childrenOnly){
+			for(TreeNode<N> childNode : treeToDelete.getRootNode().getChildren()){
+				postOrderTraversalDelete(childNode);
+			}
+		}else{
+			postOrderTraversalDelete(treeToDelete.getRootNode());
+		}
 	}
 	private void postOrderTraversalDelete(TreeNode<N> nodeToDelete) throws DatabaseException {
 		if(nodeToDelete.hasChildren()){
@@ -1407,22 +1414,22 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		)
 	 * 
 	 * @param node Will delete this node and all its children, or just its children if 'onlyChildren' is true
-	 * @param onlyChildren - false to delete the node and all its children, or true to delete all the children but keep the node itself.
+	 * @param childrenOnly - false to delete the node and all its children, or true to delete all the children but keep the node itself.
 	 * @return A list of all the nodes that were deleted.
 	 * @throws DatabaseException
 	 */
-	private List<N> doCriteriaDeleteNode(N node, boolean onlyChildren) throws DatabaseException {
+	private List<N> doCriteriaDeleteNode(N node, boolean childrenOnly) throws DatabaseException {
 		
-		List<Long> nodeIdList = getNodeIdList(node, onlyChildren);
+		List<Long> nodeIdList = getNodeIdList(node, childrenOnly);
 		
 		if(CollectionUtil.isEmpty(nodeIdList)){
-			throw new DatabaseException("Failed to get list of node IDs for the " + ((onlyChildren) ? "child" : "") + " nodes. Cannot delete.");
+			throw new DatabaseException("Failed to get list of node IDs for the " + ((childrenOnly) ? "child" : "") + " nodes. Cannot delete.");
 		}
 		
 		List<N> userNodesToDelete = getNodesCriteria(nodeIdList, node.getClass());
 		
 		if(CollectionUtil.isEmpty(userNodesToDelete)){
-			throw new DatabaseException("Failed to get " + ((onlyChildren) ? "child" : "") + " node data in preparation for deletion. Cannot delete");
+			throw new DatabaseException("Failed to get " + ((childrenOnly) ? "child" : "") + " node data in preparation for deletion. Cannot delete");
 		}
 		
 		// create delete query which uses the list of child node ID we just retrieved.
