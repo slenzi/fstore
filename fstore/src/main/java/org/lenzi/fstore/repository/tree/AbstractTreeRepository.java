@@ -1280,7 +1280,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		logger.debug("Deleted children of node " + parentNodeId + " from the closure table.");
 		
 		// allow user access to each node that was deleted so that they may perform post delete cleanup
-		postOrderTraversalDelete(treeToDelete, true);		
+		postOrderTraversalRemoveCallback(treeToDelete, true);		
 		
 	}
 
@@ -1356,34 +1356,35 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		if(nodeTable){
 			// allow user access to each node that was deleted so that they may perform post delete cleanup
-			postOrderTraversalDelete(treeToDelete, false);
+			postOrderTraversalRemoveCallback(treeToDelete, false);
 		}
 		
 	}
 	
 	/**
-	 * Perform a post-order traversal of the tree and call the postRemove(node) method for every node.
+	 * Perform a post-order traversal of the tree and call the postRemove(node) callback method for every node that
+	 * was deleted.
 	 * 
 	 * @param treeToDelete
 	 * @param childrenOnly - true to delete just the children of the node. False to delete all children, plus the node itself.
 	 * @throws DatabaseException
 	 */
-	private void postOrderTraversalDelete(Tree<N> treeToDelete, boolean childrenOnly) throws DatabaseException {
+	private void postOrderTraversalRemoveCallback(Tree<N> treeToDelete, boolean childrenOnly) throws DatabaseException {
 		if(treeToDelete == null){
 			throw new DatabaseException("Cannot perform post-order traversal of tree to delete nodes. Tree object is null.");
 		}
 		if(childrenOnly){
 			for(TreeNode<N> childNode : treeToDelete.getRootNode().getChildren()){
-				postOrderTraversalDelete(childNode);
+				postOrderTraversalRemoveCallback(childNode);
 			}
 		}else{
-			postOrderTraversalDelete(treeToDelete.getRootNode());
+			postOrderTraversalRemoveCallback(treeToDelete.getRootNode());
 		}
 	}
-	private void postOrderTraversalDelete(TreeNode<N> nodeToDelete) throws DatabaseException {
+	private void postOrderTraversalRemoveCallback(TreeNode<N> nodeToDelete) throws DatabaseException {
 		if(nodeToDelete.hasChildren()){
 			for(TreeNode<N> childNode : nodeToDelete.getChildren()){
-				postOrderTraversalDelete(childNode);
+				postOrderTraversalRemoveCallback(childNode);
 			}
 			postRemove(nodeToDelete.getData());
 		}else{
