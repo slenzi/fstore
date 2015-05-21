@@ -1,4 +1,4 @@
-package org.lenzi.fstore.cms.model;
+package org.lenzi.fstore.cms.repository.model.impl;
 
 import java.io.File;
 
@@ -10,10 +10,10 @@ import java.io.File;
  */
 public class CmsFileStore {
 
-	File roothPath = null;
+	private File roothPath = null;
 	
 	// the root directory of the file store.
-	CmsDirectory rootDir = null;
+	//private CmsDirectory rootDir = null;
 	
 	public CmsFileStore() {
 		// TODO Auto-generated constructor stub

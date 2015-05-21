@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.example.repository.model.impl;
+package org.lenzi.fstore.cms.repository.model.impl;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,9 +22,9 @@ import org.lenzi.fstore.util.DateUtil;
  * @author sal
  */
 @Entity
-@DiscriminatorValue("DirectoryNode")
-@Table(name="FS_DIRECTORY_NODE")
-public class FSDirectoryNode extends FSNode<FSDirectoryNode> {
+@DiscriminatorValue("CmsDirectory")
+@Table(name="FS_CMS_DIRECTORY")
+public class CmsDirectory extends FSNode<CmsDirectory> {
 
 	/**
 	 * 
@@ -37,12 +37,12 @@ public class FSDirectoryNode extends FSNode<FSDirectoryNode> {
 	
 	// link directory to files
 	@OneToMany(mappedBy="directory")
-	private Set<FSFileEntry> fileEntries = new HashSet<FSFileEntry>(0);
+	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
 
 	/**
 	 * 
 	 */
-	public FSDirectoryNode(String dirName) {
+	public CmsDirectory(String dirName) {
 		setName(dirName);
 		this.dirName = dirName;
 	}

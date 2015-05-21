@@ -38,7 +38,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 			"org.lenzi.fstore.repository.model.impl",
 			"org.lenzi.fstore.service",
 			"org.lenzi.fstore.logging",
-			"org.lenzi.fstore.example.repository.model.impl"
+			"org.lenzi.fstore.example.repository.model.impl",
+			"org.lenzi.fstore.cms.repository.model.impl"
 		}
 )
 // "org.lenzi.fstore.service"

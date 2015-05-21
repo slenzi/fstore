@@ -13,14 +13,19 @@
     
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		
+		<!-- core models -->
       	<class>org.lenzi.fstore.repository.model.impl.FSNode</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSClosure</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSPrune</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSTree</class>
+      	
+      	<!-- test models -->
       	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>
-      	<class>org.lenzi.fstore.example.repository.model.impl.FSDirectoryNode</class>
-      	<class>org.lenzi.fstore.example.repository.model.impl.FSFileEntry</class>
-      	<class>org.lenzi.fstore.example.repository.model.impl.FSFile</class>	 	      	
+      	
+      	<!-- cms models -->
+      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsDirectory</class>
+      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry</class>
+      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsFile</class>	      	
     
         <properties>
         

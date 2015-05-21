@@ -13,14 +13,19 @@
     
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		
+		<!-- core models -->
       	<class>org.lenzi.fstore.repository.model.impl.FSNode</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSClosure</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSPrune</class>
       	<class>org.lenzi.fstore.repository.model.impl.FSTree</class>
+      	
+      	<!-- test models -->
       	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>
-      	<class>org.lenzi.fstore.example.repository.model.impl.FSDirectoryNode</class>
-      	<class>org.lenzi.fstore.example.repository.model.impl.FSFileEntry</class>
-      	<class>org.lenzi.fstore.example.repository.model.impl.FSFile</class>		      	
+      	
+      	<!-- cms models -->
+      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsDirectory</class>
+      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry</class>
+      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsFile</class>			      	
     
         <properties>
         	
@@ -30,7 +35,7 @@
         	-->
             <property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver"/>
             <property name="hibernate.connection.username" value="ecoguser"/>
-            <property name="hibernate.connection.password" value="****"/>
+            <property name="hibernate.connection.password" value="*****"/>
             <!-- specify default schema so you don't have to hard code schema on each entity  -->
             <property name="hibernate.default_schema" value="ecoguser"/>
             <property name="hibernate.connection.url" value="jdbc:oracle:thin:@ecog1.dfci.harvard.edu:1511:ecogtst"/>

@@ -1,15 +1,9 @@
 package org.lenzi.fstore.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import javax.transaction.Transactional;
 
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
@@ -18,10 +12,11 @@ import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
-import org.lenzi.fstore.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service for interacting with database trees.
@@ -29,7 +24,7 @@ import org.springframework.stereotype.Service;
  * @author sal
  */
 @Service
-@Transactional
+@Transactional(propagation=Propagation.REQUIRED)
 public class TreeService<N extends FSNode<N>> {
 
 	@InjectLogger

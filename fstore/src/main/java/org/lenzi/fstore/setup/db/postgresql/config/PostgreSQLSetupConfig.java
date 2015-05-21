@@ -60,8 +60,9 @@ public class PostgreSQLSetupConfig {
 		em.setDataSource(getDriverManagerDataSource());
 		
 		em.setPackagesToScan(new String[] { 
-				"org.lenzi.fstore.repository.model",
-				"org.lenzi.fstore.example.repository.model"
+				
+				// not working directly with any entities. just creating / re-creating tables.
+				
 				});
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();

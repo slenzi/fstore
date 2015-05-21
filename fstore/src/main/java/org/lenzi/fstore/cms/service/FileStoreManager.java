@@ -1,16 +1,15 @@
 package org.lenzi.fstore.cms.service;
 
-import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Path;
 
-import org.lenzi.fstore.cms.model.CmsDirectory;
-import org.lenzi.fstore.cms.model.CmsFile;
-import org.lenzi.fstore.cms.model.CmsFileStore;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
+import org.lenzi.fstore.service.exception.ServiceException;
 
 public interface FileStoreManager extends Serializable {
 
 	// create file store
-	public CmsFileStore createFileStore(File dirPath, String name, String description);
+	public CmsFileStore createFileStore(Path dirPath, String name, String description) throws ServiceException;
 	
 	/*
 	// get file store

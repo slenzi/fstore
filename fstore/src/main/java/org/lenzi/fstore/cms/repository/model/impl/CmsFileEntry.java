@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.example.repository.model.impl;
+package org.lenzi.fstore.cms.repository.model.impl;
 
 import java.io.Serializable;
 
@@ -21,8 +21,8 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="FS_FILE_ENTRY")
-public class FSFileEntry implements Serializable {
+@Table(name="FS_CMS_FILE_ENTRY")
+public class CmsFileEntry implements Serializable {
 
 	/**
 	 * 
@@ -39,21 +39,21 @@ public class FSFileEntry implements Serializable {
 	// files belong to one directory
 	@ManyToOne
 	@JoinTable(
-	    name="FS_DIR_FILE_LINK",
+	    name="FS_CMS_DIR_FILE_LINK",
 	    joinColumns = @JoinColumn( name="FILE_ID"),
 	    inverseJoinColumns = @JoinColumn( name="NODE_ID")
     )
-	private FSDirectoryNode directory;
+	private CmsDirectory directory;
 	
 	// the binary data for the file
 	@OneToOne(cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
-	private FSFile file;
+	private CmsFile file;
 
 	/**
 	 * 
 	 */
-	public FSFileEntry() {
+	public CmsFileEntry() {
 		
 	}
 
@@ -88,14 +88,14 @@ public class FSFileEntry implements Serializable {
 	/**
 	 * @return the file
 	 */
-	public FSFile getFile() {
+	public CmsFile getFile() {
 		return file;
 	}
 
 	/**
 	 * @param file the file to set
 	 */
-	public void setFile(FSFile file) {
+	public void setFile(CmsFile file) {
 		this.file = file;
 	}
 
@@ -121,7 +121,7 @@ public class FSFileEntry implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FSFileEntry other = (FSFileEntry) obj;
+		CmsFileEntry other = (CmsFileEntry) obj;
 		if (fileId == null) {
 			if (other.fileId != null)
 				return false;

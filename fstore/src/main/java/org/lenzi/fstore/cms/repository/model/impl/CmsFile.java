@@ -1,4 +1,4 @@
-package org.lenzi.fstore.example.repository.model.impl;
+package org.lenzi.fstore.cms.repository.model.impl;
 
 import java.io.Serializable;
 
@@ -16,8 +16,8 @@ import javax.persistence.Transient;
  * @author sal
  */
 @Entity
-@Table(name="FS_FILE")
-public class FSFile implements Serializable  {
+@Table(name="FS_CMS_FILE")
+public class CmsFile implements Serializable  {
 
 	/**
 	 * 
@@ -36,9 +36,9 @@ public class FSFile implements Serializable  {
 	
 	// file meta data object
 	@OneToOne(mappedBy = "file")
-	private FSFileEntry fileEntry;
+	private CmsFileEntry fileEntry;
 
-	public FSFile() {
+	public CmsFile() {
 
 	}
 
@@ -92,7 +92,7 @@ public class FSFile implements Serializable  {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FSFile other = (FSFile) obj;
+		CmsFile other = (CmsFile) obj;
 		if (fileId == null) {
 			if (other.fileId != null)
 				return false;

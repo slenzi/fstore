@@ -80,37 +80,37 @@ public class OracleCreate {
 		"	PRIMARY KEY (NODE_ID) " +
 		")";
 	
-	private String SQL_DROP_TABLE_FS_DIRECTORY_NODE =
-		"drop table FS_DIRECTORY_NODE";	
-	private String SQL_CREATE_TABLE_FS_DIRECTORY_NODE =
-		"create table FS_DIRECTORY_NODE ( " + 
+	private String SQL_DROP_TABLE_FS_CMS_DIRECTORY =
+		"drop table FS_CMS_DIRECTORY";	
+	private String SQL_CREATE_TABLE_FS_CMS_DIRECTORY =
+		"create table FS_CMS_DIRECTORY ( " + 
 		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
 		"	DIR_NAME VARCHAR2(250) NOT NULL, " + 
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
 	
-	private String SQL_DROP_TABLE_FS_DIR_FILE_LINK =
-		"drop table FS_DIR_FILE_LINK";
-	private String SQL_CREATE_TABLE_FS_DIR_FILE_LINK =
-		"create table FS_DIR_FILE_LINK ( " + 
+	private String SQL_DROP_TABLE_FS_CMS_DIR_FILE_LINK =
+		"drop table FS_CMS_DIR_FILE_LINK";
+	private String SQL_CREATE_TABLE_FS_CMS_DIR_FILE_LINK =
+		"create table FS_CMS_DIR_FILE_LINK ( " + 
 		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
 		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
 		"	PRIMARY KEY(NODE_ID,FILE_ID) " + 
 		")";
 	
-	private String SQL_DROP_TABLE_FS_FILE_ENTRY =
-		"drop table FS_FILE_ENTRY";	
-	private String SQL_CREATE_TABLE_FS_FILE_ENTRY =
-		"create table FS_FILE_ENTRY ( " +  
+	private String SQL_DROP_TABLE_FS_CMS_FILE_ENTRY =
+		"drop table FS_CMS_FILE_ENTRY";	
+	private String SQL_CREATE_TABLE_FS_CMS_FILE_ENTRY =
+		"create table FS_CMS_FILE_ENTRY ( " +  
 		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
 		"	FILE_NAME VARCHAR2(250) NOT NULL, " +  
 		"	PRIMARY KEY (FILE_ID) " +  
 		")";
 	
-	private String SQL_DROP_TABLE_FS_FILE =
-		"drop table FS_FILE";	
-	private String SQL_CREATE_TABLE_FS_FILE =
-		"create table FS_FILE ( " +  
+	private String SQL_DROP_TABLE_FS_CMS_FILE =
+		"drop table FS_CMS_FILE";	
+	private String SQL_CREATE_TABLE_FS_CMS_FILE =
+		"create table FS_CMS_FILE ( " +  
 		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
 		"	FILE_DATA BLOB NOT NULL, " + 
 		"	PRIMARY KEY (FILE_ID) " + 
@@ -175,10 +175,10 @@ public class OracleCreate {
 		"ORDER  " +
 		"NOCYCLE";
 	
-	private String SQL_DROP_SEQUENCE_FS_FILE_ID =
-		"drop sequence FS_FILE_ID_SEQUENCE";	
-	private String SQL_CREATE_SEQUENCE_FS_FILE_ID =
-		"CREATE SEQUENCE FS_FILE_ID_SEQUENCE " + 
+	private String SQL_DROP_SEQUENCE_FS_CMS_FILE_ID =
+		"drop sequence FS_CMS_FILE_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_CMS_FILE_ID =
+		"CREATE SEQUENCE FS_CMS_FILE_ID_SEQUENCE " + 
 		"MINVALUE 1 " +
 		"MAXVALUE 999999999999999999999999999 " + 
 		"INCREMENT BY 1 " +
@@ -207,7 +207,7 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_NODE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_LINK_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_TREE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_FILE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_FILE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
@@ -216,10 +216,10 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
 		// test tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_ENTRY).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_NODE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIR_FILE_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_FILE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_FILE_ENTRY).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_DIRECTORY).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_DIR_FILE_LINK).executeUpdate();
 		
 	}
 	
@@ -237,17 +237,17 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_NODE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_LINK_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_FILE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_FILE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
 		// test tables
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_ENTRY).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_NODE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIR_FILE_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CMS_FILE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CMS_FILE_ENTRY).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CMS_DIRECTORY).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CMS_DIR_FILE_LINK).executeUpdate();
 		
 	}
 	
