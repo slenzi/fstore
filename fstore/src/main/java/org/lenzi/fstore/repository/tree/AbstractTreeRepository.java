@@ -185,7 +185,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
 		}
 		
-		closureLogger.logClosure(parentClosure);
+		//closureLogger.logClosure(parentClosure);
 		
 		// loop through closure data and locate the depth-1 entry. this is the closure entry that specifies the node's immediate parent.
 		N parentNode = null;
@@ -263,14 +263,14 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Failed to fetch node with it's parent closure data");
 		}
 		if(thisNode.isRootNode()){
-			return null;
+			return thisNode;
 		}
 		Set<DBClosure<N>> parentClosure = thisNode.getParentClosure();
 		if(parentClosure == null || parentClosure.size() == 0){
 			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
 		}
 		
-		closureLogger.logClosure(parentClosure);
+		//closureLogger.logClosure(parentClosure);
 		
 		// loop through closure data and locate the the node where isRootNode() is true.
 		N rootNode = null;
@@ -736,7 +736,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			for(N childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
-				//if(childNode.getNodeId() != rootNodeId){
 				if(!childNode.getNodeId().equals(rootNodeId)){
 					
 					// recursively add child nodes, and all their children. The next child node becomes the current root node.
@@ -832,7 +831,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			for(N childNode : childNodes){
 				
 				// closure table contains rows where a node is it's own child at depth 0. We want to skip over these.
-				//if(childNode.getNodeId() != copyNodeId){
 				if(!childNode.getNodeId().equals(copyNodeId)){
 					
 					// recursively add child nodes, and all their children. The new copy node becomes the current root node.
@@ -1060,43 +1058,15 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			return true;
 		}
 		
-		logger.debug("Getting parent data for node1 => " + node1.getNodeId());
-		N parentNode1 = getNodeWithParentClosure(node1);
-		logger.debug("Getting parent data for node2 => " + node2.getNodeId());
-		N parentNode2 = getNodeWithParentClosure(node2);
-		
-		if(parentNode1 == null || parentNode1.getParentClosure() == null || parentNode1.getParentClosure().size() == 0){
-			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
-		}
-		if(parentNode2 == null || parentNode2.getParentClosure() == null || parentNode2.getParentClosure().size() == 0){
-			throw new DatabaseException("Failed to get parent closure and parent node data for node " + node1.getNodeId());
-		}
-		
-		N rootNode1 = null;
-		N rootNode2 = null;
-		
-		logger.debug("Iterating through node1 parent data to find tree root node");
-		for(DBClosure<N> c : parentNode1.getParentClosure()){
-			if(c.getParentNode().getParentNodeId() == 0L){
-				rootNode1 = c.getParentNode();
-				break;
-			}
-		}
-		logger.debug("Iterating through node2 parent data to find tree root node");
-		for(DBClosure<N> c : parentNode2.getParentClosure()){
-			if(c.getParentNode().getParentNodeId() == 0L){
-				rootNode2 = c.getParentNode();
-				break;
-			}
-		}
+		// get root node for each node, and compare IDs.
+		N rootNode1 = getRootNode(node1);
 		if(rootNode1 == null){
 			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node1.getNodeId());
 		}
+		N rootNode2 = getRootNode(node2);
 		if(rootNode2 == null){
 			throw new DatabaseException("Failed to locate the root node (parent most node) for node " + node2.getNodeId());
 		}
-		
-		// they have the same parent most node. they are in the same tree.
 		if(rootNode1.getNodeId().equals(rootNode2.getNodeId())){
 			return true;
 		}

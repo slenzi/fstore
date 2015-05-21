@@ -242,7 +242,7 @@ public class AbstractNodeLocationTest extends AbstractTreeTest {
 		assertFalse(isSameTree);			
 		
 		logger.info("Check if O2 is in same tree as A1. Expected FALSE.");
-		isSameTree = treeService.isSameTree(nodeO2, (FSTestNode)dbTree1.getRootNode());
+		isSameTree = treeService.isSameTree(nodeO2, dbTree1.getRootNode());
 		logger.info(" => " + isSameTree);
 		assertFalse(isSameTree);
 	}	

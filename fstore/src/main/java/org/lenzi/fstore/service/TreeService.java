@@ -119,6 +119,13 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
+	/**
+	 * Retrieve a node with its child closure, and child nodes for all child closure entries.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws ServiceException
+	 */
 	public N getNodeWithChild(N node) throws ServiceException {
 		
 		N entity = null;
@@ -131,6 +138,13 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
+	/**
+	 * Retrieve a node with its parent closure, and parent nodes for all parent closure entries.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws ServiceException
+	 */
 	public N getNodeWithParent(N node) throws ServiceException {
 		
 		N entity = null;
@@ -143,6 +157,14 @@ public class TreeService<N extends FSNode<N>> {
 		
 	}
 	
+	/**
+	 * Retrieve a node with its parent and child closure data, plus all parent and child nodes
+	 * for all closure entries.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws ServiceException
+	 */
 	public N getNodeWithParentChild(N node) throws ServiceException {
 		
 		N entity = null;
@@ -156,7 +178,7 @@ public class TreeService<N extends FSNode<N>> {
 	}
 	
 	/**
-	 * Add a new root node.
+	 * Add a new root node. A root node has no parent. The parent ID will be 0.
 	 * 
 	 * @param parentNode
 	 * @param nodeName
@@ -178,7 +200,7 @@ public class TreeService<N extends FSNode<N>> {
 	/**
 	 * Add a new child node.
 	 * 
-	 * @param parentNode
+	 * @param parentNode - that parent node under which the new child node will be added.
 	 * @param nodeName
 	 * @return
 	 */

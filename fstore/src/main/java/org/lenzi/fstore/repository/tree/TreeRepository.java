@@ -179,14 +179,6 @@ public interface TreeRepository<N extends FSNode<N>> {
 	//public Tree addTree(String treeName, String treeDesc, Node existingNode) throws DatabaseException;
 	
 	/**
-	 * Remove a tree
-	 * 
-	 * @param treeId
-	 * @throws DatabaseException
-	 */
-	//public void removeTree(Long treeId) throws DatabaseException;
-	
-	/**
 	 * Take the root node of an tree you want to delete, and move it plus all children to under any node
 	 * of some other tree. Then delete the old tree.
 	 * 
@@ -196,16 +188,7 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 * @throws DatabaseException
 	 */
 	//public void removeTree(Tree tree, Node newParentNode)  throws DatabaseException;
-	
-	/**
-	 * Move a node. The node, plus all its chilren, will be moved to under the new parent node.
-	 * 
-	 * @param nodeId - the id of the node to move
-	 * @param newParentNodeId - the id of the new parent node.
-	 * @throws DatabaseException
-	 */
-	//public void moveNode(Long nodeId, Long newParentNodeId) throws DatabaseException;
-	
+
 	/**
 	 * Check if two nodes are in the same tree. Returns true if they are, false if they are not.
 	 * 
