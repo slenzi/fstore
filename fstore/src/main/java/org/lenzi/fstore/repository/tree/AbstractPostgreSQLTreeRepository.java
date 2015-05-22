@@ -388,9 +388,8 @@ public abstract class AbstractPostgreSQLTreeRepository<N extends FSNode<N>> exte
 	@Override
 	protected long getSequenceVal(String nativeSequenceQuery) throws DatabaseException {
 
-		Query queryPruneSequence = getEntityManager().createNativeQuery(nativeSequenceQuery);
-		//BigInteger result = (BigInteger)queryPruneSequence.getSingleResult();
-		BigInteger result = (BigInteger)getSingleResult(queryPruneSequence);
+		Query query = getEntityManager().createNativeQuery(nativeSequenceQuery);
+		BigInteger result = (BigInteger)getSingleResult(query);
 		long sequenceId = result.longValue();
 		return sequenceId;		
 		

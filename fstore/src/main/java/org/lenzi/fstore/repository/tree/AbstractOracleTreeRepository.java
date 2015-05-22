@@ -388,8 +388,9 @@ public abstract class AbstractOracleTreeRepository<N extends FSNode<N>> extends 
 	@Override
 	protected long getSequenceVal(String nativeSequenceQuery) throws DatabaseException {
 
-		Query queryPruneSequence = getEntityManager().createNativeQuery(nativeSequenceQuery);
-		BigDecimal result = (BigDecimal)getSingleResult(queryPruneSequence);
+		Query query = getEntityManager().createNativeQuery(nativeSequenceQuery);
+		// TODO - can we change this to BigInteger to match the PostgreSQLversion
+		BigDecimal result = (BigDecimal)getSingleResult(query);
 		long sequenceId = result.longValue();
 		return sequenceId;			
 		
