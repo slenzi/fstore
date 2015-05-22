@@ -6,6 +6,12 @@ import java.nio.file.Path;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.service.exception.ServiceException;
 
+/**
+ * 
+ * @author slenzi
+ *
+ * @deprecated - only kept for reference
+ */
 public interface FileStoreManager extends Serializable {
 
 	// create file store

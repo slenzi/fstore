@@ -7,21 +7,32 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
+import org.lenzi.fstore.repository.AbstractRepository;
+import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.service.exception.ServiceException;
+import org.lenzi.fstore.stereotype.InjectLogger;
 
 /**
  * @author sal
  *
  */
-@Service
+@Repository
 @Transactional(propagation=Propagation.REQUIRED)
-public class FileStoreManagerImpl implements FileStoreManager {
+public class FileStoreRepository extends AbstractRepository {
 
+	@InjectLogger
+	private Logger logger;
+	
+	//@Autowired
+	//TreeRepository<N> treeRepository;
+	
 	/**
 	 * 
 	 */
@@ -30,14 +41,10 @@ public class FileStoreManagerImpl implements FileStoreManager {
 	/**
 	 * 
 	 */
-	public FileStoreManagerImpl() {
+	public FileStoreRepository() {
 	
 	}
-
-	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.cms.service.FileStoreManager#createFileStore(java.nio.file.Path, java.lang.String, java.lang.String)
-	 */
-	@Override
+	
 	public CmsFileStore createFileStore(Path dirPath, String name, String description) throws ServiceException {
 		
 		// TODO - make sure path is not under any under file store path.
