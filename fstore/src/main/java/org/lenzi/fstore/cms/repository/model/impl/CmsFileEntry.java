@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @author sal
@@ -27,6 +28,7 @@ public class CmsFileEntry implements Serializable {
 	/**
 	 * 
 	 */
+	@Transient
 	private static final long serialVersionUID = 2945275457068233067L;
 	
 	@Id

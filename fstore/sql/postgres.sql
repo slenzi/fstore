@@ -4,6 +4,7 @@ drop sequence TEST.FS_PRUNE_ID_SEQUENCE;
 drop sequence TEST.FS_TREE_ID_SEQUENCE;
 
 drop sequence TEST.FS_CMS_FILE_ID_SEQUENCE;
+drop sequence TEST.FS_CMS_STORE_ID_SEQUENCE;
 
 drop index TEST.fs_parent_depth_child_idx;
 drop index TEST.fs_child_parent_depth_idx;	
@@ -19,6 +20,7 @@ drop table TEST.FS_CMS_FILE;
 drop table TEST.FS_CMS_FILE_ENTRY;
 drop table TEST.FS_CMS_DIRECTORY;
 drop table TEST.FS_CMS_DIR_FILE_LINK;
+drop table TEST.FS_CMS_FILE_STORE;
 
 create table TEST.FS_NODE ( 
 	NODE_ID NUMERIC(15,0) NOT NULL, 
@@ -89,6 +91,18 @@ create table TEST.FS_CMS_FILE (
 	PRIMARY KEY (FILE_ID) 
 );
 
+/* list of file stores */
+create table TEST.FS_CMS_FILE_STORE ( 
+	STORE_ID NUMERIC(15,0) NOT NULL,
+	STORE_NAME CHARACTER VARYING(250) NOT NULL,
+	STORE_DESCRIPTION CHARACTER VARYING(4000) NOT NULL,
+	STORE_PATH CHARACTER VARYING(2000) NOT NULL,
+	NODE_ID NUMERIC(15,0) NOT NULL,
+	CREATION_DATE TIMESTAMP NOT NULL, 
+	UPDATED_DATE TIMESTAMP NOT NULL, 	
+	PRIMARY KEY (STORE_ID) 
+);
+
 create unique index fs_parent_depth_child_idx on TEST.fs_closure(parent_node_id,depth,child_node_id);
 create unique index fs_child_parent_depth_idx on TEST.fs_closure(child_node_id,parent_node_id,depth);	
 
@@ -117,6 +131,12 @@ CACHE 10
 NO CYCLE;
 
 CREATE SEQUENCE TEST.FS_CMS_FILE_ID_SEQUENCE  
+INCREMENT BY 1 
+START WITH 1 
+CACHE 10  
+NO CYCLE;
+
+CREATE SEQUENCE TEST.FS_CMS_STORE_ID_SEQUENCE  
 INCREMENT BY 1 
 START WITH 1 
 CACHE 10  

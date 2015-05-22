@@ -6,8 +6,7 @@ package org.lenzi.fstore.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.service.TreeService;
+import org.lenzi.fstore.example.service.TestTreeService;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class TreeDispatcher {
     Logger logger;
     
     @Autowired
-    private TreeService<FSTestNode> treeService;
+    private TestTreeService treeService;
 	
 	/**
 	 * 

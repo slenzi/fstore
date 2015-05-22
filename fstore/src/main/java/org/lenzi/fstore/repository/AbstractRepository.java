@@ -22,6 +22,7 @@ import javax.persistence.TransactionRequiredException;
 import javax.persistence.Transient;
 
 import org.hibernate.HibernateException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.internal.SessionImpl;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.stereotype.InjectLogger;
@@ -205,6 +206,16 @@ public class AbstractRepository implements Serializable {
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
 		}catch(EntityExistsException e){
 			throw new DatabaseException("EntityExistsException was thrown. " + e.getMessage());
+		}catch(PersistenceException e){
+			throw new DatabaseException("PersistenceException was thrown. " + e.getMessage());
+		}catch(ConstraintViolationException e){
+			throw new DatabaseException("ConstraintViolationException was thrown. " + e.getMessage());
+		}catch(HibernateException e){
+			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());
+		}catch(Exception e){
+			throw new DatabaseException("General Exception was thrown. " + e.getMessage());			
+		}finally{
+			
 		}
 		
 	}

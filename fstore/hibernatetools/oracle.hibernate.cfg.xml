@@ -37,21 +37,20 @@
         <!-- 
         <property name="hbm2ddl.auto">update</property>
         -->
-        
-		<!-- List of all Hibernate mappings for this session -->
-		<!--
-        <mapping resource="org/frontier/ecog/webapp/labtransfer/model/LabTransferUploadType.hbm.xml"/>
-        -->
 
 		<!-- List of all Hibernate mappings for this session -->
+		
         <mapping class="org.lenzi.fstore.repository.model.impl.FSNode"/>
         <mapping class="org.lenzi.fstore.repository.model.impl.FSClosure"/>
         <mapping class="org.lenzi.fstore.repository.model.impl.FSPrune"/>
         <mapping class="org.lenzi.fstore.repository.model.impl.FSTree"/>
+        
         <mapping class="org.lenzi.fstore.example.repository.model.impl.FSTestNode"/>
-      	<mapping class="org.lenzi.fstore.example.repository.model.impl.FSDirectoryNode"/>
-      	<mapping class="org.lenzi.fstore.example.repository.model.impl.FSFileEntry"/>
-      	<mapping class="org.lenzi.fstore.example.repository.model.impl.FSFile"/>	               
+        
+      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsDirectory"/>
+      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry"/>
+      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsFile"/>
+      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsFileStore"/>	               
     
     </session-factory>
     

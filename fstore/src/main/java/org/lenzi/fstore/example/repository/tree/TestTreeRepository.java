@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author sal
  */
-@Repository
+@Repository("testNodeTree")
 @Transactional(propagation=Propagation.REQUIRED)
 public class TestTreeRepository extends AbstractTreeRepository<FSTestNode> {
 
