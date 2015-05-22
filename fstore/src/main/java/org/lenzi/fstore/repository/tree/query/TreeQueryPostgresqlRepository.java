@@ -30,22 +30,22 @@ public class TreeQueryPostgresqlRepository extends AbstractRepository implements
 	/**
 	 * Select next available prune ID from sequence. Used in FS_PRUNE table.
 	 */
-	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT FS_PRUNE_ID_SEQUENCE.nextval from DUAL";
+	private String SQL_SELECT_NEXT_PRUNE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_PRUNE_ID_SEQUENCE')";
 	
 	/**
 	 * Select next available node ID from sequence. Used in FS_NODE table.
 	 */
-	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT FS_NODE_ID_SEQUENCE.nextval from DUAL";
+	private String SQL_SELECT_NEXT_NODE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_NODE_ID_SEQUENCE')";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_CLOSURE table.
 	 */
-	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT FS_LINK_ID_SEQUENCE.nextval from DUAL";
+	private String SQL_SELECT_NEXT_LINK_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_LINK_ID_SEQUENCE')";
 	
 	/**
 	 * Select next available link ID from sequence. Used in FS_TREE table.
 	 */
-	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT FS_TREE_ID_SEQUENCE.nextval from DUAL";	
+	private String SQL_SELECT_NEXT_TREE_ID_SEQUENCE_VALUE = "SELECT nextval('" + SCHEMA + "FS_TREE_ID_SEQUENCE')";
 	
 	/**
 	 * Fetches a node by ID, and includes the closure entries with the parent node data.
