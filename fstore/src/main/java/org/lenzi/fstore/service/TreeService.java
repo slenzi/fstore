@@ -31,13 +31,13 @@ public class TreeService<N extends FSNode<N>> {
 	private Logger logger;
 	
 	@Autowired
-	TreeRepository<N> treeRepository;
+	private TreeRepository<N> treeRepository;
 	
 	@Autowired
-	ClosureLogger<N> closureLogger;
+	private ClosureLogger<N> closureLogger;
 	
 	@Autowired
-	TreeBuilder<N> treeBuilder;
+	private TreeBuilder<N> treeBuilder;
 	
 	// debug method for testing factory generation
 	public String getClosureRepoType(){

@@ -1,9 +1,8 @@
 package org.lenzi.fstore.config;
 
-import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.example.repository.tree.OracleTestTreeRepository;
-import org.lenzi.fstore.example.repository.tree.PostgreSQLTestTreeRepository;
-import org.lenzi.fstore.repository.tree.TreeRepository;
+import org.lenzi.fstore.repository.tree.query.TreeQueryOracleRepository;
+import org.lenzi.fstore.repository.tree.query.TreeQueryPostgresqlRepository;
+import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;
@@ -21,36 +20,35 @@ public class RepositoryConfig {
 	
 	@InjectLogger
 	private Logger logger;
-
+	
 	/**
-	 * Create instance of OracleTestTreeRepository. Will only be created when
-	 * the "oracle" Spring Profile is active.
+	 * Repository tree related query functions specific to Oracle.
 	 * 
-	 * @return Instance of an OracleTestTreeRepository.
+	 * @return
 	 */
 	@Bean
 	@Profile("oracle")
-	public TreeRepository<FSTestNode> getOracleTreeRepository(){
+	public TreeQueryRepository getOracleTreeQueryRepository(){
 		
-		logger.info("Creating Oracle Tree Repository");
+		logger.info("Creating Oracle Tree Query Repository");
 		
-		return new OracleTestTreeRepository();
+		return new TreeQueryOracleRepository();
+		
 	}
 	
 	/**
-	 * Create instance of PostgreSQLTestTreeRepository. Will only be created when
-	 * the "postgresql" Spring Profile is active.
+	 * Repository tree related query functions specific to PostgreSQL.
 	 * 
-	 * @return Instance of an PostgreSQLTestTreeRepository.
+	 * @return
 	 */
 	@Bean
 	@Profile("postgresql")
-	public TreeRepository<FSTestNode> getPostgresTreeRepository(){
+	public TreeQueryRepository getPostgresqlTreeQueryRepository(){
 		
-		logger.info("Creating PostgreSQL Tree Repository");
+		logger.info("Creating PostgreSQL Tree Query Repository");
 		
-		return new PostgreSQLTestTreeRepository();
+		return new TreeQueryPostgresqlRepository();
 		
-	}
+	}	
 
 }

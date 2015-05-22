@@ -32,6 +32,7 @@ import org.lenzi.fstore.repository.model.impl.FSClosure_;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSNode_;
 import org.lenzi.fstore.repository.model.impl.FSTree;
+import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.service.TreeBuilder;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
@@ -46,7 +47,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Where all the work happens. Contains all code, minus specific database queries, for maintaining tree like
  * structures in a database using a closure table.
  * 
- * See AbstractOracleTreeRepository and AbstractPostgreSQLTreeRepository for database specific code.
+ * @see org.lenzi.fstore.repository.tree.query.TreeQueryOracleRepository
+ * @see org.lenzi.fstore.repository.tree.query.TreeQueryPostgresqlRepository
  * 
  * @author sal
  *
@@ -63,11 +65,17 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	@InjectLogger
 	private Logger logger;
 	
+	// contains database specific queries and methods
 	@Autowired
-	ClosureLogger<N> closureLogger;
+	private TreeQueryRepository queryRepository;
 	
+	// log closure data
 	@Autowired
-	TreeBuilder<N> treeBuilder;
+	private ClosureLogger<N> closureLogger;
+	
+	// builds a tree object from database tree data
+	@Autowired
+	private TreeBuilder<N> treeBuilder;
 	
 	/**
 	 * 
@@ -351,7 +359,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		newNode.setDateUpdated(dateNow);	
 		
 		// Get next available node id from sequence
-		long nodeId = getSequenceVal(getSqlQueryNodeIdSequence());
+		long nodeId = queryRepository.getSequenceValue(queryRepository.getSqlQueryNodeIdSequence());
 		
 		// Set node id and parent node id
 		newNode.setNodeId(nodeId);
@@ -363,7 +371,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		getEntityManager().persist(newNode);
 		
 		// Get next available link id from sequence
-		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
+		long linkId = queryRepository.getSequenceValue(queryRepository.getSqlQueryLinkIdSequence());
 		
 		// Add depth-0 self link to closure table
 		DBClosure<N> selfLink = new FSClosure<N>();
@@ -379,7 +387,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		getEntityManager().flush();
 		
 		// Add parent-child links to closure table
-		Query queryInsertLinks = getEntityManager().createNativeQuery(getSqlQueryInsertMakeParent());
+		Query queryInsertLinks = getEntityManager().createNativeQuery(queryRepository.getSqlQueryInsertMakeParent());
 		queryInsertLinks.setParameter(1, newNode.getParentNodeId());
 		queryInsertLinks.setParameter(2, newNode.getNodeId());		
 		try {
@@ -477,9 +485,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * Get closure data for a node. This will give you all the necessary information to build a tree model.
 	 * Usually you would do this for a root node of a tree.
 	 * 
-	 * @deprecated - Need to check how this function correctly pulls from the N nodes table (e.g. FSTestNode). The
-	 * target entity in FSClosure is FSNode... We do use this in moveNodes and Copy Nodes... It seems to work.
-	 * 
 	 * UPDATE - Confirmed, the query does properly pull from type N (e.g. FSTestNode, or other). Hibernate magic!
 	 * 
 	 * @see org.lenzi.fstore.repository.tree.TreeRepository#getClosure(org.lenzi.fstore.repository.model.DBNode)
@@ -499,7 +504,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		List<DBClosure<N>> results = null;
 		Query query = null;
 		try {
-			query = getEntityManager().createQuery(getHqlQueryClosureByNodeId());
+			query = getEntityManager().createQuery(queryRepository.getHqlQueryClosureByNodeId());
 			query.setParameter(1, node.getNodeId());
 			query.setParameter(2, node.getNodeId());			
 		} catch (IllegalArgumentException e) {
@@ -761,7 +766,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		N updatedEntity = getEntityManager().merge(node);
 		
 		// Get next available link id from sequence
-		long linkId = getSequenceVal(getSqlQueryLinkIdSequence());
+		long linkId = queryRepository.getSequenceValue(queryRepository.getSqlQueryLinkIdSequence());
 		
 		// add depth-0 self link to closure table
 		FSClosure<N> selfLink = new FSClosure<N>();
@@ -777,7 +782,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		getEntityManager().flush();
 		
 		// add parent-child links to closure table
-		Query queryInsertLinks = getEntityManager().createNativeQuery(getSqlQueryInsertMakeParent());
+		Query queryInsertLinks = getEntityManager().createNativeQuery(queryRepository.getSqlQueryInsertMakeParent());
 		queryInsertLinks.setParameter(1, node.getParentNodeId());
 		queryInsertLinks.setParameter(2, node.getNodeId());		
 		try {
@@ -999,7 +1004,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		N rootNode = addRootNode(newRootNode);
 		
 		// Get next available tree id from sequence
-		long treeId = getSequenceVal(getSqlQueryTreeIdSequence());
+		long treeId = queryRepository.getSequenceValue(queryRepository.getSqlQueryTreeIdSequence());
 		
 		newTree.setTreeId(treeId);
 		newTree.setRootNodeId(rootNode.getNodeId());
@@ -1144,7 +1149,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		Query query = null;
 		try {
 			// TODO - query needs to pull from N node, not FSNode
-			query = getEntityManager().createQuery(getHqlQueryNodeWithParentClosure());
+			query = getEntityManager().createQuery(queryRepository.getHqlQueryNodeWithParentClosure());
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
@@ -1167,7 +1172,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		Query query = null;
 		try {
 			// TODO - query needs to pull from N node, not FSNode
-			query = getEntityManager().createQuery(getHqlQueryNodeWithChildClosure());
+			query = getEntityManager().createQuery(queryRepository.getHqlQueryNodeWithChildClosure());
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
@@ -1218,10 +1223,10 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}
 		
 		// Get next available prune id from sequence.
-		long pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
+		long pruneId = queryRepository.getSequenceValue(queryRepository.getSqlQueryPruneIdSequence());
 		
 		// Add list of nodes to delete to our prune table
-		Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneChildren());
+		Query populatePrune = getEntityManager().createNativeQuery(queryRepository.getSqlQueryInsertPruneChildren());
 		populatePrune.setParameter(1, parentNodeId);
 		try {
 			executeUpdate(populatePrune);
@@ -1236,7 +1241,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		// Remove children links from closure table.
 		// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
-		Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
+		Query queryDeleteFsClosure = getEntityManager().createNativeQuery(queryRepository.getSqlQueryDeleteFsClosurePrune());
 		queryDeleteFsClosure.setParameter(1, pruneId);
 		try {
 			executeUpdate(queryDeleteFsClosure);
@@ -1271,10 +1276,10 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		if(pruneTable){
 			
 			// Get next available prune id from sequence
-			pruneId = getSequenceVal(getSqlQueryPruneIdSequence());
+			pruneId = queryRepository.getSequenceValue(queryRepository.getSqlQueryPruneIdSequence());
 			
 			// Add list of nodes to delete to our prune table
-			Query populatePrune = getEntityManager().createNativeQuery(getSqlQueryInsertPruneTree());
+			Query populatePrune = getEntityManager().createNativeQuery(queryRepository.getSqlQueryInsertPruneTree());
 			populatePrune.setParameter(1, deleteNodeId);
 			try {
 				executeUpdate(populatePrune);
@@ -1309,7 +1314,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			
 			// Remove node depth-0 self link, plus all children links, from closure table.
 			// This query uses our prune table. Pass the prune ID which links to all the nodes to prune.
-			Query queryDeleteFsClosure = getEntityManager().createNativeQuery(getSqlQueryDeleteFsClosurePrune());
+			Query queryDeleteFsClosure = getEntityManager().createNativeQuery(queryRepository.getSqlQueryDeleteFsClosurePrune());
 			queryDeleteFsClosure.setParameter(1,pruneId);
 			try {
 				executeUpdate(queryDeleteFsClosure);
@@ -1753,72 +1758,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	}
 	*/
 	
-
-	
-	
-	// --------------------------------------------------------------------------------------------------------
-	// All functions below this line have database specific code, or have something else that is unique and 
-	// cannot be abstracted.
-	// --------------------------------------------------------------------------------------------------------
-	
 	public abstract String getRepositoryName();
 	
-	protected abstract long getSequenceVal(String nativeSequenceQuery) throws DatabaseException;
-	
-	protected abstract String getSqlQueryNodeIdSequence();
-	
-	protected abstract String getSqlQueryLinkIdSequence();
-	
-	protected abstract String getSqlQueryPruneIdSequence();
-	
-	protected abstract String getSqlQueryTreeIdSequence();
-	
-	/**
-	 * HQL_GET_NODE_BY_ID
-	 * 
-	 * @deprecated - replaced with criteria query
-	 * @return
-	 */
-	protected abstract String getHqlQueryNodeById();
-	
-	// HQL_GET_TREE_BY_ID
-	protected abstract String getHqlQueryTreeById();
-	
-	// HQL_NODE_WITH_PARENT_CLOSURE
-	protected abstract String getHqlQueryNodeWithParentClosure();
-	
-	// HQL_NODE_WITH_CHILDREN_CLOSURE
-	protected abstract String getHqlQueryNodeWithChildClosure();
-	
-	// HQL_CLOSURE_BY_NODE_ID
-	protected abstract String getHqlQueryClosureByNodeId();
-	
-	// SQL_INSERT_MAKE_PARENT
-	protected abstract String getSqlQueryInsertMakeParent();
-	
-	// SQL_INSERT_PRUNE_TREE
-	protected abstract String getSqlQueryInsertPruneTree();
-	
-	// SQL_INSERT_PRUNE_CHILDREN
-	protected abstract String getSqlQueryInsertPruneChildren();
-	
-	/**
-	 * SQL_DELETE_FS_NODE_PRUNE_TREE
-	 * 
-	 * @deprecated - replaced with a jpa criteria query
-	 * @return
-	 */
-	protected abstract String getSqlQueryDeleteFsNodePruneTree();
-	
-	/**
-	 * SQL_DELETE_FS_NODE_PRUNE_CHILDREN
-	 * 
-	 * @deprecated - replaced with a jpa criteria query
-	 * @return
-	 */	
-	protected abstract String getSqlQueryDeleteFsNodePruneChildren();
-	
-	// SQL_DELETE_FS_CLOSURE_PRUNE
-	protected abstract String getSqlQueryDeleteFsClosurePrune();
-
 }

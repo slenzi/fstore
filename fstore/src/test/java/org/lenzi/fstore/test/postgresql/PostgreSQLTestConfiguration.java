@@ -5,9 +5,8 @@ package org.lenzi.fstore.test.postgresql;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.example.repository.tree.PostgreSQLTestTreeRepository;
-import org.lenzi.fstore.repository.tree.TreeRepository;
+import org.lenzi.fstore.repository.tree.query.TreeQueryPostgresqlRepository;
+import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,6 +37,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 				"org.lenzi.fstore.repository.model.impl",
 				"org.lenzi.fstore.service",
 				"org.lenzi.fstore.logging",
+				"org.lenzi.fstore.example.repository",
 				"org.lenzi.fstore.example.repository.model.impl",
 				"org.lenzi.fstore.cms.repository.model.impl"
 		}
@@ -59,18 +59,19 @@ public class PostgreSQLTestConfiguration implements TransactionManagementConfigu
 	}
 	
 	/**
-	 * PostgreSQL closure repository
+	 * Repository tree related query functions specific to PostgreSQL.
 	 * 
 	 * @return
 	 */
 	@Bean
 	@Profile("postgresql")
-	public TreeRepository<FSTestNode> getPostgresTreeRepository(){
+	public TreeQueryRepository getPostgresqlTreeQueryRepository(){
 		
-		logger.info("Getting PostgreSQLTestTreeRepository");
+		logger.info("Creating PostgreSQL Tree Query Repository");
 		
-		return new PostgreSQLTestTreeRepository();
-	}
+		return new TreeQueryPostgresqlRepository();
+		
+	}		
 
 	/**
 	 * Transaction manager

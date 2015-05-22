@@ -5,9 +5,8 @@ package org.lenzi.fstore.test.oracle;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.example.repository.tree.OracleTestTreeRepository;
-import org.lenzi.fstore.repository.tree.TreeRepository;
+import org.lenzi.fstore.repository.tree.query.TreeQueryOracleRepository;
+import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,10 +33,12 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 		basePackages={
 			"org.lenzi.fstore.model.util",
 			"org.lenzi.fstore.repository",
+			"org.lenzi.fstore.repository",
 			"org.lenzi.fstore.repository.model",
 			"org.lenzi.fstore.repository.model.impl",
 			"org.lenzi.fstore.service",
 			"org.lenzi.fstore.logging",
+			"org.lenzi.fstore.example.repository",
 			"org.lenzi.fstore.example.repository.model.impl",
 			"org.lenzi.fstore.cms.repository.model.impl"
 		}
@@ -60,18 +61,19 @@ public class OracleTestConfiguration implements TransactionManagementConfigurer 
 	}
 	
 	/**
-	 * Oracle closure repository
+	 * Repository tree related query functions specific to Oracle.
 	 * 
 	 * @return
 	 */
 	@Bean
 	@Profile("oracle")
-	public TreeRepository<FSTestNode> getOracleTreeRepository(){
+	public TreeQueryRepository getOracleTreeQueryRepository(){
 		
-		logger.info("Getting OracleTestTreeRepository");
+		logger.info("Creating Oracle Tree Query Repository");
 		
-		return new OracleTestTreeRepository();
-	}
+		return new TreeQueryOracleRepository();
+		
+	}	
 
 	/**
 	 * Transaction manager

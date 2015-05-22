@@ -3,11 +3,9 @@
  */
 package org.lenzi.fstore.controller;
 
-import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.model.tree.TreeMeta;
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.properties.ManagedProperties;
 import org.lenzi.fstore.service.TreeService;
-import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +27,10 @@ public class TestController {
     private ManagedProperties appProps;
     
     @Autowired
-    private TreeService treeService; 
+    private TreeService<FSTestNode> treeService; 
     
     @InjectLogger
-    Logger logger;
+    private Logger logger;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String printHello(ModelMap model) {
