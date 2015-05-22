@@ -68,7 +68,7 @@ public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 	
 	// The associated tree if this node is a root node. if this is not a root
 	// node then the tree object will be null
-	@OneToOne(mappedBy="rootNode")
+	@OneToOne(mappedBy="rootNode", targetEntity = FSTree.class)
 	private FSTree<N> tree = null;
 	
 	// Closure entries that give access to the child nodes for this node.
