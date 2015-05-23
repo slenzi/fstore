@@ -6,6 +6,7 @@ package org.lenzi.fstore.cms.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,50 @@ public class FileStoreRepository extends AbstractRepository {
 	
 	}
 	
+	public List<CmsFileStore> getParentFileStores(Path dirPath){
+		
+		//
+		// make sure new path is not a sub directory of a current file store path
+		//
+		// select f from CmsFileStore as f
+		// where '/Users/slenzi/Programming/sample_store/foo' like concat(f.storePath, '%') 
+		
+		return null;
+	}
+	
+	public List<CmsFileStore> getChildFileStores(Path dirPath){
+		
+		//
+		// Make sure new path is not a parent dir of a current file store path
+		//
+		// select f from CmsFileStore as f
+		// where f.storePath like concat('/Users/slenzi/Programming', '%')
+		
+		return null;
+	}
+	
+	/*
+	 
+	 existing:
+	 /a/b/c
+	 /e/f
+	 
+	 ok:
+	 /e/g
+	 /a/b/d
+	 
+	 bad: new file store cannot have same path, and path cannot be a subdir of an existing file store.
+	 
+	 /a       - parent of existing store
+	 /a/b     - parent of existing store
+	 /a/b/c   - match of existing store
+	 /a/b/c/e - child of existing store
+	 /e		  - parent of existing store
+	 /e/f     - match of existing store
+	 /e/f/g   - child of existing store
+	 
+	 */
+	
 	/**
 	 * Create a new file store
 	 * 
@@ -63,7 +108,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public CmsFileStore createFileStore(Path dirPath, String name, String description) throws DatabaseException {
 		
-		// TODO - make sure path is not under any under file store path.
+		// TODO - make sure new path is not a child directory of a current file store, or a parent directory of a current file store.
 		
 		logger.info("Creating file store store for path => " + dirPath.toString());
 		
@@ -82,7 +127,6 @@ public class FileStoreRepository extends AbstractRepository {
 		fileStore.setName(name);
 		fileStore.setDescription(description);
 		fileStore.setNodeId(storeRootDir.getNodeId());
-		//fileStore.setRootDir(storeRootDir);
 		fileStore.setStorePath(dirPath.toString());
 		fileStore.setDateCreated(DateUtil.getCurrentTime());
 		fileStore.setDateUpdated(DateUtil.getCurrentTime());

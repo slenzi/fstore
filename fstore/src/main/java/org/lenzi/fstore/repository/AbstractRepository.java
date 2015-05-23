@@ -202,7 +202,7 @@ public class AbstractRepository implements Serializable {
 		try {
 			
 			getEntityManager().persist(entity);
-			
+		
 		}catch(TransactionRequiredException e){
 			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
 		}catch(IllegalArgumentException e){
@@ -214,7 +214,7 @@ public class AbstractRepository implements Serializable {
 		}catch(ConstraintViolationException e){
 			throw new DatabaseException("ConstraintViolationException was thrown. " + e.getMessage());
 		}catch(HibernateException e){
-			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());	
+			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());
 		}catch(Exception e){
 			throw new DatabaseException("General Exception was thrown. " + e.getMessage());			
 		}finally{

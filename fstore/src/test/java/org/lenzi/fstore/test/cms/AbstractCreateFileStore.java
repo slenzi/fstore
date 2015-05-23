@@ -45,7 +45,7 @@ public abstract class AbstractCreateFileStore extends AbstractTreeTest {
 		try {
 			fileStore = fileStoreRepository.createFileStore(examplePath, "Example File Store", "This is an example file store.");
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
+			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
 		

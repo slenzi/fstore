@@ -39,6 +39,10 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	@OneToMany(mappedBy="directory")
 	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
 
+	public CmsDirectory(){
+		
+	}
+	
 	/**
 	 * 
 	 */
