@@ -4,7 +4,7 @@ drop sequence TEST.FS_PRUNE_ID_SEQUENCE;
 drop sequence TEST.FS_TREE_ID_SEQUENCE;
 
 drop sequence TEST.FS_CMS_FILE_ID_SEQUENCE;
-drop sequence TEST.FS_CMS_FILE_STORE_ID_SEQUENCE;
+drop sequence TEST.FS_CMS_STORE_ID_SEQUENCE;
 
 drop index TEST.fs_parent_depth_child_idx;
 drop index TEST.fs_child_parent_depth_idx;	
@@ -136,7 +136,7 @@ START WITH 1
 CACHE 10  
 NO CYCLE;
 
-CREATE SEQUENCE TEST.FS_CMS_FILE_STORE_ID_SEQUENCE  
+CREATE SEQUENCE TEST.FS_CMS_STORE_ID_SEQUENCE  
 INCREMENT BY 1 
 START WITH 1 
 CACHE 10  

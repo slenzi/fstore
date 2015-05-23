@@ -201,9 +201,9 @@ public class OracleCreate {
 		"ORDER  " +
 		"NOCYCLE";
 	
-	private String SQL_DROP_SEQUENCE_FS_CMS_FILE_STORE_ID =
+	private String SQL_DROP_SEQUENCE_FS_CMS_STORE_ID =
 		"drop sequence FS_CMS_STORE_ID_SEQUENCE";	
-	private String SQL_CREATE_SEQUENCE_FS_CMS_FILE_STORE_ID =
+	private String SQL_CREATE_SEQUENCE_FS_CMS_STORE_ID =
 		"CREATE SEQUENCE FS_CMS_STORE_ID_SEQUENCE " + 
 		"MINVALUE 1 " +
 		"MAXVALUE 999999999999999999999999999 " + 
@@ -234,7 +234,7 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_LINK_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_TREE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_FILE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_FILE_STORE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
@@ -266,7 +266,7 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_LINK_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_FILE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_FILE_STORE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();

@@ -22,7 +22,7 @@ import org.springframework.test.annotation.Rollback;
  * @author sal
  *
  */
-public class AbstractCreateFileStore extends AbstractTreeTest {
+public abstract class AbstractCreateFileStore extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -37,7 +37,7 @@ public class AbstractCreateFileStore extends AbstractTreeTest {
 	@Rollback(false)
 	public void createFileStore() {
 		
-		Path examplePath = Paths.get("C:/temp/sample_store");
+		Path examplePath = Paths.get(getTestFileStorePath());
 		
 		logTestTitle("Creating sample file store at => " + examplePath.toString());
 		
@@ -55,5 +55,7 @@ public class AbstractCreateFileStore extends AbstractTreeTest {
 		logger.info(fileStore.toString());		
 		
 	}
+	
+	public abstract String getTestFileStorePath();
 
 }

@@ -36,6 +36,16 @@ public class OracleCreateFileStoreTest extends AbstractCreateFileStore {
 
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.test.cms.AbstractCreateFileStore#getTestFileStorePath()
+	 */
+	@Override
+	public String getTestFileStorePath() {
+		
+		return "C:/temp/sample_store";
+		
+	}
+
 	@Test
 	public void testWiring(){
 		

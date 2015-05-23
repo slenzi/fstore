@@ -36,6 +36,16 @@ public class PostgreSQLCreateFileStoreTest extends AbstractCreateFileStore {
 
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.test.cms.AbstractCreateFileStore#getTestFileStorePath()
+	 */
+	@Override
+	public String getTestFileStorePath() {
+		
+		return "/Users/slenzi/Programming/sample_store";
+		
+	}
+
 	@Test
 	public void testWiring(){
 		

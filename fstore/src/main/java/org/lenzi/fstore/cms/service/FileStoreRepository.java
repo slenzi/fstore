@@ -82,7 +82,7 @@ public class FileStoreRepository extends AbstractRepository {
 		fileStore.setName(name);
 		fileStore.setDescription(description);
 		fileStore.setNodeId(storeRootDir.getNodeId());
-		fileStore.setRootDir(storeRootDir);
+		//fileStore.setRootDir(storeRootDir);
 		fileStore.setStorePath(dirPath.toString());
 		fileStore.setDateCreated(DateUtil.getCurrentTime());
 		fileStore.setDateUpdated(DateUtil.getCurrentTime());
