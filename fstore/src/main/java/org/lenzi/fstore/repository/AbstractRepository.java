@@ -21,6 +21,7 @@ import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.Transient;
+import javax.persistence.criteria.CriteriaQuery;
 
 import org.hibernate.HibernateException;
 import org.hibernate.exception.ConstraintViolationException;
@@ -232,6 +233,12 @@ public class AbstractRepository implements Serializable {
 		}catch(IllegalArgumentException e){
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
 		}		
+		
+	}
+	
+	protected List getResultList(CriteriaQuery q) throws DatabaseException {
+		
+		return getResultList( getEntityManager().createQuery(q) );
 		
 	}
 

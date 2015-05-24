@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.cms.service.FileStoreRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;

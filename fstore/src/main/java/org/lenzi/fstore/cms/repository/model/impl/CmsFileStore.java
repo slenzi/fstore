@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.lenzi.fstore.util.DateUtil;
+import org.lenzi.fstore.util.StringUtil;
 
 /**
  * 
@@ -25,7 +26,7 @@ import org.lenzi.fstore.util.DateUtil;
 @Table(name="FS_CMS_FILE_STORE")
 @SequenceGenerator(name="FS_CMS_STORE_ID_SEQUENCE_GENERATOR",
 	sequenceName="FS_CMS_STORE_ID_SEQUENCE", allocationSize = 1)
-public class CmsFileStore implements Serializable {
+public class CmsFileStore implements Comparable<CmsFileStore>, Serializable {
 	
 	/**
 	 * 
@@ -206,6 +207,16 @@ public class CmsFileStore implements Serializable {
 		} else if (!storeId.equals(other.storeId))
 			return false;
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(CmsFileStore store) {
+		
+		return StringUtil.changeNull(getStorePath()).compareTo( ((store != null) ? StringUtil.changeNull(store.getStorePath()) : "" ));
+		
 	}
 
 	public String toString(){
