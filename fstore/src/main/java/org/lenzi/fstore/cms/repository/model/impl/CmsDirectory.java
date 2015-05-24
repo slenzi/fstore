@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -17,7 +18,7 @@ import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.util.DateUtil;
 
 /**
- * Extends FSNode to model a directory tree.
+ * Extends FSNode to model a directory in a tree.
  * 
  * @author sal
  */
@@ -32,15 +33,25 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	@Transient
 	private static final long serialVersionUID = 213041424219784067L;
 	
+	// directory name. to get full path you need to get all parent directories, plus the file store root path.
 	@Column(name = "DIR_NAME", nullable = false)
 	private String dirName;
 	
 	// link directory to files
 	@OneToMany(mappedBy="directory")
 	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
+	
+	// link directory back to file store. only will have a file store if this is a root directory
+	@OneToOne(mappedBy="rooDir")
+	CmsFileStore fileStore = null;
+
 
 	public CmsDirectory(){
 		
+	}
+	
+	public CmsDirectory(Long id){
+		setNodeId(id);
 	}
 	
 	/**
@@ -65,6 +76,38 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 		this.dirName = dirName;
 	}
 	
+	/**
+	 * @return the fileEntries
+	 */
+	public Set<CmsFileEntry> getFileEntries() {
+		return fileEntries;
+	}
+
+	/**
+	 * @param fileEntries the fileEntries to set
+	 */
+	public void setFileEntries(Set<CmsFileEntry> fileEntries) {
+		this.fileEntries = fileEntries;
+	}
+
+	/**
+	 * @return the fileStore
+	 */
+	public CmsFileStore getFileStore() {
+		return fileStore;
+	}
+
+	/**
+	 * @param fileStore the fileStore to set
+	 */
+	public void setFileStore(CmsFileStore fileStore) {
+		this.fileStore = fileStore;
+	}
+	
+	public boolean hasFileStore(){
+		return fileStore != null ? true : false;
+	}
+
 	public String toString(){
 		
 		StringBuffer buf = new StringBuffer();

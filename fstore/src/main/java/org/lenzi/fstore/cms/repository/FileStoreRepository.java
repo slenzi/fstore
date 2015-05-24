@@ -7,11 +7,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
@@ -25,6 +30,8 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.repository.model.DBClosure;
+import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
@@ -165,6 +172,8 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		List<CmsFileStore> dupFree = conflictingStores.parallelStream().distinct().collect(Collectors.toList());
 		
+		Collections.sort(dupFree);
+		
 		return dupFree;
 		
 	}
@@ -276,7 +285,55 @@ public class FileStoreRepository extends AbstractRepository {
 		return fileStore;
 		
 	}
+	
+	/**
+	 * Get a file store with its root directory.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileStore getCmsStore(Long id) throws DatabaseException {
+		
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		
+		Class<CmsFileStore> type = CmsFileStore.class;
+		CriteriaQuery<CmsFileStore> query = cb.createQuery(type);
+		Root<CmsFileStore> root = query.from(type);
+		
+		Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir);
+		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir);
+		
+		query.select(root);
+		query.where(
+				cb.equal(root.get(CmsFileStore_.storeId), id)
+				);
+		
+		CmsFileStore store = null;
+		try {
+			store = (CmsFileStore) this.getSingleResult(query);
+		} catch (Exception e) {
+			throw new DatabaseException("Error retrieving file store for store id => " + id);
+		}
+		
+		return store;
+		
+	}
 
-
+	public void addFile(Path file, Long cmsDirId) throws DatabaseException {
+		
+		logger.info("Adding file " + file.toString());
+		
+		// get directory
+		CmsDirectory cmsDir = treeRepository.getNodeWithParent(new CmsDirectory(cmsDirId));
+		Set<DBClosure<CmsDirectory>> parentClosure = cmsDir.getParentClosure();
+		
+		// if not a root node, get all parent dir data
+		
+		// get file store
+		
+		// build complete destination path on disk
+		
+	}
 
 }

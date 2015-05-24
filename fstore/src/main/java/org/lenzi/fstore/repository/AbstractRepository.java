@@ -236,6 +236,12 @@ public class AbstractRepository implements Serializable {
 		
 	}
 	
+	protected Object getSingleResult(CriteriaQuery q) throws DatabaseException {
+		
+		return getSingleResult( getEntityManager().createQuery(q) ); 
+		
+	}
+	
 	protected List getResultList(CriteriaQuery q) throws DatabaseException {
 		
 		return getResultList( getEntityManager().createQuery(q) );
