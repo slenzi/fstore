@@ -20,7 +20,6 @@ import org.springframework.test.annotation.Rollback;
 
 /**
  * @author sal
- *
  */
 public abstract class AbstractCreateFileStore extends AbstractTreeTest {
 

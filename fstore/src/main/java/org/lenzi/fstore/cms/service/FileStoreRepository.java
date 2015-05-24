@@ -30,11 +30,14 @@ import org.lenzi.fstore.util.DateUtil;
 import org.lenzi.fstore.util.FileUtil;
 
 /**
+ * Rollbacks by default only happen for unchecked exceptions. In the transaction annotation
+ * we add rollbackFor=Throwable.class so rollbacks will happen for checked exceptions as
+ * well, e.g., our DatabaseException class.
+ * 
  * @author sal
- *
  */
 @Repository
-@Transactional(propagation=Propagation.REQUIRED)
+@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public class FileStoreRepository extends AbstractRepository {
 
 	@InjectLogger
@@ -193,8 +196,6 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		logger.info("File store created in db");
 		logger.info(fileStore.toString());
-		
-		// throwing an exception will cause rollback on database
 		
 		try {
 			FileUtil.createDirectory(dirPath, clearIfExists);

@@ -47,6 +47,10 @@ import org.springframework.transaction.annotation.Transactional;
  * Where all the work happens. Contains all code, minus specific database queries, for maintaining tree like
  * structures in a database using a closure table.
  * 
+ * Rollbacks by default only happen for unchecked exceptions. In the transaction annotation
+ * we add rollbackFor=Throwable.class so rollbacks will happen for checked exceptions as
+ * well, e.g., our DatabaseException class.
+ * 
  * @see org.lenzi.fstore.repository.tree.query.TreeQueryOracleRepository
  * @see org.lenzi.fstore.repository.tree.query.TreeQueryPostgresqlRepository
  * 
@@ -54,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @param <N>
  */
-@Transactional(propagation=Propagation.REQUIRED)
+@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public abstract class AbstractTreeRepository<N extends FSNode<N>> extends AbstractRepository implements TreeRepository<N> {
 
 	/**

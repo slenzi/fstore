@@ -12,10 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Example tree repository for working with FSTestNode objects.
  * 
+ * Rollbacks by default only happen for unchecked exceptions. In the transaction annotation
+ * we add rollbackFor=Throwable.class so rollbacks will happen for checked exceptions as
+ * well, e.g., our DatabaseException class.
+ * 
  * @author sal
  */
 @Repository("testNodeTree")
-@Transactional(propagation=Propagation.REQUIRED)
+@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public class TestTreeRepository extends AbstractTreeRepository<FSTestNode> {
 
 	/**
