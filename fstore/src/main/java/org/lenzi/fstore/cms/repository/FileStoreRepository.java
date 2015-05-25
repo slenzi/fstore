@@ -3,11 +3,13 @@
  */
 package org.lenzi.fstore.cms.repository;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
+import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
 import org.lenzi.fstore.repository.AbstractRepository;
@@ -34,6 +37,7 @@ import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
+import org.lenzi.fstore.service.ClosureMapBuilder;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
@@ -58,7 +62,10 @@ public class FileStoreRepository extends AbstractRepository {
 	private TreeRepository<CmsDirectory> treeRepository;
 	
 	@Autowired
-	private TreeQueryRepository queryRepository;	
+	private TreeQueryRepository queryRepository;
+	
+	@Autowired
+	private ClosureMapBuilder<CmsDirectory> closureMapBuilder;
 	
 	/**
 	 * 
@@ -289,11 +296,11 @@ public class FileStoreRepository extends AbstractRepository {
 	/**
 	 * Get a file store with its root directory.
 	 * 
-	 * @param id
+	 * @param storeId - the store id
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public CmsFileStore getCmsStore(Long id) throws DatabaseException {
+	public CmsFileStore getCmsStoreByStoreId(Long storeId) throws DatabaseException {
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -306,17 +313,108 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		query.select(root);
 		query.where(
-				cb.equal(root.get(CmsFileStore_.storeId), id)
+				cb.equal(root.get(CmsFileStore_.storeId), storeId)
 				);
 		
 		CmsFileStore store = null;
 		try {
 			store = (CmsFileStore) this.getSingleResult(query);
 		} catch (Exception e) {
-			throw new DatabaseException("Error retrieving file store for store id => " + id);
+			throw new DatabaseException("Error retrieving file store for store id => " + storeId);
 		}
 		
 		return store;
+		
+	}
+	
+	/**
+	 * Get a file store with its root directory.
+	 * 
+	 * @param rootDirId - the ID of the store's root directory
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileStore getCmsStoreByRootDirId(Long rootDirId) throws DatabaseException {
+		
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		
+		Class<CmsFileStore> type = CmsFileStore.class;
+		CriteriaQuery<CmsFileStore> query = cb.createQuery(type);
+		Root<CmsFileStore> root = query.from(type);
+		
+		Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir);
+		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir);
+		
+		javax.persistence.criteria.Path<CmsDirectory> rootDir = root.get(CmsFileStore_.rootDir);
+		
+		query.select(root);
+		query.where(
+				cb.equal(rootDir.get(CmsDirectory_.nodeId), rootDirId)
+				);
+		
+		CmsFileStore store = null;
+		try {
+			store = (CmsFileStore) this.getSingleResult(query);
+		} catch (Exception e) {
+			throw new DatabaseException("Error retrieving file store for for root dir id => " + rootDirId);
+		}
+		
+		return store;
+		
+	}
+	
+	/**
+	 * Works backwards, up the tree to the root node, and builds the full path. Pass true to
+	 * inlcude the store path.
+	 * 
+	 * @param cmsDirId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public String getAbsolutePath(Long cmsDirId, boolean includeStorePath) throws DatabaseException {
+		
+		// get not with parent closure data
+		CmsDirectory cmsDir = treeRepository.getNodeWithParent(new CmsDirectory(cmsDirId));
+		Set<DBClosure<CmsDirectory>> parentClosure = cmsDir.getParentClosure();
+		
+		// create a map from the parent closure data
+		HashMap<Long,List<CmsDirectory>> treeMap = closureMapBuilder.buildMapFromClosure(parentClosure);
+		
+		// build ordered list, and reverse
+		List<CmsDirectory> childRootList = new ArrayList<CmsDirectory>();
+		buildChildToRootOrderedList(cmsDir, treeMap, childRootList);
+		Collections.reverse(childRootList);
+		
+		// build path from list data
+		CmsDirectory rootDir = null;
+		StringBuffer buf = new StringBuffer();
+		for(CmsDirectory dir : childRootList){
+			buf.append(File.separator + dir.getDirName());
+			if(rootDir == null){
+				rootDir = dir;
+			}
+		}
+		String path = buf.toString();
+		
+		// optionally include the store path
+		if(includeStorePath){
+			CmsFileStore store = this.getCmsStoreByRootDirId(rootDir.getNodeId());
+			path = store.getStorePath() + path;
+		}
+		
+		return path;
+	}
+	private List<CmsDirectory> buildChildToRootOrderedList(CmsDirectory child, HashMap<Long,List<CmsDirectory>> parentMap, List<CmsDirectory> childRootList){
+		
+		childRootList.add(child);
+		
+		for(CmsDirectory parentNode : CollectionUtil.emptyIfNull(parentMap.get(child.getNodeId()))){
+			
+			buildChildToRootOrderedList(parentNode, parentMap, childRootList);
+			
+		}
+		
+		return childRootList;
 		
 	}
 

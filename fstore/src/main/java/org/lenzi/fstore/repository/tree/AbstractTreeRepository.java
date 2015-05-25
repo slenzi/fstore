@@ -33,6 +33,7 @@ import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSNode_;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
+import org.lenzi.fstore.service.ClosureMapBuilder;
 import org.lenzi.fstore.service.TreeBuilder;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
@@ -80,6 +81,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	// builds a tree object from database tree data
 	@Autowired
 	private TreeBuilder<N> treeBuilder;
+	
+	@Autowired
+	private ClosureMapBuilder<N> closureMapBuilder;
 	
 	/**
 	 * 
@@ -598,7 +602,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				}
 			}
 			
-			HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
+			//HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
+			HashMap<Long,List<N>> treeMap = closureMapBuilder.buildMapFromClosure(closureList);
 			
 			/*
 			for(Long nextNodeId : treeMap.keySet()){
@@ -667,7 +672,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			}
 		}
 		
-		HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
+		//HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
+		HashMap<Long,List<N>> treeMap = closureMapBuilder.buildMapFromClosure(closureList);
 		
 		// get children for root node of sub-tree
 		List<N> childList = treeMap.get(rootNode.getNodeId());		
@@ -675,39 +681,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		// add the root node to the new parent node, then walk the tree and add all the children.
 		return moveNodes(rootNode, newParentNode, childList, treeMap, DateUtil.getCurrentTime());	
 		
-	}
-	
-	/**
-	 * Builds a map where the keys are node IDs, and the values are Lists of DBNode objects.
-	 * 
-	 * map.get(nodeId) will return a list containing all the child nodes for that node.
-	 * 
-	 * @param closureList
-	 * @return
-	 */
-	private HashMap<Long,List<N>> buildMapFromClosure(List<DBClosure<N>> closureList) {
-		
-		if(CollectionUtil.isEmpty(closureList)){
-			return null;
-		}
-		
-		DBClosure<N> closure = null;
-		HashMap<Long,List<N>> map = new HashMap<Long,List<N>>();
-		
-		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
-			closure = closureList.get(closureIndex);
-			if(closure.hasParent() && closure.hasChild()){
-				if(map.containsKey(closure.getParentNode().getNodeId())){
-					map.get(closure.getParentNode().getNodeId()).add(closure.getChildNode());
-				}else{
-					List<N> childList = new ArrayList<N>();
-					childList.add(closure.getChildNode());
-					map.put(closure.getParentNode().getNodeId(), childList);
-				}
-			}
-		}
-		
-		return map;
 	}
 	
 	/**
