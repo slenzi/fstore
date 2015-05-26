@@ -3,6 +3,7 @@
  */
 package org.lenzi.fstore.test.cms;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.nio.file.Path;
@@ -40,6 +41,9 @@ public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 		
 		logTestTitle("Creating sample file store at => " + examplePath.toString());
 		
+		//
+		// create file store
+		//
 		CmsFileStore fileStore = null;
 		try {
 			fileStore = fileStoreRepository.createFileStore(
@@ -59,6 +63,25 @@ public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 		logger.info("Newly created file store:");
 		logger.info(fileStore.toString());
 		logger.info("");
+		
+		//
+		// test get path method on root dir of file store
+		//
+		String rootDirPath = null;
+		try {
+			rootDirPath = fileStoreRepository.getPath(fileStore.getNodeId());
+		} catch (DatabaseException e) {
+			logger.error("Failed to get full path for root dir of newly created file store. " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		assertNotNull(rootDirPath);
+		
+		logger.info("Root dir full path => " + rootDirPath);
+		
+		String expectedPath = getTestFileStorePath();
+		
+		assertEquals(Paths.get(rootDirPath).toString(), Paths.get(expectedPath).toString());
 		
 	}
 	

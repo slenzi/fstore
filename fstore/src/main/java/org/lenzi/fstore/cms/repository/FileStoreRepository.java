@@ -33,6 +33,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
+import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
@@ -67,6 +68,9 @@ public class FileStoreRepository extends AbstractRepository {
 	
 	@Autowired
 	private ClosureMapBuilder<CmsDirectory> closureMapBuilder;
+	
+	@Autowired
+	private ClosureLogger<CmsDirectory> closureLogger;
 	
 	/**
 	 * 
@@ -447,14 +451,20 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public String getPath(Long cmsDirId, boolean includeStorePath) throws DatabaseException {
+	public String getPath(Long cmsDirId) throws DatabaseException {
+		
+		logger.info("Getting path for dir => " + cmsDirId);
 		
 		// get not with parent closure data
 		CmsDirectory cmsDir = treeRepository.getNodeWithParent(new CmsDirectory(cmsDirId));
 		Set<DBClosure<CmsDirectory>> parentClosure = cmsDir.getParentClosure();
 		
+		closureLogger.logClosure(parentClosure);
+		
 		// create a map from the parent closure data
 		HashMap<Long,List<CmsDirectory>> treeMap = closureMapBuilder.buildMapFromClosure(parentClosure);
+		
+		logger.info("Parent tree map contains " + ((treeMap != null) ? treeMap.size() : "0") + " elements.");
 		
 		// build ordered list, and reverse
 		List<CmsDirectory> childRootList = new ArrayList<CmsDirectory>();
@@ -465,26 +475,27 @@ public class FileStoreRepository extends AbstractRepository {
 		CmsDirectory rootDir = null;
 		StringBuffer buf = new StringBuffer();
 		for(CmsDirectory dir : childRootList){
-			buf.append(File.separator + dir.getDirName());
 			if(rootDir == null){
+				// store path includes root dir name, so we do not need to append it to our buffer
 				rootDir = dir;
+			}else{
+				buf.append(File.separator + dir.getDirName());
 			}
 		}
 		String path = buf.toString();
 		
 		// optionally include the store path
-		if(includeStorePath){
-			CmsFileStore store = getCmsStoreByRootDirId(rootDir.getNodeId());
-			path = store.getStorePath() + path;
-		}
+		CmsFileStore store = getCmsStoreByRootDirId(rootDir.getNodeId());
+		path = store.getStorePath() + path;
 		
 		return path;
 	}
 	private List<CmsDirectory> buildChildToRootOrderedList(CmsDirectory child, HashMap<Long,List<CmsDirectory>> parentMap, List<CmsDirectory> childRootList){
 		
+		logger.info("Adding node to list => " + child.toString());
 		childRootList.add(child);
 		
-		for(CmsDirectory parentNode : CollectionUtil.emptyIfNull(parentMap.get(child.getNodeId()))){
+		for(CmsDirectory parentNode : CollectionUtil.emptyIfNull(parentMap.get(child.getParentNodeId()))){
 			buildChildToRootOrderedList(parentNode, parentMap, childRootList);	
 		}
 		
