@@ -224,6 +224,32 @@ public class AbstractRepository implements Serializable {
 		
 	}
 	
+	protected Object merge(Object entity) throws DatabaseException {
+		
+		try {
+			
+			return getEntityManager().merge(entity);
+		
+		}catch(TransactionRequiredException e){
+			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
+		}catch(IllegalArgumentException e){
+			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage());
+		}catch(EntityExistsException e){
+			throw new DatabaseException("EntityExistsException was thrown. " + e.getMessage());
+		}catch(PersistenceException e){
+			throw new DatabaseException("PersistenceException was thrown. " + e.getMessage());
+		}catch(ConstraintViolationException e){
+			throw new DatabaseException("ConstraintViolationException was thrown. " + e.getMessage());
+		}catch(HibernateException e){
+			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());
+		}catch(Exception e){
+			throw new DatabaseException("General Exception was thrown. " + e.getMessage());			
+		}finally{
+			
+		}
+		
+	}	
+	
 	protected void remove(Object entity)  throws DatabaseException {
 		
 		try {

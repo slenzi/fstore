@@ -515,15 +515,18 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		switch(fetch){
 		
+			// just meta data
 			case META:
 				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				break;
 			
+			// meta data and byte data
 			case META_AND_BYTES:
 				Fetch<CmsDirectory,CmsFileEntry> metaFetch = root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				metaFetch.fetch(CmsFileEntry_.file, JoinType.LEFT);
 				break;
-				
+			
+			// default to just meta data
 			default:
 				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				break;
@@ -541,16 +544,26 @@ public class FileStoreRepository extends AbstractRepository {
 		
 	}
 	
+	/**
+	 * Add file to directory
+	 * 
+	 * @param file
+	 * @param cmsDirId
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
 	public void addFile(Path file, Long cmsDirId) throws DatabaseException, IOException {
 		
 		logger.info("Adding file " + file.toString());
 		
-		if(Files.exists(file)){
+		if(!Files.exists(file)){
 			throw new IOException("File does not exist => " + file.toString());
 		}
 		if(Files.isDirectory(file)){
 			throw new IOException("Path is a directory => " + file.toString());
 		}
+		
+		String dirPath = getPath(cmsDirId);
 		
 		CmsDirectory cmsDirectory = null;
 		try {
@@ -558,6 +571,9 @@ public class FileStoreRepository extends AbstractRepository {
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
 		}
+		
+		logger.info("Got directory");
+		logger.info("Path => " + dirPath);
 		
 		byte[] fileBytes = null;
 		try {
@@ -576,8 +592,14 @@ public class FileStoreRepository extends AbstractRepository {
 		cmsFileEntry.setFileSize(Files.size(file));
 		cmsFileEntry.setFile(cmsFile);
 		
-		// persist cms file entry, and cms file binary data
+		logger.info("Cms File Entry => " + cmsFileEntry);
 		
+		// persist cms file entry, and cms file binary data
+		cmsDirectory.getFileEntries().add(cmsFileEntry);
+		
+		logger.info("Merging changes");
+		
+		merge(cmsDirectory);
 		
 	}
 	

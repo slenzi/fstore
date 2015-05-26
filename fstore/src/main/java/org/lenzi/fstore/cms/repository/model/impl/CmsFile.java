@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
@@ -26,6 +28,7 @@ public class CmsFile implements Serializable  {
 	private static final long serialVersionUID = -6133759070827743119L;
 	
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "FILE_ID", updatable = false, nullable = false)
 	private Long fileId = 0L;
 	
@@ -34,7 +37,6 @@ public class CmsFile implements Serializable  {
 	@Column(name = "FILE_DATA", nullable = false)
 	private byte[] fileData;
 	
-	// file meta data object
 	@OneToOne(mappedBy = "file")
 	private CmsFileEntry fileEntry;
 

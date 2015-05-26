@@ -9,12 +9,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -24,6 +26,8 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="FS_CMS_FILE_ENTRY")
+@SequenceGenerator(name="FS_CMS_FILE_ID_SEQUENCE_GENERATOR",
+	sequenceName="FS_CMS_FILE_ID_SEQUENCE", allocationSize = 1)
 public class CmsFileEntry implements Serializable {
 
 	/**
@@ -33,6 +37,7 @@ public class CmsFileEntry implements Serializable {
 	private static final long serialVersionUID = 2945275457068233067L;
 	
 	@Id
+	@GeneratedValue(generator="FS_CMS_FILE_ID_SEQUENCE_GENERATOR")
 	@Column(name = "FILE_ID", updatable = false, nullable = false)
 	private Long fileId = 0L;	
 	
@@ -51,7 +56,6 @@ public class CmsFileEntry implements Serializable {
     )
 	private CmsDirectory directory;
 	
-	// the binary data for the file
 	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
 	private CmsFile file;
@@ -150,4 +154,13 @@ public class CmsFileEntry implements Serializable {
 		return true;
 	}
 
+	public String toString(){
+		
+		StringBuffer buf = new StringBuffer();
+		buf.append("id => " + getFileId());
+		buf.append(", name => " + getFileName());
+		buf.append(", size => " + getFileSize());
+		return buf.toString();
+	}
+	
 }
