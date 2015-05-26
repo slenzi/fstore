@@ -321,7 +321,7 @@ public class FileStoreRepository extends AbstractRepository {
 		//javax.persistence.criteria.Path<CmsDirectory> rootDir = root.get(CmsFileStore_.rootDir);
 		
 		//Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir, JoinType.INNER);
-		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir, JoinType.INNER);
+		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir, JoinType.LEFT);
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( cb.equal(root.get(CmsFileStore_.storeId), storeId) );
@@ -335,17 +335,6 @@ public class FileStoreRepository extends AbstractRepository {
 		TypedQuery<CmsFileStore> tquery = getEntityManager().createQuery(query);
 		
 		return tquery.getSingleResult();
-		
-		/*
-		CmsFileStore store = null;
-		try {
-			store = (CmsFileStore) this.getSingleResult(query);
-		} catch (Exception e) {
-			throw new DatabaseException("Error retrieving file store for store id => " + storeId);
-		}
-		
-		return store;
-		*/
 		
 	}
 	

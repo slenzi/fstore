@@ -9,11 +9,14 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.util.DateUtil;
 
@@ -42,7 +45,8 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
 	
 	// link directory back to file store. only will have a file store if this is a root directory
-	@OneToOne(mappedBy="rootDir")
+	@OneToOne(mappedBy="rootDir", optional=true)
+	@Fetch(FetchMode.JOIN)
 	CmsFileStore fileStore = null;
 
 

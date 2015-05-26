@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -59,8 +60,7 @@ public class CmsFileStore implements Comparable<CmsFileStore>, Serializable {
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;	
 	
-	// this is really a one-to-many but we want one-to-one. we use @Fetch(FetchMode.JOIN) annotation to fix the N+1 select issue.
-	@OneToOne
+	@OneToOne(optional=false)
 	@JoinColumn(name = "NODE_ID", insertable=false, updatable=false)
 	@Fetch(FetchMode.JOIN)
 	private CmsDirectory rootDir = null;
