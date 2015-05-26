@@ -14,6 +14,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.lenzi.fstore.util.DateUtil;
 import org.lenzi.fstore.util.StringUtil;
 
@@ -57,9 +59,10 @@ public class CmsFileStore implements Comparable<CmsFileStore>, Serializable {
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;	
 	
-	// the root dir name will have the same name as the last folder in the store path
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "NODE_ID", referencedColumnName = "NODE_ID", insertable=false, updatable=false)
+	// this is really a one-to-many but we want one-to-one. we use @Fetch(FetchMode.JOIN) annotation to fix the N+1 select issue.
+	@OneToOne
+	@JoinColumn(name = "NODE_ID", insertable=false, updatable=false)
+	@Fetch(FetchMode.JOIN)
 	private CmsDirectory rootDir = null;
 	
 	public CmsFileStore() {
@@ -176,6 +179,10 @@ public class CmsFileStore implements Comparable<CmsFileStore>, Serializable {
 	 */
 	public void setRootDir(CmsDirectory rootDir) {
 		this.rootDir = rootDir;
+	}
+	
+	public boolean hasRootDir(){
+		return rootDir != null ? true : false;
 	}
 
 	/* (non-Javadoc)

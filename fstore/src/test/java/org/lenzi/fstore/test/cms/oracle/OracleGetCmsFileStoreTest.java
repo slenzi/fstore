@@ -1,14 +1,15 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.cms.postgresql;
+package org.lenzi.fstore.test.cms.oracle;
 
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.cms.AbstractCreateFileStore;
-import org.lenzi.fstore.test.cms.setup.PostgresqlCmsTestConfiguration;
+import org.lenzi.fstore.test.cms.AbstractCreateCmsFileStore;
+import org.lenzi.fstore.test.cms.AbstractGetCmsFileStore;
+import org.lenzi.fstore.test.cms.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,18 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("postgresql")
-@ActiveProfiles({"postgresql"})
-public class PostgreSQLCreateFileStoreTest extends AbstractCreateFileStore {
+@ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@Transactional("oracle")
+@ActiveProfiles({"oracle"})
+public class OracleGetCmsFileStoreTest extends AbstractGetCmsFileStore {
 
 	@Autowired
-	private PostgresqlCmsTestConfiguration configuration = null;	
+	private OracleCmsTestConfiguration configuration = null;	
 	
 	/**
 	 * 
 	 */
-	public PostgreSQLCreateFileStoreTest() {
+	public OracleGetCmsFileStoreTest() {
 
 	}
 	
@@ -42,7 +43,7 @@ public class PostgreSQLCreateFileStoreTest extends AbstractCreateFileStore {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "/Users/slenzi/Programming/sample_store";
+		return "C:/temp/sample_create";
 		
 	}
 

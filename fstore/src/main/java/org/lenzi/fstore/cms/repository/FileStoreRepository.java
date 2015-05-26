@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
@@ -267,6 +269,8 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new DatabaseException("Error saving file store entry to database. ", e);
 		}
 		
+		getEntityManager().flush();
+		
 		logger.info("File store created in db");
 		logger.info(fileStore.toString());
 		
@@ -289,7 +293,11 @@ public class FileStoreRepository extends AbstractRepository {
 		logger.info("Read and write permissions look OK!");
 		logger.info("Done!");
 		
-		return fileStore;
+		// re-fetch store data so store has CmsDirectory
+		CmsFileStore store = null;
+		store = getCmsStoreByStoreId(fileStore.getStoreId());
+		
+		return store;
 		
 	}
 	
@@ -302,20 +310,33 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public CmsFileStore getCmsStoreByStoreId(Long storeId) throws DatabaseException {
 		
+		logger.info("Get file store by store id " + storeId);
+		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
 		Class<CmsFileStore> type = CmsFileStore.class;
 		CriteriaQuery<CmsFileStore> query = cb.createQuery(type);
 		Root<CmsFileStore> root = query.from(type);
 		
-		Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir);
-		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir);
+		//javax.persistence.criteria.Path<CmsDirectory> rootDir = root.get(CmsFileStore_.rootDir);
+		
+		//Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir, JoinType.INNER);
+		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir, JoinType.INNER);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( cb.equal(root.get(CmsFileStore_.storeId), storeId) );
+		//andPredicates.add( cb.equal(root.get(CmsFileStore_.nodeId), rootDir.get(CmsDirectory_.nodeId)) );
 		
 		query.select(root);
 		query.where(
-				cb.equal(root.get(CmsFileStore_.storeId), storeId)
+				cb.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
+		TypedQuery<CmsFileStore> tquery = getEntityManager().createQuery(query);
+		
+		return tquery.getSingleResult();
+		
+		/*
 		CmsFileStore store = null;
 		try {
 			store = (CmsFileStore) this.getSingleResult(query);
@@ -324,6 +345,7 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 		return store;
+		*/
 		
 	}
 	
@@ -336,14 +358,16 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public CmsFileStore getCmsStoreByRootDirId(Long rootDirId) throws DatabaseException {
 		
+		logger.info("Get store by root dir id " + rootDirId);
+		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
 		Class<CmsFileStore> type = CmsFileStore.class;
 		CriteriaQuery<CmsFileStore> query = cb.createQuery(type);
 		Root<CmsFileStore> root = query.from(type);
 		
-		Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir);
-		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir);
+		//Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir, JoinType.LEFT);
+		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir, JoinType.LEFT);
 		
 		javax.persistence.criteria.Path<CmsDirectory> rootDir = root.get(CmsFileStore_.rootDir);
 		
@@ -365,13 +389,13 @@ public class FileStoreRepository extends AbstractRepository {
 	
 	/**
 	 * Works backwards, up the tree to the root node, and builds the full path. Pass true to
-	 * inlcude the store path.
+	 * include the store path.
 	 * 
 	 * @param cmsDirId
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public String getAbsolutePath(Long cmsDirId, boolean includeStorePath) throws DatabaseException {
+	public String getPath(Long cmsDirId, boolean includeStorePath) throws DatabaseException {
 		
 		// get not with parent closure data
 		CmsDirectory cmsDir = treeRepository.getNodeWithParent(new CmsDirectory(cmsDirId));
@@ -398,7 +422,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		// optionally include the store path
 		if(includeStorePath){
-			CmsFileStore store = this.getCmsStoreByRootDirId(rootDir.getNodeId());
+			CmsFileStore store = getCmsStoreByRootDirId(rootDir.getNodeId());
 			path = store.getStorePath() + path;
 		}
 		
@@ -409,13 +433,10 @@ public class FileStoreRepository extends AbstractRepository {
 		childRootList.add(child);
 		
 		for(CmsDirectory parentNode : CollectionUtil.emptyIfNull(parentMap.get(child.getNodeId()))){
-			
-			buildChildToRootOrderedList(parentNode, parentMap, childRootList);
-			
+			buildChildToRootOrderedList(parentNode, parentMap, childRootList);	
 		}
 		
 		return childRootList;
-		
 	}
 
 	public void addFile(Path file, Long cmsDirId) throws DatabaseException {

@@ -42,7 +42,7 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
 	
 	// link directory back to file store. only will have a file store if this is a root directory
-	@OneToOne(mappedBy="rooDir")
+	@OneToOne(mappedBy="rootDir")
 	CmsFileStore fileStore = null;
 
 

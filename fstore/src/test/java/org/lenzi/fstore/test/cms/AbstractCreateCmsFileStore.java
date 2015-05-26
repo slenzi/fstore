@@ -21,14 +21,14 @@ import org.springframework.test.annotation.Rollback;
 /**
  * @author sal
  */
-public abstract class AbstractCreateFileStore extends AbstractTreeTest {
+public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
 	private  FileStoreRepository fileStoreRepository;
 	
-	public AbstractCreateFileStore() {
+	public AbstractCreateCmsFileStore() {
 		
 	}
 	
@@ -43,7 +43,7 @@ public abstract class AbstractCreateFileStore extends AbstractTreeTest {
 		CmsFileStore fileStore = null;
 		try {
 			fileStore = fileStoreRepository.createFileStore(
-					examplePath, "Example File Store", "This is an example file store.", false);
+					examplePath, "Example File Store", "This is an example file store to test create operation.", false);
 		} catch (DatabaseException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
@@ -52,7 +52,7 @@ public abstract class AbstractCreateFileStore extends AbstractTreeTest {
 		assertNotNull(fileStore);
 		
 		logger.info("Created new file store:");
-		logger.info(fileStore.toString());		
+		logger.info(fileStore.toString());
 		
 	}
 	
