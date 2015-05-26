@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -444,6 +445,58 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
+	 * Add a new directory.
+	 * 
+	 * @param parentDirId - The parent directory under which the new child directory will be created.
+	 * @param dirName - The name of the new directory
+	 * @return - reference to the newly created directory object
+	 * @throws DatabaseException - if something goes wrong...
+	 */
+	public CmsDirectory addDirectory(Long parentDirId, String dirName) throws DatabaseException {
+		
+		if(parentDirId == null){
+			throw new DatabaseException("Parent dir id param is null.");
+		}
+		if(dirName == null){
+			throw new DatabaseException("Dir name param is null.");
+		}
+		
+		CmsDirectory dir = null;
+		try {
+			dir = treeRepository.addChildNode(new CmsDirectory(parentDirId), new CmsDirectory(dirName));
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error adding new directory to parent dir => " + parentDirId, e);
+		}
+		
+		String fullPath = null;
+		try {
+			fullPath = getPath(dir.getNodeId());
+		} catch (Exception e) {
+			throw new DatabaseException("Failed to get full path to newly created directory => " + dir.getNodeId() + 
+					" which would exist under parent directory => " + parentDirId, e);
+		}
+		Path dirPath = Paths.get(fullPath);
+		
+		//add physical path on the file system
+		try {
+			FileUtil.createDirectory(dirPath, true);
+		} catch (IOException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		}
+		
+		// make sure we can read and write to the directory
+		boolean canReadWrite = Files.isReadable(dirPath) && Files.isWritable(dirPath);
+		if(!canReadWrite){
+			throw new DatabaseException("Cannot read and write to directory " + dirPath.toString());
+		}		
+		
+		logger.info("Created new sub dir!");
+		
+		return dir;
+		
+	}
+	
+	/**
 	 * Works backwards, up the tree to the root node, and builds the full path. Pass true to
 	 * include the store path.
 	 * 
@@ -462,9 +515,12 @@ public class FileStoreRepository extends AbstractRepository {
 		closureLogger.logClosure(parentClosure);
 		
 		// create a map from the parent closure data
-		HashMap<Long,List<CmsDirectory>> treeMap = closureMapBuilder.buildMapFromClosure(parentClosure);
+		HashMap<Long,CmsDirectory> treeMap = closureMapBuilder.buildParentMapFromClosure(parentClosure);
 		
 		logger.info("Parent tree map contains " + ((treeMap != null) ? treeMap.size() : "0") + " elements.");
+		for(Long id : treeMap.keySet()){
+			logger.info("Parent of node " + id + " => " + treeMap.get(id).toString());
+		}
 		
 		// build ordered list, and reverse
 		List<CmsDirectory> childRootList = new ArrayList<CmsDirectory>();
@@ -490,13 +546,16 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		return path;
 	}
-	private List<CmsDirectory> buildChildToRootOrderedList(CmsDirectory child, HashMap<Long,List<CmsDirectory>> parentMap, List<CmsDirectory> childRootList){
+	private List<CmsDirectory> buildChildToRootOrderedList(CmsDirectory child, HashMap<Long,CmsDirectory> parentMap, List<CmsDirectory> childRootList){
 		
 		logger.info("Adding node to list => " + child.toString());
 		childRootList.add(child);
 		
-		for(CmsDirectory parentNode : CollectionUtil.emptyIfNull(parentMap.get(child.getParentNodeId()))){
-			buildChildToRootOrderedList(parentNode, parentMap, childRootList);	
+		CmsDirectory parent = null;
+		if((parent = parentMap.get(child.getNodeId())) != null){
+			buildChildToRootOrderedList(parent, parentMap, childRootList);
+		}else{
+			logger.info("Node " + child.getNodeId() + " has no parents.");
 		}
 		
 		return childRootList;

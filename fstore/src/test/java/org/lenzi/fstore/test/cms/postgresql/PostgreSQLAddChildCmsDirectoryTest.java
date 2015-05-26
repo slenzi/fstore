@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.cms.AbstractGetCmsFileStore;
+import org.lenzi.fstore.test.cms.AbstractAddChildCmsDirectory;
 import org.lenzi.fstore.test.cms.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("postgresql")
 @ActiveProfiles({"postgresql"})
-public class PostgreSQLGetCmsFileStoreTest extends AbstractGetCmsFileStore {
+public class PostgreSQLAddChildCmsDirectoryTest extends AbstractAddChildCmsDirectory {
 
 	@Autowired
 	private PostgresqlCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class PostgreSQLGetCmsFileStoreTest extends AbstractGetCmsFileStore {
 	/**
 	 * 
 	 */
-	public PostgreSQLGetCmsFileStoreTest() {
+	public PostgreSQLAddChildCmsDirectoryTest() {
 
 	}
 	
@@ -42,7 +42,7 @@ public class PostgreSQLGetCmsFileStoreTest extends AbstractGetCmsFileStore {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "/Users/slenzi/Programming/sample_fetch";
+		return "/Users/slenzi/Programming/sample_add_child";
 		
 	}
 

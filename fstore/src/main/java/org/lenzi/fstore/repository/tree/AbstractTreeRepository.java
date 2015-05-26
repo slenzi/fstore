@@ -603,7 +603,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			}
 			
 			//HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
-			HashMap<Long,List<N>> treeMap = closureMapBuilder.buildMapFromClosure(closureList);
+			HashMap<Long,List<N>> treeMap = closureMapBuilder.buildChildMapFromClosure(closureList);
 			
 			/*
 			for(Long nextNodeId : treeMap.keySet()){
@@ -673,7 +673,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}
 		
 		//HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
-		HashMap<Long,List<N>> treeMap = closureMapBuilder.buildMapFromClosure(closureList);
+		HashMap<Long,List<N>> treeMap = closureMapBuilder.buildChildMapFromClosure(closureList);
 		
 		// get children for root node of sub-tree
 		List<N> childList = treeMap.get(rootNode.getNodeId());		

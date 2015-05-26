@@ -28,12 +28,12 @@ public class ClosureMapBuilder<N extends FSNode<N>> {
 	}
 	
 	/**
-	 * Builds a map where the keys are node IDs, and the values are Lists of DBNode objects.
+	 * Builds a map where the keys are parent node IDs, and the values are Lists of child DBNode objects.
 	 * 
 	 * @param closureList
 	 * @return
 	 */
-	public HashMap<Long,List<N>> buildMapFromClosure(List<DBClosure<N>> closureList) {
+	public HashMap<Long,List<N>> buildChildMapFromClosure(List<DBClosure<N>> closureList) {
 		
 		if(CollectionUtil.isEmpty(closureList)){
 			return null;
@@ -59,17 +59,61 @@ public class ClosureMapBuilder<N extends FSNode<N>> {
 	}
 	
 	/**
-	 * Builds a map where the keys are node IDs, and the values are Lists of DBNode objects.
+	 * Builds a map where the keys are child node IDs, and the values are parent nodes.
+	 * 
+	 * @param closureList
+	 * @return
+	 */
+	public HashMap<Long,N> buildParentMapFromClosure(List<DBClosure<N>> closureList) {
+		
+		if(CollectionUtil.isEmpty(closureList)){
+			return null;
+		}
+		
+		DBClosure<N> closure = null;
+		HashMap<Long,N> map = new HashMap<Long,N>();
+		
+		for(int closureIndex=0; closureIndex<closureList.size(); closureIndex++){
+			closure = closureList.get(closureIndex);
+			if(closure.hasParent() && closure.hasChild()){
+				if(closure.getParentNodeId().equals(closure.getChildNodeId())){
+					// skip depth-0 closure entries
+				}else{
+					map.put(closure.getChildNodeId(), closure.getParentNode());
+				}
+			}
+		}
+		
+		return map;
+	}
+	
+	/**
+	 * Builds a map where the keys are parent node IDs, and the values are Lists of child DBNode objects.
 	 * 
 	 * @param closureSet
 	 * @return
 	 */
-	public HashMap<Long,List<N>> buildMapFromClosure(Set<DBClosure<N>> closureSet) {
+	public HashMap<Long,List<N>> buildChildMapFromClosure(Set<DBClosure<N>> closureSet) {
 		
 		List<DBClosure<N>> list = new ArrayList<DBClosure<N>>();
 		list.addAll(closureSet);
 		
-		return buildMapFromClosure(list);
+		return buildChildMapFromClosure(list);
+		
+	}
+	
+	/**
+	 * Builds a map where the keys are child node IDs, and the values are parent nodes.
+	 * 
+	 * @param closureSet
+	 * @return
+	 */
+	public HashMap<Long,N> buildParentMapFromClosure(Set<DBClosure<N>> closureSet) {
+		
+		List<DBClosure<N>> list = new ArrayList<DBClosure<N>>();
+		list.addAll(closureSet);
+		
+		return buildParentMapFromClosure(list);
 		
 	}
 

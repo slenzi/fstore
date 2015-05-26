@@ -79,6 +79,11 @@ public abstract class FileUtil {
 			}	
 		}
 		
+		// verify it exists
+		if(!Files.exists(directory)){
+			throw new IOException("Failed to created directory on file system for unknown reason. No exception was thrown during create operation, but directory does not exist.");
+		}
+		
 	}
 
 }

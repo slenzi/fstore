@@ -35,7 +35,7 @@ public abstract class AbstractGetCmsFileStore extends AbstractTreeTest {
 	@Rollback(false)
 	public void getFileStoreByStoreId() {
 		
-		logger.info("Fetching file store by store id...");
+		logTestTitle("Fetching file store by store id");
 		
 		CmsFileStore fileStore = null;
 		try {
@@ -65,7 +65,7 @@ public abstract class AbstractGetCmsFileStore extends AbstractTreeTest {
 	@Rollback(false)
 	public void getFileStoreByRootDirId() {
 		
-		logger.info("Fetching file store by root dir id...");
+		logTestTitle("Fetching file store by root dir id");
 		
 		CmsFileStore fileStore = null;
 		try {

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.cms.AbstractCreateCmsFileStore;
 import org.lenzi.fstore.test.cms.AbstractGetCmsFileStore;
 import org.lenzi.fstore.test.cms.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class OracleGetCmsFileStoreTest extends AbstractGetCmsFileStore {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/sample_create";
+		return "C:/temp/sample_fetch";
 		
 	}
 
