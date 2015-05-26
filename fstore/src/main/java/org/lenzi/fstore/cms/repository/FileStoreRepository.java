@@ -303,9 +303,9 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Get a file store with its root directory.
+	 * Get file store by store id
 	 * 
-	 * @param storeId - the store id
+	 * @param storeId
 	 * @return
 	 * @throws DatabaseException
 	 */
@@ -313,26 +313,26 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		logger.info("Get file store by store id " + storeId);
 		
-		String hql1 = "select s from " + CmsFileStore.class.getName() + " s " +
-				"left join fetch s.rootDir d where s.storeId = :storeId and d.class";
-		
-		String hql2 = 
-				"select s  " +
-				"from CmsFileStore s, CmsDirectory d " +
-				"where s.rootDir.nodeId = d.nodeId " +
-				"and s.storeId = :storeId";
-		
-		Query q = getEntityManager().createQuery(hql2);
-		q.setParameter("storeId", storeId);
-	
-		
-		CmsFileStore store = (CmsFileStore)getSingleResult(q);
-		
-		return store;
+		return getCmsStoreByStoreIdCriteria(storeId);
 		
 	}
-	// not workig
-	private CmsFileStore getCmsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
+	
+	/**
+	 * Get file store by root dir id
+	 * 
+	 * @param dirId - id of the root dir for the file store
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileStore getCmsStoreByRootDirId(Long dirId) throws DatabaseException {
+		
+		logger.info("Get file store by root dir id " + dirId);
+		
+		return getCmsStoreByRootDirIdCriteria(dirId);
+		
+	}	
+	
+	public CmsFileStore getCmsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
 		
 		logger.info("Get file store by store id " + storeId);
 		
@@ -360,18 +360,48 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		return tquery.getSingleResult();
 		
-	}
+	}	
 	
 	/**
 	 * Get a file store with its root directory.
 	 * 
-	 * @param rootDirId - the ID of the store's root directory
+	 * @param storeId - the store id
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public CmsFileStore getCmsStoreByRootDirId(Long rootDirId) throws DatabaseException {
+	private CmsFileStore getCmsStoreByStoreIdHql(Long storeId) throws DatabaseException {
 		
-		logger.info("Get store by root dir id " + rootDirId);
+		logger.info("Get file store by store id " + storeId);
+		
+		String hql1 = "select s from " + CmsFileStore.class.getName() + " s " +
+				"left join fetch s.rootDir d where s.storeId = :storeId and d.class";
+		
+		String hql2 = 
+				"select s  " +
+				"from CmsFileStore s, CmsDirectory d " +
+				"where s.rootDir.nodeId = d.nodeId " +
+				"and s.storeId = :storeId";
+		
+		Query q = getEntityManager().createQuery(hql1);
+		q.setParameter("storeId", storeId);
+	
+		
+		CmsFileStore store = (CmsFileStore)getSingleResult(q);
+		
+		return store;
+		
+	}	
+	
+	/**
+	 * Get a file store with its root directory.
+	 * 
+	 * @param dirId - the ID of the store's root directory
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileStore getCmsStoreByRootDirIdCriteria(Long dirId) throws DatabaseException {
+		
+		logger.info("Get store by root dir id " + dirId);
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -386,14 +416,14 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		query.select(root);
 		query.where(
-				cb.equal(rootDir.get(CmsDirectory_.nodeId), rootDirId)
+				cb.equal(rootDir.get(CmsDirectory_.nodeId), dirId)
 				);
 		
 		CmsFileStore store = null;
 		try {
 			store = (CmsFileStore) this.getSingleResult(query);
 		} catch (Exception e) {
-			throw new DatabaseException("Error retrieving file store for for root dir id => " + rootDirId);
+			throw new DatabaseException("Error retrieving file store for for root dir id => " + dirId);
 		}
 		
 		return store;

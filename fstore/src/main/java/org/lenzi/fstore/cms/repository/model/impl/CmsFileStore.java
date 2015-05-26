@@ -61,7 +61,7 @@ public class CmsFileStore implements Comparable<CmsFileStore>, Serializable {
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;	
 	
-	@OneToOne(optional=false, targetEntity = CmsDirectory.class)
+	@OneToOne(optional=false, fetch=FetchType.EAGER, targetEntity = CmsDirectory.class)
 	@JoinColumn(name = "NODE_ID", insertable=false, updatable=false)
 	@Fetch(FetchMode.JOIN)
 	private CmsDirectory rootDir = null;
