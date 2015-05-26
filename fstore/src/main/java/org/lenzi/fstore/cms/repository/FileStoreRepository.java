@@ -567,7 +567,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		CmsDirectory cmsDirectory = null;
 		try {
-			cmsDirectory = treeRepository.getNode(new CmsDirectory(cmsDirId));
+			cmsDirectory = getCmsDirectory(cmsDirId, CmsFileFetch.META);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
 		}
@@ -582,20 +582,24 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new IOException("Error reading data from file => " + file.toString(), e);
 		}
 		
+		String fileName = file.getFileName().toString();
+		logger.info("Adding file => " + fileName);
+		
 		// create cms file to store binary data
 		CmsFile cmsFile = new CmsFile();
 		cmsFile.setFileData(fileBytes);
 		
 		// create cms file entry for meta data, and link to cms file
 		CmsFileEntry cmsFileEntry = new CmsFileEntry();
-		cmsFileEntry.setFileName(file.getFileName().toString());
+		cmsFileEntry.setDirectory(cmsDirectory);
+		cmsFileEntry.setFileName(fileName);
 		cmsFileEntry.setFileSize(Files.size(file));
 		cmsFileEntry.setFile(cmsFile);
 		
 		logger.info("Cms File Entry => " + cmsFileEntry);
 		
 		// persist cms file entry, and cms file binary data
-		cmsDirectory.getFileEntries().add(cmsFileEntry);
+		cmsDirectory.addFileEntry(cmsFileEntry);
 		
 		logger.info("Merging changes");
 		

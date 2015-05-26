@@ -42,7 +42,7 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	private String dirName;
 	
 	// link directory to files
-	@OneToMany(mappedBy="directory", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy="directory", cascade=CascadeType.ALL)
 	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
 	
 	// link directory back to file store. only will have a file store if this is a root directory
@@ -93,6 +93,10 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	 */
 	public void setFileEntries(Set<CmsFileEntry> fileEntries) {
 		this.fileEntries = fileEntries;
+	}
+	
+	public void addFileEntry(CmsFileEntry e){
+		fileEntries.add(e);
 	}
 
 	/**

@@ -30,9 +30,6 @@ import javax.persistence.Transient;
 	sequenceName="FS_CMS_FILE_ID_SEQUENCE", allocationSize = 1)
 public class CmsFileEntry implements Serializable {
 
-	/**
-	 * 
-	 */
 	@Transient
 	private static final long serialVersionUID = 2945275457068233067L;
 	
@@ -42,7 +39,7 @@ public class CmsFileEntry implements Serializable {
 	private Long fileId = 0L;	
 	
 	@Column(name = "FILE_NAME", nullable = false)
-	private String fileName;
+	private String fileName = "unknown";
 	
 	@Column(name = "FILE_SIZE", nullable = false)
 	private Long fileSize = 0L;
@@ -54,11 +51,11 @@ public class CmsFileEntry implements Serializable {
 	    joinColumns = @JoinColumn( name="FILE_ID"),
 	    inverseJoinColumns = @JoinColumn( name="NODE_ID")
     )
-	private CmsDirectory directory;
+	private CmsDirectory directory = null;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
-	private CmsFile file;
+	private CmsFile file = null;
 
 	/**
 	 * 
@@ -87,7 +84,7 @@ public class CmsFileEntry implements Serializable {
 	public String getFileName() {
 		return fileName;
 	}
-
+	
 	/**
 	 * @param fileName the fileName to set
 	 */
@@ -107,6 +104,20 @@ public class CmsFileEntry implements Serializable {
 	 */
 	public void setFileSize(Long fileSize) {
 		this.fileSize = fileSize;
+	}
+
+	/**
+	 * @return the directory
+	 */
+	public CmsDirectory getDirectory() {
+		return directory;
+	}
+
+	/**
+	 * @param directory the directory to set
+	 */
+	public void setDirectory(CmsDirectory directory) {
+		this.directory = directory;
 	}
 
 	/**
