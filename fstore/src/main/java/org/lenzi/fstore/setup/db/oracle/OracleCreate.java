@@ -103,6 +103,7 @@ public class OracleCreate {
 	private String SQL_CREATE_TABLE_FS_CMS_FILE_ENTRY =
 		"create table FS_CMS_FILE_ENTRY ( " +  
 		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
+		"	FILE_SIZE NUMBER(15,0) NOT NULL, " + 
 		"	FILE_NAME VARCHAR2(250) NOT NULL, " +  
 		"	PRIMARY KEY (FILE_ID) " +  
 		")";

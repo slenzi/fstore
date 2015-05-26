@@ -6,6 +6,7 @@ package org.lenzi.fstore.cms.repository.model.impl;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -41,7 +42,7 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	private String dirName;
 	
 	// link directory to files
-	@OneToMany(mappedBy="directory")
+	@OneToMany(mappedBy="directory", cascade = CascadeType.PERSIST)
 	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
 	
 	// link directory back to file store. only will have a file store if this is a root directory

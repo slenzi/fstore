@@ -104,7 +104,8 @@ public class PostgreSQLCreate {
 		"drop table " + SCHEMA + "FS_CMS_FILE_ENTRY";	
 	private String SQL_CREATE_TABLE_FS_CMS_FILE_ENTRY =
 		"create table " + SCHEMA + "FS_CMS_FILE_ENTRY ( " +  
-		"	FILE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	FILE_ID NUMERIC(15,0) NOT NULL, " +
+		"	FILE_SIZE NUMERIC(15,0) NOT NULL, " +
 		"	FILE_NAME CHARACTER VARYING(250) NOT NULL, " +  
 		"	PRIMARY KEY (FILE_ID) " +  
 		")";

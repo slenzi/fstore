@@ -8,6 +8,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -38,6 +39,9 @@ public class CmsFileEntry implements Serializable {
 	@Column(name = "FILE_NAME", nullable = false)
 	private String fileName;
 	
+	@Column(name = "FILE_SIZE", nullable = false)
+	private Long fileSize = 0L;
+	
 	// files belong to one directory
 	@ManyToOne
 	@JoinTable(
@@ -48,7 +52,7 @@ public class CmsFileEntry implements Serializable {
 	private CmsDirectory directory;
 	
 	// the binary data for the file
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
 	private CmsFile file;
 
@@ -85,6 +89,20 @@ public class CmsFileEntry implements Serializable {
 	 */
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	/**
+	 * @return the fileSize
+	 */
+	public Long getFileSize() {
+		return fileSize;
+	}
+
+	/**
+	 * @param fileSize the fileSize to set
+	 */
+	public void setFileSize(Long fileSize) {
+		this.fileSize = fileSize;
 	}
 
 	/**

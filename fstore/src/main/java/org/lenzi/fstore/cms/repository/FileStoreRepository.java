@@ -32,12 +32,16 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory_;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFile;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
+import org.lenzi.fstore.repository.model.impl.FSNode_;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.service.ClosureMapBuilder;
@@ -72,6 +76,10 @@ public class FileStoreRepository extends AbstractRepository {
 	
 	@Autowired
 	private ClosureLogger<CmsDirectory> closureLogger;
+	
+	public enum CmsFileFetch {
+		META, META_AND_BYTES
+	}
 	
 	/**
 	 * 
@@ -490,19 +498,86 @@ public class FileStoreRepository extends AbstractRepository {
 		return childRootList;
 	}
 
-	public void addFile(Path file, Long cmsDirId) throws DatabaseException {
+	/**
+	 * Get a directory
+	 * 
+	 * @param dirId - directory (node) id
+	 * @param fetch - specify which data to fetch for the directory
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsDirectory getCmsDirectory(Long dirId, CmsFileFetch fetch) throws DatabaseException {
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<CmsDirectory> query = criteriaBuilder.createQuery(CmsDirectory.class);
+		Root<CmsDirectory> root = query.from(CmsDirectory.class);
+		
+		switch(fetch){
+		
+			case META:
+				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+				break;
+			
+			case META_AND_BYTES:
+				Fetch<CmsDirectory,CmsFileEntry> metaFetch = root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+				metaFetch.fetch(CmsFileEntry_.file, JoinType.LEFT);
+				break;
+				
+			default:
+				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+				break;
+				
+		}
+		
+		query.select(root);
+		query.where(
+				criteriaBuilder.equal(root.get(CmsDirectory_.nodeId), dirId)
+				);
+		
+		CmsDirectory result = getEntityManager().createQuery(query).getSingleResult();
+		
+		return result;		
+		
+	}
+	
+	public void addFile(Path file, Long cmsDirId) throws DatabaseException, IOException {
 		
 		logger.info("Adding file " + file.toString());
 		
-		// get directory
-		CmsDirectory cmsDir = treeRepository.getNodeWithParent(new CmsDirectory(cmsDirId));
-		Set<DBClosure<CmsDirectory>> parentClosure = cmsDir.getParentClosure();
+		if(Files.exists(file)){
+			throw new IOException("File does not exist => " + file.toString());
+		}
+		if(Files.isDirectory(file)){
+			throw new IOException("Path is a directory => " + file.toString());
+		}
 		
-		// if not a root node, get all parent dir data
+		CmsDirectory cmsDirectory = null;
+		try {
+			cmsDirectory = treeRepository.getNode(new CmsDirectory(cmsDirId));
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
+		}
 		
-		// get file store
+		byte[] fileBytes = null;
+		try {
+			fileBytes = Files.readAllBytes(file);
+		} catch (IOException e) {
+			throw new IOException("Error reading data from file => " + file.toString(), e);
+		}
 		
-		// build complete destination path on disk
+		// create cms file to store binary data
+		CmsFile cmsFile = new CmsFile();
+		cmsFile.setFileData(fileBytes);
+		
+		// create cms file entry for meta data, and link to cms file
+		CmsFileEntry cmsFileEntry = new CmsFileEntry();
+		cmsFileEntry.setFileName(file.getFileName().toString());
+		cmsFileEntry.setFileSize(Files.size(file));
+		cmsFileEntry.setFile(cmsFile);
+		
+		// persist cms file entry, and cms file binary data
+		
 		
 	}
 	
