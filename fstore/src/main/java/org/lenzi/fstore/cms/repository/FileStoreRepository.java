@@ -19,7 +19,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -37,7 +36,6 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.service.ClosureMapBuilder;
@@ -221,6 +219,18 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public CmsFileStore createFileStore(Path dirPath, String name, String description, boolean clearIfExists) throws DatabaseException {
 		
+		CmsFileStore store = doCreateStore(dirPath, name, description, clearIfExists);
+		
+		// re-fetch store data so store has CmsDirectory
+		//CmsFileStore storeWithDir = null;
+		//storeWithDir = getCmsStoreByStoreId(store.getStoreId());
+		
+		return store;
+		
+	}
+	// helper method for create operation
+	private CmsFileStore doCreateStore(Path dirPath, String name, String description, boolean clearIfExists) throws DatabaseException {
+		
 		logger.info("Creating file store store for path => " + dirPath.toString());
 		
 		// check for existing store paths that will conflict with the new store path
@@ -252,8 +262,8 @@ public class FileStoreRepository extends AbstractRepository {
 					name + ", path => " + dirPath.toString(), e);
 		}
 		
-		logger.info("Created CmsDirectory for store root dir");
-		logger.info(storeRootDir.toString());
+		//logger.info("Created CmsDirectory for store root dir");
+		//logger.info(storeRootDir.toString());
 		
 		// create new file store and save to db
 		CmsFileStore fileStore = new CmsFileStore();
@@ -272,8 +282,11 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		getEntityManager().flush();
 		
-		logger.info("File store created in db");
-		logger.info(fileStore.toString());
+		// want to avoid insert operation...
+		fileStore.setRootDir(storeRootDir);
+		
+		//logger.info("File store created in db");
+		//logger.info(fileStore.toString());
 		
 		// create directory on local file system, if there is an error a DatabaseException will be thrown,
 		// and a database rollback will be performed so that the database and file system remain in sync.
@@ -283,7 +296,7 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new DatabaseException(e.getMessage(), e);
 		}
 		
-		logger.info("Created path on local file system => " + dirPath.toString());
+		//logger.info("Created path on local file system => " + dirPath.toString());
 		
 		// make sure we can read and write to the directory
 		boolean canReadWrite = Files.isReadable(dirPath) && Files.isWritable(dirPath);
@@ -291,14 +304,10 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new DatabaseException("Cannot read and write to directory " + dirPath.toString());
 		}
 		
-		logger.info("Read and write permissions look OK!");
-		logger.info("Done!");
+		//logger.info("Read and write permissions look OK!");
+		logger.info("Created file store!");
 		
-		// re-fetch store data so store has CmsDirectory
-		CmsFileStore store = null;
-		store = getCmsStoreByStoreId(fileStore.getStoreId());
-		
-		return store;
+		return fileStore;		
 		
 	}
 	
@@ -334,7 +343,7 @@ public class FileStoreRepository extends AbstractRepository {
 	
 	public CmsFileStore getCmsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
 		
-		logger.info("Get file store by store id " + storeId);
+		logger.info("Get file store by store id " + storeId + " criteria");
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -371,7 +380,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	private CmsFileStore getCmsStoreByStoreIdHql(Long storeId) throws DatabaseException {
 		
-		logger.info("Get file store by store id " + storeId);
+		logger.info("Get file store by store id " + storeId + " hql");
 		
 		String hql1 = "select s from " + CmsFileStore.class.getName() + " s " +
 				"left join fetch s.rootDir d where s.storeId = :storeId and d.class";
@@ -401,7 +410,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public CmsFileStore getCmsStoreByRootDirIdCriteria(Long dirId) throws DatabaseException {
 		
-		logger.info("Get store by root dir id " + dirId);
+		logger.info("Get store by root dir id " + dirId + " criteria");
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		

@@ -49,10 +49,16 @@ public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 			e.printStackTrace();
 		}
 		
-		assertNotNull(fileStore);
+		logger.info("Have file store => " + ((fileStore != null) ? true : false));
+		logger.info("Have root dir => " + ((fileStore != null) ? fileStore.hasRootDir() : false));		
 		
-		logger.info("Created new file store:");
+		assertNotNull(fileStore);
+		assertNotNull(fileStore.getRootDir());
+		
+		logger.info("");
+		logger.info("Newly created file store:");
 		logger.info(fileStore.toString());
+		logger.info("");
 		
 	}
 	
