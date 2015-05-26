@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -309,6 +310,29 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @throws DatabaseException
 	 */
 	public CmsFileStore getCmsStoreByStoreId(Long storeId) throws DatabaseException {
+		
+		logger.info("Get file store by store id " + storeId);
+		
+		String hql1 = "select s from " + CmsFileStore.class.getName() + " s " +
+				"left join fetch s.rootDir d where s.storeId = :storeId and d.class";
+		
+		String hql2 = 
+				"select s  " +
+				"from CmsFileStore s, CmsDirectory d " +
+				"where s.rootDir.nodeId = d.nodeId " +
+				"and s.storeId = :storeId";
+		
+		Query q = getEntityManager().createQuery(hql2);
+		q.setParameter("storeId", storeId);
+	
+		
+		CmsFileStore store = (CmsFileStore)getSingleResult(q);
+		
+		return store;
+		
+	}
+	// not workig
+	private CmsFileStore getCmsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
 		
 		logger.info("Get file store by store id " + storeId);
 		

@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.lenzi.fstore.repository.model.impl.FSClosure;
 import org.lenzi.fstore.util.DateUtil;
 import org.lenzi.fstore.util.StringUtil;
 
@@ -60,7 +61,7 @@ public class CmsFileStore implements Comparable<CmsFileStore>, Serializable {
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;	
 	
-	@OneToOne(optional=false)
+	@OneToOne(optional=false, targetEntity = CmsDirectory.class)
 	@JoinColumn(name = "NODE_ID", insertable=false, updatable=false)
 	@Fetch(FetchMode.JOIN)
 	private CmsDirectory rootDir = null;
