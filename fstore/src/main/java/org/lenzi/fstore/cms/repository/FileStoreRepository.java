@@ -226,10 +226,6 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		CmsFileStore store = doCreateStore(dirPath, name, description, clearIfExists);
 		
-		// re-fetch store data so store has CmsDirectory
-		//CmsFileStore storeWithDir = null;
-		//storeWithDir = getCmsStoreByStoreId(store.getStoreId());
-		
 		return store;
 		
 	}
@@ -267,9 +263,6 @@ public class FileStoreRepository extends AbstractRepository {
 					name + ", path => " + dirPath.toString(), e);
 		}
 		
-		//logger.info("Created CmsDirectory for store root dir");
-		//logger.info(storeRootDir.toString());
-		
 		// create new file store and save to db
 		CmsFileStore fileStore = new CmsFileStore();
 		fileStore.setName(name);
@@ -290,27 +283,11 @@ public class FileStoreRepository extends AbstractRepository {
 		// want to avoid insert operation...
 		fileStore.setRootDir(storeRootDir);
 		
-		//logger.info("File store created in db");
-		//logger.info(fileStore.toString());
-		
-		// create directory on local file system, if there is an error a DatabaseException will be thrown,
-		// and a database rollback will be performed so that the database and file system remain in sync.
 		try {
-			FileUtil.createDirectory(dirPath, clearIfExists);
-		} catch (IOException e) {
-			throw new DatabaseException(e.getMessage(), e);
+			createDirOnFileSystem(dirPath, true);
+		} catch (SecurityException | IOException e) {
+			throw new DatabaseException("Error creating directory on local file system. ", e);
 		}
-		
-		//logger.info("Created path on local file system => " + dirPath.toString());
-		
-		// make sure we can read and write to the directory
-		boolean canReadWrite = Files.isReadable(dirPath) && Files.isWritable(dirPath);
-		if(!canReadWrite){
-			throw new DatabaseException("Cannot read and write to directory " + dirPath.toString());
-		}
-		
-		//logger.info("Read and write permissions look OK!");
-		logger.info("Created file store!");
 		
 		return fileStore;		
 		
@@ -357,7 +334,6 @@ public class FileStoreRepository extends AbstractRepository {
 		Root<CmsFileStore> root = query.from(type);
 		
 		//javax.persistence.criteria.Path<CmsDirectory> rootDir = root.get(CmsFileStore_.rootDir);
-		
 		//Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir, JoinType.INNER);
 		Fetch<CmsFileStore,CmsDirectory> rootDirFetch =  root.fetch(CmsFileStore_.rootDir, JoinType.LEFT);
 		
@@ -373,36 +349,6 @@ public class FileStoreRepository extends AbstractRepository {
 		TypedQuery<CmsFileStore> tquery = getEntityManager().createQuery(query);
 		
 		return tquery.getSingleResult();
-		
-	}	
-	
-	/**
-	 * Get a file store with its root directory.
-	 * 
-	 * @param storeId - the store id
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private CmsFileStore getCmsStoreByStoreIdHql(Long storeId) throws DatabaseException {
-		
-		logger.info("Get file store by store id " + storeId + " hql");
-		
-		String hql1 = "select s from " + CmsFileStore.class.getName() + " s " +
-				"left join fetch s.rootDir d where s.storeId = :storeId and d.class";
-		
-		String hql2 = 
-				"select s  " +
-				"from CmsFileStore s, CmsDirectory d " +
-				"where s.rootDir.nodeId = d.nodeId " +
-				"and s.storeId = :storeId";
-		
-		Query q = getEntityManager().createQuery(hql1);
-		q.setParameter("storeId", storeId);
-	
-		
-		CmsFileStore store = (CmsFileStore)getSingleResult(q);
-		
-		return store;
 		
 	}	
 	
@@ -477,20 +423,11 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		Path dirPath = Paths.get(fullPath);
 		
-		//add physical path on the file system
 		try {
-			FileUtil.createDirectory(dirPath, true);
-		} catch (IOException e) {
-			throw new DatabaseException(e.getMessage(), e);
+			createDirOnFileSystem(dirPath, true);
+		} catch (SecurityException | IOException e) {
+			throw new DatabaseException("Error creating directory on local file system. ", e);
 		}
-		
-		// make sure we can read and write to the directory
-		boolean canReadWrite = Files.isReadable(dirPath) && Files.isWritable(dirPath);
-		if(!canReadWrite){
-			throw new DatabaseException("Cannot read and write to directory " + dirPath.toString());
-		}		
-		
-		logger.info("Created new sub dir!");
 		
 		return dir;
 		
@@ -512,15 +449,10 @@ public class FileStoreRepository extends AbstractRepository {
 		CmsDirectory cmsDir = treeRepository.getNodeWithParent(new CmsDirectory(cmsDirId));
 		Set<DBClosure<CmsDirectory>> parentClosure = cmsDir.getParentClosure();
 		
-		closureLogger.logClosure(parentClosure);
+		//closureLogger.logClosure(parentClosure);
 		
 		// create a map from the parent closure data
 		HashMap<Long,CmsDirectory> treeMap = closureMapBuilder.buildParentMapFromClosure(parentClosure);
-		
-		logger.info("Parent tree map contains " + ((treeMap != null) ? treeMap.size() : "0") + " elements.");
-		for(Long id : treeMap.keySet()){
-			logger.info("Parent of node " + id + " => " + treeMap.get(id).toString());
-		}
 		
 		// build ordered list, and reverse
 		List<CmsDirectory> childRootList = new ArrayList<CmsDirectory>();
@@ -548,14 +480,11 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	private List<CmsDirectory> buildChildToRootOrderedList(CmsDirectory child, HashMap<Long,CmsDirectory> parentMap, List<CmsDirectory> childRootList){
 		
-		logger.info("Adding node to list => " + child.toString());
 		childRootList.add(child);
 		
 		CmsDirectory parent = null;
 		if((parent = parentMap.get(child.getNodeId())) != null){
 			buildChildToRootOrderedList(parent, parentMap, childRootList);
-		}else{
-			logger.info("Node " + child.getNodeId() + " has no parents.");
 		}
 		
 		return childRootList;
@@ -574,6 +503,17 @@ public class FileStoreRepository extends AbstractRepository {
 		// get file store
 		
 		// build complete destination path on disk
+		
+	}
+	
+	private void createDirOnFileSystem(Path path, boolean clearIfExists) throws IOException, SecurityException {
+		
+		FileUtil.createDirectory(path, clearIfExists);
+
+		boolean canReadWrite = Files.isReadable(path) && Files.isWritable(path);
+		if(!canReadWrite){
+			throw new SecurityException("Cannot read and write to directory " + path.toString());
+		}		
 		
 	}
 

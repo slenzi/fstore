@@ -2,8 +2,11 @@ package org.lenzi.fstore.util;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +59,8 @@ public abstract class FileUtil {
 			if(!isEmpty && clearIfNotEmpty){
 				logger.info("Deleting " + directory.toString());
 				try {
-					Files.delete(directory);
+					deleteDirectory(directory);
+					//Files.delete(directory);
 				} catch (IOException e) {
 					throw new IOException("Error removing existing directory " + directory.toString());
 				}
@@ -83,6 +87,32 @@ public abstract class FileUtil {
 		if(!Files.exists(directory)){
 			throw new IOException("Failed to created directory on file system for unknown reason. No exception was thrown during create operation, but directory does not exist.");
 		}
+		
+	}
+	
+	/**
+	 * Delete a directory, and everything in it if the directories contains files and sub directories.
+	 * 
+	 * @param directory
+	 * @throws IOException
+	 */
+	public static void deleteDirectory(final Path directory) throws IOException {
+		
+		Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+			
+			   @Override
+			   public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				   Files.delete(file);
+				   return FileVisitResult.CONTINUE;
+			   }
+
+			   @Override
+			   public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				   Files.delete(dir);
+				   return FileVisitResult.CONTINUE;
+			   }
+
+		   });		
 		
 	}
 
