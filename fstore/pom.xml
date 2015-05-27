@@ -35,7 +35,7 @@
 		<!-- not sure if hibernate jpa is needed -->
 		<version.hibernate.jpa>1.0.0.Final</version.hibernate.jpa>
 		<version.jdbc.postgres>9.1-901-1.jdbc4</version.jdbc.postgres>
-		<version.jdbc.oracle>10.2.0.2</version.jdbc.oracle>
+		<version.jdbc.oracle>11.2.0.4</version.jdbc.oracle> <!-- was 10.2.0.2 -->
 	</properties>
 	
 	<profiles>
@@ -223,12 +223,19 @@
 		
 		<!-- Oracle JDBC Driver -->
 		
+		<!-- old version -->
+		<!--
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc14</artifactId>
 			<version>${version.jdbc.oracle}</version>
 		</dependency>
-		
+		-->
+		<dependency>
+		  <groupId>com.oracle</groupId>
+		  <artifactId>ojdbc6</artifactId>
+		  <version>${version.jdbc.oracle}</version>
+		</dependency>		
 		
 		<!-- Apache CXF web services -->
 		<dependency>

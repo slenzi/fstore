@@ -25,7 +25,6 @@ public class CmsFile implements Serializable  {
 	private static final long serialVersionUID = -6133759070827743119L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "FILE_ID", updatable = false, nullable = false)
 	private Long fileId = 0L;
 	

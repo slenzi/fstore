@@ -597,11 +597,12 @@ public class FileStoreRepository extends AbstractRepository {
 		cmsDirectory.addFileEntry(cmsFileEntry);
 		cmsDirectory = (CmsDirectory)merge(cmsDirectory);
 		
-		// set file byte data
-		// create cms file to store binary data
+		// create cms file object for file byte data, and persist
 		CmsFile cmsFile = new CmsFile();
+		cmsFile.setFileId(cmsFileEntry.getFileId());
 		cmsFile.setFileData(fileBytes);
-		//cmsFileEntry.setFile(cmsFile);		
+		persist(cmsFile);
+		getEntityManager().flush();
 		
 		logger.info("Added new CmsFileEntry => " + cmsFileEntry.getFileId() + " to directory => " + cmsDirectory.getNodeId());
 		
