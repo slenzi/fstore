@@ -5,6 +5,8 @@ package org.lenzi.fstore.cms.repository;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -41,7 +42,6 @@ import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.impl.FSNode_;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.service.ClosureMapBuilder;
@@ -77,18 +77,35 @@ public class FileStoreRepository extends AbstractRepository {
 	@Autowired
 	private ClosureLogger<CmsDirectory> closureLogger;
 	
-	public enum CmsFileFetch {
-		META, META_AND_BYTES
+	/**
+	 * When fetching a CmsDirectory, specify which file data to fetch.
+	 */
+	public enum CmsDirectoryFetch {
+		
+		// just meta data for each file
+		FILE_META,
+		
+		// meta data and byte data
+		FILE_META_WITH_DATA
+		
 	}
 	
 	/**
-	 * 
+	 * When fetching a CmsFileEntry, specify which file data to fetch.
 	 */
+	public enum CmsFileEntryFetch {
+		
+		// just meta data for each file
+		FILE_META,
+		
+		// meta data and byte data
+		FILE_META_WITH_DATA
+		
+	}
+	
 	private static final long serialVersionUID = 8439120459143189611L;
 
-	/**
-	 * 
-	 */
+	
 	public FileStoreRepository() {
 	
 	}
@@ -103,12 +120,6 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @return
 	 */
 	public List<CmsFileStore> getParentFileStores(Path dirPath) throws DatabaseException {
-		
-		//
-		// make sure new path is not a sub directory of a current file store path
-		//
-		// select f from CmsFileStore as f
-		// where '/Users/slenzi/Programming/sample_store/foo' like concat(f.storePath, '%') 
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -141,12 +152,6 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @return
 	 */
 	public List<CmsFileStore> getChildFileStores(Path dirPath) throws DatabaseException {
-		
-		//
-		// Make sure new path is not a parent dir of a current file store path
-		//
-		// select f from CmsFileStore as f
-		// where f.storePath like concat('/Users/slenzi/Programming', '%')
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -442,10 +447,10 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Works backwards, up the tree to the root node, and builds the full path. Pass true to
+	 * Works backwards up the tree to the root node, and builds the full path. Pass true to
 	 * include the store path.
 	 * 
-	 * @param cmsDirId
+	 * @param cmsDirId - id of the cms directory (tree node)
 	 * @return
 	 * @throws DatabaseException
 	 */
@@ -465,6 +470,7 @@ public class FileStoreRepository extends AbstractRepository {
 		// build ordered list, and reverse
 		List<CmsDirectory> childRootList = new ArrayList<CmsDirectory>();
 		buildChildToRootOrderedList(cmsDir, treeMap, childRootList);
+		// after reverse, first node in list is the root dir
 		Collections.reverse(childRootList);
 		
 		// build path from list data
@@ -485,7 +491,10 @@ public class FileStoreRepository extends AbstractRepository {
 		path = store.getStorePath() + path;
 		
 		return path;
+		
 	}
+	// builds list of cms directory nodes. first node in returned list is the child most node, and last 
+	// node in returned list is the parent most node (root node)
 	private List<CmsDirectory> buildChildToRootOrderedList(CmsDirectory child, HashMap<Long,CmsDirectory> parentMap, List<CmsDirectory> childRootList){
 		
 		childRootList.add(child);
@@ -496,32 +505,32 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 		return childRootList;
+		
 	}
 
 	/**
-	 * Get a directory
+	 * Fetch a CmsDirectory
 	 * 
 	 * @param dirId - directory (node) id
-	 * @param fetch - specify which data to fetch for the directory
+	 * @param fetch - specify which file data to fetch for the directory
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public CmsDirectory getCmsDirectory(Long dirId, CmsFileFetch fetch) throws DatabaseException {
+	public CmsDirectory getCmsDirectoryById(Long dirId, CmsDirectoryFetch fetch) throws DatabaseException {
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-		
 		CriteriaQuery<CmsDirectory> query = criteriaBuilder.createQuery(CmsDirectory.class);
 		Root<CmsDirectory> root = query.from(CmsDirectory.class);
 		
 		switch(fetch){
 		
 			// just meta data
-			case META:
+			case FILE_META:
 				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				break;
 			
 			// meta data and byte data
-			case META_AND_BYTES:
+			case FILE_META_WITH_DATA:
 				Fetch<CmsDirectory,CmsFileEntry> metaFetch = root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				metaFetch.fetch(CmsFileEntry_.file, JoinType.LEFT);
 				break;
@@ -539,6 +548,48 @@ public class FileStoreRepository extends AbstractRepository {
 				);
 		
 		CmsDirectory result = getEntityManager().createQuery(query).getSingleResult();
+		
+		return result;		
+		
+	}
+	
+	/**
+	 * Fetch a CmsFileEntry
+	 * 
+	 * @param fileId - file entry id
+	 * @param fetch - specify which file data to fetch for the entry, just meta data or also CmsFile which includes byte data
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileEntry getCmsFileEntryById(Long fileId, CmsFileEntryFetch fetch) throws DatabaseException {
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<CmsFileEntry> query = criteriaBuilder.createQuery(CmsFileEntry.class);
+		Root<CmsFileEntry> root = query.from(CmsFileEntry.class);		
+		
+		switch(fetch){
+		
+			// just meta data, no extra behavior
+			case FILE_META:
+				break;
+			
+			// include CmsFile with byte data
+			case FILE_META_WITH_DATA:
+				root.fetch(CmsFileEntry_.file, JoinType.LEFT);
+				break;
+			
+			// default to just meta data, no extra behavior
+			default:
+				break;
+			
+		}
+		
+		query.select(root);
+		query.where(
+				criteriaBuilder.equal(root.get(CmsFileEntry_.fileId), fileId)
+				);
+		
+		CmsFileEntry result = getEntityManager().createQuery(query).getSingleResult();
 		
 		return result;		
 		
@@ -567,7 +618,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		CmsDirectory cmsDirectory = null;
 		try {
-			cmsDirectory = getCmsDirectory(cmsDirId, CmsFileFetch.META);
+			cmsDirectory = getCmsDirectoryById(cmsDirId, CmsDirectoryFetch.FILE_META);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
 		}
@@ -604,10 +655,35 @@ public class FileStoreRepository extends AbstractRepository {
 		persist(cmsFile);
 		getEntityManager().flush();
 		
-		logger.info("Added new CmsFileEntry => " + cmsFileEntry.getFileId() + " to directory => " + cmsDirectory.getNodeId());
+		// copy file to directory for CmsDirectory
+		Path target =  Paths.get(dirPath + File.separator + fileName);
+		try {
+			
+			Files.copy(file, target);
+			
+		} catch (FileAlreadyExistsException e){
+			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+		} catch (DirectoryNotEmptyException e){
+			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+		}
 		
 	}
 	
+	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, CmsDirectory directory, Throwable e){
+		StringBuffer buf = new StringBuffer();
+		String cr = System.getProperty("line.separator");
+		buf.append("Error copying source file => " + source.toString() + " to target file => " + target.toString() + cr);
+		buf.append("CMS directory id => " + directory.getNodeId() + ", name => " + directory.getName() + cr);
+		buf.append("Throwable => " + e.getClass().getName() + cr);
+		buf.append("Message => " + e.getMessage() + cr);
+		return new DatabaseException(buf.toString(), e);
+	}
+	
+	// create directory on file system
 	private void createDirOnFileSystem(Path path, boolean clearIfExists) throws IOException, SecurityException {
 		
 		FileUtil.createDirectory(path, clearIfExists);

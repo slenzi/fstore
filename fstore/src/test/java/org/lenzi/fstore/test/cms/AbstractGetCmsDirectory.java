@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.lenzi.fstore.cms.repository.FileStoreRepository;
-import org.lenzi.fstore.cms.repository.FileStoreRepository.CmsFileFetch;
+import org.lenzi.fstore.cms.repository.FileStoreRepository.CmsDirectoryFetch;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.repository.exception.DatabaseException;
@@ -41,7 +41,7 @@ public abstract class AbstractGetCmsDirectory extends AbstractTreeTest {
 		
 		CmsDirectory cmsDirectory = null;
 		try {
-			cmsDirectory = fileStoreRepository.getCmsDirectory(1L, CmsFileFetch.META);
+			cmsDirectory = fileStoreRepository.getCmsDirectoryById(1L, CmsDirectoryFetch.FILE_META);
 		} catch (DatabaseException e) {
 			logger.error("Failed to fetch cms directory. " + e.getMessage());
 			e.printStackTrace();

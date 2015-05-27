@@ -15,6 +15,18 @@ public abstract class FileUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
 	
+	public static void copyFile(Path source, Path target) throws IOException, SecurityException {
+		
+		try {
+			Files.copy(source, target);
+		} catch (IOException e) {
+			throw new IOException("Error copying " + source.toString() + " to " + target.toString() + ". " + e.getMessage(), e);
+		} catch (SecurityException e) {
+			throw new SecurityException("Error copying " + source.toString() + " to " + target.toString() + ". " + e.getMessage(), e);
+		}
+		
+	}
+	
 	/**
 	 * Check if a directory is empty.
 	 * 

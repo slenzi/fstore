@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.lenzi.fstore.cms.repository.FileStoreRepository;
-import org.lenzi.fstore.cms.repository.FileStoreRepository.CmsFileFetch;
-import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -50,6 +48,7 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		
 		assertNotNull(resourceLoader);
 		
+		// get test file for upload to database
 		Resource res = resourceLoader.getResource("classpath:image/honey_badger.JPG");
 		Path filePath = null;
 		try {
@@ -58,6 +57,8 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 			logger.error("Failed to get file resource." + e.getMessage());
 			e.printStackTrace();
 		}
+		
+		// persist file to database
 		try {
 			
 			logger.info("Test file => " + filePath.toString());
@@ -69,7 +70,7 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (DatabaseException e) {
-			logger.error("error adding file. " + e.getMessage());
+			logger.error("Error adding file. " + e.getMessage());
 			e.printStackTrace();
 		}
 	

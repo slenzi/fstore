@@ -14,8 +14,9 @@ import org.lenzi.fstore.util.CollectionUtil;
 import org.springframework.stereotype.Service;
 
 /**
+ * Build maps from closure data.
+ * 
  * @author slenzi
- *
  */
 @Service
 public class ClosureMapBuilder<N extends FSNode<N>> {
@@ -88,7 +89,7 @@ public class ClosureMapBuilder<N extends FSNode<N>> {
 	}
 	
 	/**
-	 * Builds a map where the keys are parent node IDs, and the values are Lists of child DBNode objects.
+	 * Builds a map where the keys are parent node IDs, and the values are Lists of child node objects.
 	 * 
 	 * @param closureSet
 	 * @return
