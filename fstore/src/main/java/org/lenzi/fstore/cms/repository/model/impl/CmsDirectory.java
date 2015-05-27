@@ -41,6 +41,12 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	@Column(name = "DIR_NAME", nullable = false)
 	private String dirName;
 	
+	// path relative to store root dir path
+	@Column(name = "RELATIVE_DIR_PATH", nullable = false)
+	private String relativeDirPath;
+	
+	// TODO - consider adding STORE_ID so we can easily link back to the CmsFileStore
+	
 	// link directory to files
 	@OneToMany(mappedBy="directory", cascade=CascadeType.ALL)
 	private Set<CmsFileEntry> fileEntries = new HashSet<CmsFileEntry>(0);
@@ -58,15 +64,22 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	public CmsDirectory(Long id){
 		setNodeId(id);
 	}
-	
-	/**
-	 * 
-	 */
-	public CmsDirectory(String dirName) {
+
+	public CmsDirectory(String dirName, String dirPath) {
 		setName(dirName);
 		this.dirName = dirName;
+		this.relativeDirPath = dirPath;
 	}
-
+	
+	/**
+	 * The directory id is the same as FSNode.getNodeId();
+	 * 
+	 * @return
+	 */
+	public Long getDirId(){
+		return getNodeId();
+	}
+	
 	/**
 	 * @return the dirName
 	 */
@@ -81,6 +94,20 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 		this.dirName = dirName;
 	}
 	
+	/**
+	 * @return the relativeDirPath
+	 */
+	public String getRelativeDirPath() {
+		return relativeDirPath;
+	}
+
+	/**
+	 * @param relativeDirPath the relativeDirPath to set
+	 */
+	public void setRelativeDirPath(String relativeDirPath) {
+		this.relativeDirPath = relativeDirPath;
+	}
+
 	/**
 	 * @return the fileEntries
 	 */
@@ -127,6 +154,7 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 		buf.append(", \"parent_id\" : \"" + getParentNodeId() + "\"");
 		buf.append(", \"root\" : \"" + isRootNode() + "\"");
 		buf.append(", \"dir_name\" : \"" + getDirName() + "\"");
+		buf.append(", \"dir_path\" : \"" + getRelativeDirPath() + "\"");
 		buf.append(", \"dt_created\" : \"" + DateUtil.defaultFormat(getDateCreated()) + "\"");
 		buf.append(", \"dt_updated\" : \"" + DateUtil.defaultFormat(getDateUpdated()) + "\"");
 		buf.append("}");

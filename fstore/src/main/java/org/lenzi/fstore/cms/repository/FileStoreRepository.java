@@ -82,6 +82,9 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public enum CmsDirectoryFetch {
 		
+		// just directory meta, no file entries
+		FILE_NONE,		
+		
 		// just meta data for each file
 		FILE_META,
 		
@@ -224,7 +227,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 * /e/f     - match of existing store
 	 * /e/f/g   - child of existing store
 	 * 
-	 * @param dirPath - path to where all files will be stored
+	 * @param storePath - path to where all files will be stored
 	 * @param name - name of the file store
 	 * @param description - description of the file store
 	 * @param clearIfExists - if the 'dirPath' currently exists on the file system, and contains files, pass true to wipe
@@ -235,28 +238,28 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @throws DatabaseException - If the 'dirPath' exists on the file system and contains files, and 'clearIfExists' is false.
 	 * 	Also throws a DatabaseException if data cannot be persisted.
 	 */
-	public CmsFileStore createFileStore(Path dirPath, String name, String description, boolean clearIfExists) throws DatabaseException {
+	public CmsFileStore createFileStore(Path storePath, String name, String description, boolean clearIfExists) throws DatabaseException {
 		
-		CmsFileStore store = doCreateStore(dirPath, name, description, clearIfExists);
+		CmsFileStore store = doCreateStore(storePath, name, description, clearIfExists);
 		
 		return store;
 		
 	}
 	// helper method for create operation
-	private CmsFileStore doCreateStore(Path dirPath, String name, String description, boolean clearIfExists) throws DatabaseException {
+	private CmsFileStore doCreateStore(Path storePath, String name, String description, boolean clearIfExists) throws DatabaseException {
 		
-		logger.info("Creating file store store for path => " + dirPath.toString());
+		logger.info("Creating file store store for path => " + storePath.toString());
 		
 		// check for existing store paths that will conflict with the new store path
 		List<CmsFileStore> conflictingStores = null;
 		try {
-			conflictingStores = validatePath(dirPath);
+			conflictingStores = validatePath(storePath);
 		} catch (Exception e) {
 			throw new DatabaseException("Error checking for conflicting store paths.", e);
 		}
 		if(conflictingStores != null && conflictingStores.size() > 0){
 			StringBuffer buf = new StringBuffer();
-			buf.append("The following existing files stores conflict with the new file store path " + dirPath.toString() + 
+			buf.append("The following existing files stores conflict with the new file store path " + storePath.toString() + 
 					System.getProperty("line.separator"));
 			buf.append("New file store path must not be the same as an existing file store path. Additionally, new path "
 					+ "must not be a child directory of an existing store path, and must not be a parent directory of "
@@ -270,18 +273,20 @@ public class FileStoreRepository extends AbstractRepository {
 		// create root directory for new file store
 		CmsDirectory storeRootDir = null;
 		try {
-			storeRootDir = treeRepository.addRootNode(new CmsDirectory(dirPath.getFileName().toString()));
+			
+			storeRootDir = treeRepository.addRootNode(new CmsDirectory(storePath.getFileName().toString(), File.separator));
+			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to create root directory tree node for file store, name => " + 
-					name + ", path => " + dirPath.toString(), e);
+					name + ", path => " + storePath.toString(), e);
 		}
 		
 		// create new file store and save to db
 		CmsFileStore fileStore = new CmsFileStore();
 		fileStore.setName(name);
 		fileStore.setDescription(description);
-		fileStore.setNodeId(storeRootDir.getNodeId());
-		fileStore.setStorePath(dirPath.toString());
+		fileStore.setNodeId(storeRootDir.getDirId());
+		fileStore.setStorePath(storePath.toString());
 		fileStore.setDateCreated(DateUtil.getCurrentTime());
 		fileStore.setDateUpdated(DateUtil.getCurrentTime());
 		
@@ -297,7 +302,7 @@ public class FileStoreRepository extends AbstractRepository {
 		fileStore.setRootDir(storeRootDir);
 		
 		try {
-			createDirOnFileSystem(dirPath, true);
+			createDirOnFileSystem(storePath, true);
 		} catch (SecurityException | IOException e) {
 			throw new DatabaseException("Error creating directory on local file system. ", e);
 		}
@@ -404,6 +409,36 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
+	 * Get the file store for the directory.
+	 * 
+	 * @param dirId - id of directory which belongs to the file store. This does not have to be an id
+	 * 	of a root directory. This can be a child directory deep in the tree. This will walk the tree
+	 *  all the way back to the root node to get the file store.
+	 *  
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileStore getCmsFileStoreByDirId(Long dirId) throws DatabaseException {
+		
+		CmsDirectory rootDir = null;
+		try {
+			rootDir = treeRepository.getRootNode(new CmsDirectory(dirId));
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error fetching root directory for dir => " + dirId, e);
+		}
+		
+		CmsFileStore store = null;
+		try {
+			store = getCmsStoreByRootDirId(rootDir.getDirId());
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Erro fetching file store by root dir id => " + rootDir.getDirId(), e);
+		}
+		
+		return store;
+		
+	}
+	
+	/**
 	 * Add a new directory.
 	 * 
 	 * @param parentDirId - The parent directory under which the new child directory will be created.
@@ -420,29 +455,51 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new DatabaseException("Dir name param is null.");
 		}
 		
-		CmsDirectory dir = null;
+		// get parent dir
+		CmsDirectory parentDir = null;
 		try {
-			dir = treeRepository.addChildNode(new CmsDirectory(parentDirId), new CmsDirectory(dirName));
+			parentDir = getCmsDirectoryById(parentDirId, CmsDirectoryFetch.FILE_NONE);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch parent cms directory.", e);
+		}
+		
+		// get file store
+		CmsFileStore store = null;
+		try {
+			store = getCmsFileStoreByDirId(parentDir.getDirId());
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch file store for cms dir id => " + parentDir.getDirId(), e);
+		}
+		
+		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + store.getName());
+		
+		// CmsDirectory.getRelativeDirPath() returns a path relative to the store path
+		Path storePath = Paths.get(store.getStorePath());
+		Path childPath =  Paths.get(store.getStorePath() + parentDir.getRelativeDirPath() + File.separator + dirName);
+		Path childRelativePath = storePath.relativize(childPath);
+		String sChildRelativePath = childRelativePath.toString();
+		if(!sChildRelativePath.startsWith(File.separator)){
+			sChildRelativePath = File.separator + sChildRelativePath;
+		}
+		
+		// add new child dir
+		logger.info("Child dir path => " + childPath.toString());
+		CmsDirectory childDir = null;
+		try {
+			
+			childDir = treeRepository.addChildNode(parentDir, new CmsDirectory(dirName, sChildRelativePath) );
+			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Error adding new directory to parent dir => " + parentDirId, e);
 		}
 		
-		String fullPath = null;
 		try {
-			fullPath = getPath(dir.getNodeId());
-		} catch (Exception e) {
-			throw new DatabaseException("Failed to get full path to newly created directory => " + dir.getNodeId() + 
-					" which would exist under parent directory => " + parentDirId, e);
-		}
-		Path dirPath = Paths.get(fullPath);
-		
-		try {
-			createDirOnFileSystem(dirPath, true);
+			createDirOnFileSystem(childPath, true);
 		} catch (SecurityException | IOException e) {
 			throw new DatabaseException("Error creating directory on local file system. ", e);
 		}
 		
-		return dir;
+		return childDir;
 		
 	}
 	
@@ -453,8 +510,10 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @param cmsDirId - id of the cms directory (tree node)
 	 * @return
 	 * @throws DatabaseException
+	 * 
+	 * @deprecated - does not work.
 	 */
-	public String getPath(Long cmsDirId) throws DatabaseException {
+	public String getWalkPath(Long cmsDirId) throws DatabaseException {
 		
 		logger.info("Getting path for dir => " + cmsDirId);
 		
@@ -487,7 +546,7 @@ public class FileStoreRepository extends AbstractRepository {
 		String path = buf.toString();
 		
 		// optionally include the store path
-		CmsFileStore store = getCmsStoreByRootDirId(rootDir.getNodeId());
+		CmsFileStore store = getCmsStoreByRootDirId(rootDir.getDirId());
 		path = store.getStorePath() + path;
 		
 		return path;
@@ -500,7 +559,7 @@ public class FileStoreRepository extends AbstractRepository {
 		childRootList.add(child);
 		
 		CmsDirectory parent = null;
-		if((parent = parentMap.get(child.getNodeId())) != null){
+		if((parent = parentMap.get(child.getDirId())) != null){
 			buildChildToRootOrderedList(parent, parentMap, childRootList);
 		}
 		
@@ -524,18 +583,22 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		switch(fetch){
 		
-			// just meta data
+			// just directory meta, no join
+			case FILE_NONE:
+				break;
+		
+			// just file meta data
 			case FILE_META:
 				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				break;
 			
-			// meta data and byte data
+			// file meta data, and file byte data
 			case FILE_META_WITH_DATA:
 				Fetch<CmsDirectory,CmsFileEntry> metaFetch = root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				metaFetch.fetch(CmsFileEntry_.file, JoinType.LEFT);
 				break;
 			
-			// default to just meta data
+			// default to just file meta data
 			default:
 				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
 				break;
@@ -569,7 +632,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		switch(fetch){
 		
-			// just meta data, no extra behavior
+			// just meta data, no join
 			case FILE_META:
 				break;
 			
@@ -578,7 +641,7 @@ public class FileStoreRepository extends AbstractRepository {
 				root.fetch(CmsFileEntry_.file, JoinType.LEFT);
 				break;
 			
-			// default to just meta data, no extra behavior
+			// default to just meta data, no join
 			default:
 				break;
 			
@@ -614,8 +677,7 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new IOException("Path is a directory => " + file.toString());
 		}
 		
-		String dirPath = getPath(cmsDirId);
-		
+		// get parent dir
 		CmsDirectory cmsDirectory = null;
 		try {
 			cmsDirectory = getCmsDirectoryById(cmsDirId, CmsDirectoryFetch.FILE_META);
@@ -623,6 +685,21 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
 		}
 		
+		// get file store
+		CmsFileStore store = null;
+		try {
+			store = getCmsFileStoreByDirId(cmsDirectory.getDirId());
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirectory.getDirId(), e);
+		}		
+		
+		// get full path to directory using relative path from CmsDirectory and store path from CmsFileStore
+		String dirRelativePath = cmsDirectory.getRelativeDirPath();
+		if(!dirRelativePath.startsWith(File.separator)){
+			dirRelativePath = File.separator + dirRelativePath;
+		}
+		String dirAbsolutePath = store.getStorePath() + dirRelativePath;
+	
 		byte[] fileBytes = null;
 		try {
 			fileBytes = Files.readAllBytes(file);
@@ -633,8 +710,8 @@ public class FileStoreRepository extends AbstractRepository {
 		String fileName = file.getFileName().toString();
 		
 		logger.info("Adding file => " + fileName + ", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
-				", Cms Directory Id => " + cmsDirectory.getNodeId() + ", Cms Directory Name => " + cmsDirectory.getName() +
-				", File system path => " + dirPath);
+				", Cms Directory Id => " + cmsDirectory.getDirId() + ", Cms Directory Name => " + cmsDirectory.getName() +
+				", File system path => " + dirAbsolutePath);
 		
 		// create cms file entry for meta data
 		CmsFileEntry cmsFileEntry = new CmsFileEntry();
@@ -661,7 +738,7 @@ public class FileStoreRepository extends AbstractRepository {
 		cmsFile.setFileEntry(cmsFileEntry);
 		
 		// copy file to directory for CmsDirectory
-		Path target = Paths.get(dirPath + File.separator + fileName);
+		Path target = Paths.get(dirAbsolutePath + File.separator + fileName);
 		try {
 			
 			Files.copy(file, target);
@@ -689,7 +766,7 @@ public class FileStoreRepository extends AbstractRepository {
 		StringBuffer buf = new StringBuffer();
 		String cr = System.getProperty("line.separator");
 		buf.append("Error copying source file => " + source.toString() + " to target file => " + target.toString() + cr);
-		buf.append("CMS directory id => " + directory.getNodeId() + ", name => " + directory.getName() + cr);
+		buf.append("CMS directory id => " + directory.getDirId() + ", name => " + directory.getName() + cr);
 		buf.append("Throwable => " + e.getClass().getName() + cr);
 		buf.append("Message => " + e.getMessage() + cr);
 		return new DatabaseException(buf.toString(), e);
@@ -704,6 +781,37 @@ public class FileStoreRepository extends AbstractRepository {
 		if(!canReadWrite){
 			throw new SecurityException("Cannot read and write to directory " + path.toString());
 		}		
+		
+	}
+	
+	/**
+	 * Get the full absolute path for a cms directory.
+	 * 
+	 * @param cmsDirId - id of the cms directory
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public String getAbsoluteDirPath(Long cmsDirId) throws DatabaseException {
+		
+		// get directory
+		CmsDirectory cmsDirectory = null;
+		try {
+			cmsDirectory = getCmsDirectoryById(cmsDirId, CmsDirectoryFetch.FILE_META);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
+		}
+		
+		// get file store for directory
+		CmsFileStore store = null;
+		try {
+			store = getCmsFileStoreByDirId(cmsDirectory.getDirId());
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirectory.getDirId(), e);
+		}
+		
+		String path = store.getStorePath() + cmsDirectory.getRelativeDirPath();
+		
+		return path;
 		
 	}
 

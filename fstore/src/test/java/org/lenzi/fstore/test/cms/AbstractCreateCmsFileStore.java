@@ -69,7 +69,7 @@ public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 		//
 		String rootDirPath = null;
 		try {
-			rootDirPath = fileStoreRepository.getPath(fileStore.getNodeId());
+			rootDirPath = fileStoreRepository.getAbsoluteDirPath(fileStore.getNodeId());
 		} catch (DatabaseException e) {
 			logger.error("Failed to get full path for root dir of newly created file store. " + e.getMessage());
 			e.printStackTrace();

@@ -88,7 +88,7 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		
 		String dirPath = null;
 		try {
-			dirPath = fileStoreRepository.getPath(fileEntry.getDirectory().getNodeId());
+			dirPath = fileStoreRepository.getAbsoluteDirPath(fileEntry.getDirectory().getNodeId());
 		} catch (DatabaseException e) {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();

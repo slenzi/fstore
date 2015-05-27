@@ -85,7 +85,8 @@ public class OracleCreate {
 	private String SQL_CREATE_TABLE_FS_CMS_DIRECTORY =
 		"create table FS_CMS_DIRECTORY ( " + 
 		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
-		"	DIR_NAME VARCHAR2(250) NOT NULL, " + 
+		"	DIR_NAME VARCHAR2(250) NOT NULL, " +
+		"	RELATIVE_DIR_PATH VARCHAR2(250) NOT NULL, " +
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
 	
