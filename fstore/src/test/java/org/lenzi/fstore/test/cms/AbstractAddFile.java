@@ -11,7 +11,9 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.lenzi.fstore.cms.repository.FileStoreRepository;
+import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -61,6 +63,27 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 			e.printStackTrace();
 		}
 		
+		// create file store
+		Path examplePath = Paths.get(getTestFileStorePath());
+		CmsFileStore fileStore = null;
+		try {
+			fileStore = fileStoreRepository.createFileStore(
+					examplePath, "Example File Store", "This is an example file store to test adding of files.", false);
+		} catch (DatabaseException e) {
+			logger.error("Failed to create new file store. " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		// add sub dir 
+		final String subDirName1 = "upload_test";
+		CmsDirectory subTest1 = null;
+		try {
+			subTest1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
+		} catch (DatabaseException e) {
+			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
+			e.printStackTrace();
+		}		
+		
 		// persist file to database
 		CmsFileEntry fileEntry = null;
 		try {
@@ -68,7 +91,7 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 			logger.info("Test file => " + sourcePath.toString());
 			logger.info("Size => " + Files.size(sourcePath));
 			
-			fileEntry = fileStoreRepository.addFile(sourcePath, 1L);
+			fileEntry = fileStoreRepository.addFile(sourcePath, subTest1.getDirId());
 			
 		}catch(IOException e){
 			logger.error(e.getMessage());
@@ -88,7 +111,7 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		
 		String dirPath = null;
 		try {
-			dirPath = fileStoreRepository.getAbsoluteDirPath(fileEntry.getDirectory().getNodeId());
+			dirPath = fileStoreRepository.getAbsoluteDirPath(fileEntry.getDirectory().getDirId());
 		} catch (DatabaseException e) {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();
@@ -106,5 +129,7 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		assertTrue(Files.exists(targetPath));
 	
 	}
+	
+	public abstract String getTestFileStorePath();
 	
 }

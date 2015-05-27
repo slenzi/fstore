@@ -36,6 +36,16 @@ public class PostgreSQLAddFileTest extends AbstractAddFile {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.test.cms.AbstractAddFile#getTestFileStorePath()
+	 */
+	@Override
+	public String getTestFileStorePath() {
+
+		return "/Users/slenzi/Programming/sample_upload";
+		
+	}
+
 	@Test
 	public void testWiring(){
 		

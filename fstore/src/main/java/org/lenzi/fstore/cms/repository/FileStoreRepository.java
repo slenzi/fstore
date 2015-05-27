@@ -327,7 +327,7 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Get file store by root dir id
+	 * Get the file store for the *root* directory.
 	 * 
 	 * @param dirId - id of the root dir for the file store
 	 * @return
@@ -339,9 +339,46 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		return getCmsStoreByRootDirIdCriteria(dirId);
 		
+	}
+	
+	/**
+	 * Get the file store for the directory (does not have to be a root directory)
+	 * 
+	 * @param dirId - id of directory which belongs to the file store. This does not have to be an id
+	 * 	of a root directory. This can be a child directory deep in the tree. This will walk the tree
+	 *  all the way back to the root node to get the file store.
+	 *  
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileStore getCmsFileStoreByDirId(Long dirId) throws DatabaseException {
+		
+		CmsDirectory rootDir = null;
+		try {
+			rootDir = treeRepository.getRootNode(new CmsDirectory(dirId));
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error fetching root directory for dir => " + dirId, e);
+		}
+		
+		CmsFileStore store = null;
+		try {
+			store = getCmsStoreByRootDirId(rootDir.getDirId());
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Erro fetching file store by root dir id => " + rootDir.getDirId(), e);
+		}
+		
+		return store;
+		
 	}	
 	
-	public CmsFileStore getCmsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
+	/**
+	 * Criteria query to get CmsFileStore by store id
+	 * 
+	 * @param storeId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private CmsFileStore getCmsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
 		
 		logger.info("Get file store by store id " + storeId + " criteria");
 		
@@ -371,13 +408,13 @@ public class FileStoreRepository extends AbstractRepository {
 	}	
 	
 	/**
-	 * Get a file store with its root directory.
+	 * Criteria query to get CmsFileStore by the stores root directory.
 	 * 
 	 * @param dirId - the ID of the store's root directory
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public CmsFileStore getCmsStoreByRootDirIdCriteria(Long dirId) throws DatabaseException {
+	private CmsFileStore getCmsStoreByRootDirIdCriteria(Long dirId) throws DatabaseException {
 		
 		logger.info("Get store by root dir id " + dirId + " criteria");
 		
@@ -402,36 +439,6 @@ public class FileStoreRepository extends AbstractRepository {
 			store = (CmsFileStore) this.getSingleResult(query);
 		} catch (Exception e) {
 			throw new DatabaseException("Error retrieving file store for for root dir id => " + dirId);
-		}
-		
-		return store;
-		
-	}
-	
-	/**
-	 * Get the file store for the directory.
-	 * 
-	 * @param dirId - id of directory which belongs to the file store. This does not have to be an id
-	 * 	of a root directory. This can be a child directory deep in the tree. This will walk the tree
-	 *  all the way back to the root node to get the file store.
-	 *  
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public CmsFileStore getCmsFileStoreByDirId(Long dirId) throws DatabaseException {
-		
-		CmsDirectory rootDir = null;
-		try {
-			rootDir = treeRepository.getRootNode(new CmsDirectory(dirId));
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Error fetching root directory for dir => " + dirId, e);
-		}
-		
-		CmsFileStore store = null;
-		try {
-			store = getCmsStoreByRootDirId(rootDir.getDirId());
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Erro fetching file store by root dir id => " + rootDir.getDirId(), e);
 		}
 		
 		return store;
@@ -661,8 +668,8 @@ public class FileStoreRepository extends AbstractRepository {
 	/**
 	 * Add file to directory
 	 * 
-	 * @param file
-	 * @param cmsDirId
+	 * @param file - file to add to the cms directory
+	 * @param cmsDirId - id of the cms directory
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
@@ -762,6 +769,15 @@ public class FileStoreRepository extends AbstractRepository {
 		
 	}
 	
+	/**
+	 * Builds a database exception for file copy error process.
+	 * 
+	 * @param source
+	 * @param target
+	 * @param directory
+	 * @param e
+	 * @return
+	 */
 	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, CmsDirectory directory, Throwable e){
 		StringBuffer buf = new StringBuffer();
 		String cr = System.getProperty("line.separator");
@@ -772,7 +788,14 @@ public class FileStoreRepository extends AbstractRepository {
 		return new DatabaseException(buf.toString(), e);
 	}
 	
-	// create directory on file system
+	/**
+	 * Create directory on file system (plus all parent directories if they don't exist.)
+	 * 
+	 * @param path - the directory to create
+	 * @param clearIfExists - clear the directory if not empty
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
 	private void createDirOnFileSystem(Path path, boolean clearIfExists) throws IOException, SecurityException {
 		
 		FileUtil.createDirectory(path, clearIfExists);

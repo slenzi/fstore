@@ -36,6 +36,20 @@ public class OracleAddFileTest extends AbstractAddFile {
 
 	}
 
+
+	
+	/* (non-Javadoc)
+	 * @see org.lenzi.fstore.test.cms.AbstractAddFile#getTestFileStorePath()
+	 */
+	@Override
+	public String getTestFileStorePath() {
+		
+		return "C:/temp/sample_upload";
+		
+	}
+
+
+
 	@Test
 	public void testWiring(){
 		

@@ -132,6 +132,15 @@ public class CmsFileStore implements Comparable<CmsFileStore>, Serializable {
 	public Long getNodeId() {
 		return nodeId;
 	}
+	
+	/**
+	 * Get id of root directory. same as getNodeId()
+	 * 
+	 * @return
+	 */
+	public Long getRooDirId(){
+		return getNodeId();
+	}
 
 	/**
 	 * @param nodeId the nodeId to set
