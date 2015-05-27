@@ -133,6 +133,14 @@ public class CmsFileEntry implements Serializable {
 	public void setFile(CmsFile file) {
 		this.file = file;
 	}
+	
+	public boolean haveCmsFile(){
+		return file != null ? true : false;
+	}
+	
+	public boolean haveCmsFileBytes(){
+		return ((file != null) ? ((file.getFileData() != null) && (file.getFileData().length > 0)) : false);
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -168,9 +176,13 @@ public class CmsFileEntry implements Serializable {
 	public String toString(){
 		
 		StringBuffer buf = new StringBuffer();
+		
 		buf.append("id => " + getFileId());
 		buf.append(", name => " + getFileName());
 		buf.append(", size => " + getFileSize());
+		buf.append(", have cms file => " + haveCmsFile());
+		buf.append(", have cms file bytes => " + haveCmsFileBytes());
+		
 		return buf.toString();
 	}
 	

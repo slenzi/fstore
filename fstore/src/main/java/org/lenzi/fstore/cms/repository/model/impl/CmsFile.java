@@ -21,9 +21,6 @@ import javax.persistence.Transient;
 @Table(name="FS_CMS_FILE")
 public class CmsFile implements Serializable  {
 
-	/**
-	 * 
-	 */
 	@Transient
 	private static final long serialVersionUID = -6133759070827743119L;
 	
@@ -32,7 +29,6 @@ public class CmsFile implements Serializable  {
 	@Column(name = "FILE_ID", updatable = false, nullable = false)
 	private Long fileId = 0L;
 	
-	// binary file data
 	@Lob
 	@Column(name = "FILE_DATA", nullable = false)
 	private byte[] fileData;

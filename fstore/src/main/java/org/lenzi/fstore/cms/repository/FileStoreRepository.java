@@ -572,9 +572,6 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
 		}
 		
-		logger.info("Got directory");
-		logger.info("Path => " + dirPath);
-		
 		byte[] fileBytes = null;
 		try {
 			fileBytes = Files.readAllBytes(file);
@@ -583,27 +580,30 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 		String fileName = file.getFileName().toString();
-		logger.info("Adding file => " + fileName);
 		
-		// create cms file to store binary data
-		CmsFile cmsFile = new CmsFile();
-		cmsFile.setFileData(fileBytes);
+		logger.info("Adding file => " + fileName + ", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
+				", Cms Directory Id => " + cmsDirectory.getNodeId() + ", Cms Directory Name => " + cmsDirectory.getName() +
+				", File system path => " + dirPath);
 		
-		// create cms file entry for meta data, and link to cms file
+		// create cms file entry for meta data
 		CmsFileEntry cmsFileEntry = new CmsFileEntry();
 		cmsFileEntry.setDirectory(cmsDirectory);
 		cmsFileEntry.setFileName(fileName);
 		cmsFileEntry.setFileSize(Files.size(file));
-		cmsFileEntry.setFile(cmsFile);
-		
-		logger.info("Cms File Entry => " + cmsFileEntry);
-		
-		// persist cms file entry, and cms file binary data
+		persist(cmsFileEntry);
+		getEntityManager().flush();
+
+		// update cms directory with new cms file entry
 		cmsDirectory.addFileEntry(cmsFileEntry);
+		cmsDirectory = (CmsDirectory)merge(cmsDirectory);
 		
-		logger.info("Merging changes");
+		// set file byte data
+		// create cms file to store binary data
+		CmsFile cmsFile = new CmsFile();
+		cmsFile.setFileData(fileBytes);
+		//cmsFileEntry.setFile(cmsFile);		
 		
-		merge(cmsDirectory);
+		logger.info("Added new CmsFileEntry => " + cmsFileEntry.getFileId() + " to directory => " + cmsDirectory.getNodeId());
 		
 	}
 	
