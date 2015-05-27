@@ -1,7 +1,9 @@
 package org.lenzi.fstore.test.cms;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +11,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.lenzi.fstore.cms.repository.FileStoreRepository;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -49,22 +52,23 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		assertNotNull(resourceLoader);
 		
 		// get test file for upload to database
-		Resource res = resourceLoader.getResource("classpath:image/honey_badger.JPG");
-		Path filePath = null;
+		Resource sourceResource = resourceLoader.getResource("classpath:image/honey_badger.JPG");
+		Path sourcePath = null;
 		try {
-			filePath = Paths.get(res.getFile().getAbsolutePath());
+			sourcePath = Paths.get(sourceResource.getFile().getAbsolutePath());
 		} catch (IOException e) {
 			logger.error("Failed to get file resource." + e.getMessage());
 			e.printStackTrace();
 		}
 		
 		// persist file to database
+		CmsFileEntry fileEntry = null;
 		try {
 			
-			logger.info("Test file => " + filePath.toString());
-			logger.info("Size => " + Files.size(filePath));
+			logger.info("Test file => " + sourcePath.toString());
+			logger.info("Size => " + Files.size(sourcePath));
 			
-			fileStoreRepository.addFile(filePath, 1L);
+			fileEntry = fileStoreRepository.addFile(sourcePath, 1L);
 			
 		}catch(IOException e){
 			logger.error(e.getMessage());
@@ -73,6 +77,33 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 			logger.error("Error adding file. " + e.getMessage());
 			e.printStackTrace();
 		}
+		
+		assertNotNull(fileEntry);
+		assertNotNull(fileEntry.getDirectory());
+		assertNotNull(fileEntry.getDirectory().getFileEntries());
+		assertNotNull(fileEntry.getFile());
+		
+		logger.info("CmsFileEntry:");
+		logger.info(fileEntry.toString());
+		
+		String dirPath = null;
+		try {
+			dirPath = fileStoreRepository.getPath(fileEntry.getDirectory().getNodeId());
+		} catch (DatabaseException e) {
+			logger.error("Error getting path for cms directory. " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		assertNotNull(dirPath);
+		
+		logger.info("Path of directory => " + dirPath);
+		
+		String fullFilePath = dirPath + File.separator + fileEntry.getFileName();
+		Path targetPath = Paths.get(fullFilePath);
+		
+		logger.info("Path of cms file => " + targetPath.toString());
+		
+		assertTrue(Files.exists(targetPath));
 	
 	}
 	

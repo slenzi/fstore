@@ -67,6 +67,20 @@ public class CmsFile implements Serializable  {
 		this.fileData = fileData;
 	}
 
+	/**
+	 * @return the fileEntry
+	 */
+	public CmsFileEntry getFileEntry() {
+		return fileEntry;
+	}
+
+	/**
+	 * @param fileEntry the fileEntry to set
+	 */
+	public void setFileEntry(CmsFileEntry fileEntry) {
+		this.fileEntry = fileEntry;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

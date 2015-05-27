@@ -119,6 +119,10 @@ public class CmsFileEntry implements Serializable {
 	public void setDirectory(CmsDirectory directory) {
 		this.directory = directory;
 	}
+	
+	public boolean haveDirectory(){
+		return directory != null ? true : false;
+	}
 
 	/**
 	 * @return the file
@@ -176,12 +180,16 @@ public class CmsFileEntry implements Serializable {
 	public String toString(){
 		
 		StringBuffer buf = new StringBuffer();
-		
-		buf.append("id => " + getFileId());
-		buf.append(", name => " + getFileName());
-		buf.append(", size => " + getFileSize());
-		buf.append(", have cms file => " + haveCmsFile());
-		buf.append(", have cms file bytes => " + haveCmsFileBytes());
+		buf.append("{");
+		buf.append("\"id\" : \"" + getFileId() + "\"");
+		buf.append(", \"name\" : \"" + getFileName() + "\"");
+		buf.append(", \"size\" : \"" + getFileSize() + "\"");
+		buf.append(", \"haveCmsFile\" : \"" + haveCmsFile() + "\"");
+		buf.append(", \"haveCmsFileBytes\" : \"" + haveCmsFileBytes() + "\"");
+		if(haveDirectory()){
+			buf.append(", \"directory\" : \"" + getDirectory() + "\"");
+		}
+		buf.append("}");
 		
 		return buf.toString();
 	}

@@ -121,15 +121,15 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 		
 		StringBuffer buf = new StringBuffer();
 		
-		buf.append("[");
-		buf.append("name => '" + getName() + "'");
-		buf.append(", id => '" + getNodeId() + "'");
-		buf.append(", parent_id => '" + getParentNodeId() + "'");
-		buf.append(", root => '" + isRootNode() + "'");
-		buf.append(", dir_name => '" + getDirName() + "'");
-		buf.append(", dt_created => '" + DateUtil.defaultFormat(getDateCreated()) + "'");
-		buf.append(", dt_updated => '" + DateUtil.defaultFormat(getDateUpdated()) + "'");
-		buf.append("]");
+		buf.append("{");
+		buf.append("\"name\" : \"" + getName() + "\"");
+		buf.append(", \"id\" : \"" + getNodeId() + "\"");
+		buf.append(", \"parent_id\" : \"" + getParentNodeId() + "\"");
+		buf.append(", \"root\" : \"" + isRootNode() + "\"");
+		buf.append(", \"dir_name\" : \"" + getDirName() + "\"");
+		buf.append(", \"dt_created\" : \"" + DateUtil.defaultFormat(getDateCreated()) + "\"");
+		buf.append(", \"dt_updated\" : \"" + DateUtil.defaultFormat(getDateUpdated()) + "\"");
+		buf.append("}");
 		
 		return buf.toString();
 		

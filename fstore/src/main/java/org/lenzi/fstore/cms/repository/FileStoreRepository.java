@@ -603,7 +603,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	public void addFile(Path file, Long cmsDirId) throws DatabaseException, IOException {
+	public CmsFileEntry addFile(Path file, Long cmsDirId) throws DatabaseException, IOException {
 		
 		logger.info("Adding file " + file.toString());
 		
@@ -644,7 +644,7 @@ public class FileStoreRepository extends AbstractRepository {
 		persist(cmsFileEntry);
 		getEntityManager().flush();
 
-		// update cms directory with new cms file entry
+		// update cms directory with new cms file entry (updates linking table)
 		cmsDirectory.addFileEntry(cmsFileEntry);
 		cmsDirectory = (CmsDirectory)merge(cmsDirectory);
 		
@@ -655,8 +655,13 @@ public class FileStoreRepository extends AbstractRepository {
 		persist(cmsFile);
 		getEntityManager().flush();
 		
+		// make sure objects have all data set before returning
+		cmsFileEntry.setDirectory(cmsDirectory);
+		cmsFileEntry.setFile(cmsFile);
+		cmsFile.setFileEntry(cmsFileEntry);
+		
 		// copy file to directory for CmsDirectory
-		Path target =  Paths.get(dirPath + File.separator + fileName);
+		Path target = Paths.get(dirPath + File.separator + fileName);
 		try {
 			
 			Files.copy(file, target);
@@ -670,6 +675,13 @@ public class FileStoreRepository extends AbstractRepository {
 		} catch (SecurityException e) {
 			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
 		}
+		
+		// not really needed...
+		if(!Files.exists(target)){
+			throw new IOException("Copy proceeded without error, but file copy does not appear to exists..");
+		}
+		
+		return cmsFileEntry;
 		
 	}
 	
