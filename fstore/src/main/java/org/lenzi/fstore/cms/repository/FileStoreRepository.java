@@ -102,7 +102,10 @@ public class FileStoreRepository extends AbstractRepository {
 		FILE_META,
 		
 		// meta data and byte data
-		FILE_META_WITH_DATA
+		FILE_META_WITH_DATA,
+		
+		// meta data, plus file byte data, plus directory
+		FILE_META_WITH_DATA_AND_DIR
 		
 	}
 	
@@ -645,6 +648,11 @@ public class FileStoreRepository extends AbstractRepository {
 			
 			// include CmsFile with byte data
 			case FILE_META_WITH_DATA:
+				root.fetch(CmsFileEntry_.file, JoinType.LEFT);
+				break;
+				
+			case FILE_META_WITH_DATA_AND_DIR:
+				root.fetch(CmsFileEntry_.directory, JoinType.LEFT);
 				root.fetch(CmsFileEntry_.file, JoinType.LEFT);
 				break;
 			
