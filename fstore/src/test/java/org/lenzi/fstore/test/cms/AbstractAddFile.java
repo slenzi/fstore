@@ -91,7 +91,7 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 			logger.info("Test file => " + sourcePath.toString());
 			logger.info("Size => " + Files.size(sourcePath));
 			
-			fileEntry = fileStoreRepository.addFile(sourcePath, subTest1.getDirId());
+			fileEntry = fileStoreRepository.addFile(sourcePath, subTest1.getDirId(), true);
 			
 		}catch(IOException e){
 			logger.error(e.getMessage());

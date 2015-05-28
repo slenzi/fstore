@@ -4,6 +4,7 @@
 package org.lenzi.fstore.cms.repository.model.impl;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -142,6 +143,29 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	
 	public boolean hasFileStore(){
 		return fileStore != null ? true : false;
+	}
+	
+	/**
+	 * Get the file entry by file name
+	 * 
+	 * @param fileName - the file name to match on.
+	 * @param caseSensitive - pass true for case sensitive match, pass false for case insensitive
+	 * @return
+	 */
+	public CmsFileEntry getEntryByFileName(String fileName, boolean caseSensitive){
+		
+		Optional<CmsFileEntry> value = fileEntries.stream()
+			.filter(e -> {
+				if(caseSensitive){
+					return e.getFileName().equals(fileName);
+				}else{
+					return e.getFileName().toLowerCase().equals(fileName.toLowerCase());
+				}
+			})
+			.findFirst();
+		
+		return value.isPresent() ? value.get() : null;
+		
 	}
 
 	public String toString(){

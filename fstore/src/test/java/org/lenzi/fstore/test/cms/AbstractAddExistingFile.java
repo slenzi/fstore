@@ -9,9 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.lenzi.fstore.cms.repository.FileStoreRepository;
-import org.lenzi.fstore.cms.repository.FileStoreRepository.CmsFileEntryFetch;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
@@ -29,7 +30,7 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractGetCmsFileEntry extends AbstractTreeTest {
+public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -39,7 +40,10 @@ public abstract class AbstractGetCmsFileEntry extends AbstractTreeTest {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public AbstractGetCmsFileEntry() {
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
+	public AbstractAddExistingFile() {
 
 	}
 
@@ -48,9 +52,9 @@ public abstract class AbstractGetCmsFileEntry extends AbstractTreeTest {
 	 */
 	@Test
 	@Rollback(false)
-	public void doGetCmsFileEntry() {
+	public void doAddExistingFile() throws DatabaseException, IOException {
 		
-		logTestTitle("Fetch Cms File Entry test");
+		logTestTitle("Add existing file test");
 		
 		assertNotNull(resourceLoader);
 		
@@ -69,14 +73,14 @@ public abstract class AbstractGetCmsFileEntry extends AbstractTreeTest {
 		CmsFileStore fileStore = null;
 		try {
 			fileStore = fileStoreRepository.createFileStore(
-					examplePath, "Example File Store", "This is an example file store to test fetching of cms file entries.", false);
+					examplePath, "Example File Store", "This is an example file store to test adding of files.", false);
 		} catch (DatabaseException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
 		
 		// add sub dir 
-		final String subDirName1 = "file_entry_fetch";
+		final String subDirName1 = "upload_test";
 		CmsDirectory subTest1 = null;
 		try {
 			subTest1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
@@ -129,21 +133,12 @@ public abstract class AbstractGetCmsFileEntry extends AbstractTreeTest {
 		
 		assertTrue(Files.exists(targetPath));
 		
-		CmsFileEntry sampleEntry = null;
-		try {
-			sampleEntry = fileStoreRepository.getCmsFileEntryById(fileEntry.getFileId(), CmsFileEntryFetch.FILE_META_WITH_DATA_AND_DIR);
-		} catch (DatabaseException e) {
-			logger.error("Error getting cms file entry. " + e.getMessage());
-			e.printStackTrace();
-		}
-		
-		assertNotNull(sampleEntry);
-		assertNotNull(sampleEntry.getDirectory());
-		assertNotNull(sampleEntry.getDirectory().getFileEntries());
-		assertNotNull(sampleEntry.getFile());
-		
-		logger.info("Fetched CmsFileEntry:");
-		logger.info(fileEntry.toString());
+		//
+		// persist same file to the database again, set 'replaceExisting' to false to test DatabaseException
+		//
+		exception.expect(DatabaseException.class);
+		fileStoreRepository.addFile(sourcePath, subTest1.getDirId(), false);
+				
 	
 	}
 	

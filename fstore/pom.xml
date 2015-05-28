@@ -17,25 +17,37 @@
 		<java.version.target>1.8</java.version.target>
 	
 		<version.junit>4.12</version.junit>
+		
 		<version.mockito>1.9.5</version.mockito>
+		
 		<version.aspectj>1.8.5</version.aspectj>
-		<version.logback>1.1.2</version.logback>
+		
+		<version.logback>1.1.3</version.logback> <!-- was 1.1.2 5/28/2015-->
+		
 		<version.joda.time>2.7</version.joda.time>
+		
 		<version.google.guava>18.0</version.google.guava>
+		
 		<version.apache.commons.io>2.4</version.apache.commons.io>
 		<version.apache.commons.fileupload>1.3.1</version.apache.commons.fileupload>
-		<version.apache.commons.lang3>3.3.2</version.apache.commons.lang3>
+		<version.apache.commons.lang3>3.4</version.apache.commons.lang3> <!-- was 3.3.2 5/28/2015 -->
 		<version.apache.cxf>3.0.4</version.apache.cxf>
+		
 		<version.jackson.jaxrs>1.9.13</version.jackson.jaxrs>
+		
 		<version.javax.inject>1</version.javax.inject>
 		<version.javax.servlet>3.1.0</version.javax.servlet>
 		<version.javax.jsr311.version>1.1.1</version.javax.jsr311.version>
-		<version.spring>4.1.4.RELEASE</version.spring>
+		
+		<version.spring>4.1.6.RELEASE</version.spring> <!-- was 4.1.4.RELEASE 5/28/2015 -->
+		
 		<version.hibernate>4.3.8.Final</version.hibernate>
 		<!-- not sure if hibernate jpa is needed -->
 		<version.hibernate.jpa>1.0.0.Final</version.hibernate.jpa>
+		
 		<version.jdbc.postgres>9.1-901-1.jdbc4</version.jdbc.postgres>
-		<version.jdbc.oracle>11.2.0.4</version.jdbc.oracle> <!-- was 10.2.0.2 -->
+		<version.jdbc.oracle>11.2.0.4</version.jdbc.oracle> <!-- was 10.2.0.2 5/28/2015 -->
+		
 	</properties>
 	
 	<profiles>
@@ -187,7 +199,11 @@
 		</dependency>
 		-->
 
-		<!-- Hibernate -->
+		<!--
+		Hibernate
+		
+		In Hibernate ORM 5.x (not 5.0), the hibernate-core and hibernate-entitymanager artifcats are merged into one.
+		-->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>

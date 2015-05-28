@@ -674,39 +674,42 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Add file to directory
+	 * Add file, or replace existing file.
 	 * 
-	 * @param file - file to add to the cms directory
-	 * @param cmsDirId - id of the cms directory
+	 * @param fileToAdd - the file to add
+	 * @param cmsDirId - id of the cms directory where file is to be added
+	 * @param replaceExisting - true to replace existing file, false not to. If file already exists, and 'replaceExisting'
+	 * 	is set to false, a DatabaseException will be thrown.
+	 * @return
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	public CmsFileEntry addFile(Path file, Long cmsDirId) throws DatabaseException, IOException {
+	public CmsFileEntry addFile(Path fileToAdd, Long cmsDirId, boolean replaceExisting) throws DatabaseException, IOException {
 		
-		logger.info("Adding file " + file.toString());
+		if(!Files.exists(fileToAdd)){
+			throw new IOException("File does not exist => " + fileToAdd.toString());
+		}
+		if(Files.isDirectory(fileToAdd)){
+			throw new IOException("Path is a directory => " + fileToAdd.toString());
+		}
 		
-		if(!Files.exists(file)){
-			throw new IOException("File does not exist => " + file.toString());
-		}
-		if(Files.isDirectory(file)){
-			throw new IOException("Path is a directory => " + file.toString());
-		}
+		String fileName = fileToAdd.getFileName().toString();
 		
 		// get parent dir
 		CmsDirectory cmsDirectory = null;
 		try {
 			cmsDirectory = getCmsDirectoryById(cmsDirId, CmsDirectoryFetch.FILE_META);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to retrieve CmsDirectory", e);
+			throw new DatabaseException("Failed to retrieve CmsDirectory for cms dir id => " + cmsDirId, e);
 		}
 		
 		// get file store
 		CmsFileStore store = null;
 		try {
-			store = getCmsFileStoreByDirId(cmsDirectory.getDirId());
+			store = getCmsFileStoreByDirId(cmsDirId);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirectory.getDirId(), e);
-		}		
+			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirId, e);
+		}
 		
 		// get full path to directory using relative path from CmsDirectory and store path from CmsFileStore
 		String dirRelativePath = cmsDirectory.getRelativeDirPath();
@@ -714,25 +717,69 @@ public class FileStoreRepository extends AbstractRepository {
 			dirRelativePath = File.separator + dirRelativePath;
 		}
 		String dirAbsolutePath = store.getStorePath() + dirRelativePath;
-	
-		byte[] fileBytes = null;
-		try {
-			fileBytes = Files.readAllBytes(file);
-		} catch (IOException e) {
-			throw new IOException("Error reading data from file => " + file.toString(), e);
+		
+		// check if there is an existing file with the same name
+		CmsFileEntry existingCmsFileEntry = cmsDirectory.getEntryByFileName(fileName, false);
+		
+		// file exists, but we are not to replace file. throw error 
+		if(existingCmsFileEntry != null && !replaceExisting){
+		
+			throw new DatabaseException("File " + fileName + " already exists in cms directory " + cmsDirectory.getName() + 
+					" at path " + dirAbsolutePath + ". Cannot replace existing file because 'replaceExisting' param is false.");
+		
+		// file exists, and we need to replace existing one
+		}else if(existingCmsFileEntry != null && replaceExisting){
+		
+			throw new DatabaseException("Replace existing file not implemented yet.");
+			
+		// not existing file. add a new entry
+		}else{
+			
+			return addNewFile(fileToAdd, cmsDirectory, store);
+			
 		}
 		
-		String fileName = file.getFileName().toString();
+	}
+	
+	/**
+	 * Add a new file to a CmsDirectory
+	 * 
+	 * @param fileToAdd
+	 * @param cmsDirectory
+	 * @param cmsStore
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	private CmsFileEntry addNewFile(Path fileToAdd, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
+		
+		String fileName = fileToAdd.getFileName().toString();
+		
+		// get full path to directory using relative path from CmsDirectory and store path from CmsFileStore
+		String dirRelativePath = cmsDirectory.getRelativeDirPath();
+		if(!dirRelativePath.startsWith(File.separator)){
+			dirRelativePath = File.separator + dirRelativePath;
+		}
+		String dirAbsolutePath = cmsStore.getStorePath() + dirRelativePath;
+		
+		// read in file data
+		// TODO - look into reading the file in chunks... not good to read entire file if file is large.
+		byte[] fileBytes = null;
+		try {
+			fileBytes = Files.readAllBytes(fileToAdd);
+		} catch (IOException e) {
+			throw new IOException("Error reading data from file => " + fileToAdd.toString(), e);
+		}
 		
 		logger.info("Adding file => " + fileName + ", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
 				", Cms Directory Id => " + cmsDirectory.getDirId() + ", Cms Directory Name => " + cmsDirectory.getName() +
-				", File system path => " + dirAbsolutePath);
+				", File system path => " + dirAbsolutePath);		
 		
 		// create cms file entry for meta data
 		CmsFileEntry cmsFileEntry = new CmsFileEntry();
 		cmsFileEntry.setDirectory(cmsDirectory);
 		cmsFileEntry.setFileName(fileName);
-		cmsFileEntry.setFileSize(Files.size(file));
+		cmsFileEntry.setFileSize(Files.size(fileToAdd));
 		persist(cmsFileEntry);
 		getEntityManager().flush();
 
@@ -756,19 +803,19 @@ public class FileStoreRepository extends AbstractRepository {
 		Path target = Paths.get(dirAbsolutePath + File.separator + fileName);
 		try {
 			
-			Files.copy(file, target);
+			Files.copy(fileToAdd, target);
 			
 		} catch (FileAlreadyExistsException e){
-			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+			throw buildDatabaseExceptionCopyError(fileToAdd, target, cmsDirectory, e);
 		} catch (DirectoryNotEmptyException e){
-			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+			throw buildDatabaseExceptionCopyError(fileToAdd, target, cmsDirectory, e);
 		} catch (IOException e) {
-			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+			throw buildDatabaseExceptionCopyError(fileToAdd, target, cmsDirectory, e);
 		} catch (SecurityException e) {
-			throw buildDatabaseExceptionCopyError(file, target, cmsDirectory, e);
+			throw buildDatabaseExceptionCopyError(fileToAdd, target, cmsDirectory, e);
 		}
 		
-		// not really needed...
+		// not really needed... just a little extra precaution
 		if(!Files.exists(target)){
 			throw new IOException("Copy proceeded without error, but file copy does not appear to exists..");
 		}
@@ -787,6 +834,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @return
 	 */
 	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, CmsDirectory directory, Throwable e){
+		
 		StringBuffer buf = new StringBuffer();
 		String cr = System.getProperty("line.separator");
 		buf.append("Error copying source file => " + source.toString() + " to target file => " + target.toString() + cr);
@@ -794,6 +842,7 @@ public class FileStoreRepository extends AbstractRepository {
 		buf.append("Throwable => " + e.getClass().getName() + cr);
 		buf.append("Message => " + e.getMessage() + cr);
 		return new DatabaseException(buf.toString(), e);
+		
 	}
 	
 	/**
