@@ -42,7 +42,7 @@ public class OracleAddChildCmsDirectoryTest extends AbstractAddChildCmsDirectory
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/sample_add_child";
+		return "C:/temp/file_store/sample_add_child";
 		
 	}
 

@@ -44,7 +44,7 @@ public class OracleAddFileTest extends AbstractAddFile {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/sample_upload";
+		return "C:/temp/file_store/sample_upload";
 		
 	}
 

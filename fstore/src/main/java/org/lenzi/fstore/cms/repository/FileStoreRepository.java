@@ -38,6 +38,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFile_;
 import org.lenzi.fstore.logging.ClosureLogger;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
@@ -108,6 +109,19 @@ public class FileStoreRepository extends AbstractRepository {
 		FILE_META_WITH_DATA_AND_DIR
 		
 	}
+	
+	/**
+	 * When fetching a CmsFileEntry, specify which file data to fetch.
+	 */
+	public enum CmsFileFetch {
+		
+		// just the CmsFile data
+		FILE_DATA,
+		
+		// CmsFile data plus associated CmsFileEntry meta data
+		FILE_DATA_WITH_META,
+		
+	}	
 	
 	private static final long serialVersionUID = 8439120459143189611L;
 
@@ -674,6 +688,47 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
+	 * Fetch a CmsFile object
+	 * 
+	 * @param fileId - the file id
+	 * @param fetch - specify what to fetch along with the cms file data
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFile getCmsFileById(Long fileId, CmsFileFetch fetch) throws DatabaseException {
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<CmsFile> query = criteriaBuilder.createQuery(CmsFile.class);
+		Root<CmsFile> root = query.from(CmsFile.class);	
+		
+		query.select(root);
+		query.where(
+				criteriaBuilder.equal(root.get(CmsFile_.fileId), fileId)
+				);
+		
+		switch(fetch){
+		
+			// just CmsFile data
+			case FILE_DATA:
+				break;
+			
+			// CmsFile data plus associates CmsFileEntry meta
+			case FILE_DATA_WITH_META:
+				root.fetch(CmsFile_.fileEntry, JoinType.LEFT);
+				break;
+			
+			// default to just meta data, no join
+			default:
+				break;
+		
+		}		
+		
+		CmsFile result = getEntityManager().createQuery(query).getSingleResult();
+		
+		return result;
+	}
+	
+	/**
 	 * Add file, or replace existing file.
 	 * 
 	 * @param fileToAdd - the file to add
@@ -730,7 +785,7 @@ public class FileStoreRepository extends AbstractRepository {
 		// file exists, and we need to replace existing one
 		}else if(existingCmsFileEntry != null && replaceExisting){
 		
-			throw new DatabaseException("Replace existing file not implemented yet.");
+			return replaceExistingFile(fileToAdd, existingCmsFileEntry, cmsDirectory, store);
 			
 		// not existing file. add a new entry
 		}else{
@@ -739,6 +794,76 @@ public class FileStoreRepository extends AbstractRepository {
 			
 		}
 		
+	}
+	
+	/**
+	 * Replace existing file
+	 * 
+	 * @param newFile
+	 * @param existingCmsFileEntry
+	 * @param cmsDirectory
+	 * @param cmsStore
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	private CmsFileEntry replaceExistingFile(Path newFile, CmsFileEntry existingCmsFileEntry, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
+		
+		Long fileId = existingCmsFileEntry.getFileId();
+		
+		String fileName = newFile.getFileName().toString();
+		
+		CmsFile existingCmsFile = getCmsFileById(fileId, CmsFileFetch.FILE_DATA);
+		
+		// read in file data
+		// TODO - look into reading the file in chunks... not good to read entire file if file is large.
+		byte[] fileBytes = null;
+		try {
+			fileBytes = Files.readAllBytes(newFile);
+		} catch (IOException e) {
+			throw new IOException("Error reading data from file => " + newFile.toString(), e);
+		}
+		
+		// get full path to directory using relative path from CmsDirectory and store path from CmsFileStore
+		String dirRelativePath = cmsDirectory.getRelativeDirPath();
+		if(!dirRelativePath.startsWith(File.separator)){
+			dirRelativePath = File.separator + dirRelativePath;
+		}
+		String dirAbsolutePath = cmsStore.getStorePath() + dirRelativePath;
+		String existingFilePath = dirAbsolutePath + File.separator + existingCmsFileEntry.getFileName();
+		
+		existingCmsFileEntry.setFileName(fileName);
+		existingCmsFileEntry.setFileSize(Files.size(newFile));
+		existingCmsFile.setFileData(fileBytes);
+		
+		CmsFile updatedCmsFile = (CmsFile)merge(existingCmsFile);
+
+		CmsFileEntry updatedCmsFileEntry = (CmsFileEntry)merge(existingCmsFileEntry);
+		
+		updatedCmsFileEntry.setFile(updatedCmsFile);
+		
+		try {
+			FileUtil.deleteDirectory(Paths.get(existingFilePath));
+		} catch (IOException e) {
+			throw new DatabaseException("Could not remove existing file on disk " + existingFilePath);
+		}
+		
+		Path target = Paths.get(dirAbsolutePath + File.separator + fileName);
+		try {
+			
+			Files.copy(newFile, target);
+			
+		} catch (FileAlreadyExistsException e){
+			throw buildDatabaseExceptionCopyError(newFile, target, cmsDirectory, e);
+		} catch (DirectoryNotEmptyException e){
+			throw buildDatabaseExceptionCopyError(newFile, target, cmsDirectory, e);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionCopyError(newFile, target, cmsDirectory, e);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionCopyError(newFile, target, cmsDirectory, e);
+		}		
+		
+		return updatedCmsFileEntry;
 	}
 	
 	/**

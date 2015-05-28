@@ -42,7 +42,7 @@ public class PostgreSQLGetCmsFileEntryTest extends AbstractGetCmsFileEntry {
 	@Override
 	public String getTestFileStorePath() {
 
-		return "/Users/slenzi/Programming/sample_file_entry_fetch";
+		return "/Users/slenzi/Programming/file_store/sample_file_entry_fetch";
 		
 	}
 

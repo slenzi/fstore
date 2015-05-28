@@ -44,7 +44,7 @@ public class OracleAddExistingFileTest extends AbstractAddExistingFile {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/sample_upload_existing";
+		return "C:/temp/file_store/sample_upload_existing";
 		
 	}
 

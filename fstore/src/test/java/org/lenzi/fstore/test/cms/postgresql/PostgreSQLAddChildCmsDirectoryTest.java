@@ -42,7 +42,7 @@ public class PostgreSQLAddChildCmsDirectoryTest extends AbstractAddChildCmsDirec
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "/Users/slenzi/Programming/sample_add_child";
+		return "/Users/slenzi/Programming/file_store/sample_add_child";
 		
 	}
 

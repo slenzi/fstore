@@ -44,7 +44,7 @@ public class OracleGetCmsFileEntryTest extends AbstractGetCmsFileEntry {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/sample_file_entry_fetch";
+		return "C:/temp/file_store/sample_file_entry_fetch";
 		
 	}
 

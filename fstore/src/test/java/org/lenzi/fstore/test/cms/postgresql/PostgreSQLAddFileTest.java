@@ -42,7 +42,7 @@ public class PostgreSQLAddFileTest extends AbstractAddFile {
 	@Override
 	public String getTestFileStorePath() {
 
-		return "/Users/slenzi/Programming/sample_upload";
+		return "/Users/slenzi/Programming/file_store/sample_upload";
 		
 	}
 

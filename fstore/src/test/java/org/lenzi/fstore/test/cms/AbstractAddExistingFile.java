@@ -58,13 +58,16 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		
 		assertNotNull(resourceLoader);
 		
-		// get test file for upload to database
-		Resource sourceResource = resourceLoader.getResource("classpath:image/honey_badger.JPG");
-		Path sourcePath = null;
+		Resource sourceResource1 = resourceLoader.getResource("classpath:image/honey_badger.JPG");
+		Resource sourceResource2 = resourceLoader.getResource("classpath:image/other/honey_badger.JPG");
+		
+		// get test files
+		Path sourcePath1 = null, sourcePath2 = null;
 		try {
-			sourcePath = Paths.get(sourceResource.getFile().getAbsolutePath());
+			sourcePath1 = Paths.get(sourceResource1.getFile().getAbsolutePath());
+			sourcePath2 = Paths.get(sourceResource2.getFile().getAbsolutePath());
 		} catch (IOException e) {
-			logger.error("Failed to get file resource." + e.getMessage());
+			logger.error("Failed to get file resources." + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -93,10 +96,10 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		CmsFileEntry fileEntry = null;
 		try {
 			
-			logger.info("Test file => " + sourcePath.toString());
-			logger.info("Size => " + Files.size(sourcePath));
+			logger.info("Resource 1 => " + sourcePath1.toString());
+			logger.info("Resource 1 Size => " + Files.size(sourcePath1));
 			
-			fileEntry = fileStoreRepository.addFile(sourcePath, subTest1.getDirId(), true);
+			fileEntry = fileStoreRepository.addFile(sourcePath1, subTest1.getDirId(), true);
 			
 		}catch(IOException e){
 			logger.error(e.getMessage());
@@ -114,6 +117,9 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		logger.info("CmsFileEntry:");
 		logger.info(fileEntry.toString());
 		
+		//
+		// check file on disk
+		//
 		String dirPath = null;
 		try {
 			dirPath = fileStoreRepository.getAbsoluteDirPath(fileEntry.getDirectory().getDirId());
@@ -121,9 +127,8 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();
 		}
-		
 		assertNotNull(dirPath);
-		
+
 		logger.info("Path of directory => " + dirPath);
 		
 		String fullFilePath = dirPath + File.separator + fileEntry.getFileName();
@@ -133,13 +138,41 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		
 		assertTrue(Files.exists(targetPath));
 		
+		
 		//
-		// persist same file to the database again, set 'replaceExisting' to false to test DatabaseException
+		// persist second version of file with same name
 		//
-		exception.expect(DatabaseException.class);
-		fileStoreRepository.addFile(sourcePath, subTest1.getDirId(), false);
+		//exception.expect(DatabaseException.class);
+		CmsFileEntry updatedEntry = fileStoreRepository.addFile(sourcePath2, subTest1.getDirId(), true);
 				
-	
+		assertNotNull(updatedEntry);
+		assertNotNull(updatedEntry.getDirectory());
+		assertNotNull(updatedEntry.getDirectory().getFileEntries());
+		assertNotNull(updatedEntry.getFile());
+		
+		logger.info("Updated CmsFileEntry:");
+		logger.info(updatedEntry.toString());
+		
+		//
+		// re-check file on disk
+		//
+		try {
+			dirPath = fileStoreRepository.getAbsoluteDirPath(updatedEntry.getDirectory().getDirId());
+		} catch (DatabaseException e) {
+			logger.error("Error getting path for cms directory. " + e.getMessage());
+			e.printStackTrace();
+		}
+		assertNotNull(dirPath);
+
+		logger.info("Path of directory => " + dirPath);
+		
+		fullFilePath = dirPath + File.separator + updatedEntry.getFileName();
+		targetPath = Paths.get(fullFilePath);
+		
+		logger.info("Path of cms file => " + targetPath.toString());
+		
+		assertTrue(Files.exists(targetPath));		
+		
 	}
 	
 	public abstract String getTestFileStorePath();

@@ -42,7 +42,7 @@ public class PostgreSQLAddExistingFileTest extends AbstractAddExistingFile {
 	@Override
 	public String getTestFileStorePath() {
 
-		return "/Users/slenzi/Programming/sample_upload_existing";
+		return "/Users/slenzi/Programming/file_store/sample_upload_existing";
 		
 	}
 

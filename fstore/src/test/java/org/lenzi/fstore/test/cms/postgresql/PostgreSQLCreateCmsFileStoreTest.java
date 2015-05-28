@@ -42,7 +42,7 @@ public class PostgreSQLCreateCmsFileStoreTest extends AbstractCreateCmsFileStore
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "/Users/slenzi/Programming/sample_create";
+		return "/Users/slenzi/Programming/file_store/sample_create";
 		
 	}
 
