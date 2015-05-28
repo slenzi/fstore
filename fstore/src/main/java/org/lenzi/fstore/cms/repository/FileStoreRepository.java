@@ -813,6 +813,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		String fileName = newFile.getFileName().toString();
 		
+		// TODO - do we need to fetch before we update? try creating a new object with same ID, then merge
 		CmsFile existingCmsFile = getCmsFileById(fileId, CmsFileFetch.FILE_DATA);
 		
 		// read in file data
@@ -832,22 +833,22 @@ public class FileStoreRepository extends AbstractRepository {
 		String dirAbsolutePath = cmsStore.getStorePath() + dirRelativePath;
 		String existingFilePath = dirAbsolutePath + File.separator + existingCmsFileEntry.getFileName();
 		
+		// update database
 		existingCmsFileEntry.setFileName(fileName);
 		existingCmsFileEntry.setFileSize(Files.size(newFile));
 		existingCmsFile.setFileData(fileBytes);
-		
 		CmsFile updatedCmsFile = (CmsFile)merge(existingCmsFile);
-
 		CmsFileEntry updatedCmsFileEntry = (CmsFileEntry)merge(existingCmsFileEntry);
-		
 		updatedCmsFileEntry.setFile(updatedCmsFile);
 		
+		// delete old file on disk
 		try {
 			FileUtil.deleteDirectory(Paths.get(existingFilePath));
 		} catch (IOException e) {
 			throw new DatabaseException("Could not remove existing file on disk " + existingFilePath);
 		}
 		
+		// add new file on disk
 		Path target = Paths.get(dirAbsolutePath + File.separator + fileName);
 		try {
 			
