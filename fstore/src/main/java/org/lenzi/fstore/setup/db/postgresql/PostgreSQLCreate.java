@@ -130,7 +130,7 @@ public class PostgreSQLCreate {
 	private String SQL_CREATE_TABLE_FS_CMS_FILE =
 		"create table " + SCHEMA + "FS_CMS_FILE ( " +  
 		"	FILE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	FILE_DATA BYTEA NOT NULL, " + 
+		"	FILE_DATA OID NOT NULL, " + 
 		"	PRIMARY KEY (FILE_ID) " + 
 		")";	
 		

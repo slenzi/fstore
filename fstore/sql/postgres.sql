@@ -89,7 +89,7 @@ create table TEST.FS_CMS_FILE_ENTRY (
 /* for storing binary data  */
 create table TEST.FS_CMS_FILE ( 
 	FILE_ID NUMERIC(15,0) NOT NULL,
-	FILE_DATA BYTEA NOT NULL,
+	FILE_DATA OID NOT NULL,
 	PRIMARY KEY (FILE_ID) 
 );
 
