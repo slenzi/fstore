@@ -1,4 +1,4 @@
-package org.lenzi.fstore.model.tree;
+package org.lenzi.fstore.tree;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,12 +6,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.example.service.TestTreeService;
-import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.model.tree.TreeMeta;
 import org.lenzi.fstore.rest.exception.WebServiceException;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.tree.Tree;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class TreeResource {
 	@GET
 	@Path("{treeid}")
 	@Produces(MediaType.APPLICATION_JSON)
-    public Tree<TreeMeta> getTreeById(@PathParam("treeid") String treeid) throws WebServiceException {
+    public Tree<CmsDirectory> getTreeById(@PathParam("treeid") String treeid) throws WebServiceException {
     	
 		logger.info("Fetch tree by id = " + treeid);
 		

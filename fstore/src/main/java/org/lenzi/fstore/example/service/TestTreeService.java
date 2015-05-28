@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.logging.ClosureLogger;
-import org.lenzi.fstore.model.tree.Tree;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.model.DBClosure;
@@ -13,6 +12,7 @@ import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.service.TreeBuilder;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.tree.Tree;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

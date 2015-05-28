@@ -21,8 +21,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
 import org.lenzi.fstore.logging.ClosureLogger;
-import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.model.util.NodeCopier;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
@@ -37,6 +35,8 @@ import org.lenzi.fstore.service.ClosureMapBuilder;
 import org.lenzi.fstore.service.TreeBuilder;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.tree.Tree;
+import org.lenzi.fstore.tree.TreeNode;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
 import org.slf4j.Logger;

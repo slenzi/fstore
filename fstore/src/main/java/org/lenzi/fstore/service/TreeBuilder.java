@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.lenzi.fstore.model.tree.Tree;
-import org.lenzi.fstore.model.tree.TreeNode;
 import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.service.exception.ServiceException;
+import org.lenzi.fstore.tree.Tree;
+import org.lenzi.fstore.tree.TreeNode;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.springframework.stereotype.Service;
 
