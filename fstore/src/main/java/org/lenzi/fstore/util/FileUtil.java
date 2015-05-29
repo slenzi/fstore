@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,32 @@ public abstract class FileUtil {
 	    try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
 	        return !dirStream.iterator().hasNext();
 	    }
+	}
+	
+	/**
+	 * List files in a directory, and all sub-directories
+	 * 
+	 * @param directory
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<Path> listFiles(final Path directory) throws IOException {
+		return listFilesToDepth(directory, Integer.MAX_VALUE);
+	}
+	
+	/**
+	 * List files in a directory, up to a limited number of sub directories.
+	 * 
+	 * @param directory - the directory to start at
+	 * @param maxDepth - the maximum number of directory levels to visit
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<Path> listFilesToDepth(final Path directory, int maxDepth) throws IOException {
+		
+		return Files.walk(directory, maxDepth)
+			.filter(path -> Files.isRegularFile(path))
+			.collect(Collectors.toList());
 	}
 	
 	/**

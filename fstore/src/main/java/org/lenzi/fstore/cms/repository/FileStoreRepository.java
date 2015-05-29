@@ -852,6 +852,86 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
+	 * Add a list of files, or replace a series of existing files.
+	 * 
+	 * @param filesToAdd
+	 * @param cmsDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	public List<CmsFileEntry> addFile(List<Path> filesToAdd, Long cmsDirId, boolean replaceExisting) throws DatabaseException, IOException {
+		
+		if(filesToAdd == null || filesToAdd.size() == 0){
+			throw new DatabaseException("Files to add list is null or empty");
+		}
+		for(Path p : filesToAdd){
+			if(!Files.exists(p)){
+				throw new IOException("File does not exist => " + p.toString());
+			}
+			if(Files.isDirectory(p)){
+				throw new IOException("Path is a directory => " + p.toString());
+			}			
+		}
+		
+		// get parent dir
+		CmsDirectory cmsDirectory = null;
+		try {
+			cmsDirectory = getCmsDirectoryById(cmsDirId, CmsDirectoryFetch.FILE_META);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to retrieve CmsDirectory for cms dir id => " + cmsDirId, e);
+		}
+		
+		// get file store
+		CmsFileStore cmsStore = null;
+		try {
+			cmsStore = getCmsFileStoreByDirId(cmsDirId);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirId, e);
+		}
+		
+		String dirFullPath = getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
+		
+		CmsFileEntry newCmsFileEntry = null;
+		List<CmsFileEntry> newCmsFileEntries = new ArrayList<CmsFileEntry>();
+		
+		for(Path fileToAdd : filesToAdd){
+			
+			String fileName = fileToAdd.getFileName().toString();
+			
+			// check if there is an existing file with the same name
+			CmsFileEntry existingCmsFileEntry = cmsDirectory.getEntryByFileName(fileName, false);
+			
+			// file exists, but we are not to replace file. throw error 
+			if(existingCmsFileEntry != null && !replaceExisting){
+			
+				throw new DatabaseException("File " + fileName + " already exists in cms directory " + cmsDirectory.getName() + 
+						" at path " + dirFullPath + ". Cannot replace existing file because 'replaceExisting' param is false.");
+			
+			// file exists, and we need to replace existing one
+			}else if(existingCmsFileEntry != null && replaceExisting){
+			
+				newCmsFileEntry = replaceExistingFile(fileToAdd, existingCmsFileEntry, cmsDirectory, cmsStore);
+				
+				newCmsFileEntries.add(newCmsFileEntry);
+				
+			// not existing file. add a new entry
+			}else{
+				
+				newCmsFileEntry = addNewFile(fileToAdd, cmsDirectory, cmsStore);
+				
+				newCmsFileEntries.add(newCmsFileEntry);
+				
+			}			
+			
+		}
+		
+		return newCmsFileEntries;
+		
+	}
+	
+	/**
 	 * Replace existing file
 	 * 
 	 * @param newFile
@@ -866,6 +946,8 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		Long fileId = existingCmsFileEntry.getFileId();
 		String newFileName = newFile.getFileName().toString();
+		String oldFileName = existingCmsFileEntry.getFileName();
+		Long oldFileSize = existingCmsFileEntry.getFileSize();
 		
 		// read in file data
 		// TODO - look into reading the file in chunks... not good to read entire file if file is large.
@@ -874,10 +956,15 @@ public class FileStoreRepository extends AbstractRepository {
 			fileBytes = Files.readAllBytes(newFile);
 		} catch (IOException e) {
 			throw new IOException("Error reading data from file => " + newFile.toString(), e);
-		}
+		}	
 		
 		String dirFullPath = getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
 		String existingFilePath = getAbsoluteFilePath(cmsStore, cmsDirectory, existingCmsFileEntry);
+		
+		logger.info("Replacing old file => " + oldFileName + ", size => " + oldFileSize + " bytes , with new file => " + newFileName +
+				", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
+				", Cms Directory Id => " + cmsDirectory.getDirId() + ", Cms Directory Name => " + cmsDirectory.getName() +
+				", File system path => " + dirFullPath);			
 		
 		// update database
 		CmsFile updatedFile = new CmsFile();
@@ -941,7 +1028,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		logger.info("Adding file => " + fileName + ", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
 				", Cms Directory Id => " + cmsDirectory.getDirId() + ", Cms Directory Name => " + cmsDirectory.getName() +
-				", File system path => " + dirFullPath);		
+				", File system path => " + dirFullPath);	
 		
 		// create cms file entry for meta data
 		CmsFileEntry cmsFileEntry = new CmsFileEntry();
