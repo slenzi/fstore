@@ -24,6 +24,7 @@ import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -590,6 +591,65 @@ public class FileStoreRepository extends AbstractRepository {
 		return childRootList;
 		
 	}
+	
+	/**
+	 * Fetch a cms directory by a file id.
+	 * 
+	 * @param fileId - id of the file in the directory
+	 * @param fetch - specify what to fetch for the cms directory
+	 * @return the cms directory entry that the file is in.
+	 * @throws DatabaseException
+	 */
+	public CmsDirectory getCmsDirectoryByFileId(Long fileId, CmsDirectoryFetch fetch) throws DatabaseException {
+		
+		// TODO - check if this returns all file entries, or just the one with the specified file id
+		
+		/*
+	 	select d from CmsDirectory as d
+		join fetch d.fileEntries e
+		where e.fileId = 1
+		*/
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<CmsDirectory> query = criteriaBuilder.createQuery(CmsDirectory.class);
+		Root<CmsDirectory> root = query.from(CmsDirectory.class);
+		
+		SetJoin<CmsDirectory,CmsFileEntry> fileEntries = root.join(CmsDirectory_.fileEntries, JoinType.LEFT);
+		
+		switch(fetch){
+		
+			// just directory meta, no join
+			case FILE_NONE:
+				break;
+		
+			// just file meta data
+			case FILE_META:
+				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+				break;
+			
+			// file meta data, and file byte data
+			case FILE_META_WITH_DATA:
+				Fetch<CmsDirectory,CmsFileEntry> metaFetch = root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+				metaFetch.fetch(CmsFileEntry_.file, JoinType.LEFT);
+				break;
+			
+			// default to just file meta data
+			default:
+				root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+				break;
+				
+		}		
+		
+		query.select(root);
+		query.where(
+				criteriaBuilder.equal(fileEntries.get(CmsFileEntry_.fileId), fileId)
+				);
+		
+		CmsDirectory result = getEntityManager().createQuery(query).getSingleResult();
+		
+		return result;
+		
+	}
 
 	/**
 	 * Fetch a CmsDirectory
@@ -603,7 +663,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<CmsDirectory> query = criteriaBuilder.createQuery(CmsDirectory.class);
-		Root<CmsDirectory> root = query.from(CmsDirectory.class);
+		Root<CmsDirectory> root = query.from(CmsDirectory.class);		
 		
 		switch(fetch){
 		
@@ -759,19 +819,14 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 		// get file store
-		CmsFileStore store = null;
+		CmsFileStore cmsStore = null;
 		try {
-			store = getCmsFileStoreByDirId(cmsDirId);
+			cmsStore = getCmsFileStoreByDirId(cmsDirId);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirId, e);
 		}
 		
-		// get full path to directory using relative path from CmsDirectory and store path from CmsFileStore
-		String dirRelativePath = cmsDirectory.getRelativeDirPath();
-		if(!dirRelativePath.startsWith(File.separator)){
-			dirRelativePath = File.separator + dirRelativePath;
-		}
-		String dirAbsolutePath = store.getStorePath() + dirRelativePath;
+		String dirFullPath = getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
 		
 		// check if there is an existing file with the same name
 		CmsFileEntry existingCmsFileEntry = cmsDirectory.getEntryByFileName(fileName, false);
@@ -780,17 +835,17 @@ public class FileStoreRepository extends AbstractRepository {
 		if(existingCmsFileEntry != null && !replaceExisting){
 		
 			throw new DatabaseException("File " + fileName + " already exists in cms directory " + cmsDirectory.getName() + 
-					" at path " + dirAbsolutePath + ". Cannot replace existing file because 'replaceExisting' param is false.");
+					" at path " + dirFullPath + ". Cannot replace existing file because 'replaceExisting' param is false.");
 		
 		// file exists, and we need to replace existing one
 		}else if(existingCmsFileEntry != null && replaceExisting){
 		
-			return replaceExistingFile(fileToAdd, existingCmsFileEntry, cmsDirectory, store);
+			return replaceExistingFile(fileToAdd, existingCmsFileEntry, cmsDirectory, cmsStore);
 			
 		// not existing file. add a new entry
 		}else{
 			
-			return addNewFile(fileToAdd, cmsDirectory, store);
+			return addNewFile(fileToAdd, cmsDirectory, cmsStore);
 			
 		}
 		
@@ -810,11 +865,7 @@ public class FileStoreRepository extends AbstractRepository {
 	private CmsFileEntry replaceExistingFile(Path newFile, CmsFileEntry existingCmsFileEntry, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
 		
 		Long fileId = existingCmsFileEntry.getFileId();
-		
-		String fileName = newFile.getFileName().toString();
-		
-		// TODO - do we need to fetch before we update? try creating a new object with same ID, then merge
-		CmsFile existingCmsFile = getCmsFileById(fileId, CmsFileFetch.FILE_DATA);
+		String newFileName = newFile.getFileName().toString();
 		
 		// read in file data
 		// TODO - look into reading the file in chunks... not good to read entire file if file is large.
@@ -825,31 +876,28 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new IOException("Error reading data from file => " + newFile.toString(), e);
 		}
 		
-		// get full path to directory using relative path from CmsDirectory and store path from CmsFileStore
-		String dirRelativePath = cmsDirectory.getRelativeDirPath();
-		if(!dirRelativePath.startsWith(File.separator)){
-			dirRelativePath = File.separator + dirRelativePath;
-		}
-		String dirAbsolutePath = cmsStore.getStorePath() + dirRelativePath;
-		String existingFilePath = dirAbsolutePath + File.separator + existingCmsFileEntry.getFileName();
+		String dirFullPath = getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
+		String existingFilePath = getAbsoluteFilePath(cmsStore, cmsDirectory, existingCmsFileEntry);
 		
 		// update database
-		existingCmsFileEntry.setFileName(fileName);
+		CmsFile updatedFile = new CmsFile();
+		updatedFile.setFileId(fileId);
+		updatedFile.setFileData(fileBytes);
+		existingCmsFileEntry.setFileName(newFileName);
 		existingCmsFileEntry.setFileSize(Files.size(newFile));
-		existingCmsFile.setFileData(fileBytes);
-		CmsFile updatedCmsFile = (CmsFile)merge(existingCmsFile);
+		CmsFile updatedCmsFile = (CmsFile)merge(updatedFile);
 		CmsFileEntry updatedCmsFileEntry = (CmsFileEntry)merge(existingCmsFileEntry);
 		updatedCmsFileEntry.setFile(updatedCmsFile);
 		
 		// delete old file on disk
 		try {
-			FileUtil.deleteDirectory(Paths.get(existingFilePath));
+			FileUtil.deletePath(Paths.get(existingFilePath));
 		} catch (IOException e) {
 			throw new DatabaseException("Could not remove existing file on disk " + existingFilePath);
 		}
 		
 		// add new file on disk
-		Path target = Paths.get(dirAbsolutePath + File.separator + fileName);
+		Path target = Paths.get(dirFullPath + File.separator + newFileName);
 		try {
 			
 			Files.copy(newFile, target);
@@ -880,13 +928,7 @@ public class FileStoreRepository extends AbstractRepository {
 	private CmsFileEntry addNewFile(Path fileToAdd, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
 		
 		String fileName = fileToAdd.getFileName().toString();
-		
-		// get full path to directory using relative path from CmsDirectory and store path from CmsFileStore
-		String dirRelativePath = cmsDirectory.getRelativeDirPath();
-		if(!dirRelativePath.startsWith(File.separator)){
-			dirRelativePath = File.separator + dirRelativePath;
-		}
-		String dirAbsolutePath = cmsStore.getStorePath() + dirRelativePath;
+		String dirFullPath = getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
 		
 		// read in file data
 		// TODO - look into reading the file in chunks... not good to read entire file if file is large.
@@ -899,7 +941,7 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		logger.info("Adding file => " + fileName + ", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
 				", Cms Directory Id => " + cmsDirectory.getDirId() + ", Cms Directory Name => " + cmsDirectory.getName() +
-				", File system path => " + dirAbsolutePath);		
+				", File system path => " + dirFullPath);		
 		
 		// create cms file entry for meta data
 		CmsFileEntry cmsFileEntry = new CmsFileEntry();
@@ -926,7 +968,7 @@ public class FileStoreRepository extends AbstractRepository {
 		cmsFile.setFileEntry(cmsFileEntry);
 		
 		// copy file to directory for CmsDirectory
-		Path target = Paths.get(dirAbsolutePath + File.separator + fileName);
+		Path target = Paths.get(dirFullPath + File.separator + fileName);
 		try {
 			
 			Files.copy(fileToAdd, target);
@@ -949,6 +991,66 @@ public class FileStoreRepository extends AbstractRepository {
 		return cmsFileEntry;
 		
 	}
+	
+	/**
+	 * Remove a file
+	 * 
+	 * @param fileId - if of the file to remove
+	 * @throws DatabaseException
+	 */
+	public void removeFile(Long fileId) throws DatabaseException {
+		
+		CmsFile file = getCmsFileById(fileId, CmsFileFetch.FILE_DATA_WITH_META);
+		CmsFileEntry fileEntry = file.getFileEntry();
+		
+		CmsDirectory dir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_NONE);
+		CmsFileStore store = getCmsFileStoreByDirId(dir.getDirId());
+		
+		String fileToDelete = getAbsoluteFilePath(store, dir, fileEntry);		
+		
+		try {
+			remove(file); // needed?  we have CASCADE set to ALL
+			remove(fileEntry);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to remove file from database for file id => " + fileId, e);
+		}
+		
+		Path filePath = Paths.get(fileToDelete);
+		try {
+			FileUtil.deletePath(filePath);
+		} catch (IOException e) {
+			throw new DatabaseException("Failed to remove file from local file system => " + filePath.toString(), e);
+		}
+		
+	}
+	
+	/**
+	 * Joins the CmsStore path and the relative CmsDirectory path to get the full/absolute path
+	 * to the directory on the file system
+	 * 
+	 * @param cmsStore
+	 * @param cmsDirectory
+	 * @return
+	 */
+	private String getAbsoluteDirectoryPath(CmsFileStore cmsStore, CmsDirectory cmsDirectory){
+		
+		String dirRelativePath = cmsDirectory.getRelativeDirPath();
+		if(!dirRelativePath.startsWith(File.separator)){
+			dirRelativePath = File.separator + dirRelativePath;
+		}
+		return cmsStore.getStorePath() + dirRelativePath;		
+		
+	}
+	
+	/**
+	 * Joins the CmsStore path, relative CmsDirectory path, and CmsFileEntry file name to
+	 * get the full/absolute path to the fole on the file system.
+	 */
+	private String getAbsoluteFilePath(CmsFileStore cmsStore, CmsDirectory cmsDirectory, CmsFileEntry cmsFileEntry){
+		
+		return getAbsoluteDirectoryPath(cmsStore, cmsDirectory) + File.separator + cmsFileEntry.getFileName();	
+		
+	}	
 	
 	/**
 	 * Builds a database exception for file copy error process.

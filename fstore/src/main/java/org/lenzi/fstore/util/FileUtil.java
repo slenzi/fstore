@@ -71,7 +71,7 @@ public abstract class FileUtil {
 			if(!isEmpty && clearIfNotEmpty){
 				logger.info("Deleting " + directory.toString());
 				try {
-					deleteDirectory(directory);
+					deletePath(directory);
 					//Files.delete(directory);
 				} catch (IOException e) {
 					throw new IOException("Error removing existing directory " + directory.toString());
@@ -103,14 +103,15 @@ public abstract class FileUtil {
 	}
 	
 	/**
-	 * Delete a directory, and everything in it if the directories contains files and sub directories.
+	 * Delete a path. If the path references a file then the file is deleted. If the path references a
+	 * directory then the directory and everything under it is deleted.
 	 * 
-	 * @param directory
+	 * @param path
 	 * @throws IOException
 	 */
-	public static void deleteDirectory(final Path directory) throws IOException {
+	public static void deletePath(final Path path) throws IOException {
 		
-		Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 
 			// delete the file
 			@Override
