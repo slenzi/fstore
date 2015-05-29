@@ -212,6 +212,10 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	private List<CmsFileStore> validatePath(Path dirPath) throws DatabaseException {
 		
+		// TODO - bug in pattern matching
+		
+		// /onetwo/threefour will match on /onetwo/three
+		
 		List<CmsFileStore> conflictingStores = new ArrayList<CmsFileStore>();
 		
 		conflictingStores.addAll( CollectionUtil.emptyListIfNull(getParentFileStores(dirPath)) );
@@ -1089,17 +1093,23 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		CmsFile file = getCmsFileById(fileId, CmsFileFetch.FILE_DATA_WITH_META);
 		CmsFileEntry fileEntry = file.getFileEntry();
-		
 		CmsDirectory dir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_NONE);
 		CmsFileStore store = getCmsFileStoreByDirId(dir.getDirId());
 		
+		removeFile(store, dir, fileEntry, file);
+		
+	}
+	private void removeFile(CmsFileStore store, CmsDirectory dir, CmsFileEntry fileEntry, CmsFile file) throws DatabaseException {
+		
 		String fileToDelete = getAbsoluteFilePath(store, dir, fileEntry);		
+		
+		logger.info("removing file id => " + file.getFileId() + ", path => " + fileToDelete);
 		
 		try {
 			remove(file); // needed?  we have CASCADE set to ALL
 			remove(fileEntry);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to remove file from database for file id => " + fileId, e);
+			throw new DatabaseException("Failed to remove file from database for file id => " + file.getFileId(), e);
 		}
 		
 		Path filePath = Paths.get(fileToDelete);
@@ -1107,7 +1117,7 @@ public class FileStoreRepository extends AbstractRepository {
 			FileUtil.deletePath(filePath);
 		} catch (IOException e) {
 			throw new DatabaseException("Failed to remove file from local file system => " + filePath.toString(), e);
-		}
+		}		
 		
 	}
 	
