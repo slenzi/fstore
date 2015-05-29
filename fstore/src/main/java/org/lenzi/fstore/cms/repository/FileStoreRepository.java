@@ -47,7 +47,12 @@ import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.service.ClosureMapBuilder;
+import org.lenzi.fstore.service.TreeBuilder;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.tree.Tree;
+import org.lenzi.fstore.tree.Trees;
+import org.lenzi.fstore.tree.Trees.PrintOption;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
 import org.lenzi.fstore.util.FileUtil;
@@ -78,6 +83,9 @@ public class FileStoreRepository extends AbstractRepository {
 	
 	@Autowired
 	private ClosureLogger<CmsDirectory> closureLogger;
+	
+	@Autowired
+	private TreeBuilder<CmsDirectory> treeBuilder;
 	
 	/**
 	 * When fetching a CmsDirectory, specify which file data to fetch.
@@ -1118,6 +1126,33 @@ public class FileStoreRepository extends AbstractRepository {
 		} catch (IOException e) {
 			throw new DatabaseException("Failed to remove file from local file system => " + filePath.toString(), e);
 		}		
+		
+	}
+	
+	/**
+	 * Remove a directory
+	 * 
+	 * @param dirId
+	 * @throws DatabaseException
+	 */
+	public void removeDirectory(Long dirId) throws DatabaseException {
+		
+		// TODO - finish!
+		
+		CmsDirectory dirWithChild = treeRepository.getNodeWithChild(new CmsDirectory(dirId));
+		
+		Tree<CmsDirectory> dirTree = null;
+		try {
+			dirTree = treeBuilder.buildTree(dirWithChild);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to buikd tree from CmsDirectory node", e);
+		}
+		
+		dirTree.printTree();
+		
+		CmsDirectory cmsDirectory = getCmsDirectoryById(dirId, CmsDirectoryFetch.FILE_META);
+		CmsFileStore cmsStore = getCmsFileStoreByDirId(cmsDirectory.getDirId());
+		
 		
 	}
 	
