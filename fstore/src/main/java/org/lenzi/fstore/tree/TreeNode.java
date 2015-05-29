@@ -10,77 +10,77 @@ import java.util.List;
  * @author sal
  *
  */
-public class TreeNode<T> {
+public class TreeNode<N> {
 	
-	private T data = null;
-	private TreeNode<T> parent = null;
-	private List<TreeNode<T>> childList = null;
+	private N data = null;
+	private TreeNode<N> parent = null;
+	private List<TreeNode<N>> childList = null;
 	
 	public TreeNode() {
 		super();
 	}
 	
-	public TreeNode(T data) {
+	public TreeNode(N data) {
 		super();
 		this.data = data;
 	}
 
-	public TreeNode(T data, TreeNode<T> parent) {
+	public TreeNode(N data, TreeNode<N> parent) {
 		super();
 		this.data = data;
 		this.parent = parent;
 	}
 
-	public void setData(T data) {
+	public void setData(N data) {
 		this.data = data;
 	}
 
-	public T getData() {
+	public N getData() {
 		return data;
 	}
 
-	public void setParent(TreeNode<T> parent) {
+	public void setParent(TreeNode<N> parent) {
 		this.parent = parent;
 	}
 
-	public TreeNode<T> getParent() {
+	public TreeNode<N> getParent() {
 		return parent;
 	}
 
-	public void addChildNode(TreeNode<T> child) {
+	public void addChildNode(TreeNode<N> child) {
 		if(child == null){
 			return;
 		}
 		if(childList == null){
-			childList = new ArrayList<TreeNode<T>>();
+			childList = new ArrayList<TreeNode<N>>();
 		}
 		child.setParent(this);
 		childList.add(child);
 	}
 
-	public void addChildren(List<TreeNode<T>> children) {
+	public void addChildren(List<TreeNode<N>> children) {
 		if(children == null || children.size() == 0){
 			return;
 		}
 		if(childList == null){
-			childList = new ArrayList<TreeNode<T>>();
+			childList = new ArrayList<TreeNode<N>>();
 		}
-		for(TreeNode<T> n : children){
+		for(TreeNode<N> n : children){
 			n.setParent(this);
 		}
 		childList.addAll(children);
 	}
 
-	public void setChildren(List<TreeNode<T>> children) {
+	public void setChildren(List<TreeNode<N>> children) {
 		childList = children;
 		if(childList != null){
-			for(TreeNode<T> n : childList){
+			for(TreeNode<N> n : childList){
 				n.setParent(this);
 			}			
 		}
 	}
 
-	public List<TreeNode<T>> getChildren() {
+	public List<TreeNode<N>> getChildren() {
 		return childList;
 	}
 
@@ -91,6 +91,8 @@ public class TreeNode<T> {
 	public int getChildCount() {
 		return ((childList != null) ? childList.size() : 0);
 	}
+	
+	/* deprecated
 	
 	// print tree with provided line separator (e.d. <br> tag)
 	public String printTree(String lineSepartor){
@@ -132,7 +134,9 @@ public class TreeNode<T> {
 	        	childList.get(childList.size() - 1).printHtml(buf, prefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), true, lineSepartor);
 	        }
     	}
-    }	    
+    }
+    
+	*/
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -156,7 +160,7 @@ public class TreeNode<T> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TreeNode other = (TreeNode) obj;
+		TreeNode<N> other = (TreeNode<N>) obj;
 		if (data == null) {
 			if (other.data != null)
 				return false;

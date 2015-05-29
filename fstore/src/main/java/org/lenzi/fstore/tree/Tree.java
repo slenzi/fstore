@@ -1,17 +1,16 @@
 package org.lenzi.fstore.tree;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.lenzi.fstore.tree.Trees.PrintOption;
 
-public class Tree<T> {
+public class Tree<N> {
 
-	private TreeNode<T> rootNode = null;
+	private TreeNode<N> rootNode = null;
 	
 	public Tree() {
 		super();
 	}
 
-	public Tree(TreeNode<T> rootNode) {
+	public Tree(TreeNode<N> rootNode) {
 		super();
 		this.rootNode = rootNode;
 	}
@@ -19,44 +18,58 @@ public class Tree<T> {
 	/**
 	 * @return the rootNode
 	 */
-	public TreeNode<T> getRootNode() {
+	public TreeNode<N> getRootNode() {
 		return rootNode;
 	}
 
 	/**
 	 * @param rootNode the rootNode to set
 	 */
-	public void setRootNode(TreeNode<T> rootNode) {
+	public void setRootNode(TreeNode<N> rootNode) {
 		this.rootNode = rootNode;
 	}	
 
-    public List<TreeNode<T>> toList() {
-        List<TreeNode<T>> list = new ArrayList<TreeNode<T>>();
+	/* deprecated
+    public List<TreeNode<N>> toList() {
+        List<TreeNode<N>> list = new ArrayList<TreeNode<N>>();
         walk(rootNode, list);
         return list;
     }
+    */
     
-    private void walk(TreeNode<T> node, List<TreeNode<T>> list){
+    /* deprecated
+    private void walk(TreeNode<N> node, List<TreeNode<N>> list){
     	list.add(node);
-        for (TreeNode<T> data : node.getChildren()) {
+        for (TreeNode<N> data : node.getChildren()) {
             walk(data, list);
         }    	
     }
+    */
     
+	/* deprecated
     public String toString() {
         return toList().toString();
     }
+    */
     
+    /* deprecated
     public String printTree(String lineSeparator){
     	return rootNode.printTree(lineSeparator);
     }
+    */
 	
     public String printTree(){
-    	return rootNode.printTree();
+    	
+    	return Trees.printTree(rootNode, PrintOption.TERMINAL);
+    	//return rootNode.printTree();
+    	
     }
     
     public String printHtmlTree(){
-    	return rootNode.printHtmlTree();
+    	
+    	return Trees.printTree(rootNode, PrintOption.HTML);
+    	//return rootNode.printHtmlTree();
+    	
     }
     
 }

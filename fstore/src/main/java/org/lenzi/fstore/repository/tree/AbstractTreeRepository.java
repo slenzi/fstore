@@ -31,12 +31,16 @@ import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.repository.model.impl.FSNode_;
 import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
+import org.lenzi.fstore.repository.tree.visitor.SimpleFSNodeVisitor;
 import org.lenzi.fstore.service.ClosureMapBuilder;
 import org.lenzi.fstore.service.TreeBuilder;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.tree.Tree;
 import org.lenzi.fstore.tree.TreeNode;
+import org.lenzi.fstore.tree.TreeNodeVisitException;
+import org.lenzi.fstore.tree.Trees;
+import org.lenzi.fstore.tree.Trees.WalkOption;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
 import org.slf4j.Logger;
@@ -1228,7 +1232,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		logger.debug("Deleted children of node " + parentNodeId + " from the closure table.");
 		
 		// allow user access to each node that was deleted so that they may perform post delete cleanup
-		postOrderTraversalRemoveCallback(treeToDelete, true);		
+		//postOrderTraversalRemoveCallback(treeToDelete, true);
+		handlePostRemove(treeToDelete, true);
 		
 	}
 
@@ -1303,10 +1308,43 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		}
 		
 		if(nodeTable){
-			// allow user access to each node that was deleted so that they may perform post delete cleanup
-			postOrderTraversalRemoveCallback(treeToDelete, false);
+			
+			handlePostRemove(treeToDelete, false);		
+			
 		}
 		
+	}
+	
+	/**
+	 * Walks tree in post-order traversal and calls postRemove(N) for each node
+	 * 
+	 * @param treeToDelete
+	 * @throws DatabaseException
+	 */
+	private void handlePostRemove(Tree<N> treeToDelete, boolean childrenOnly) throws DatabaseException {
+	
+		if(childrenOnly){
+			for(TreeNode<N> child : treeToDelete.getRootNode().getChildren()){
+				_handlePostRemove(child);
+			}
+		}else{
+			_handlePostRemove(treeToDelete.getRootNode());
+		}		
+	}
+	private void _handlePostRemove(TreeNode<N> nodeToDelete) throws DatabaseException {
+		try {
+			Trees.walkTree(nodeToDelete,
+					(n) -> { 
+						try {
+							postRemove(n.getData());
+						} catch (DatabaseException e) {
+							throw new TreeNodeVisitException("Error calling postRemove(N) for node " + n.getData().toString(), e);
+						} 
+					},
+					WalkOption.POST_ORDER_TRAVERSAL);
+		} catch (TreeNodeVisitException e) {
+			throw new DatabaseException(e.getMessage(), e.getCause());
+		}
 	}
 	
 	/**
@@ -1316,6 +1354,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @param treeToDelete
 	 * @param childrenOnly - true to delete just the children of the node. False to delete all children, plus the node itself.
 	 * @throws DatabaseException
+	 * 
+	 * @deprecated - replaced with handlePostRemove(..) method
 	 */
 	private void postOrderTraversalRemoveCallback(Tree<N> treeToDelete, boolean childrenOnly) throws DatabaseException {
 		if(treeToDelete == null){
@@ -1329,6 +1369,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			postOrderTraversalRemoveCallback(treeToDelete.getRootNode());
 		}
 	}
+	/**
+	 * @deprecated - replaced with handlePostRemove(..) method
+	 */
 	private void postOrderTraversalRemoveCallback(TreeNode<N> nodeToDelete) throws DatabaseException {
 		if(nodeToDelete.hasChildren()){
 			for(TreeNode<N> childNode : nodeToDelete.getChildren()){
