@@ -21,6 +21,7 @@ import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.Transient;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.hibernate.HibernateException;
@@ -271,6 +272,18 @@ public class AbstractRepository implements Serializable {
 	protected List getResultList(CriteriaQuery q) throws DatabaseException {
 		
 		return getResultList( getEntityManager().createQuery(q) );
+		
+	}
+	
+	protected void executeUpdate(CriteriaQuery q) throws DatabaseException {
+		
+		this.executeUpdate(getEntityManager().createQuery(q));
+		
+	}
+	
+	protected void executeUpdate(CriteriaDelete q) throws DatabaseException {
+		
+		this.executeUpdate(getEntityManager().createQuery(q));
 		
 	}
 

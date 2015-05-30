@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
@@ -26,7 +27,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
-import oracle.net.aso.n;
+//import oracle.net.aso.n;
+
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1109,18 +1111,35 @@ public class FileStoreRepository extends AbstractRepository {
 		CmsDirectory dir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_NONE);
 		CmsFileStore store = getCmsFileStoreByDirId(dir.getDirId());
 		
-		removeFile(store, dir, fileEntry);
+		_removeFile(store, dir, fileEntry);
 		
 	}
-	private void removeFile(CmsFileStore store, CmsDirectory dir, CmsFileEntry fileEntry) throws DatabaseException {
+	private void _removeFile(CmsFileStore store, CmsDirectory dir, CmsFileEntry fileEntry) throws DatabaseException {
 		
 		String fileToDelete = getAbsoluteFilePath(store, dir, fileEntry);		
 		
-		logger.info("removing file id => " + fileEntry.getFileId() + ", path => " + fileToDelete);
+		logger.info("removing file id => " + fileEntry.getFileId() + ", name => " + fileEntry.getFileName() + 
+				", path => " + fileToDelete);
+		
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
 		try {
-			remove(new CmsFile(fileEntry.getFileId())); // needed?  we have CASCADE set to ALL
-			remove(fileEntry);
+			
+			//remove(new CmsFile(fileEntry.getFileId())); // needed?  we have CASCADE set to ALL
+			//remove(fileEntry);
+			
+			// delete cms file
+			CriteriaDelete<CmsFile> cmsFileDelete = cb.createCriteriaDelete(CmsFile.class);
+			Root<CmsFile> cmsFileRoot = cmsFileDelete.from(CmsFile.class);
+			cmsFileDelete.where(cb.lessThanOrEqualTo(cmsFileRoot.get(CmsFile_.fileId), fileEntry.getFileId()));
+			executeUpdate(cmsFileDelete);
+			
+			// delete cms file entry
+			CriteriaDelete<CmsFileEntry> cmsFileEntryDelete = cb.createCriteriaDelete(CmsFileEntry.class);
+			Root<CmsFileEntry> cmsFileEntryRoot = cmsFileEntryDelete.from(CmsFileEntry.class);
+			cmsFileEntryDelete.where(cb.lessThanOrEqualTo(cmsFileEntryRoot.get(CmsFileEntry_.fileId), fileEntry.getFileId()));
+			executeUpdate(cmsFileEntryDelete);
+			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to remove file from database for file id => " + fileEntry.getFileId(), e);
 		}
@@ -1142,10 +1161,10 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public void removeDirectory(Long dirId) throws DatabaseException {
 		
-		// TODO - finish!
-		
+		//
+		// build tree
+		//
 		CmsDirectory parentDir = treeRepository.getNodeWithChild(new CmsDirectory(dirId));
-		
 		Tree<CmsDirectory> dirTree = null;
 		try {
 			dirTree = treeBuilder.buildTree(parentDir);
@@ -1158,40 +1177,67 @@ public class FileStoreRepository extends AbstractRepository {
 		CmsDirectory cmsDirectory = getCmsDirectoryById(dirId, CmsDirectoryFetch.FILE_META);
 		CmsFileStore cmsStore = getCmsFileStoreByDirId(cmsDirectory.getDirId());
 		
+		//
+		// walk tree in post-order traversal, deleting one directory at a time
+		//
 		try {
+			
 			Trees.walkTree(dirTree,
 					(treeNode) -> {
 						
 						CmsDirectory dirToDelete = treeNode.getData();
 						
-						//
-						// remove all files in the directory
-						//
-						for(CmsFileEntry fileEntryToDelete : dirToDelete.getFileEntries()){
-							try {
-								removeFile(cmsStore, dirToDelete, fileEntryToDelete);
-							} catch (DatabaseException e) {
-								throw new TreeNodeVisitException("Error deleting CmsFileEntry, file id => " + 
-										fileEntryToDelete.getFileId() + ", name => " + fileEntryToDelete.getFileName(),e);
-							}
-						}
-						
-						//
-						// remove the directory
-						//
 						try {
-							treeRepository.removeNode(treeNode.getData());
-						} catch (Exception e) {
-							throw new TreeNodeVisitException("Error deleting CmsDirectory, dir id => " + 
-									dirToDelete.getDirId() + ", name => " + dirToDelete.getDirName(), e);
+							_removeDirectory(cmsStore, dirToDelete);
+						} catch (DatabaseException e) {
+							throw new TreeNodeVisitException(e.getMessage(), e);
 						}
 						
 					},
 					WalkOption.POST_ORDER_TRAVERSAL);
+			
 		} catch (TreeNodeVisitException e) {
-			throw new DatabaseException("Error deleting directory id => " + parentDir.getDirId() + ", name => " + parentDir.getDirName(), e);
+			throw new DatabaseException("Error deleting directory id => " + parentDir.getDirId() + 
+					", name => " + parentDir.getDirName(), e);
 		}
 		
+	}
+	// TODO - consider making this method require a new transaction
+	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
+	private void _removeDirectory(CmsFileStore cmsStore, CmsDirectory dirToDelete) throws DatabaseException {
+		
+		String dirPath = getAbsoluteDirectoryPath(cmsStore, dirToDelete);
+		
+		logger.info("Removing directory, id => " + dirToDelete.getDirId() + ", name => " + dirToDelete.getDirName() +
+				", path => " + dirPath);
+		
+		// remove all files in the directory
+		for(CmsFileEntry fileEntryToDelete : dirToDelete.getFileEntries()){
+			try {
+				_removeFile(cmsStore, dirToDelete, fileEntryToDelete);
+			} catch (DatabaseException e) {
+				throw new DatabaseException("Error deleting CmsFileEntry, file id => " + 
+						fileEntryToDelete.getFileId() + ", name => " + fileEntryToDelete.getFileName() +
+						", in CmsDirectory, dir id => " + dirToDelete.getDirId() + ", name => " +
+						dirToDelete.getDirName(), e);
+			}
+		}
+		
+		// remove the directory
+		try {
+			treeRepository.removeNode(dirToDelete);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error deleting CmsDirectory, dir id => " + 
+					dirToDelete.getDirId() + ", name => " + dirToDelete.getDirName(), e);
+		}
+		
+		// remove dir on file system
+		try {
+			FileUtil.deletePath(Paths.get(dirPath));
+		} catch (IOException e) {
+			throw new DatabaseException("Error deleting physical directory on file system for CmsDirectory, dir id => " + 
+					dirToDelete.getDirId() + ", name => " + dirToDelete.getDirName() + ", path => " + dirPath, e);
+		}
 		
 	}
 	

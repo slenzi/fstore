@@ -49,16 +49,21 @@ public final class Trees {
 	 * @param option
 	 */
 	public static <N> void walkTree(TreeNode<N> start, TreeNodeVisitor<N> visitor, WalkOption walkOption) throws TreeNodeVisitException {
+		
 		switch(walkOption){
+		
 			case POST_ORDER_TRAVERSAL:
 				postOrderTraversal(start, visitor);
 				break;
+				
 			case PRE_ORDER_TRAVERSAL:
 				break;
 				
 			default:
 				break;
+				
 		}
+		
 	}
 	
 	/**
