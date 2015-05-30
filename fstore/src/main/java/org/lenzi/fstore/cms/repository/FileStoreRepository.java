@@ -26,6 +26,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
+import oracle.net.aso.n;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,8 +53,10 @@ import org.lenzi.fstore.service.TreeBuilder;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.tree.Tree;
+import org.lenzi.fstore.tree.TreeNodeVisitException;
 import org.lenzi.fstore.tree.Trees;
 import org.lenzi.fstore.tree.Trees.PrintOption;
+import org.lenzi.fstore.tree.Trees.WalkOption;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
 import org.lenzi.fstore.util.FileUtil;
@@ -1099,25 +1103,26 @@ public class FileStoreRepository extends AbstractRepository {
 	 */
 	public void removeFile(Long fileId) throws DatabaseException {
 		
-		CmsFile file = getCmsFileById(fileId, CmsFileFetch.FILE_DATA_WITH_META);
-		CmsFileEntry fileEntry = file.getFileEntry();
+		//CmsFile file = getCmsFileById(fileId, CmsFileFetch.FILE_DATA_WITH_META);
+		CmsFileEntry fileEntry = this.getCmsFileEntryById(fileId, CmsFileEntryFetch.FILE_META);
+		
 		CmsDirectory dir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_NONE);
 		CmsFileStore store = getCmsFileStoreByDirId(dir.getDirId());
 		
-		removeFile(store, dir, fileEntry, file);
+		removeFile(store, dir, fileEntry);
 		
 	}
-	private void removeFile(CmsFileStore store, CmsDirectory dir, CmsFileEntry fileEntry, CmsFile file) throws DatabaseException {
+	private void removeFile(CmsFileStore store, CmsDirectory dir, CmsFileEntry fileEntry) throws DatabaseException {
 		
 		String fileToDelete = getAbsoluteFilePath(store, dir, fileEntry);		
 		
-		logger.info("removing file id => " + file.getFileId() + ", path => " + fileToDelete);
+		logger.info("removing file id => " + fileEntry.getFileId() + ", path => " + fileToDelete);
 		
 		try {
-			remove(file); // needed?  we have CASCADE set to ALL
+			remove(new CmsFile(fileEntry.getFileId())); // needed?  we have CASCADE set to ALL
 			remove(fileEntry);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to remove file from database for file id => " + file.getFileId(), e);
+			throw new DatabaseException("Failed to remove file from database for file id => " + fileEntry.getFileId(), e);
 		}
 		
 		Path filePath = Paths.get(fileToDelete);
@@ -1139,19 +1144,53 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		// TODO - finish!
 		
-		CmsDirectory dirWithChild = treeRepository.getNodeWithChild(new CmsDirectory(dirId));
+		CmsDirectory parentDir = treeRepository.getNodeWithChild(new CmsDirectory(dirId));
 		
 		Tree<CmsDirectory> dirTree = null;
 		try {
-			dirTree = treeBuilder.buildTree(dirWithChild);
+			dirTree = treeBuilder.buildTree(parentDir);
 		} catch (ServiceException e) {
-			throw new DatabaseException("Failed to buikd tree from CmsDirectory node", e);
+			throw new DatabaseException("Failed to build tree from CmsDirectory node. Need tree for post-order traversal delete.", e);
 		}
 		
-		dirTree.printTree();
+		logger.info(dirTree.printTree());
 		
 		CmsDirectory cmsDirectory = getCmsDirectoryById(dirId, CmsDirectoryFetch.FILE_META);
 		CmsFileStore cmsStore = getCmsFileStoreByDirId(cmsDirectory.getDirId());
+		
+		try {
+			Trees.walkTree(dirTree,
+					(treeNode) -> {
+						
+						CmsDirectory dirToDelete = treeNode.getData();
+						
+						//
+						// remove all files in the directory
+						//
+						for(CmsFileEntry fileEntryToDelete : dirToDelete.getFileEntries()){
+							try {
+								removeFile(cmsStore, dirToDelete, fileEntryToDelete);
+							} catch (DatabaseException e) {
+								throw new TreeNodeVisitException("Error deleting CmsFileEntry, file id => " + 
+										fileEntryToDelete.getFileId() + ", name => " + fileEntryToDelete.getFileName(),e);
+							}
+						}
+						
+						//
+						// remove the directory
+						//
+						try {
+							treeRepository.removeNode(treeNode.getData());
+						} catch (Exception e) {
+							throw new TreeNodeVisitException("Error deleting CmsDirectory, dir id => " + 
+									dirToDelete.getDirId() + ", name => " + dirToDelete.getDirName(), e);
+						}
+						
+					},
+					WalkOption.POST_ORDER_TRAVERSAL);
+		} catch (TreeNodeVisitException e) {
+			throw new DatabaseException("Error deleting directory id => " + parentDir.getDirId() + ", name => " + parentDir.getDirName(), e);
+		}
 		
 		
 	}

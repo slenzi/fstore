@@ -44,7 +44,7 @@ public class OracleRemoveFileTest extends AbstractRemoveFile {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/file_store/sample_remove";
+		return "C:/temp/file_store/sample_remove_file";
 		
 	}
 

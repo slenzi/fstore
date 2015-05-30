@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.cms.AbstractRemoveFile;
+import org.lenzi.fstore.test.cms.AbstractRemoveDirectory;
 import org.lenzi.fstore.test.cms.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("postgresql")
 @ActiveProfiles({"postgresql"})
-public class PostgreSQLRemoveFileTest extends AbstractRemoveFile {
+public class PostgreSQLRemoveDirectoryTest extends AbstractRemoveDirectory {
 
 	@Autowired
 	private PostgresqlCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class PostgreSQLRemoveFileTest extends AbstractRemoveFile {
 	/**
 	 * 
 	 */
-	public PostgreSQLRemoveFileTest() {
+	public PostgreSQLRemoveDirectoryTest() {
 
 	}
 
@@ -42,7 +42,7 @@ public class PostgreSQLRemoveFileTest extends AbstractRemoveFile {
 	@Override
 	public String getTestFileStorePath() {
 
-		return "/Users/slenzi/Programming/file_store/sample_remove_file";
+		return "/Users/slenzi/Programming/file_store/sample_remove_directory";
 		
 	}
 

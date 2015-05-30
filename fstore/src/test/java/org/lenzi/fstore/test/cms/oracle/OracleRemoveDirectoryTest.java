@@ -1,14 +1,14 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.cms.postgresql;
+package org.lenzi.fstore.test.cms.oracle;
 
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.cms.AbstractRemoveFile;
-import org.lenzi.fstore.test.cms.setup.PostgresqlCmsTestConfiguration;
+import org.lenzi.fstore.test.cms.AbstractRemoveDirectory;
+import org.lenzi.fstore.test.cms.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,30 +21,34 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("postgresql")
-@ActiveProfiles({"postgresql"})
-public class PostgreSQLRemoveFileTest extends AbstractRemoveFile {
+@ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@Transactional("oracle")
+@ActiveProfiles({"oracle"})
+public class OracleRemoveDirectoryTest extends AbstractRemoveDirectory {
 
 	@Autowired
-	private PostgresqlCmsTestConfiguration configuration = null;	
+	private OracleCmsTestConfiguration configuration = null;	
 	
 	/**
 	 * 
 	 */
-	public PostgreSQLRemoveFileTest() {
+	public OracleRemoveDirectoryTest() {
 
 	}
 
+
+	
 	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.test.cms.AbstractAddFile#getTestFileStorePath()
 	 */
 	@Override
 	public String getTestFileStorePath() {
-
-		return "/Users/slenzi/Programming/file_store/sample_remove_file";
+		
+		return "C:/temp/file_store/sample_remove_directory";
 		
 	}
+
+
 
 	@Test
 	public void testWiring(){

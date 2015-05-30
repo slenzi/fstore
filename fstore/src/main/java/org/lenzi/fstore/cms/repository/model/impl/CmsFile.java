@@ -38,6 +38,10 @@ public class CmsFile implements Serializable  {
 	public CmsFile() {
 
 	}
+	
+	public CmsFile(Long fileId){
+		this.fileId = fileId;
+	}
 
 	/**
 	 * @return the fileId
