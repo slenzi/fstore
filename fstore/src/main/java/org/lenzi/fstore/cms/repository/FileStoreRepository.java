@@ -1279,33 +1279,10 @@ public class FileStoreRepository extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			// remove existing entry from target dir, then delete it
-			CmsFileEntry entryToRemove = targetDir.removeEntryById(conflictingTargetEntry.getFileId());
-			remove(entryToRemove);
+			String conflictingTargetFilePath = getAbsoluteFilePath(targetStore, targetDir, conflictingTargetEntry);
 			
-			// remove entry from source dir, and update
-			sourceDir.removeEntryById(fileId);
-			sourceDir = (CmsDirectory)merge(sourceDir);
-			
-			// add source entry to new target directory, and update
-			targetDir.addFileEntry(sourceEntry);
-			sourceEntry.setDirectory(targetDir);
-			targetDir = (CmsDirectory)merge(targetDir);
-			
-			// remove physical conflicting file, and move new file over
-			try {
-				String conflictTargetFilePath = getAbsoluteFilePath(targetStore, targetDir, conflictingTargetEntry);
-				FileUtil.deletePath(Paths.get(conflictTargetFilePath));
-				FileUtil.moveFile(Paths.get(sourceFilePath), Paths.get(targetFilePath));
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			return sourceEntry;
+			return _moveWithReplace(sourceDir, targetDir, sourceEntry, conflictingTargetEntry, 
+					Paths.get(sourceFilePath), Paths.get(targetFilePath), Paths.get(conflictingTargetFilePath));
 			
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
@@ -1316,29 +1293,67 @@ public class FileStoreRepository extends AbstractRepository {
 		// simply move file to target dir
 		}else{
 			
-			// remove entry from source dir
-			sourceDir.removeEntryById(fileId);
-			sourceDir = (CmsDirectory)merge(sourceDir);
-			
-			// add source entry to new target directory
-			targetDir.addFileEntry(sourceEntry);
-			sourceEntry.setDirectory(targetDir);
-			targetDir = (CmsDirectory)merge(targetDir);
-			
-			// move file to new directory
-			try {
-				FileUtil.moveFile(Paths.get(sourceFilePath), Paths.get(targetFilePath));
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			return sourceEntry;
+			return _moveWithoutReplace(sourceDir, targetDir, sourceEntry, Paths.get(sourceFilePath), Paths.get(targetFilePath));
 			
 		}
+		
+	}
+	// helper method for move file opertation. used when we need to replace a file with the same name in the target directory
+	private CmsFileEntry _moveWithReplace(
+			CmsDirectory sourceDir, CmsDirectory targetDir,
+			CmsFileEntry sourceEntry, CmsFileEntry conflictingTargetEntry,
+			Path sourceFilePath, Path targetFilePath, Path conflictTargetFilePath) throws DatabaseException {
+		
+		// remove existing entry from target dir, then delete it
+		CmsFileEntry entryToRemove = targetDir.removeEntryById(conflictingTargetEntry.getFileId());
+		remove(entryToRemove);
+		
+		// remove entry from source dir, and update
+		sourceDir.removeEntryById(sourceEntry.getFileId());
+		sourceDir = (CmsDirectory)merge(sourceDir);
+		
+		// add source entry to new target directory, and update
+		targetDir.addFileEntry(sourceEntry);
+		sourceEntry.setDirectory(targetDir);
+		targetDir = (CmsDirectory)merge(targetDir);
+		
+		// remove physical conflicting file, and move new file over
+		try {
+			FileUtil.deletePath(conflictTargetFilePath);
+			FileUtil.moveFile(sourceFilePath, targetFilePath);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionMoveError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionMoveError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		}
+		
+		return sourceEntry;
+		
+	}
+	// helper method for move file operation. used when we don't have to worry about replacing a file with the same name
+	private CmsFileEntry _moveWithoutReplace(
+			CmsDirectory sourceDir, CmsDirectory targetDir, CmsFileEntry sourceEntry,
+			Path sourceFilePath, Path targetFilePath) throws DatabaseException {
+		
+		// remove entry from source dir
+		sourceDir.removeEntryById(sourceEntry.getFileId());
+		sourceDir = (CmsDirectory)merge(sourceDir);
+		
+		// add source entry to new target directory
+		targetDir.addFileEntry(sourceEntry);
+		sourceEntry.setDirectory(targetDir);
+		targetDir = (CmsDirectory)merge(targetDir);
+		
+		// move file to new directory
+		try {
+			FileUtil.moveFile(sourceFilePath, targetFilePath);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionMoveError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionMoveError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		}
+		
+		return sourceEntry;
 		
 	}
 	
@@ -1390,7 +1405,20 @@ public class FileStoreRepository extends AbstractRepository {
 		StringBuffer buf = new StringBuffer();
 		String cr = System.getProperty("line.separator");
 		buf.append("Error copying source file => " + source.toString() + " to target file => " + target.toString() + cr);
-		buf.append("CMS directory id => " + directory.getDirId() + ", name => " + directory.getName() + cr);
+		buf.append("Target cms directory, id => " + directory.getDirId() + ", name => " + directory.getName() + cr);
+		buf.append("Throwable => " + e.getClass().getName() + cr);
+		buf.append("Message => " + e.getMessage() + cr);
+		return new DatabaseException(buf.toString(), e);
+		
+	}
+	
+	private DatabaseException buildDatabaseExceptionMoveError(Path source, Path target, CmsDirectory sourceDir, CmsDirectory targetDir, Throwable e){
+		
+		StringBuffer buf = new StringBuffer();
+		String cr = System.getProperty("line.separator");
+		buf.append("Error moving file => " + source.toString() + " to target file => " + target.toString() + cr);
+		buf.append("Source cms directory, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getName() + cr);
+		buf.append("Target cms directory, id => " + targetDir.getDirId() + ", name => " + targetDir.getName() + cr);
 		buf.append("Throwable => " + e.getClass().getName() + cr);
 		buf.append("Message => " + e.getMessage() + cr);
 		return new DatabaseException(buf.toString(), e);
