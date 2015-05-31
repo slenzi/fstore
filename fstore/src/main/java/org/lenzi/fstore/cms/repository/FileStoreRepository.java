@@ -5,11 +5,13 @@ package org.lenzi.fstore.cms.repository;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,14 +23,12 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
-
-//import oracle.net.aso.n;
-
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +116,9 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		// just meta data for each file
 		FILE_META,
+		
+		// meta data, and directory
+		FILE_META_WITH_DIR,
 		
 		// meta data and byte data
 		FILE_META_WITH_DATA,
@@ -737,6 +740,10 @@ public class FileStoreRepository extends AbstractRepository {
 			// just meta data, no join
 			case FILE_META:
 				break;
+				
+			case FILE_META_WITH_DIR:
+				root.fetch(CmsFileEntry_.directory, JoinType.LEFT);
+				break;
 			
 			// include CmsFile with byte data
 			case FILE_META_WITH_DATA:
@@ -1202,7 +1209,7 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 	}
-	// TODO - consider making this method require a new transaction
+	// TODO - test rollback
 	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 	private void _removeDirectory(CmsFileStore cmsStore, CmsDirectory dirToDelete) throws DatabaseException {
 		
@@ -1242,6 +1249,106 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
+	 * Move a file.
+	 * 
+	 * @param fileId - id of the file entry
+	 * @param targetDirId - id of target directory, where file will be moved to.
+	 * @param replaceExisting - pass true to replace any existing file with the same name in the target directory,
+	 * 	or pass false not to replace. If you pass false, and a file already exists in the target directory, then a
+	 * 	database exception will be thrown.
+	 * @throws DatabaseException
+	 */
+	public CmsFileEntry moveFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException {
+
+		// get source information
+		CmsDirectory sourceDir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_META);
+		CmsFileStore sourceStore = getCmsFileStoreByDirId(sourceDir.getDirId());
+		CmsFileEntry sourceEntry = sourceDir.getEntryByFileId(fileId);
+		
+		// get target information
+		CmsDirectory targetDir = getCmsDirectoryById(targetDirId, CmsDirectoryFetch.FILE_META);
+		CmsFileStore targetStore = getCmsFileStoreByDirId(targetDir.getDirId());
+		CmsFileEntry conflictingTargetEntry = targetDir.getEntryByFileName(sourceEntry.getFileName(), false);
+		
+		String sourceFilePath = getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		String targetFilePath = getAbsoluteFilePath(targetStore, targetDir, sourceEntry); // use source file name
+		
+		// will be true of we need to replace the existing file in the target directory
+		boolean needReplace = conflictingTargetEntry != null ? true : false;
+		
+		// replace existing file in target dir with file from source dir
+		if(needReplace && replaceExisting){
+			
+			// remove existing entry from target dir, then delete it
+			CmsFileEntry entryToRemove = targetDir.removeEntryById(conflictingTargetEntry.getFileId());
+			remove(entryToRemove);
+			
+			// remove entry from source dir, and update
+			sourceDir.removeEntryById(fileId);
+			sourceDir = (CmsDirectory)merge(sourceDir);
+			
+			// add source entry to new target directory, and update
+			targetDir.addFileEntry(sourceEntry);
+			sourceEntry.setDirectory(targetDir);
+			targetDir = (CmsDirectory)merge(targetDir);
+			
+			// remove physical conflicting file, and move new file over
+			try {
+				String conflictTargetFilePath = getAbsoluteFilePath(targetStore, targetDir, conflictingTargetEntry);
+				FileUtil.deletePath(Paths.get(conflictTargetFilePath));
+				FileUtil.moveFile(Paths.get(sourceFilePath), Paths.get(targetFilePath));
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return sourceEntry;
+			
+		// user specified not to replace, throw database exception
+		}else if(needReplace && !replaceExisting){
+			
+			throw new DatabaseException("Target directory contains a file with the same name, but 'replaceExisting' param "
+					+ "was false. Cannot move file to target directory.");
+		
+		// simply move file to target dir
+		}else{
+			
+			// remove entry from source dir
+			sourceDir.removeEntryById(fileId);
+			sourceDir = (CmsDirectory)merge(sourceDir);
+			
+			// add source entry to new target directory
+			targetDir.addFileEntry(sourceEntry);
+			sourceEntry.setDirectory(targetDir);
+			targetDir = (CmsDirectory)merge(targetDir);
+			
+			// move file to new directory
+			try {
+				FileUtil.moveFile(Paths.get(sourceFilePath), Paths.get(targetFilePath));
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return sourceEntry;
+			
+		}
+		
+	}
+	
+	public void moveDirectory(Long dirId, Long newParentDirId) throws DatabaseException {
+		
+		// make sure not a root directory
+		
+	}
+	
+	/**
 	 * Joins the CmsStore path and the relative CmsDirectory path to get the full/absolute path
 	 * to the directory on the file system
 	 * 
@@ -1249,7 +1356,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @param cmsDirectory
 	 * @return
 	 */
-	private String getAbsoluteDirectoryPath(CmsFileStore cmsStore, CmsDirectory cmsDirectory){
+	public String getAbsoluteDirectoryPath(CmsFileStore cmsStore, CmsDirectory cmsDirectory){
 		
 		String dirRelativePath = cmsDirectory.getRelativeDirPath();
 		if(!dirRelativePath.startsWith(File.separator)){
@@ -1263,7 +1370,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 * Joins the CmsStore path, relative CmsDirectory path, and CmsFileEntry file name to
 	 * get the full/absolute path to the fole on the file system.
 	 */
-	private String getAbsoluteFilePath(CmsFileStore cmsStore, CmsDirectory cmsDirectory, CmsFileEntry cmsFileEntry){
+	public String getAbsoluteFilePath(CmsFileStore cmsStore, CmsDirectory cmsDirectory, CmsFileEntry cmsFileEntry){
 		
 		return getAbsoluteDirectoryPath(cmsStore, cmsDirectory) + File.separator + cmsFileEntry.getFileName();	
 		

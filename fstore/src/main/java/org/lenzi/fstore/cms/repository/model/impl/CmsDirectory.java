@@ -167,6 +167,44 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 		return value.isPresent() ? value.get() : null;
 		
 	}
+	
+	/**
+	 * Get file entry by id
+	 * 
+	 * @param fileId
+	 * @return
+	 */
+	public CmsFileEntry getEntryByFileId(Long fileId){
+		
+		Optional<CmsFileEntry> value = fileEntries.stream()
+			.filter(e -> {
+				return e.getFileId().equals(fileId);
+			})
+			.findFirst();
+		
+		return value.isPresent() ? value.get() : null;
+		
+	}
+	
+	/**
+	 * Remove file entry
+	 * 
+	 * @param fileId
+	 * @return the removed entry
+	 */
+	public CmsFileEntry removeEntryById(Long fileId){
+		
+		CmsFileEntry removed = null;
+		for(CmsFileEntry e : fileEntries){
+			if(e.getFileId().equals(fileId)){
+				removed = e;
+				break;
+			}
+		}
+		fileEntries.remove(removed);
+		return removed;
+		
+	}
 
 	public String toString(){
 		

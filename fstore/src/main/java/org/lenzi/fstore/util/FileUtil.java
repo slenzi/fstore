@@ -1,11 +1,13 @@
 package org.lenzi.fstore.util;
 
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,10 +19,35 @@ public abstract class FileUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
 	
-	public static void copyFile(Path source, Path target) throws IOException, SecurityException {
+	public static void copyFile(Path source, Path target, CopyOption... options) throws IOException, SecurityException {
 		
 		try {
-			Files.copy(source, target);
+			
+			Files.copy(source, target, options);
+			
+		} catch (IOException e) {
+			throw new IOException("Error copying " + source.toString() + " to " + target.toString() + ". " + e.getMessage(), e);
+		} catch (SecurityException e) {
+			throw new SecurityException("Error copying " + source.toString() + " to " + target.toString() + ". " + e.getMessage(), e);
+		}
+		
+	}
+	
+	/**
+	 * Move a file
+	 * 
+	 * @param source
+	 * @param target
+	 * @param options
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public static void moveFile(Path source, Path target, CopyOption... options) throws IOException, SecurityException {
+		
+		try {
+			
+			Files.move(source, target, options);
+			
 		} catch (IOException e) {
 			throw new IOException("Error copying " + source.toString() + " to " + target.toString() + ". " + e.getMessage(), e);
 		} catch (SecurityException e) {
