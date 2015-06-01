@@ -135,7 +135,7 @@ public class FileStoreRepository extends AbstractRepository {
 		// CmsFile data plus associated CmsFileEntry meta data
 		FILE_DATA_WITH_META,
 		
-	}	
+	}
 	
 	private static final long serialVersionUID = 8439120459143189611L;
 
@@ -1254,7 +1254,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 * 	database exception will be thrown.
 	 * @throws DatabaseException
 	 */
-	public CmsFileEntry moveFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException {
+	public CmsFileEntry moveFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 
 		// get source information
 		CmsDirectory sourceDir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_META);
@@ -1283,7 +1283,7 @@ public class FileStoreRepository extends AbstractRepository {
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
 			
-			throw new DatabaseException("Target directory contains a file with the same name, but 'replaceExisting' param "
+			throw new FileAlreadyExistsException("Target directory contains a file with the same name, but 'replaceExisting' param "
 					+ "was false. Cannot move file to target directory.");
 		
 		// simply move file to target dir
@@ -1364,7 +1364,7 @@ public class FileStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public CmsFileEntry copyFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException {
+	public CmsFileEntry copyFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
 		// get source information
 		CmsDirectory sourceDir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_META);
@@ -1394,7 +1394,7 @@ public class FileStoreRepository extends AbstractRepository {
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
 			
-			throw new DatabaseException("Target directory contains a file with the same name, but 'replaceExisting' param "
+			throw new FileAlreadyExistsException("Target directory contains a file with the same name, but 'replaceExisting' param "
 					+ "was false. Cannot move file to target directory.");
 		
 		// simply copy file to target dir
@@ -1402,7 +1402,7 @@ public class FileStoreRepository extends AbstractRepository {
 			
 			return _copyWithoutReplace(sourceDir, targetDir, sourceEntry, Paths.get(sourceFilePath), Paths.get(targetFilePath));
 			
-		}		
+		}	
 		
 	}
 	// helper method for copy file operation. used when we need to replace a file with the same name in the target directory
@@ -1505,13 +1505,76 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 		return cmsFileEntryCopy;
-	}	
+	}
 	
-	public void moveDirectory(Long dirId, Long newParentDirId) throws DatabaseException {
+	// TODO - implement
+	public void moveDirectory(Long dirId, Long newParentDirId, boolean replaceExisting) throws DatabaseException {
 		
 		// make sure not a root directory
 		
+		// if directory already exists, merge files
+		
 	}
+	
+	// TODO - implement
+	public void copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException {
+		
+		// if directory already exists, merge files
+		
+		if(sourceDirId == null){
+			throw new DatabaseException("Cannot copy directory, source dir id param is null");
+		}
+		
+		//
+		// build tree for source directory, this is the tree we want to copy
+		//
+		CmsDirectory sourceDir = treeRepository.getNodeWithChild(new CmsDirectory(sourceDirId));
+		Tree<CmsDirectory> sourceTree = null;
+		try {
+			sourceTree = treeBuilder.buildTree(sourceDir);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from source CmsDirectory node. Need source tree for pre-order traversal copy.", e);
+		}
+		
+		//
+		// build tree for destination directory, this is where we are copying to
+		//
+		CmsDirectory targetDir = treeRepository.getNodeWithChild(new CmsDirectory(targetDirId));
+		Tree<CmsDirectory> targetTree = null;
+		try {
+			targetTree = treeBuilder.buildTree(targetDir);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from target CmsDirectory node. Need target tree for pre-order traversal copy.", e);
+		}		
+		
+		logger.info("Source tree:\n" + sourceTree.printTree());
+		logger.info("Target tree:\n" + targetTree.printTree());
+		
+		CmsFileStore sourceStore = getCmsFileStoreByDirId(sourceDir.getDirId());
+		CmsFileStore targetStore = getCmsFileStoreByDirId(targetDir.getDirId());
+		
+		//
+		// walk tree in pre-order traversal, copying each directory level
+		//
+		try {
+			
+			Trees.walkTree(sourceTree,
+					(treeNode) -> {
+						
+						CmsDirectory sourceDirToCopy = treeNode.getData();
+						
+						
+						
+					},
+					WalkOption.PRE_ORDER_TRAVERSAL);
+			
+		} catch (TreeNodeVisitException e) {
+			throw new DatabaseException("Error deleting directory id => " + sourceDir.getDirId() + 
+					", name => " + sourceDir.getDirName(), e);
+		}
+
+		
+	}	
 	
 	/**
 	 * Joins the CmsStore path and the relative CmsDirectory path to get the full/absolute path

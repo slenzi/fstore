@@ -57,9 +57,11 @@ public final class Trees {
 				break;
 				
 			case PRE_ORDER_TRAVERSAL:
+				preOrderTraversal(start, visitor);
 				break;
 				
 			default:
+				preOrderTraversal(start, visitor);
 				break;
 				
 		}
@@ -82,6 +84,24 @@ public final class Trees {
 			visitor.visitNode(node);
 		}
 	}
+	
+	/**
+	 * Walk tree in pre-order traversal
+	 * 
+	 * @param node
+	 * @param visitor
+	 */
+	private static <N> void preOrderTraversal(TreeNode<N> node, TreeNodeVisitor<N> visitor) throws TreeNodeVisitException {
+		
+		visitor.visitNode(node);
+	
+		if(node.hasChildren()){
+			for(TreeNode<N> childNode : node.getChildren()){
+				preOrderTraversal(childNode, visitor);
+			}
+		}
+		
+	}	
 	
 	/**
 	 * Print a tree.

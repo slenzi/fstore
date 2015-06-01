@@ -2,6 +2,8 @@ package org.lenzi.fstore.test.core;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.service.TestTreeService;
@@ -10,6 +12,8 @@ import org.lenzi.fstore.repository.model.impl.FSTree;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.lenzi.fstore.tree.Tree;
+import org.lenzi.fstore.tree.TreeNode;
+import org.lenzi.fstore.tree.Trees.WalkOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +73,20 @@ public abstract class AbstractPrintTreeTest extends AbstractTreeTest {
 		Tree<FSTestNode> tree = treeService.buildTree(dbTree.getRootNode());
 		assertNotNull(tree);
 		logger.info(tree.printTree());
+		
+		
+		List<TreeNode<FSTestNode>> preList = tree.toList(WalkOption.PRE_ORDER_TRAVERSAL);
+		List<TreeNode<FSTestNode>> postList = tree.toList(WalkOption.POST_ORDER_TRAVERSAL);
+		
+		logger.info("Pre-order node list");
+		for(TreeNode<FSTestNode> tn : preList){
+			logger.info(tn.getData().toString());
+		}
+		
+		logger.info("Post-order node list");
+		for(TreeNode<FSTestNode> tn : postList){
+			logger.info(tn.getData().toString());
+		}		
 
 		
 	}	

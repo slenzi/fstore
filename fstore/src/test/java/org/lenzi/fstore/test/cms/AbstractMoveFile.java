@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -188,7 +189,15 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		//
 		// move file in move_test2 dir to move_test3 dir (requires a replace of existing file)
 		//
-		movedEntry = fileStoreRepository.moveFile(fileEntry2.getFileId(), subTest3.getDirId(), true);
+		try {
+			movedEntry = fileStoreRepository.moveFile(fileEntry2.getFileId(), subTest3.getDirId(), true);
+		} catch (FileAlreadyExistsException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DatabaseException e){
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
 		
 		assertNotNull(movedEntry);
 		assertNotNull(movedEntry.getDirectory());
