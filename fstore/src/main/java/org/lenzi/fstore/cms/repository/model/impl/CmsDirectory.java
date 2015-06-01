@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.lenzi.fstore.repository.model.DBClosure;
 import org.lenzi.fstore.repository.model.impl.FSNode;
 import org.lenzi.fstore.util.DateUtil;
 
@@ -115,6 +116,10 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	public Set<CmsFileEntry> getFileEntries() {
 		return fileEntries;
 	}
+	
+	public boolean hasFileEntries(){
+		return (fileEntries != null && fileEntries.size() > 0) ? true : false;
+	}
 
 	/**
 	 * @param fileEntries the fileEntries to set
@@ -146,6 +151,36 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	}
 	
 	/**
+	 * Get a child directory of this directory, by name
+	 * 
+	 * @param dirName - the directory name to match on
+	 * @param caseSensitive - pass true for case sensitive match, pass false for case insensitive
+	 * @return
+	 */
+	public CmsDirectory getChildDirectoryByName(String dirName, boolean caseSensitive){
+		
+		if(!hasChildClosure()){
+			return null;
+		}
+		
+		Optional<DBClosure<CmsDirectory>> value = getChildClosure().stream()
+				.filter(c -> {
+					// only care about first level children
+					if(c.getDepth() == 1){
+						if(caseSensitive){
+							return c.getChildNode().getDirName().equals(dirName);
+						}else{
+							return c.getChildNode().getDirName().toLowerCase().equals(dirName.toLowerCase());
+						}
+					}
+					return false;
+				})
+				.findFirst();
+			
+			return value.isPresent() ? value.get().getChildNode() : null;		
+	}
+	
+	/**
 	 * Get the file entry by file name
 	 * 
 	 * @param fileName - the file name to match on.
@@ -153,6 +188,10 @@ public class CmsDirectory extends FSNode<CmsDirectory> {
 	 * @return
 	 */
 	public CmsFileEntry getEntryByFileName(String fileName, boolean caseSensitive){
+		
+		if(!hasFileEntries()){
+			return null;
+		}
 		
 		Optional<CmsFileEntry> value = fileEntries.stream()
 			.filter(e -> {

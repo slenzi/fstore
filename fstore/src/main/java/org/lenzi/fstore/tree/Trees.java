@@ -1,6 +1,7 @@
 package org.lenzi.fstore.tree;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains a bunch of static methods for working on Trees.
@@ -185,6 +186,6 @@ public final class Trees {
 			}
 		}
 		
-	}	
+	}
 
 }

@@ -52,6 +52,7 @@ import org.lenzi.fstore.service.TreeBuilder;
 import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.tree.Tree;
+import org.lenzi.fstore.tree.TreeNode;
 import org.lenzi.fstore.tree.TreeNodeVisitException;
 import org.lenzi.fstore.tree.Trees;
 import org.lenzi.fstore.tree.Trees.WalkOption;
@@ -1517,17 +1518,16 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	// TODO - implement
-	public void copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException {
-		
-		// if directory already exists, merge files
+	public void copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
 		if(sourceDirId == null){
 			throw new DatabaseException("Cannot copy directory, source dir id param is null");
 		}
+		if(targetDirId == null){
+			throw new DatabaseException("Cannot copy directory, target dir id param is null");
+		}		
 		
-		//
-		// build tree for source directory, this is the tree we want to copy
-		//
+		// build tree for source directory, this is the tree we want to copy, in pre-order traversal (top down)
 		CmsDirectory sourceDir = treeRepository.getNodeWithChild(new CmsDirectory(sourceDirId));
 		Tree<CmsDirectory> sourceTree = null;
 		try {
@@ -1536,45 +1536,65 @@ public class FileStoreRepository extends AbstractRepository {
 			throw new DatabaseException("Failed to build tree from source CmsDirectory node. Need source tree for pre-order traversal copy.", e);
 		}
 		
-		//
-		// build tree for destination directory, this is where we are copying to
-		//
-		CmsDirectory targetDir = treeRepository.getNodeWithChild(new CmsDirectory(targetDirId));
-		Tree<CmsDirectory> targetTree = null;
-		try {
-			targetTree = treeBuilder.buildTree(targetDir);
-		} catch (ServiceException e) {
-			throw new DatabaseException("Failed to build tree from target CmsDirectory node. Need target tree for pre-order traversal copy.", e);
-		}		
-		
 		logger.info("Source tree:\n" + sourceTree.printTree());
-		logger.info("Target tree:\n" + targetTree.printTree());
 		
-		CmsFileStore sourceStore = getCmsFileStoreByDirId(sourceDir.getDirId());
-		CmsFileStore targetStore = getCmsFileStoreByDirId(targetDir.getDirId());
+		CmsFileStore sourceStore = getCmsFileStoreByDirId(sourceDirId);
+		CmsFileStore targetStore = getCmsFileStoreByDirId(targetDirId);
 		
-		//
-		// walk tree in pre-order traversal, copying each directory level
-		//
-		try {
-			
-			Trees.walkTree(sourceTree,
-					(treeNode) -> {
-						
-						CmsDirectory sourceDirToCopy = treeNode.getData();
-						
-						
-						
-					},
-					WalkOption.PRE_ORDER_TRAVERSAL);
-			
-		} catch (TreeNodeVisitException e) {
-			throw new DatabaseException("Error deleting directory id => " + sourceDir.getDirId() + 
-					", name => " + sourceDir.getDirName(), e);
+		// start copy at root node (dir) of source tree, and walk tree in pre-order traversal
+		_copyDirPreOrderTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);
+		
+	}
+	// helper method for copy directory operation
+	private void _copyDirPreOrderTraversal(TreeNode<CmsDirectory> dirToCopyNode, Long targetParentDirId, 
+			CmsFileStore sourceStore, CmsFileStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
+		
+		CmsDirectory dirToCopy = getCmsDirectoryById(dirToCopyNode.getData().getDirId(), CmsDirectoryFetch.FILE_META);
+		
+		Long nextTargetParentDirId = _doCopyDirToDir(dirToCopy, targetParentDirId, sourceStore, targetStore, replaceExisting);
+		
+		if(dirToCopyNode.hasChildren()){
+			for(TreeNode<CmsDirectory> child : dirToCopyNode.getChildren()){
+				
+				_copyDirPreOrderTraversal(child, nextTargetParentDirId, sourceStore, targetStore, replaceExisting);
+				
+			}
 		}
-
+	
+	}
+	// helper method for copy directory operation
+	// TODO - test rollback
+	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
+	private Long _doCopyDirToDir(CmsDirectory dirToCopy, Long targetParentDirId, 
+			CmsFileStore sourceStore, CmsFileStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
-	}	
+		// check if parent dir already contains a child dir with the same name as the dir we are copying
+		CmsDirectory targetParentDir = treeRepository.getNodeWithChild(new CmsDirectory(targetParentDirId), 1);
+		CmsDirectory existingDir = targetParentDir.getChildDirectoryByName(dirToCopy.getDirName(), false);
+		boolean needMergeDirectory = existingDir != null ? true : false;
+		
+		// merge contents of dirToCopy into existing directory
+		if(needMergeDirectory){
+			
+			logger.info("Copy to existing dir: target dir => " + getAbsoluteDirectoryPath(sourceStore, dirToCopy) + 
+					", to source dir => " + getAbsoluteDirectoryPath(targetStore, existingDir));
+			
+			return existingDir.getDirId();
+		
+		// create new directory under target parent dir, then copy over contents of dirToCopy
+		}else{
+			
+			logger.info("Copy to new dir: target dir => " + getAbsoluteDirectoryPath(sourceStore, dirToCopy) + 
+					", to source dir => " + getAbsoluteDirectoryPath(targetStore, existingDir));
+			
+			CmsDirectory newTargetDir = addDirectory(targetParentDirId, dirToCopy.getDirName());
+			
+			return 0L;
+			
+		}
+	
+	}
+	
 	
 	/**
 	 * Joins the CmsStore path and the relative CmsDirectory path to get the full/absolute path

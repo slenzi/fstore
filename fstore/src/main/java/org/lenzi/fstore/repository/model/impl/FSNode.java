@@ -216,6 +216,10 @@ public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 	public void setChildClosure(Set<DBClosure<N>> childClosure) {
 		this.childClosure = childClosure;
 	}
+	
+	public boolean hasChildClosure(){
+		return (this.childClosure != null && this.childClosure.size() > 0) ? true : false;
+	}
 
 	/**
 	 * @return the parentClosure
@@ -230,6 +234,10 @@ public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 	public void setParentClosure(Set<DBClosure<N>> parentClosure) {
 		this.parentClosure = parentClosure;
 	}
+	
+	public boolean hasParentClosure(){
+		return (this.parentClosure != null && this.parentClosure.size() > 0) ? true : false;
+	}	
 	
 	public boolean isRootNode(){
 		if(parentNodeId != null && parentNodeId == 0L){

@@ -163,7 +163,18 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	}
 
 	/**
-	 * Fetch a node with its parent and child closure data, plus parent and child nodes for all closure entries.
+	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries, up to the
+	 * specified max depth
+	 */
+	@Override
+	public N getNodeWithChild(N node, int maxDepth) throws DatabaseException {
+		
+		return getNodeWithChildClosureCriteria(node, maxDepth);
+		
+	}
+
+	/**
+	 * Fetch a node with its parent AND child closure data, plus parent and child nodes for all closure entries.
 	 */
 	@Override
 	public N getNodewithParentChild(N node) throws DatabaseException {
@@ -1588,6 +1599,49 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		return result;
 	}
+	
+	/**
+	 * Get a node with it's child closure data, and fetch the parent and child nodes for the closure entries.
+	 * 
+	 * @param node - The node to fetch (with node ID set)
+	 * @param maxDepth - fetch only the child closure data up to the specified depth. 
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private N getNodeWithChildClosureCriteria(N node, int maxDepth) throws DatabaseException {
+		
+		logger.info("Getting node with child closure criteria => " + node.getNodeId());
+		
+		Class<N> type = (Class<N>) node.getClass();
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<N> nodeSelect = criteriaBuilder.createQuery(type);
+		Root<N> nodeSelectRoot = nodeSelect.from(type);
+		
+		SetJoin<N, FSClosure> childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
+		
+		Fetch<N, FSClosure> childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
+		
+		childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
+		//andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );
+		andPredicates.add( criteriaBuilder.lessThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), maxDepth) );
+		
+		nodeSelect.distinct(true);
+		nodeSelect.select(nodeSelectRoot);
+		nodeSelect.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		return result;
+	}	
 	
 	/**
 	 * Get a node with it's parent closure data, and fetch the parent and child nodes for the closure entries.
