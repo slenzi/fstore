@@ -3,7 +3,6 @@ package org.lenzi.fstore.test.cms;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,12 +55,14 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		assertNotNull(resourceLoader);
 		
 		// get test file for upload to database
-		Resource sourceResource = resourceLoader.getResource("classpath:image/honey_badger.JPG");
-		Path sourcePath = null;
+		Resource sourceResource1 = resourceLoader.getResource("classpath:image/honey_badger.JPG");
+		Resource sourceResource2 = resourceLoader.getResource("classpath:image/other/honey_badger.JPG");
+		Path sourcePath1 = null, sourcePath2 = null;
 		try {
-			sourcePath = Paths.get(sourceResource.getFile().getAbsolutePath());
+			sourcePath1 = Paths.get(sourceResource1.getFile().getAbsolutePath());
+			sourcePath2 = Paths.get(sourceResource2.getFile().getAbsolutePath());
 		} catch (IOException e) {
-			logger.error("Failed to get file resource." + e.getMessage());
+			logger.error("Failed to get file resources." + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -106,16 +107,19 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 			e.printStackTrace();
 		}
 		
-		// persist file to 1st and 2nd dir
+		// persist files to 1st and 2nd directories
 		CmsFileEntry fileEntry1 = null;
 		CmsFileEntry fileEntry2 = null;
 		try {
 			
-			logger.info("Test file => " + sourcePath.toString());
-			logger.info("Size => " + Files.size(sourcePath));
+			logger.info("Test file 1 => " + sourcePath1.toString());
+			logger.info("Test file Size 1 => " + Files.size(sourcePath1));
 			
-			fileEntry1 = fileStoreRepository.addFile(sourcePath, subTest1.getDirId(), true);
-			fileEntry2 = fileStoreRepository.addFile(sourcePath, subTest2.getDirId(), true);
+			logger.info("Test file 2 => " + sourcePath2.toString());
+			logger.info("Test file Size 2 => " + Files.size(sourcePath2));			
+			
+			fileEntry1 = fileStoreRepository.addFile(sourcePath1, subTest1.getDirId(), true);
+			fileEntry2 = fileStoreRepository.addFile(sourcePath2, subTest2.getDirId(), true);
 			
 		}catch(IOException e){
 			logger.error(e.getMessage());
@@ -156,7 +160,6 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		Path targetPath2 = Paths.get(fullFilePath2);
 		logger.info("Path of cms file 2 => " + targetPath2.toString());
 		assertTrue(Files.exists(targetPath2));
-		
 		
 		//
 		// move file in move_test1 dir to move_test3 dir (no replace required)
