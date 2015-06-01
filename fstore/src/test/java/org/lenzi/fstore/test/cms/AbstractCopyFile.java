@@ -29,7 +29,7 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractMoveFile extends AbstractTreeTest {
+public abstract class AbstractCopyFile extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -39,7 +39,7 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public AbstractMoveFile() {
+	public AbstractCopyFile() {
 
 	}
 
@@ -48,9 +48,9 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 	 */
 	@Test
 	@Rollback(false)
-	public void doMoveFile() throws Exception {
+	public void doCopyFile() throws Exception {
 		
-		logTestTitle("Move file test");
+		logTestTitle("Copy file test");
 		
 		assertNotNull(resourceLoader);
 		
@@ -71,14 +71,14 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		CmsFileStore fileStore = null;
 		try {
 			fileStore = fileStoreRepository.createFileStore(
-					examplePath, "Example File Store", "This is an example file store to test moving files.", false);
+					examplePath, "Example File Store", "This is an example file store to test copying files.", false);
 		} catch (DatabaseException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
 		
 		// add sub dir 1
-		final String subDirName1 = "move_test1";
+		final String subDirName1 = "copy_test1";
 		CmsDirectory subTest1 = null;
 		try {
 			subTest1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
@@ -88,7 +88,7 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		}
 		
 		// add sub dir 2
-		final String subDirName2 = "move_test2";
+		final String subDirName2 = "copy_test2";
 		CmsDirectory subTest2 = null;
 		try {
 			subTest2 = fileStoreRepository.addDirectory(subTest1.getDirId(), subDirName2);
@@ -98,7 +98,7 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		}
 		
 		// add sub dir 3
-		final String subDirName3 = "move_test3";
+		final String subDirName3 = "copy_test3";
 		CmsDirectory subTest3 = null;
 		try {
 			subTest3 = fileStoreRepository.addDirectory(subTest2.getDirId(), subDirName3);
@@ -162,50 +162,48 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		assertTrue(Files.exists(targetPath2));
 		
 		//
-		// move file in move_test1 dir to move_test3 dir (no replace required)
+		// copy file in copy_test1 dir to copy_test3 dir (no replace required)
 		//
-		CmsFileEntry movedEntry = null;
-		movedEntry = fileStoreRepository.moveFile(fileEntry1.getFileId(), subTest3.getDirId(), true);
+		CmsFileEntry copiedEntry = null;
+		copiedEntry = fileStoreRepository.copyFile(fileEntry1.getFileId(), subTest3.getDirId(), true);
 		
-		assertNotNull(movedEntry);
-		assertNotNull(movedEntry.getDirectory());
-		assertNotNull(movedEntry.getDirectory().getFileEntries());
-		//assertNotNull(movedEntry.getFile());
+		assertNotNull(copiedEntry);
+		assertNotNull(copiedEntry.getDirectory());
+		assertNotNull(copiedEntry.getDirectory().getFileEntries());
+		assertNotNull(copiedEntry.getFile());
 		
-		logger.info("Moved CmsFileEntry 1 to dir 3:");
-		logger.info(movedEntry.toString());
+		logger.info("Copied CmsFileEntry 1 to dir 3:");
+		logger.info(copiedEntry.toString());
 		
-		// check that file has been moved to dir 3
-		String dirPath3 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, movedEntry.getDirectory());
-		String fullFilePath3 = fileStoreRepository.getAbsoluteFilePath(fileStore, movedEntry.getDirectory(), movedEntry);
+		// check that file has been copied to dir 3
+		String dirPath3 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, copiedEntry.getDirectory());
+		String fullFilePath3 = fileStoreRepository.getAbsoluteFilePath(fileStore, copiedEntry.getDirectory(), copiedEntry);
 		assertNotNull(dirPath3);
 		logger.info("Path of 3 => " + dirPath3);
 		Path targetPath3 = Paths.get(fullFilePath3);
-		logger.info("Path of cms file 3 => " + targetPath3.toString());
-		assertTrue(!Files.exists(targetPath1));
+		logger.info("Path of cms file 3 => " + targetPath3.toString());;
 		assertTrue(Files.exists(targetPath3));
 		
 		//
-		// move file in move_test2 dir to move_test3 dir (requires a replace of existing file)
+		// copy file in copy_test2 dir to copy_test3 dir (requires a replace of existing file)
 		//
-		movedEntry = fileStoreRepository.moveFile(fileEntry2.getFileId(), subTest3.getDirId(), true);
+		copiedEntry = fileStoreRepository.copyFile(fileEntry2.getFileId(), subTest3.getDirId(), true);
 		
-		assertNotNull(movedEntry);
-		assertNotNull(movedEntry.getDirectory());
-		assertNotNull(movedEntry.getDirectory().getFileEntries());
-		//assertNotNull(movedEntry.getFile());
+		assertNotNull(copiedEntry);
+		assertNotNull(copiedEntry.getDirectory());
+		assertNotNull(copiedEntry.getDirectory().getFileEntries());
+		assertNotNull(copiedEntry.getFile());
 		
-		logger.info("Moved CmsFileEntry 2 to dir 3:");
-		logger.info(movedEntry.toString());
+		logger.info("Copied CmsFileEntry 2 to dir 3:");
+		logger.info(copiedEntry.toString());
 		
-		// check that file has been moved to dir 3
-		dirPath3 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, movedEntry.getDirectory());
-		fullFilePath3 = fileStoreRepository.getAbsoluteFilePath(fileStore, movedEntry.getDirectory(), movedEntry);
+		// check that file has been copied to dir 3
+		dirPath3 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, copiedEntry.getDirectory());
+		fullFilePath3 = fileStoreRepository.getAbsoluteFilePath(fileStore, copiedEntry.getDirectory(), copiedEntry);
 		assertNotNull(dirPath3);
 		logger.info("Path of 3 => " + dirPath3);
 		targetPath3 = Paths.get(fullFilePath3);
 		logger.info("Path of cms file 3 => " + targetPath3.toString());
-		assertTrue(!Files.exists(targetPath2));
 		assertTrue(Files.exists(targetPath3));
 		
 	}

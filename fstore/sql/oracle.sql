@@ -1,3 +1,10 @@
+/**
+ * Oracle scripts
+ * 
+ * Get length of lob:
+ * select dbms_lob.getlength(f.file_data) from fs_cms_file f
+ */
+
 drop sequence FS_NODE_ID_SEQUENCE;
 drop sequence FS_LINK_ID_SEQUENCE;
 drop sequence FS_PRUNE_ID_SEQUENCE;

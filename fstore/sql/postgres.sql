@@ -1,3 +1,7 @@
+/**
+ * PostgreSQL scripts
+ */
+
 drop sequence TEST.FS_NODE_ID_SEQUENCE;
 drop sequence TEST.FS_LINK_ID_SEQUENCE;	
 drop sequence TEST.FS_PRUNE_ID_SEQUENCE;

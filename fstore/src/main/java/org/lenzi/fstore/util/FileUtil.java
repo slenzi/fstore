@@ -7,7 +7,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +18,15 @@ public abstract class FileUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
 	
+	/**
+	 * Copy a file
+	 * 
+	 * @param source
+	 * @param target
+	 * @param options
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
 	public static void copyFile(Path source, Path target, CopyOption... options) throws IOException, SecurityException {
 		
 		try {

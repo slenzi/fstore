@@ -5,13 +5,11 @@ package org.lenzi.fstore.cms.repository;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +21,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -57,7 +54,6 @@ import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.tree.Tree;
 import org.lenzi.fstore.tree.TreeNodeVisitException;
 import org.lenzi.fstore.tree.Trees;
-import org.lenzi.fstore.tree.Trees.PrintOption;
 import org.lenzi.fstore.tree.Trees.WalkOption;
 import org.lenzi.fstore.util.CollectionUtil;
 import org.lenzi.fstore.util.DateUtil;
@@ -1298,7 +1294,7 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 	}
-	// helper method for move file opertation. used when we need to replace a file with the same name in the target directory
+	// helper method for move file operation. used when we need to replace a file with the same name in the target directory
 	private CmsFileEntry _moveWithReplace(
 			CmsDirectory sourceDir, CmsDirectory targetDir,
 			CmsFileEntry sourceEntry, CmsFileEntry conflictingTargetEntry,
@@ -1357,6 +1353,160 @@ public class FileStoreRepository extends AbstractRepository {
 		
 	}
 	
+	/**
+	 * Copy a file.
+	 * 
+	 * @param fileId - id of the file to copy
+	 * @param targetDirId - id of target directory, where file will be copied to.
+	 * @param replaceExisting - pass true to replace any existing file with the same name in the target directory,
+	 * 	or pass false not to replace. If you pass false, and a file already exists in the target directory, then a
+	 * 	database exception will be thrown.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileEntry copyFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException {
+		
+		// get source information
+		CmsDirectory sourceDir = getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_META);
+		CmsFileStore sourceStore = getCmsFileStoreByDirId(sourceDir.getDirId());
+		// also fetch byte data
+		CmsFileEntry sourceEntry = getCmsFileEntryById(fileId, CmsFileEntryFetch.FILE_META_WITH_DATA);
+		
+		// get target information
+		CmsDirectory targetDir = getCmsDirectoryById(targetDirId, CmsDirectoryFetch.FILE_META);
+		CmsFileStore targetStore = getCmsFileStoreByDirId(targetDir.getDirId());
+		CmsFileEntry conflictingTargetEntry = targetDir.getEntryByFileName(sourceEntry.getFileName(), false);
+		
+		String sourceFilePath = getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		String targetFilePath = getAbsoluteFilePath(targetStore, targetDir, sourceEntry); // use source file name
+		
+		// will be true of we need to replace the existing file in the target directory
+		boolean needReplace = conflictingTargetEntry != null ? true : false;
+		
+		// replace existing file in target dir with file from source dir
+		if(needReplace && replaceExisting){
+			
+			String conflictingTargetFilePath = getAbsoluteFilePath(targetStore, targetDir, conflictingTargetEntry);
+			
+			return _copyWithReplace(sourceDir, targetDir, sourceEntry, conflictingTargetEntry, 
+					Paths.get(sourceFilePath), Paths.get(targetFilePath), Paths.get(conflictingTargetFilePath));
+			
+		// user specified not to replace, throw database exception
+		}else if(needReplace && !replaceExisting){
+			
+			throw new DatabaseException("Target directory contains a file with the same name, but 'replaceExisting' param "
+					+ "was false. Cannot move file to target directory.");
+		
+		// simply copy file to target dir
+		}else{
+			
+			return _copyWithoutReplace(sourceDir, targetDir, sourceEntry, Paths.get(sourceFilePath), Paths.get(targetFilePath));
+			
+		}		
+		
+	}
+	// helper method for copy file operation. used when we need to replace a file with the same name in the target directory
+	private CmsFileEntry _copyWithReplace(
+			CmsDirectory sourceDir, CmsDirectory targetDir,
+			CmsFileEntry sourceEntry, CmsFileEntry conflictingTargetEntry,
+			Path sourceFilePath, Path targetFilePath, Path conflictTargetFilePath) throws DatabaseException {
+		
+		if(sourceEntry.getFile() == null){
+			throw new DatabaseException("Cannot copy file. CmsFileEntry object with id " + 
+					sourceEntry.getFileId() + " is missing it's CmsFile object. Need this data for copy.");
+		}		
+		
+		// remove existing entry from target dir, then delete it
+		CmsFileEntry entryToRemove = targetDir.removeEntryById(conflictingTargetEntry.getFileId());
+		remove(entryToRemove);
+		
+		// remove entry from source dir, and update
+		sourceDir.removeEntryById(sourceEntry.getFileId());
+		sourceDir = (CmsDirectory)merge(sourceDir);	
+		
+		// create cms file entry for meta data
+		CmsFileEntry cmsFileEntryCopy = new CmsFileEntry();
+		cmsFileEntryCopy.setDirectory(targetDir);
+		cmsFileEntryCopy.setFileName(sourceEntry.getFileName());
+		cmsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
+		persist(cmsFileEntryCopy);
+		getEntityManager().flush();
+
+		// update target cms directory with new cms file entry copy (updates linking table)
+		targetDir.addFileEntry(cmsFileEntryCopy);
+		targetDir = (CmsDirectory)merge(targetDir);
+		
+		// create cms file copy object for file byte data, and persist
+		CmsFile cmsFileCopy = new CmsFile();
+		cmsFileCopy.setFileId(cmsFileEntryCopy.getFileId());
+		cmsFileCopy.setFileData(sourceEntry.getFile().getFileData());
+		persist(cmsFileCopy);
+		getEntityManager().flush();
+		
+		// make sure objects have all data set before returning
+		cmsFileEntryCopy.setDirectory(targetDir);
+		cmsFileEntryCopy.setFile(cmsFileCopy);
+		cmsFileCopy.setFileEntry(cmsFileEntryCopy);
+		
+		// remove conflicting file, then copy over new file
+		try {
+			FileUtil.deletePath(conflictTargetFilePath);
+			FileUtil.copyFile(sourceFilePath, targetFilePath);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		}
+		
+		return cmsFileEntryCopy;
+
+	}
+	// helper method for copy file operation. used when we don't have to worry about replacing a file with the same name
+	private CmsFileEntry _copyWithoutReplace(
+			CmsDirectory sourceDir, CmsDirectory targetDir, CmsFileEntry sourceEntry,
+			Path sourceFilePath, Path targetFilePath) throws DatabaseException {
+	
+		if(sourceEntry.getFile() == null){
+			throw new DatabaseException("Cannot copy file. CmsFileEntry object with id " + 
+					sourceEntry.getFileId() + " is missing it's CmsFile object. Need this data for copy.");
+		}
+		
+		// create cms file entry for meta data
+		CmsFileEntry cmsFileEntryCopy = new CmsFileEntry();
+		cmsFileEntryCopy.setDirectory(targetDir);
+		cmsFileEntryCopy.setFileName(sourceEntry.getFileName());
+		cmsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
+		persist(cmsFileEntryCopy);
+		getEntityManager().flush();
+
+		// update target cms directory with new cms file entry copy (updates linking table)
+		targetDir.addFileEntry(cmsFileEntryCopy);
+		targetDir = (CmsDirectory)merge(targetDir);
+		
+		// create cms file copy object for file byte data, and persist
+		CmsFile cmsFileCopy = new CmsFile();
+		cmsFileCopy.setFileId(cmsFileEntryCopy.getFileId());
+		cmsFileCopy.setFileData(sourceEntry.getFile().getFileData());
+		persist(cmsFileCopy);
+		getEntityManager().flush();
+		
+		// make sure objects have all data set before returning
+		cmsFileEntryCopy.setDirectory(targetDir);
+		cmsFileEntryCopy.setFile(cmsFileCopy);
+		cmsFileCopy.setFileEntry(cmsFileEntryCopy);
+		
+		// move file to new directory
+		try {
+			FileUtil.copyFile(sourceFilePath, targetFilePath);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		}
+		
+		return cmsFileEntryCopy;
+	}	
+	
 	public void moveDirectory(Long dirId, Long newParentDirId) throws DatabaseException {
 		
 		// make sure not a root directory
@@ -1411,6 +1561,19 @@ public class FileStoreRepository extends AbstractRepository {
 		return new DatabaseException(buf.toString(), e);
 		
 	}
+	
+	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, CmsDirectory sourceDir, CmsDirectory targetDir, Throwable e){
+		
+		StringBuffer buf = new StringBuffer();
+		String cr = System.getProperty("line.separator");
+		buf.append("Error copying file => " + source.toString() + " to target file => " + target.toString() + cr);
+		buf.append("Source cms directory, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getName() + cr);
+		buf.append("Target cms directory, id => " + targetDir.getDirId() + ", name => " + targetDir.getName() + cr);
+		buf.append("Throwable => " + e.getClass().getName() + cr);
+		buf.append("Message => " + e.getMessage() + cr);
+		return new DatabaseException(buf.toString(), e);
+		
+	}	
 	
 	private DatabaseException buildDatabaseExceptionMoveError(Path source, Path target, CmsDirectory sourceDir, CmsDirectory targetDir, Throwable e){
 		
