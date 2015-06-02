@@ -11,10 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private  FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	public AbstractAddChildCmsDirectory() {
 		
@@ -48,9 +48,9 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 		//
 		CmsFileStore fileStore = null;
 		try {
-			fileStore = fileStoreRepository.createFileStore(
+			fileStore = storeService.createFileStore(
 					examplePath, "Example File Store", "This is an example file store to test adding child directories.", false);
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -72,8 +72,8 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 		final String subDirName1 = "sub_test_1";
 		CmsDirectory subTest1 = null;
 		try {
-			subTest1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
-		} catch (DatabaseException e) {
+			subTest1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -86,17 +86,17 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 		//
 		// validate sub dir 1 path
 		//
-		String subDirPath1 = null;
+		Path subDirPath1 = null;
 		try {
-			subDirPath1 = fileStoreRepository.getAbsoluteDirectoryPath(subTest1.getDirId());
-		} catch (DatabaseException e) {
+			subDirPath1 = storeService.getAbsoluteDirectoryPath(subTest1.getDirId());
+		} catch (CmsServiceException e) {
 			logger.error("Failed to get full path for root dir of newly created file store. " + e.getMessage());
 			e.printStackTrace();
 		}
 		assertNotNull(subDirPath1);
-		logger.info("Sub dir full path 1 => " + subDirPath1);
+		logger.info("Sub dir full path 1 => " + subDirPath1.toString());
 		String expectedPath1 = getTestFileStorePath() + File.separator + subDirName1;
-		assertEquals(Paths.get(subDirPath1).toString(), Paths.get(expectedPath1).toString());		
+		assertEquals(subDirPath1.toString(), Paths.get(expectedPath1).toString());		
 		
 		//
 		// add child directory 2
@@ -104,8 +104,8 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 		final String subDirName2 = "sub_test_2";
 		CmsDirectory subTest2 = null;
 		try {
-			subTest2 = fileStoreRepository.addDirectory(subTest1.getNodeId(), subDirName2);
-		} catch (DatabaseException e) {
+			subTest2 = storeService.addDirectory(subTest1.getNodeId(), subDirName2);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + subTest1.getDirId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -118,17 +118,17 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 		//
 		// validate sub dir 2 path
 		//
-		String subDirPath2 = null;
+		Path subDirPath2 = null;
 		try {
-			subDirPath2 = fileStoreRepository.getAbsoluteDirectoryPath(subTest2.getDirId());
-		} catch (DatabaseException e) {
+			subDirPath2 = storeService.getAbsoluteDirectoryPath(subTest2.getDirId());
+		} catch (CmsServiceException e) {
 			logger.error("Failed to get full path for root dir of newly created file store. " + e.getMessage());
 			e.printStackTrace();
 		}
 		assertNotNull(subDirPath2);
-		logger.info("Sub dir full path 2 => " + subDirPath2);
+		logger.info("Sub dir full path 2 => " + subDirPath2.toString());
 		String expectedPath2 = getTestFileStorePath() + File.separator + subDirName1 + File.separator + subDirName2;
-		assertEquals(Paths.get(subDirPath2).toString(), Paths.get(expectedPath2).toString());		
+		assertEquals(subDirPath2.toString(), Paths.get(expectedPath2).toString());		
 		
 
 		

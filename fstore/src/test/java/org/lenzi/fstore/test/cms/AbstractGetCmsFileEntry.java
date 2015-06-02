@@ -115,14 +115,10 @@ public abstract class AbstractGetCmsFileEntry extends AbstractTreeTest {
 		}
 		
 		assertNotNull(dirPath);
-		
 		logger.info("Path of directory => " + dirPath.toString());
-		
 		String fullFilePath = dirPath.toString() + File.separator + fileEntry.getFileName();
 		Path targetPath = Paths.get(fullFilePath);
-		
 		logger.info("Path of cms file => " + targetPath.toString());
-		
 		assertTrue(Files.exists(targetPath));
 		
 		CmsFileEntry sampleEntry = null;

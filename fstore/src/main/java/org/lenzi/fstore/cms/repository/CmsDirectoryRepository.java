@@ -95,7 +95,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Path getAbsoluteDirectoryPath(CmsFileStore cmsStore, CmsDirectory cmsDirectory) throws DatabaseException {
+	public Path getAbsoluteDirectoryPath(CmsFileStore cmsStore, CmsDirectory cmsDirectory) {
 		
 		return fileStoreHelper.getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
 		

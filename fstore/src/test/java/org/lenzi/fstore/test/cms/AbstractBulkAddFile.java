@@ -13,11 +13,11 @@ import java.util.List;
 
 import org.junit.Test;
 import org.lenzi.fstore.util.FileUtil;
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public abstract class AbstractBulkAddFile extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -82,9 +82,9 @@ public abstract class AbstractBulkAddFile extends AbstractTreeTest {
 		Path examplePath = Paths.get(getTestFileStorePath());
 		CmsFileStore fileStore = null;
 		try {
-			fileStore = fileStoreRepository.createFileStore(examplePath, 
+			fileStore = storeService.createFileStore(examplePath, 
 					"Example File Store", "This is an example file store to test bulk file add.", true);
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -93,19 +93,16 @@ public abstract class AbstractBulkAddFile extends AbstractTreeTest {
 		final String subDirName = "upload_bulk";
 		CmsDirectory subTest = null;
 		try {
-			subTest = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName);
-		} catch (DatabaseException e) {
+			subTest = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
 		
 		List<CmsFileEntry> fileEntries = null;
 		try {
-			fileEntries = fileStoreRepository.addFile(filePaths, subTest.getDirId(), true);
-		} catch (DatabaseException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
+			fileEntries = storeService.addFile(filePaths, subTest.getDirId(), true);
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}

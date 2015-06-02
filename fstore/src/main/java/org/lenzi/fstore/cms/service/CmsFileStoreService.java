@@ -2,6 +2,7 @@ package org.lenzi.fstore.cms.service;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.lenzi.fstore.cms.repository.CmsDirectoryRepository;
 import org.lenzi.fstore.cms.repository.CmsDirectoryRepository.CmsDirectoryFetch;
@@ -18,6 +19,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Main service for working with cms stores, directories, and files.
+ * 
+ * @author sal
+ */
 @Service
 public class CmsFileStoreService {
 
@@ -35,6 +41,51 @@ public class CmsFileStoreService {
 	
 	
 	public CmsFileStoreService() {
+		
+	}
+	
+	/**
+	 * Get full path for directory
+	 * 
+	 * @param nodeId
+	 * @return
+	 */
+	public Path getAbsoluteDirectoryPath(Long dirId) throws CmsServiceException {
+		
+		Path path = null;
+		try {
+			path = cmsDirectoryRepository.getAbsoluteDirectoryPath(dirId);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Error fetching path for directory, id => " + dirId + ". " + e.getMessage(), e);
+		}
+		return path;
+		
+	}
+	
+	/**
+	 * Get full path for directory
+	 * 
+	 * @param cmsStore
+	 * @param cmsDirectory
+	 * @return
+	 */
+	public Path getAbsoluteDirectoryPath(CmsFileStore cmsStore, CmsDirectory cmsDirectory) {
+		
+		return cmsDirectoryRepository.getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
+		
+	}
+	
+	/**
+	 * Get full path for file
+	 * 
+	 * @param cmsStore
+	 * @param cmsDirectory
+	 * @param cmsFileEntry
+	 * @return
+	 */
+	public Path getAbsoluteFilePath(CmsFileStore cmsStore, CmsDirectory cmsDirectory, CmsFileEntry cmsFileEntry){
+		
+		return cmsFileEntryRepository.getAbsoluteFilePath(cmsStore, cmsDirectory, cmsFileEntry);
 		
 	}
 	
@@ -57,24 +108,6 @@ public class CmsFileStoreService {
 			throw new CmsServiceException("Error creating store. " + e.getMessage(), e);
 		}
 		return cmsStore;
-		
-	}
-
-	/**
-	 * Get full path for directory
-	 * 
-	 * @param nodeId
-	 * @return
-	 */
-	public Path getAbsoluteDirectoryPath(Long dirId) throws CmsServiceException {
-		
-		Path path = null;
-		try {
-			path = cmsDirectoryRepository.getAbsoluteDirectoryPath(dirId);
-		} catch (DatabaseException e) {
-			throw new CmsServiceException("Error fetching path for directory, id => " + dirId + ". " + e.getMessage(), e);
-		}
-		return path;
 		
 	}
 
@@ -190,11 +223,34 @@ public class CmsFileStoreService {
 		try {
 			fileEntry = cmsFileEntryRepository.addFile(sourcePath, dirId, replaceExisting);
 		} catch (DatabaseException e) {
-			throw new CmsServiceException("Database error when adding new directory. " + e.getMessage(), e);
+			throw new CmsServiceException("Database error when adding new file. " + e.getMessage(), e);
 		} catch (IOException e) {
-			throw new CmsServiceException("I/O error when adding new directory. " + e.getMessage(), e);
+			throw new CmsServiceException("I/O error when adding new file. " + e.getMessage(), e);
 		}
 		return fileEntry;
+		
+	}
+	
+	/**
+	 * Add files
+	 * 
+	 * @param filePaths
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws CmsServiceException
+	 */
+	public List<CmsFileEntry> addFile(List<Path> filePaths, Long dirId, boolean replaceExisting) throws CmsServiceException {
+		
+		List<CmsFileEntry> entries = null;
+		try {
+			entries = cmsFileEntryRepository.addFile(filePaths, dirId, replaceExisting);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Database error when adding new files. " + e.getMessage(), e);
+		} catch (IOException e) {
+			throw new CmsServiceException("I/O error when adding new files. " + e.getMessage(), e);
+		}
+		return entries;
 		
 	}
 

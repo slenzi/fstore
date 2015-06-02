@@ -12,11 +12,11 @@ import java.nio.file.Paths;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -52,7 +52,7 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 	 */
 	@Test
 	@Rollback(false)
-	public void doAddExistingFile() throws DatabaseException, IOException {
+	public void doAddExistingFile() throws CmsServiceException, IOException {
 		
 		logTestTitle("Add existing file test");
 		
@@ -75,9 +75,9 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		Path examplePath = Paths.get(getTestFileStorePath());
 		CmsFileStore fileStore = null;
 		try {
-			fileStore = fileStoreRepository.createFileStore(
+			fileStore = storeService.createFileStore(
 					examplePath, "Example File Store", "This is an example file store to test adding of files.", false);
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -86,8 +86,8 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		final String subDirName1 = "upload_test";
 		CmsDirectory subTest1 = null;
 		try {
-			subTest1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
-		} catch (DatabaseException e) {
+			subTest1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}		
@@ -97,14 +97,10 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		try {
 			
 			logger.info("Resource 1 => " + sourcePath1.toString());
-			logger.info("Resource 1 Size => " + Files.size(sourcePath1));
 			
-			fileEntry = fileStoreRepository.addFile(sourcePath1, subTest1.getDirId(), true);
+			fileEntry = storeService.addFile(sourcePath1, subTest1.getDirId(), true);
 			
-		}catch(IOException e){
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Error adding file. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -120,30 +116,26 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		//
 		// check file on disk
 		//
-		String dirPath = null;
+		Path dirPath = null;
 		try {
-			dirPath = fileStoreRepository.getAbsoluteDirectoryPath(fileEntry.getDirectory().getDirId());
-		} catch (DatabaseException e) {
+			dirPath = storeService.getAbsoluteDirectoryPath(fileEntry.getDirectory().getDirId());
+		} catch (CmsServiceException e) {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 		assertNotNull(dirPath);
-
-		logger.info("Path of directory => " + dirPath);
-		
-		String fullFilePath = dirPath + File.separator + fileEntry.getFileName();
+		logger.info("Path of directory => " + dirPath.toString());
+		String fullFilePath = dirPath.toString() + File.separator + fileEntry.getFileName();
 		Path targetPath = Paths.get(fullFilePath);
-		
 		logger.info("Path of cms file => " + targetPath.toString());
-		
 		assertTrue(Files.exists(targetPath));
-		
 		
 		//
 		// persist second version of file with same name
 		//
 		//exception.expect(DatabaseException.class);
-		CmsFileEntry updatedEntry = fileStoreRepository.addFile(sourcePath2, subTest1.getDirId(), true);
+		CmsFileEntry updatedEntry = storeService.addFile(sourcePath2, subTest1.getDirId(), true);
 				
 		assertNotNull(updatedEntry);
 		assertNotNull(updatedEntry.getDirectory());
@@ -157,20 +149,17 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		// re-check file on disk
 		//
 		try {
-			dirPath = fileStoreRepository.getAbsoluteDirectoryPath(updatedEntry.getDirectory().getDirId());
-		} catch (DatabaseException e) {
+			dirPath = storeService.getAbsoluteDirectoryPath(updatedEntry.getDirectory().getDirId());
+		} catch (CmsServiceException e) {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 		assertNotNull(dirPath);
-
-		logger.info("Path of directory => " + dirPath);
-		
-		fullFilePath = dirPath + File.separator + updatedEntry.getFileName();
+		logger.info("Path of directory => " + dirPath.toString());
+		fullFilePath = dirPath.toString() + File.separator + updatedEntry.getFileName();
 		targetPath = Paths.get(fullFilePath);
-		
 		logger.info("Path of cms file => " + targetPath.toString());
-		
 		assertTrue(Files.exists(targetPath));		
 		
 	}
