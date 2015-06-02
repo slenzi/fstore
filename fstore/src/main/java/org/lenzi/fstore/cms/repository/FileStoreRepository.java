@@ -528,18 +528,24 @@ public class FileStoreRepository extends AbstractRepository {
 		}
 		
 		// get file store
-		CmsFileStore store = null;
+		CmsFileStore cmsStore = null;
 		try {
-			store = getCmsFileStoreByDirId(parentDir.getDirId());
+			cmsStore = getCmsFileStoreByDirId(parentDir.getDirId());
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch file store for cms dir id => " + parentDir.getDirId(), e);
 		}
 		
-		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + store.getName());
+		return _addDirectory(parentDir, cmsStore, dirName);
+		
+	}
+	// helper method for add directory operation
+	private CmsDirectory _addDirectory(CmsDirectory parentDir, CmsFileStore cmsStore, String dirName) throws DatabaseException {
+		
+		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + cmsStore.getName());
 		
 		// CmsDirectory.getRelativeDirPath() returns a path relative to the store path
-		Path storePath = Paths.get(store.getStorePath());
-		Path childPath =  Paths.get(store.getStorePath() + parentDir.getRelativeDirPath() + File.separator + dirName);
+		Path storePath = Paths.get(cmsStore.getStorePath());
+		Path childPath =  Paths.get(cmsStore.getStorePath() + parentDir.getRelativeDirPath() + File.separator + dirName);
 		Path childRelativePath = storePath.relativize(childPath);
 		String sChildRelativePath = childRelativePath.toString();
 		if(!sChildRelativePath.startsWith(File.separator)){
@@ -554,7 +560,7 @@ public class FileStoreRepository extends AbstractRepository {
 			childDir = treeRepository.addChildNode(parentDir, new CmsDirectory(dirName, sChildRelativePath) );
 			
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Error adding new directory to parent dir => " + parentDirId, e);
+			throw new DatabaseException("Error adding new directory to parent dir => " + parentDir.getDirId(), e);
 		}
 		
 		try {
@@ -883,12 +889,12 @@ public class FileStoreRepository extends AbstractRepository {
 		// file exists, and we need to replace existing one
 		}else if(existingCmsFileEntry != null && replaceExisting){
 		
-			return replaceExistingFile(fileToAdd, existingCmsFileEntry, cmsDirectory, cmsStore);
+			return _addFileReplace(fileToAdd, existingCmsFileEntry, cmsDirectory, cmsStore);
 			
 		// not existing file. add a new entry
 		}else{
 			
-			return addNewFile(fileToAdd, cmsDirectory, cmsStore);
+			return _addFileNew(fileToAdd, cmsDirectory, cmsStore);
 			
 		}
 		
@@ -955,14 +961,14 @@ public class FileStoreRepository extends AbstractRepository {
 			// file exists, and we need to replace existing one
 			}else if(existingCmsFileEntry != null && replaceExisting){
 			
-				newCmsFileEntry = replaceExistingFile(fileToAdd, existingCmsFileEntry, cmsDirectory, cmsStore);
+				newCmsFileEntry = _addFileReplace(fileToAdd, existingCmsFileEntry, cmsDirectory, cmsStore);
 				
 				newCmsFileEntries.add(newCmsFileEntry);
 				
 			// not existing file. add a new entry
 			}else{
 				
-				newCmsFileEntry = addNewFile(fileToAdd, cmsDirectory, cmsStore);
+				newCmsFileEntry = _addFileNew(fileToAdd, cmsDirectory, cmsStore);
 				
 				newCmsFileEntries.add(newCmsFileEntry);
 				
@@ -973,19 +979,8 @@ public class FileStoreRepository extends AbstractRepository {
 		return newCmsFileEntries;
 		
 	}
-	
-	/**
-	 * Replace existing file
-	 * 
-	 * @param newFile
-	 * @param existingCmsFileEntry
-	 * @param cmsDirectory
-	 * @param cmsStore
-	 * @return
-	 * @throws DatabaseException
-	 * @throws IOException
-	 */
-	private CmsFileEntry replaceExistingFile(Path newFile, CmsFileEntry existingCmsFileEntry, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
+	// helper method for add file operation. used when we have to replace an existing file with the same name
+	private CmsFileEntry _addFileReplace(Path newFile, CmsFileEntry existingCmsFileEntry, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
 		
 		Long fileId = existingCmsFileEntry.getFileId();
 		String newFileName = newFile.getFileName().toString();
@@ -1044,18 +1039,8 @@ public class FileStoreRepository extends AbstractRepository {
 		
 		return updatedCmsFileEntry;
 	}
-	
-	/**
-	 * Add a new file to a CmsDirectory
-	 * 
-	 * @param fileToAdd
-	 * @param cmsDirectory
-	 * @param cmsStore
-	 * @return
-	 * @throws DatabaseException
-	 * @throws IOException
-	 */
-	private CmsFileEntry addNewFile(Path fileToAdd, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
+	// helper method for add file operation. used when not having to worry about replacing a file
+	private CmsFileEntry _addFileNew(Path fileToAdd, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
 		
 		String fileName = fileToAdd.getFileName().toString();
 		String dirFullPath = getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
@@ -1586,31 +1571,73 @@ public class FileStoreRepository extends AbstractRepository {
 	// helper method for copy directory operation
 	// TODO - test rollback
 	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
-	private Long _doCopyDirToDir(CmsDirectory dirToCopy, Long targetParentDirId, 
+	private Long _doCopyDirToDir(
+			CmsDirectory sourceDir, Long targetParentDirId, 
 			CmsFileStore sourceStore, CmsFileStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
 		// check if parent dir already contains a child dir with the same name as the dir we are copying
 		CmsDirectory targetParentDir = treeRepository.getNodeWithChild(new CmsDirectory(targetParentDirId), 1);
-		CmsDirectory existingDir = targetParentDir.getChildDirectoryByName(dirToCopy.getDirName(), false);
+		CmsDirectory existingDir = targetParentDir.getChildDirectoryByName(sourceDir.getDirName(), false);
 		boolean needMergeDirectory = existingDir != null ? true : false;
 		
 		// merge contents of dirToCopy into existing directory
 		if(needMergeDirectory){
 			
-			logger.info("Copy to existing dir: target dir => " + getAbsoluteDirectoryPath(sourceStore, dirToCopy) + 
-					", to source dir => " + getAbsoluteDirectoryPath(targetStore, existingDir));
+			Path sourceFilePath = null, targetFilePath = null, conflictTargetFilePath = null;
+			CmsFileEntry sourceEntryWithData = null, conflictingTargetEntry = null;
+			
+			CmsDirectory targetDirWithFiles = getCmsDirectoryById(existingDir.getDirId(), CmsDirectoryFetch.FILE_META);
+			
+			for(CmsFileEntry entryToCopy : sourceDir.getFileEntries()){
+				
+				sourceEntryWithData = getCmsFileEntryById(entryToCopy.getFileId(), CmsFileEntryFetch.FILE_META_WITH_DATA);
+				
+				conflictingTargetEntry = targetDirWithFiles.getEntryByFileName(sourceEntryWithData.getFileName(), false);
+				
+				boolean needReplace = conflictingTargetEntry != null ? true : false;
+				
+				sourceFilePath = Paths.get(getAbsoluteFilePath(sourceStore, sourceDir, sourceEntryWithData));
+				targetFilePath = Paths.get(getAbsoluteFilePath(targetStore, existingDir, sourceEntryWithData)); // use same file name
+				conflictTargetFilePath = Paths.get(getAbsoluteFilePath(targetStore, existingDir, conflictingTargetEntry));
+				
+				// replace existing entry
+				if(needReplace){
+				
+					_copyWithReplace(sourceDir, targetDirWithFiles, sourceEntryWithData, 
+							conflictingTargetEntry, sourceFilePath, targetFilePath, conflictTargetFilePath);
+					
+				// regular copy
+				}else{
+					
+					_copyWithoutReplace(sourceDir, targetDirWithFiles, sourceEntryWithData, 
+							sourceFilePath, targetFilePath);
+					
+				}
+
+			}
 			
 			return existingDir.getDirId();
 		
 		// create new directory under target parent dir, then copy over contents of dirToCopy
 		}else{
 			
-			logger.info("Copy to new dir: target dir => " + getAbsoluteDirectoryPath(sourceStore, dirToCopy) + 
-					", to source dir => to_be_created");
+			CmsDirectory newTargetDir = _addDirectory(targetParentDir, targetStore, sourceDir.getDirName());
 			
-			CmsDirectory newTargetDir = addDirectory(targetParentDirId, dirToCopy.getDirName());
+			Path sourceFilePath = null, targetFilePath = null;
+			CmsFileEntry entryWithData = null;
 			
-			return 0L;
+			for(CmsFileEntry entryToCopy : sourceDir.getFileEntries()){
+				
+				entryWithData = getCmsFileEntryById(entryToCopy.getFileId(), CmsFileEntryFetch.FILE_META_WITH_DATA);
+				
+				sourceFilePath = Paths.get(getAbsoluteFilePath(sourceStore, sourceDir, entryWithData));
+				targetFilePath = Paths.get(getAbsoluteFilePath(targetStore, newTargetDir, entryWithData)); // use same file name
+				
+				_copyWithoutReplace(sourceDir, newTargetDir, entryWithData, sourceFilePath, targetFilePath);
+				
+			}
+			
+			return newTargetDir.getDirId();
 			
 		}
 	
