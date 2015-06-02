@@ -1523,7 +1523,15 @@ public class FileStoreRepository extends AbstractRepository {
 		
 	}
 	
-	// TODO - implement
+	/**
+	 * Copy a directory
+	 * 
+	 * @param sourceDirId
+	 * @param targetDirId
+	 * @param replaceExisting
+	 * @throws DatabaseException
+	 * @throws FileAlreadyExistsException
+	 */
 	public void copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
 		if(sourceDirId == null){
@@ -1601,10 +1609,15 @@ public class FileStoreRepository extends AbstractRepository {
 				conflictTargetFilePath = Paths.get(getAbsoluteFilePath(targetStore, existingDir, conflictingTargetEntry));
 				
 				// replace existing entry
-				if(needReplace){
+				if(needReplace && replaceExisting){
 				
 					_copyWithReplace(sourceDir, targetDirWithFiles, sourceEntryWithData, 
 							conflictingTargetEntry, sourceFilePath, targetFilePath, conflictTargetFilePath);
+				
+				}else if(!needReplace && replaceExisting){
+					
+					throw new FileAlreadyExistsException("Target directory contains a file with the same name, but 'replaceExisting' param "
+							+ "was false. Cannot move file to target directory.");
 					
 				// regular copy
 				}else{
