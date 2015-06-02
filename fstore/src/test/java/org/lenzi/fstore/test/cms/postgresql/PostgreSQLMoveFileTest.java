@@ -42,7 +42,7 @@ public class PostgreSQLMoveFileTest extends AbstractMoveFile {
 	@Override
 	public String getTestFileStorePath() {
 
-		return "/Users/slenzi/Programming/file_store/sample_move";
+		return "/Users/slenzi/Programming/file_store/sample_move_file";
 		
 	}
 

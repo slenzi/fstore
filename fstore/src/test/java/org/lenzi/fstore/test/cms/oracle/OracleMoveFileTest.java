@@ -44,7 +44,7 @@ public class OracleMoveFileTest extends AbstractMoveFile {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/file_store/sample_move";
+		return "C:/temp/file_store/sample_move_file";
 		
 	}
 

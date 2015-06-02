@@ -66,7 +66,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 			return;
 		}
 		
-		// get all files to add
+		// get all files to add (depth 1)
 		List<Path> filePaths = null;
 		try {
 			filePaths = FileUtil.listFilesToDepth(sourceDirPath, 1);
@@ -88,7 +88,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		}
 		
 		// add sub dir for fun
-		CmsDirectory dir1 = null, dir2 = null, dir3 = null, dir4 = null, dir5 = null, dir6 = null;
+		CmsDirectory dir1 = null, dir2 = null, dir3 = null, dir4 = null, dir5 = null, dir6 = null, dir7 = null, dir8 = null;
 		try {
 			
 			dir1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), "dir1");
@@ -97,16 +97,24 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 					dir4 = fileStoreRepository.addDirectory(dir2.getDirId(), "dir4");
 				dir5 = fileStoreRepository.addDirectory(dir1.getDirId(), "dir5");
 					dir6 = fileStoreRepository.addDirectory(dir5.getDirId(), "dir6");
+				dir7 = fileStoreRepository.addDirectory(dir1.getDirId(), "dir7");
+					// dir 8 has same name as dir 2 so we can test merging
+					dir8 = fileStoreRepository.addDirectory(dir7.getDirId(), "dir2");
 			
 		} catch (DatabaseException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
 		
-		List<CmsFileEntry> dir2Entries = null, dir6Entries = null;
+		//
+		// add some files to dir2, dir3, dir6, and dir8
+		//
+		List<CmsFileEntry> dir2Entries = null, dir3Entries = null, dir6Entries = null, dir8Entries = null;
 		try {
 			dir2Entries = fileStoreRepository.addFile(filePaths, dir2.getDirId(), true);
+			dir3Entries = fileStoreRepository.addFile(filePaths, dir3.getDirId(), true);
 			dir6Entries = fileStoreRepository.addFile(filePaths, dir6.getDirId(), true);
+			dir8Entries = fileStoreRepository.addFile(filePaths, dir8.getDirId(), true);
 		} catch (DatabaseException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
@@ -116,7 +124,9 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		}
 		
 		assertEquals(filePaths.size(), dir2Entries.size());
+		assertEquals(filePaths.size(), dir3Entries.size());
 		assertEquals(filePaths.size(), dir6Entries.size());
+		assertEquals(filePaths.size(), dir8Entries.size());
 		
 		logger.info("Tree before:");
 		try {
@@ -127,7 +137,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		}
 		
 		//
-		// do copy
+		// do copy - this copy does not require replacing files
 		//
 		try {
 			fileStoreRepository.copyDirectory(dir2.getDirId(), dir5.getDirId(), true);
@@ -138,6 +148,19 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
+		
+		//
+		// do copy - this copy DOES require merging directories and replacing files
+		//
+		try {
+			fileStoreRepository.copyDirectory(dir2.getDirId(), dir7.getDirId(), true);
+		} catch (FileAlreadyExistsException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (DatabaseException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}		
 		
 		logger.info("Tree after:");
 		try {

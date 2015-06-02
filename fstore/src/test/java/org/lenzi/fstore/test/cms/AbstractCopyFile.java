@@ -16,6 +16,7 @@ import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
+import org.lenzi.fstore.cms.service.FileStoreManager;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -39,6 +40,9 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
+	
+	@Autowired
+	private FileStoreManager fileStoreManager;	
 	
 	public AbstractCopyFile() {
 
@@ -146,16 +150,16 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		logger.info("CmsFileEntry 2:");
 		logger.info(fileEntry2.toString());
 		
-		String dirPath1 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, fileEntry1.getDirectory());
-		String fullFilePath1 = fileStoreRepository.getAbsoluteFilePath(fileStore, fileEntry1.getDirectory(), fileEntry1);
+		String dirPath1 = fileStoreManager.getAbsoluteDirectoryString(fileStore, fileEntry1.getDirectory());
+		String fullFilePath1 = fileStoreManager.getAbsoluteFileString(fileStore, fileEntry1.getDirectory(), fileEntry1);
 		assertNotNull(dirPath1);
 		logger.info("Path of 1 => " + dirPath1);
 		Path targetPath1 = Paths.get(fullFilePath1);
 		logger.info("Path of cms file 1 => " + targetPath1.toString());
 		assertTrue(Files.exists(targetPath1));
 		
-		String dirPath2 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, fileEntry2.getDirectory());
-		String fullFilePath2 = fileStoreRepository.getAbsoluteFilePath(fileStore, fileEntry2.getDirectory(), fileEntry2);
+		String dirPath2 = fileStoreManager.getAbsoluteDirectoryString(fileStore, fileEntry2.getDirectory());
+		String fullFilePath2 = fileStoreManager.getAbsoluteFileString(fileStore, fileEntry2.getDirectory(), fileEntry2);
 		assertNotNull(dirPath2);
 		logger.info("Path of 2 => " + dirPath2);
 		Path targetPath2 = Paths.get(fullFilePath2);
@@ -177,8 +181,8 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		logger.info(copiedEntry.toString());
 		
 		// check that file has been copied to dir 3
-		String dirPath3 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, copiedEntry.getDirectory());
-		String fullFilePath3 = fileStoreRepository.getAbsoluteFilePath(fileStore, copiedEntry.getDirectory(), copiedEntry);
+		String dirPath3 = fileStoreManager.getAbsoluteDirectoryString(fileStore, copiedEntry.getDirectory());
+		String fullFilePath3 = fileStoreManager.getAbsoluteFileString(fileStore, copiedEntry.getDirectory(), copiedEntry);
 		assertNotNull(dirPath3);
 		logger.info("Path of 3 => " + dirPath3);
 		Path targetPath3 = Paths.get(fullFilePath3);
@@ -207,8 +211,8 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		logger.info(copiedEntry.toString());
 		
 		// check that file has been copied to dir 3
-		dirPath3 = fileStoreRepository.getAbsoluteDirectoryPath(fileStore, copiedEntry.getDirectory());
-		fullFilePath3 = fileStoreRepository.getAbsoluteFilePath(fileStore, copiedEntry.getDirectory(), copiedEntry);
+		dirPath3 = fileStoreManager.getAbsoluteDirectoryString(fileStore, copiedEntry.getDirectory());
+		fullFilePath3 = fileStoreManager.getAbsoluteFileString(fileStore, copiedEntry.getDirectory(), copiedEntry);
 		assertNotNull(dirPath3);
 		logger.info("Path of 3 => " + dirPath3);
 		targetPath3 = Paths.get(fullFilePath3);
