@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,12 +11,11 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.cms.service.FileStoreHelper;
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +34,10 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
-	
-	@Autowired
-	private FileStoreHelper fileStoreManager;	
 	
 	public AbstractCopyFile() {
 
@@ -75,9 +70,9 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		Path examplePath = Paths.get(getTestFileStorePath());
 		CmsFileStore fileStore = null;
 		try {
-			fileStore = fileStoreRepository.createFileStore(
+			fileStore = storeService.createFileStore(
 					examplePath, "Example File Store", "This is an example file store to test copying files.", false);
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -86,8 +81,8 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		final String subDirName1 = "copy_test1";
 		CmsDirectory subTest1 = null;
 		try {
-			subTest1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
-		} catch (DatabaseException e) {
+			subTest1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -96,8 +91,8 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		final String subDirName2 = "copy_test2";
 		CmsDirectory subTest2 = null;
 		try {
-			subTest2 = fileStoreRepository.addDirectory(subTest1.getDirId(), subDirName2);
-		} catch (DatabaseException e) {
+			subTest2 = storeService.addDirectory(subTest1.getDirId(), subDirName2);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + subTest1.getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -106,8 +101,8 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		final String subDirName3 = "copy_test3";
 		CmsDirectory subTest3 = null;
 		try {
-			subTest3 = fileStoreRepository.addDirectory(subTest2.getDirId(), subDirName3);
-		} catch (DatabaseException e) {
+			subTest3 = storeService.addDirectory(subTest2.getDirId(), subDirName3);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + subTest2.getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -123,13 +118,13 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 			logger.info("Test file 2 => " + sourcePath2.toString());
 			logger.info("Test file Size 2 => " + Files.size(sourcePath2));			
 			
-			fileEntry1 = fileStoreRepository.addFile(sourcePath1, subTest1.getDirId(), true);
-			fileEntry2 = fileStoreRepository.addFile(sourcePath2, subTest2.getDirId(), true);
+			fileEntry1 = storeService.addFile(sourcePath1, subTest1.getDirId(), true);
+			fileEntry2 = storeService.addFile(sourcePath2, subTest2.getDirId(), true);
 			
 		}catch(IOException e){
 			logger.error(e.getMessage());
 			e.printStackTrace();
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Error adding file. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -150,27 +145,30 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		logger.info("CmsFileEntry 2:");
 		logger.info(fileEntry2.toString());
 		
-		String dirPath1 = fileStoreManager.getAbsoluteDirectoryString(fileStore, fileEntry1.getDirectory());
-		String fullFilePath1 = fileStoreManager.getAbsoluteFileString(fileStore, fileEntry1.getDirectory(), fileEntry1);
+		Path dirPath1 = storeService.getAbsoluteDirectoryPath(fileStore, fileEntry1.getDirectory());
+		Path fullFilePath1 = storeService.getAbsoluteFilePath(fileStore, fileEntry1.getDirectory(), fileEntry1);
 		assertNotNull(dirPath1);
-		logger.info("Path of 1 => " + dirPath1);
-		Path targetPath1 = Paths.get(fullFilePath1);
-		logger.info("Path of cms file 1 => " + targetPath1.toString());
-		assertTrue(Files.exists(targetPath1));
+		logger.info("Path of 1 => " + dirPath1.toString());
+		logger.info("Path of cms file 1 => " + fullFilePath1.toString());
+		assertTrue(Files.exists(fullFilePath1));
 		
-		String dirPath2 = fileStoreManager.getAbsoluteDirectoryString(fileStore, fileEntry2.getDirectory());
-		String fullFilePath2 = fileStoreManager.getAbsoluteFileString(fileStore, fileEntry2.getDirectory(), fileEntry2);
+		Path dirPath2 = storeService.getAbsoluteDirectoryPath(fileStore, fileEntry2.getDirectory());
+		Path fullFilePath2 = storeService.getAbsoluteFilePath(fileStore, fileEntry2.getDirectory(), fileEntry2);
 		assertNotNull(dirPath2);
-		logger.info("Path of 2 => " + dirPath2);
-		Path targetPath2 = Paths.get(fullFilePath2);
-		logger.info("Path of cms file 2 => " + targetPath2.toString());
-		assertTrue(Files.exists(targetPath2));
+		logger.info("Path of 2 => " + dirPath2.toString());
+		logger.info("Path of cms file 2 => " + fullFilePath2.toString());
+		assertTrue(Files.exists(fullFilePath2));
 		
 		//
 		// copy file in copy_test1 dir to copy_test3 dir (no replace required)
 		//
 		CmsFileEntry copiedEntry = null;
-		copiedEntry = fileStoreRepository.copyFile(fileEntry1.getFileId(), subTest3.getDirId(), true);
+		try {
+			copiedEntry = storeService.copyFile(fileEntry1.getFileId(), subTest3.getDirId(), true);
+		} catch (CmsServiceException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
 		
 		assertNotNull(copiedEntry);
 		assertNotNull(copiedEntry.getDirectory());
@@ -181,23 +179,19 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		logger.info(copiedEntry.toString());
 		
 		// check that file has been copied to dir 3
-		String dirPath3 = fileStoreManager.getAbsoluteDirectoryString(fileStore, copiedEntry.getDirectory());
-		String fullFilePath3 = fileStoreManager.getAbsoluteFileString(fileStore, copiedEntry.getDirectory(), copiedEntry);
+		Path dirPath3 = storeService.getAbsoluteDirectoryPath(fileStore, copiedEntry.getDirectory());
+		Path fullFilePath3 = storeService.getAbsoluteFilePath(fileStore, copiedEntry.getDirectory(), copiedEntry);
 		assertNotNull(dirPath3);
-		logger.info("Path of 3 => " + dirPath3);
-		Path targetPath3 = Paths.get(fullFilePath3);
-		logger.info("Path of cms file 3 => " + targetPath3.toString());;
-		assertTrue(Files.exists(targetPath3));
+		logger.info("Path of 3 => " + dirPath3.toString());
+		logger.info("Path of cms file 3 => " + fullFilePath3.toString());
+		assertTrue(Files.exists(fullFilePath3));
 		
 		//
 		// copy file in copy_test2 dir to copy_test3 dir (requires a replace of existing file)
 		//
 		try {
-			copiedEntry = fileStoreRepository.copyFile(fileEntry2.getFileId(), subTest3.getDirId(), true);
-		} catch (FileAlreadyExistsException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (DatabaseException e){
+			copiedEntry = storeService.copyFile(fileEntry2.getFileId(), subTest3.getDirId(), true);
+		} catch (CmsServiceException e){
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -211,13 +205,12 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 		logger.info(copiedEntry.toString());
 		
 		// check that file has been copied to dir 3
-		dirPath3 = fileStoreManager.getAbsoluteDirectoryString(fileStore, copiedEntry.getDirectory());
-		fullFilePath3 = fileStoreManager.getAbsoluteFileString(fileStore, copiedEntry.getDirectory(), copiedEntry);
+		dirPath3 = storeService.getAbsoluteDirectoryPath(fileStore, copiedEntry.getDirectory());
+		fullFilePath3 = storeService.getAbsoluteFilePath(fileStore, copiedEntry.getDirectory(), copiedEntry);
 		assertNotNull(dirPath3);
-		logger.info("Path of 3 => " + dirPath3);
-		targetPath3 = Paths.get(fullFilePath3);
-		logger.info("Path of cms file 3 => " + targetPath3.toString());
-		assertTrue(Files.exists(targetPath3));
+		logger.info("Path of 3 => " + dirPath3.toString());
+		logger.info("Path of cms file 3 => " + fullFilePath3.toString());
+		assertTrue(Files.exists(fullFilePath3));
 		
 	}
 	

@@ -1,6 +1,7 @@
 package org.lenzi.fstore.cms.service;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -271,6 +272,52 @@ public class CmsFileStoreService {
 			throw new CmsServiceException("Error fetching file, id => " + fileId + ". " + e.getMessage(), e);
 		}
 		return fileEntry;		
+		
+	}
+
+	/**
+	 * Copy file
+	 * 
+	 * @param fileId
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws CmsServiceException
+	 */
+	public CmsFileEntry copyFile(Long fileId, Long dirId, boolean replaceExisting) throws CmsServiceException {
+		
+		CmsFileEntry copy = null;
+		try {
+			copy = cmsFileEntryRepository.copyFile(fileId, dirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new CmsServiceException("Error, file already exists. " + e.getMessage(), e);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Database error when copying file. " + e.getMessage(), e);
+		}
+		return copy;
+		
+	}
+
+	/**
+	 * Moev file
+	 * 
+	 * @param fileId
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws CmsServiceException
+	 */
+	public CmsFileEntry moveFile(Long fileId, Long dirId, boolean replaceExisting) throws CmsServiceException {
+
+		CmsFileEntry move = null;
+		try {
+			move = cmsFileEntryRepository.moveFile(fileId, dirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new CmsServiceException("Error, file already exists. " + e.getMessage(), e);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Database error when moving file. " + e.getMessage(), e);
+		}
+		return move;		
 		
 	}	
 
