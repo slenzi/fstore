@@ -24,6 +24,8 @@ import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.tree.TreeRepository;
+import org.lenzi.fstore.service.TreeBuilder;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.tree.Tree;
 import org.lenzi.fstore.tree.TreeNode;
@@ -68,7 +70,11 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	private CmsFileStoreRepository cmsFileStoreRepository;
 	
 	@Autowired
+	private TreeBuilder<CmsDirectory> treeBuilder;	
+	
+	@Autowired
 	private FileStoreHelper fileStoreHelper;
+	
 	
 	public enum CmsDirectoryFetch {
 		
@@ -100,6 +106,28 @@ public class CmsDirectoryRepository extends AbstractRepository {
 		return fileStoreHelper.getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
 		
 	}
+	
+	/**
+	 * Get directory tree
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public Tree<CmsDirectory> getTree(Long dirId) throws DatabaseException {
+		
+		// TODO - allow for specific fetch options (with file meta and file data if needed.)
+		
+		CmsDirectory cmsDir = treeRepository.getNodeWithChild(new CmsDirectory(dirId));
+		Tree<CmsDirectory> tree = null;
+		try {
+			tree = treeBuilder.buildTree(cmsDir);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from CmsDirectory node, id => " + dirId, e);
+		}
+		return tree;
+		
+	}	
 	
 	/**
 	 * Get the full absolute path for a cms directory.

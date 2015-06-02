@@ -41,6 +41,8 @@ public class FileStoreHelper {
 	/**
 	 * Get printable tree
 	 * 
+	 * @deprecated - remove
+	 * 
 	 * @param dirId - id of node
 	 * @return
 	 * @throws DatabaseException
@@ -55,6 +57,8 @@ public class FileStoreHelper {
 	
 	/**
 	 * Get a tree for the cms directory.
+	 * 
+	 * @deprecated - remove
 	 * 
 	 * @param dirId - id of node
 	 * @return

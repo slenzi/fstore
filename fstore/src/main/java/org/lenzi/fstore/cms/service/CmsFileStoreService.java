@@ -15,7 +15,9 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
+import org.lenzi.fstore.tree.Tree;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,32 @@ public class CmsFileStoreService {
 	public CmsFileStoreService() {
 		
 	}
+	
+	/**
+	 * Get printable tree in string format
+	 */
+	public String printTree(Long dirId) throws CmsServiceException {
+		
+		return getTree(dirId).printTree();
+		
+	}
+	
+	/**
+	 * Get tree for directory
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws CmsServiceException
+	 */
+	public Tree<CmsDirectory> getTree(Long dirId) throws CmsServiceException {
+		
+		try {
+			return cmsDirectoryRepository.getTree(dirId);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Error fetching tree for directory, id => " + dirId + ". " + e.getMessage(), e);
+		}
+		
+	}	
 	
 	/**
 	 * Get full path for directory
@@ -318,6 +346,58 @@ public class CmsFileStoreService {
 			throw new CmsServiceException("Database error when moving file. " + e.getMessage(), e);
 		}
 		return move;		
+		
+	}
+
+	/**
+	 * Remove file
+	 * 
+	 * @param fileId
+	 * @throws CmsServiceException
+	 */
+	public void removeFile(Long fileId) throws CmsServiceException {
+		
+		try {
+			cmsFileEntryRepository.removeFile(fileId);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Database error when removing file, id => " + fileId + ". " + e.getMessage(), e);
+		}
+		
+	}
+
+	/**
+	 * Remove directory
+	 * 
+	 * @param dirId
+	 * @throws CmsServiceException
+	 */
+	public void removeDirectory(Long dirId) throws CmsServiceException {
+		
+		try {
+			cmsDirectoryRepository.removeDirectory(dirId);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Database error when removing directory, id => " + dirId + ". " + e.getMessage(), e);
+		}
+		
+	}
+
+	/**
+	 * Copy directory
+	 * 
+	 * @param dirId
+	 * @param dirId2
+	 * @param replaceExisting
+	 * @throws CmsServiceException
+	 */
+	public void copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws CmsServiceException {
+		
+		try {
+			cmsDirectoryRepository.copyDirectory(sourceDirId, targetDirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new CmsServiceException("Error copying directory, file already exists. " + e.getMessage(), e);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Error copying directory. " + e.getMessage(), e);
+		}
 		
 	}	
 

@@ -11,11 +11,11 @@ import java.util.List;
 
 import org.junit.Test;
 import org.lenzi.fstore.util.FileUtil;
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -80,9 +80,9 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 		Path examplePath = Paths.get(getTestFileStorePath());
 		CmsFileStore fileStore = null;
 		try {
-			fileStore = fileStoreRepository.createFileStore(examplePath, 
+			fileStore = storeService.createFileStore(examplePath, 
 					"Example File Store", "This is an example file store to test bulk file add.", true);
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -91,8 +91,8 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 		final String subDirName1 = "sub1";
 		CmsDirectory subTest1 = null;
 		try {
-			subTest1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
-		} catch (DatabaseException e) {
+			subTest1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -101,8 +101,8 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 		final String subDirName2 = "sub2";
 		CmsDirectory subTest2 = null;
 		try {
-			subTest2 = fileStoreRepository.addDirectory(subTest1.getDirId(), subDirName2);
-		} catch (DatabaseException e) {
+			subTest2 = storeService.addDirectory(subTest1.getDirId(), subDirName2);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + subTest1.getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -120,11 +120,8 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 		//
 		List<CmsFileEntry> fileEntriesGroup1 = null;
 		try {
-			fileEntriesGroup1 = fileStoreRepository.addFile(firstTwo, subTest1.getDirId(), true);
-		} catch (DatabaseException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
+			fileEntriesGroup1 = storeService.addFile(firstTwo, subTest1.getDirId(), true);
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -134,11 +131,8 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 		//
 		List<CmsFileEntry> fileEntriesGroup2 = null;
 		try {
-			fileEntriesGroup2 = fileStoreRepository.addFile(filePaths, subTest2.getDirId(), true);
-		} catch (DatabaseException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
+			fileEntriesGroup2 = storeService.addFile(filePaths, subTest2.getDirId(), true);
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -149,7 +143,7 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 		//
 		// Perform delete on first directory
 		//
-		fileStoreRepository.removeDirectory(subTest1.getDirId());
+		storeService.removeDirectory(subTest1.getDirId());
 	
 	}
 	

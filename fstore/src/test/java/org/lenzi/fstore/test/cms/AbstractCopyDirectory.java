@@ -11,11 +11,11 @@ import java.util.List;
 
 import org.junit.Test;
 import org.lenzi.fstore.util.FileUtil;
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -80,9 +80,9 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		Path examplePath = Paths.get(getTestFileStorePath());
 		CmsFileStore fileStore = null;
 		try {
-			fileStore = fileStoreRepository.createFileStore(examplePath, 
+			fileStore = storeService.createFileStore(examplePath, 
 					"Example File Store", "This is an example file store to test copy directory.", true);
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -91,17 +91,17 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		CmsDirectory dir1 = null, dir2 = null, dir3 = null, dir4 = null, dir5 = null, dir6 = null, dir7 = null, dir8 = null;
 		try {
 			
-			dir1 = fileStoreRepository.addDirectory(fileStore.getRootDir().getDirId(), "dir1");
-				dir2 = fileStoreRepository.addDirectory(dir1.getDirId(), "dir2");
-					dir3 = fileStoreRepository.addDirectory(dir2.getDirId(), "dir3");
-					dir4 = fileStoreRepository.addDirectory(dir2.getDirId(), "dir4");
-				dir5 = fileStoreRepository.addDirectory(dir1.getDirId(), "dir5");
-					dir6 = fileStoreRepository.addDirectory(dir5.getDirId(), "dir6");
-				dir7 = fileStoreRepository.addDirectory(dir1.getDirId(), "dir7");
+			dir1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), "dir1");
+				dir2 = storeService.addDirectory(dir1.getDirId(), "dir2");
+					dir3 = storeService.addDirectory(dir2.getDirId(), "dir3");
+					dir4 = storeService.addDirectory(dir2.getDirId(), "dir4");
+				dir5 = storeService.addDirectory(dir1.getDirId(), "dir5");
+					dir6 = storeService.addDirectory(dir5.getDirId(), "dir6");
+				dir7 = storeService.addDirectory(dir1.getDirId(), "dir7");
 					// dir 8 has same name as dir 2 so we can test merging
-					dir8 = fileStoreRepository.addDirectory(dir7.getDirId(), "dir2");
+					dir8 = storeService.addDirectory(dir7.getDirId(), "dir2");
 			
-		} catch (DatabaseException e) {
+		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -111,14 +111,11 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		//
 		List<CmsFileEntry> dir2Entries = null, dir3Entries = null, dir6Entries = null, dir8Entries = null;
 		try {
-			dir2Entries = fileStoreRepository.addFile(filePaths, dir2.getDirId(), true);
-			dir3Entries = fileStoreRepository.addFile(filePaths, dir3.getDirId(), true);
-			dir6Entries = fileStoreRepository.addFile(filePaths, dir6.getDirId(), true);
-			dir8Entries = fileStoreRepository.addFile(filePaths, dir8.getDirId(), true);
-		} catch (DatabaseException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
+			dir2Entries = storeService.addFile(filePaths, dir2.getDirId(), true);
+			dir3Entries = storeService.addFile(filePaths, dir3.getDirId(), true);
+			dir6Entries = storeService.addFile(filePaths, dir6.getDirId(), true);
+			dir8Entries = storeService.addFile(filePaths, dir8.getDirId(), true);
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -130,8 +127,8 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		
 		logger.info("Tree before:");
 		try {
-			logger.info(fileStoreRepository.printTree(fileStore.getRootDir().getDirId()));
-		} catch (DatabaseException e) {
+			logger.info(storeService.printTree(fileStore.getRootDir().getDirId()));
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -140,11 +137,8 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		// do copy - this copy does not require replacing files
 		//
 		try {
-			fileStoreRepository.copyDirectory(dir2.getDirId(), dir5.getDirId(), true);
-		} catch (FileAlreadyExistsException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (DatabaseException e) {
+			storeService.copyDirectory(dir2.getDirId(), dir5.getDirId(), true);
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
@@ -153,19 +147,16 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		// do copy - this copy DOES require merging directories and replacing files
 		//
 		try {
-			fileStoreRepository.copyDirectory(dir2.getDirId(), dir7.getDirId(), true);
-		} catch (FileAlreadyExistsException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (DatabaseException e) {
+			storeService.copyDirectory(dir2.getDirId(), dir7.getDirId(), true);
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}		
 		
 		logger.info("Tree after:");
 		try {
-			logger.info(fileStoreRepository.printTree(fileStore.getRootDir().getDirId()));
-		} catch (DatabaseException e) {
+			logger.info(storeService.printTree(fileStore.getRootDir().getDirId()));
+		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
