@@ -3,11 +3,10 @@ package org.lenzi.fstore.test.cms;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
-import org.lenzi.fstore.cms.repository.FileStoreRepository.CmsDirectoryFetch;
+import org.lenzi.fstore.cms.repository.CmsDirectoryRepository.CmsDirectoryFetch;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
-import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public abstract class AbstractGetCmsDirectory extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private  FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	public AbstractGetCmsDirectory() {
 
@@ -41,8 +40,8 @@ public abstract class AbstractGetCmsDirectory extends AbstractTreeTest {
 		
 		CmsDirectory cmsDirectory = null;
 		try {
-			cmsDirectory = fileStoreRepository.getCmsDirectoryById(1L, CmsDirectoryFetch.FILE_META);
-		} catch (DatabaseException e) {
+			cmsDirectory = storeService.getCmsDirectoryById(1L, CmsDirectoryFetch.FILE_META);
+		} catch (CmsServiceException e) {
 			logger.error("Failed to fetch cms directory. " + e.getMessage());
 			e.printStackTrace();
 		}
