@@ -1,14 +1,14 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.cms.oracle;
+package org.lenzi.fstore.test.cms.postgresql;
 
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.cms.AbstractCopyFile;
-import org.lenzi.fstore.test.cms.setup.OracleCmsTestConfiguration;
+import org.lenzi.fstore.test.cms.AbstractCopyDirectory;
+import org.lenzi.fstore.test.cms.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,34 +21,30 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("oracle")
-@ActiveProfiles({"oracle"})
-public class OracleCopyFileTest extends AbstractCopyFile {
+@ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@Transactional("postgresql")
+@ActiveProfiles({"postgresql"})
+public class PostgreSQLCopyDirectoryTest extends AbstractCopyDirectory {
 
 	@Autowired
-	private OracleCmsTestConfiguration configuration = null;	
+	private PostgresqlCmsTestConfiguration configuration = null;	
 	
 	/**
 	 * 
 	 */
-	public OracleCopyFileTest() {
+	public PostgreSQLCopyDirectoryTest() {
 
 	}
 
-
-	
 	/* (non-Javadoc)
 	 * @see org.lenzi.fstore.test.cms.AbstractAddFile#getTestFileStorePath()
 	 */
 	@Override
 	public String getTestFileStorePath() {
-		
-		return "C:/temp/file_store/sample_copy_file";
+
+		return "/Users/slenzi/Programming/file_store/sample_copy_dir";
 		
 	}
-
-
 
 	@Test
 	public void testWiring(){

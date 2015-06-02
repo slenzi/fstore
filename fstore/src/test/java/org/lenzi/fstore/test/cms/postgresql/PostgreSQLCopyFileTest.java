@@ -42,7 +42,7 @@ public class PostgreSQLCopyFileTest extends AbstractCopyFile {
 	@Override
 	public String getTestFileStorePath() {
 
-		return "/Users/slenzi/Programming/file_store/sample_copy";
+		return "/Users/slenzi/Programming/file_store/sample_copy_file";
 		
 	}
 

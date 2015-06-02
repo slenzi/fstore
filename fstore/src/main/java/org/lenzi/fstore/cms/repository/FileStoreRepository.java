@@ -146,6 +146,27 @@ public class FileStoreRepository extends AbstractRepository {
 	}
 	
 	/**
+	 * Get printable tree
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public String printTree(Long dirId) throws DatabaseException {
+		
+		CmsDirectory cmsDir = treeRepository.getNodeWithChild(new CmsDirectory(dirId));
+		Tree<CmsDirectory> sourceTree = null;
+		try {
+			sourceTree = treeBuilder.buildTree(cmsDir);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from cms directory, id => " + dirId, e);
+		}
+		
+		return sourceTree.printTree();
+		
+	}
+	
+	/**
 	 * Retrieve any file stores whose path is a parent directory of the 'dirPath'
 	 * 
 	 * File stores cannot be nested. i.e., the store path of one file store cannot
@@ -1585,7 +1606,7 @@ public class FileStoreRepository extends AbstractRepository {
 		}else{
 			
 			logger.info("Copy to new dir: target dir => " + getAbsoluteDirectoryPath(sourceStore, dirToCopy) + 
-					", to source dir => " + getAbsoluteDirectoryPath(targetStore, existingDir));
+					", to source dir => to_be_created");
 			
 			CmsDirectory newTargetDir = addDirectory(targetParentDirId, dirToCopy.getDirName());
 			
