@@ -111,7 +111,7 @@ public abstract class AbstractRemoveFile extends AbstractTreeTest {
 		
 		String dirPath = null;
 		try {
-			dirPath = fileStoreRepository.getAbsoluteDirPath(fileEntry.getDirectory().getDirId());
+			dirPath = fileStoreRepository.getAbsoluteDirectoryPath(fileEntry.getDirectory().getDirId());
 		} catch (DatabaseException e) {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();

@@ -122,7 +122,7 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		//
 		String dirPath = null;
 		try {
-			dirPath = fileStoreRepository.getAbsoluteDirPath(fileEntry.getDirectory().getDirId());
+			dirPath = fileStoreRepository.getAbsoluteDirectoryPath(fileEntry.getDirectory().getDirId());
 		} catch (DatabaseException e) {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();
@@ -157,7 +157,7 @@ public abstract class AbstractAddExistingFile extends AbstractTreeTest {
 		// re-check file on disk
 		//
 		try {
-			dirPath = fileStoreRepository.getAbsoluteDirPath(updatedEntry.getDirectory().getDirId());
+			dirPath = fileStoreRepository.getAbsoluteDirectoryPath(updatedEntry.getDirectory().getDirId());
 		} catch (DatabaseException e) {
 			logger.error("Error getting path for cms directory. " + e.getMessage());
 			e.printStackTrace();

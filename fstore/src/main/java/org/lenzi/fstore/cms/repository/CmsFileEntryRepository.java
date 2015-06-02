@@ -23,7 +23,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFile_;
-import org.lenzi.fstore.cms.service.FileStoreManager;
+import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.stereotype.InjectLogger;
@@ -54,7 +54,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 	private Logger logger;
 	
 	@Autowired
-	private FileStoreManager fileStoreManager;
+	private FileStoreHelper fileStoreHelper;
 	
 	@Autowired
 	private CmsFileStoreRepository cmsFileStoreRepository;
@@ -105,6 +105,20 @@ public class CmsFileEntryRepository extends AbstractRepository {
 	}	
 
 	public CmsFileEntryRepository() {
+		
+	}
+	
+	/**
+	 * Get absolute file path
+	 * 
+	 * @param cmsStore
+	 * @param cmsDirectory
+	 * @param cmsFileEntry
+	 * @return
+	 */
+	public Path getAbsoluteFilePath(CmsFileStore cmsStore, CmsDirectory cmsDirectory, CmsFileEntry cmsFileEntry){
+		
+		return fileStoreHelper.getAbsoluteFilePath(cmsStore, cmsDirectory, cmsFileEntry);
 		
 	}
 	
@@ -238,7 +252,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirId, e);
 		}
 		
-		String dirFullPath = fileStoreManager.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
+		String dirFullPath = fileStoreHelper.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
 		
 		// check if there is an existing file with the same name
 		CmsFileEntry existingCmsFileEntry = cmsDirectory.getEntryByFileName(fileName, false);
@@ -303,7 +317,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirId, e);
 		}
 		
-		String dirFullPath = fileStoreManager.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
+		String dirFullPath = fileStoreHelper.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
 		
 		CmsFileEntry newCmsFileEntry = null;
 		List<CmsFileEntry> newCmsFileEntries = new ArrayList<CmsFileEntry>();
@@ -365,8 +379,8 @@ public class CmsFileEntryRepository extends AbstractRepository {
 		CmsFileStore targetStore = cmsFileStoreRepository.getCmsFileStoreByDirId(targetDir.getDirId());
 		CmsFileEntry conflictingTargetEntry = targetDir.getEntryByFileName(sourceEntry.getFileName(), false);
 		
-		String sourceFilePath = fileStoreManager.getAbsoluteFileString(sourceStore, sourceDir, sourceEntry);
-		String targetFilePath = fileStoreManager.getAbsoluteFileString(targetStore, targetDir, sourceEntry); // use source file name
+		String sourceFilePath = fileStoreHelper.getAbsoluteFileString(sourceStore, sourceDir, sourceEntry);
+		String targetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, sourceEntry); // use source file name
 		
 		// will be true of we need to replace the existing file in the target directory
 		boolean needReplace = conflictingTargetEntry != null ? true : false;
@@ -374,7 +388,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			String conflictingTargetFilePath = fileStoreManager.getAbsoluteFileString(targetStore, targetDir, conflictingTargetEntry);
+			String conflictingTargetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, conflictingTargetEntry);
 			
 			return moveReplace(sourceDir, targetDir, sourceEntry, conflictingTargetEntry, 
 					Paths.get(sourceFilePath), Paths.get(targetFilePath), Paths.get(conflictingTargetFilePath));
@@ -418,8 +432,8 @@ public class CmsFileEntryRepository extends AbstractRepository {
 		CmsFileStore targetStore = cmsFileStoreRepository.getCmsFileStoreByDirId(targetDir.getDirId());
 		CmsFileEntry conflictingTargetEntry = targetDir.getEntryByFileName(sourceEntry.getFileName(), false);
 		
-		String sourceFilePath = fileStoreManager.getAbsoluteFileString(sourceStore, sourceDir, sourceEntry);
-		String targetFilePath = fileStoreManager.getAbsoluteFileString(targetStore, targetDir, sourceEntry); // use source file name
+		String sourceFilePath = fileStoreHelper.getAbsoluteFileString(sourceStore, sourceDir, sourceEntry);
+		String targetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, sourceEntry); // use source file name
 		
 		// will be true of we need to replace the existing file in the target directory
 		boolean needReplace = conflictingTargetEntry != null ? true : false;
@@ -427,7 +441,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			String conflictingTargetFilePath = fileStoreManager.getAbsoluteFileString(targetStore, targetDir, conflictingTargetEntry);
+			String conflictingTargetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, conflictingTargetEntry);
 			
 			return copyReplace(sourceDir, targetDir, sourceEntry, conflictingTargetEntry, 
 					Paths.get(sourceFilePath), Paths.get(targetFilePath), Paths.get(conflictingTargetFilePath));
@@ -475,8 +489,8 @@ public class CmsFileEntryRepository extends AbstractRepository {
 			throw new IOException("Error reading data from file => " + newFile.toString(), e);
 		}	
 		
-		String dirFullPath = fileStoreManager.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
-		String existingFilePath = fileStoreManager.getAbsoluteFileString(cmsStore, cmsDirectory, existingCmsFileEntry);
+		String dirFullPath = fileStoreHelper.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
+		String existingFilePath = fileStoreHelper.getAbsoluteFileString(cmsStore, cmsDirectory, existingCmsFileEntry);
 		
 		logger.info("Replacing old file => " + oldFileName + ", size => " + oldFileSize + " bytes , with new file => " + newFileName +
 				", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
@@ -532,7 +546,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 	public CmsFileEntry add(Path fileToAdd, CmsDirectory cmsDirectory, CmsFileStore cmsStore) throws DatabaseException, IOException {
 		
 		String fileName = fileToAdd.getFileName().toString();
-		String dirFullPath = fileStoreManager.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
+		String dirFullPath = fileStoreHelper.getAbsoluteDirectoryString(cmsStore, cmsDirectory);
 		
 		// read in file data
 		// TODO - look into reading the file in chunks... not good to read entire file if file is large.
@@ -832,7 +846,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 	 */
 	public void remove(CmsFileStore store, CmsDirectory dir, CmsFileEntry fileEntry) throws DatabaseException {
 		
-		String fileToDelete = fileStoreManager.getAbsoluteFileString(store, dir, fileEntry);		
+		String fileToDelete = fileStoreHelper.getAbsoluteFileString(store, dir, fileEntry);		
 		
 		logger.info("removing file id => " + fileEntry.getFileId() + ", name => " + fileEntry.getFileName() + 
 				", path => " + fileToDelete);

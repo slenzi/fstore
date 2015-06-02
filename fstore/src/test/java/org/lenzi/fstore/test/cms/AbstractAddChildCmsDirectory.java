@@ -88,7 +88,7 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 		//
 		String subDirPath1 = null;
 		try {
-			subDirPath1 = fileStoreRepository.getAbsoluteDirPath(subTest1.getDirId());
+			subDirPath1 = fileStoreRepository.getAbsoluteDirectoryPath(subTest1.getDirId());
 		} catch (DatabaseException e) {
 			logger.error("Failed to get full path for root dir of newly created file store. " + e.getMessage());
 			e.printStackTrace();
@@ -120,7 +120,7 @@ public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
 		//
 		String subDirPath2 = null;
 		try {
-			subDirPath2 = fileStoreRepository.getAbsoluteDirPath(subTest2.getDirId());
+			subDirPath2 = fileStoreRepository.getAbsoluteDirectoryPath(subTest2.getDirId());
 		} catch (DatabaseException e) {
 			logger.error("Failed to get full path for root dir of newly created file store. " + e.getMessage());
 			e.printStackTrace();

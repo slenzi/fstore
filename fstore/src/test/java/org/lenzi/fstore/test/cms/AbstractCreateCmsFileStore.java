@@ -10,8 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
+import org.lenzi.fstore.cms.service.CmsFileStoreService;
+import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
-	private  FileStoreRepository fileStoreRepository;
+	private CmsFileStoreService storeService;
 	
 	public AbstractCreateCmsFileStore() {
 		
@@ -46,9 +47,11 @@ public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 		//
 		CmsFileStore fileStore = null;
 		try {
-			fileStore = fileStoreRepository.createFileStore(
-					examplePath, "Example File Store", "This is an example file store to test create operation.", false);
-		} catch (DatabaseException e) {
+			
+			fileStore = storeService.createFileStore(examplePath, "Example File Store", 
+					"This is an example file store to test create operation.", false);
+
+		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -67,21 +70,20 @@ public abstract class AbstractCreateCmsFileStore extends AbstractTreeTest {
 		//
 		// test get path method on root dir of file store
 		//
-		String rootDirPath = null;
+		Path rootDirPath = null;
 		try {
-			rootDirPath = fileStoreRepository.getAbsoluteDirPath(fileStore.getNodeId());
-		} catch (DatabaseException e) {
+			
+			rootDirPath = storeService.getAbsoluteDirectoryPath(fileStore.getNodeId());
+			
+		} catch (CmsServiceException e) {
 			logger.error("Failed to get full path for root dir of newly created file store. " + e.getMessage());
 			e.printStackTrace();
 		}
 		
 		assertNotNull(rootDirPath);
-		
 		logger.info("Root dir full path => " + rootDirPath);
-		
 		String expectedPath = getTestFileStorePath();
-		
-		assertEquals(Paths.get(rootDirPath).toString(), Paths.get(expectedPath).toString());
+		assertEquals(rootDirPath.toString(), Paths.get(expectedPath).toString());
 		
 	}
 	

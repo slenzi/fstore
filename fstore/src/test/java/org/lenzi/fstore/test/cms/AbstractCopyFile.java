@@ -16,7 +16,7 @@ import org.lenzi.fstore.cms.repository.FileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.cms.service.FileStoreManager;
+import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public abstract class AbstractCopyFile extends AbstractTreeTest {
 	private ResourceLoader resourceLoader;
 	
 	@Autowired
-	private FileStoreManager fileStoreManager;	
+	private FileStoreHelper fileStoreManager;	
 	
 	public AbstractCopyFile() {
 

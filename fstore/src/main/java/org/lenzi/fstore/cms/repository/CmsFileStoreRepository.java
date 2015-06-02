@@ -20,7 +20,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
-import org.lenzi.fstore.cms.service.FileStoreManager;
+import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.tree.TreeRepository;
@@ -46,7 +46,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 	private TreeRepository<CmsDirectory> treeRepository;
 	
 	@Autowired
-	private FileStoreManager fileStoreManager;	
+	private FileStoreHelper fileStoreHelper;	
 	
 	public CmsFileStoreRepository() {
 		
@@ -246,7 +246,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 		fileStore.setRootDir(storeRootDir);
 		
 		try {
-			fileStoreManager.createDirOnFileSystem(storePath, true);
+			fileStoreHelper.createDirOnFileSystem(storePath, true);
 		} catch (SecurityException | IOException e) {
 			throw new DatabaseException("Error creating directory on local file system. ", e);
 		}

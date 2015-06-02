@@ -18,6 +18,8 @@ import org.lenzi.fstore.stereotype.InjectLogger;
  * 
  * Each method will use the parent transaction if available, otherwise a new one will be created.
  * 
+ * @deprecated - old
+ * 
  * @author sal
  */
 @Repository

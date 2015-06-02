@@ -20,7 +20,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.cms.service.FileStoreManager;
+import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
 import org.lenzi.fstore.repository.tree.TreeRepository;
@@ -68,7 +68,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	private CmsFileStoreRepository cmsFileStoreRepository;
 	
 	@Autowired
-	private FileStoreManager fileStoreManager;
+	private FileStoreHelper fileStoreHelper;
 	
 	public enum CmsDirectoryFetch {
 		
@@ -90,11 +90,25 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	/**
 	 * Get the full absolute path for a cms directory.
 	 * 
+	 * @param cmsStore
+	 * @param cmsDirectory
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public Path getAbsoluteDirectoryPath(CmsFileStore cmsStore, CmsDirectory cmsDirectory) throws DatabaseException {
+		
+		return fileStoreHelper.getAbsoluteDirectoryPath(cmsStore, cmsDirectory);
+		
+	}
+	
+	/**
+	 * Get the full absolute path for a cms directory.
+	 * 
 	 * @param cmsDirId - id of the cms directory
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public String getAbsoluteDirPath(Long cmsDirId) throws DatabaseException {
+	public Path getAbsoluteDirectoryPath(Long cmsDirId) throws DatabaseException {
 		
 		// get directory
 		CmsDirectory cmsDirectory = null;
@@ -112,9 +126,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 			throw new DatabaseException("Failed to fetch file store for cms dir id => " + cmsDirectory.getDirId(), e);
 		}
 		
-		String path = store.getStorePath() + cmsDirectory.getRelativeDirPath();
-		
-		return path;
+		return fileStoreHelper.getAbsoluteDirectoryPath(store, cmsDirectory);
 		
 	}	
 	
@@ -273,7 +285,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	 */
 	public void removeDirectory(Long dirId) throws DatabaseException {
 		
-		Tree<CmsDirectory> dirTree = fileStoreManager.getTree(dirId);
+		Tree<CmsDirectory> dirTree = fileStoreHelper.getTree(dirId);
 		
 		logger.info(dirTree.printTree());
 		
@@ -336,7 +348,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 		}		
 		
 		// build tree for source directory, this is the tree we want to copy, in pre-order traversal (top down)
-		Tree<CmsDirectory> sourceTree = fileStoreManager.getTree(sourceDirId);
+		Tree<CmsDirectory> sourceTree = fileStoreHelper.getTree(sourceDirId);
 		logger.info("Source tree:\n" + sourceTree.printTree());
 		
 		CmsFileStore sourceStore = cmsFileStoreRepository.getCmsFileStoreByDirId(sourceDirId);
@@ -408,8 +420,8 @@ public class CmsDirectoryRepository extends AbstractRepository {
 		// merge contents of dirToCopy into existing directory
 		if(needMergeDirectory){
 			
-			String sourceDirPath = fileStoreManager.getAbsoluteDirectoryString(sourceStore, sourceDir);
-			String targetDirPath = fileStoreManager.getAbsoluteDirectoryString(targetStore, existingDir);
+			String sourceDirPath = fileStoreHelper.getAbsoluteDirectoryString(sourceStore, sourceDir);
+			String targetDirPath = fileStoreHelper.getAbsoluteDirectoryString(targetStore, existingDir);
 			
 			logger.info("Merging source dir, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getDirName() + ", path => " + sourceDirPath
 					+ ", into target dir, id => " + existingDir.getDirId() + ", name => " + existingDir.getDirName() + ", path => " + targetDirPath);
@@ -427,9 +439,9 @@ public class CmsDirectoryRepository extends AbstractRepository {
 				
 				boolean needReplace = conflictingTargetEntry != null ? true : false;
 				
-				sourceFilePath = fileStoreManager.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntryWithData);
-				targetFilePath = fileStoreManager.getAbsoluteFilePath(targetStore, existingDir, sourceEntryWithData); // use same file name
-				conflictTargetFilePath = fileStoreManager.getAbsoluteFilePath(targetStore, existingDir, conflictingTargetEntry);
+				sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntryWithData);
+				targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, existingDir, sourceEntryWithData); // use same file name
+				conflictTargetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, existingDir, conflictingTargetEntry);
 				
 				// replace existing entry
 				if(needReplace && replaceExisting){
@@ -465,8 +477,8 @@ public class CmsDirectoryRepository extends AbstractRepository {
 				
 				entryWithData = cmsFileEntryRepository.getCmsFileEntryById(entryToCopy.getFileId(), CmsFileEntryFetch.FILE_META_WITH_DATA);
 				
-				sourceFilePath = fileStoreManager.getAbsoluteFilePath(sourceStore, sourceDir, entryWithData);
-				targetFilePath = fileStoreManager.getAbsoluteFilePath(targetStore, newTargetDir, entryWithData); // use same file name
+				sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, entryWithData);
+				targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, newTargetDir, entryWithData); // use same file name
 				
 				cmsFileEntryRepository.copy(sourceDir, newTargetDir, entryWithData, sourceFilePath, targetFilePath);
 				
@@ -530,7 +542,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	 */
 	private void remove(CmsFileStore cmsStore, CmsDirectory dirToDelete) throws DatabaseException {
 		
-		String dirPath = fileStoreManager.getAbsoluteDirectoryString(cmsStore, dirToDelete);
+		String dirPath = fileStoreHelper.getAbsoluteDirectoryString(cmsStore, dirToDelete);
 		
 		logger.info("Removing directory, id => " + dirToDelete.getDirId() + ", name => " + dirToDelete.getDirName() +
 				", path => " + dirPath);
