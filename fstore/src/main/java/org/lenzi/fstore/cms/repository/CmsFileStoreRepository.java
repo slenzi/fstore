@@ -30,7 +30,19 @@ import org.lenzi.fstore.util.DateUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Repository for dealing with cms file store operations.
+ * 
+ * All operations are wrapped in a new transaction.
+ * 
+ * @author sal
+ */
+@Repository
+@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 public class CmsFileStoreRepository extends AbstractRepository {
 
 	/**

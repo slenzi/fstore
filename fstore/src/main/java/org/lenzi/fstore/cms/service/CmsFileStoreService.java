@@ -15,12 +15,13 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.service.exception.ServiceException;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.tree.Tree;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Main service for working with cms stores, directories, and files.
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
  * @author sal
  */
 @Service
+@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 public class CmsFileStoreService {
 
 	@InjectLogger
