@@ -5,6 +5,10 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.lenzi.fstore.cms.repository.CmsDirectoryAdder;
+import org.lenzi.fstore.cms.repository.CmsDirectoryCopier;
+import org.lenzi.fstore.cms.repository.CmsDirectoryMover;
+import org.lenzi.fstore.cms.repository.CmsDirectoryRemover;
 import org.lenzi.fstore.cms.repository.CmsDirectoryRepository;
 import org.lenzi.fstore.cms.repository.CmsDirectoryRepository.CmsDirectoryFetch;
 import org.lenzi.fstore.cms.repository.CmsFileAdder;
@@ -12,6 +16,7 @@ import org.lenzi.fstore.cms.repository.CmsFileCopier;
 import org.lenzi.fstore.cms.repository.CmsFileEntryRepository;
 import org.lenzi.fstore.cms.repository.CmsFileEntryRepository.CmsFileEntryFetch;
 import org.lenzi.fstore.cms.repository.CmsFileMover;
+import org.lenzi.fstore.cms.repository.CmsFileRemover;
 import org.lenzi.fstore.cms.repository.CmsFileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
@@ -54,7 +59,22 @@ public class CmsFileStoreService {
 	private CmsFileCopier cmsFileCopier;
 	
 	@Autowired
-	private CmsFileMover cmsFileMover;	
+	private CmsFileMover cmsFileMover;
+	
+	@Autowired
+	private CmsFileRemover cmsFileRemover;
+	
+	@Autowired
+	private CmsDirectoryAdder cmsDirectoryAdder;
+	
+	@Autowired
+	private CmsDirectoryCopier cmsDirectoryCopier;
+
+	@Autowired
+	private CmsDirectoryMover cmsDirectoryMover;	
+	
+	@Autowired
+	private CmsDirectoryRemover cmsDirectoryRemover;
 	
 	
 	public CmsFileStoreService() {
@@ -243,7 +263,7 @@ public class CmsFileStoreService {
 
 		CmsDirectory dir = null;
 		try {
-			dir = cmsDirectoryRepository.addDirectory(parentDirId, dirName);
+			dir = cmsDirectoryAdder.addDirectory(parentDirId, dirName);
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Error adding new directory. " + e.getMessage(), e);
 		}
@@ -372,7 +392,7 @@ public class CmsFileStoreService {
 	public void removeFile(Long fileId) throws CmsServiceException {
 		
 		try {
-			cmsFileEntryRepository.removeFile(fileId);
+			cmsFileRemover.removeFile(fileId);
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Database error when removing file, id => " + fileId + ". " + e.getMessage(), e);
 		}
@@ -388,7 +408,7 @@ public class CmsFileStoreService {
 	public void removeDirectory(Long dirId) throws CmsServiceException {
 		
 		try {
-			cmsDirectoryRepository.removeDirectory(dirId);
+			cmsDirectoryRemover.removeDirectory(dirId);
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Database error when removing directory, id => " + dirId + ". " + e.getMessage(), e);
 		}
@@ -406,7 +426,7 @@ public class CmsFileStoreService {
 	public void copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws CmsServiceException {
 		
 		try {
-			cmsDirectoryRepository.copyDirectory(sourceDirId, targetDirId, replaceExisting);
+			cmsDirectoryCopier.copyDirectory(sourceDirId, targetDirId, replaceExisting);
 		} catch (FileAlreadyExistsException e) {
 			throw new CmsServiceException("Error copying directory, file already exists. " + e.getMessage(), e);
 		} catch (DatabaseException e) {
