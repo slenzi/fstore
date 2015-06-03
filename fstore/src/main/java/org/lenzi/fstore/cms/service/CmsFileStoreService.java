@@ -7,8 +7,11 @@ import java.util.List;
 
 import org.lenzi.fstore.cms.repository.CmsDirectoryRepository;
 import org.lenzi.fstore.cms.repository.CmsDirectoryRepository.CmsDirectoryFetch;
+import org.lenzi.fstore.cms.repository.CmsFileAdder;
+import org.lenzi.fstore.cms.repository.CmsFileCopier;
 import org.lenzi.fstore.cms.repository.CmsFileEntryRepository;
 import org.lenzi.fstore.cms.repository.CmsFileEntryRepository.CmsFileEntryFetch;
+import org.lenzi.fstore.cms.repository.CmsFileMover;
 import org.lenzi.fstore.cms.repository.CmsFileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
@@ -43,6 +46,15 @@ public class CmsFileStoreService {
 	
 	@Autowired
 	private CmsFileEntryRepository cmsFileEntryRepository;
+
+	@Autowired
+	private CmsFileAdder cmsFileAdder;	
+	
+	@Autowired
+	private CmsFileCopier cmsFileCopier;
+	
+	@Autowired
+	private CmsFileMover cmsFileMover;	
 	
 	
 	public CmsFileStoreService() {
@@ -252,7 +264,7 @@ public class CmsFileStoreService {
 
 		CmsFileEntry fileEntry = null;
 		try {
-			fileEntry = cmsFileEntryRepository.addFile(sourcePath, dirId, replaceExisting);
+			fileEntry = cmsFileAdder.addFile(sourcePath, dirId, replaceExisting);
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Database error when adding new file. " + e.getMessage(), e);
 		} catch (IOException e) {
@@ -275,7 +287,7 @@ public class CmsFileStoreService {
 		
 		List<CmsFileEntry> entries = null;
 		try {
-			entries = cmsFileEntryRepository.addFile(filePaths, dirId, replaceExisting);
+			entries = cmsFileAdder.addFile(filePaths, dirId, replaceExisting);
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Database error when adding new files. " + e.getMessage(), e);
 		} catch (IOException e) {
@@ -318,7 +330,7 @@ public class CmsFileStoreService {
 		
 		CmsFileEntry copy = null;
 		try {
-			copy = cmsFileEntryRepository.copyFile(fileId, dirId, replaceExisting);
+			copy = cmsFileCopier.copyFile(fileId, dirId, replaceExisting);
 		} catch (FileAlreadyExistsException e) {
 			throw new CmsServiceException("Error, file already exists. " + e.getMessage(), e);
 		} catch (DatabaseException e) {
@@ -341,7 +353,7 @@ public class CmsFileStoreService {
 
 		CmsFileEntry move = null;
 		try {
-			move = cmsFileEntryRepository.moveFile(fileId, dirId, replaceExisting);
+			move = cmsFileMover.moveFile(fileId, dirId, replaceExisting);
 		} catch (FileAlreadyExistsException e) {
 			throw new CmsServiceException("Error, file already exists. " + e.getMessage(), e);
 		} catch (DatabaseException e) {

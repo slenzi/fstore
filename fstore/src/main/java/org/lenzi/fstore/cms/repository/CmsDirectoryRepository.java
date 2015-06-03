@@ -73,6 +73,9 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	@Autowired
 	private FileStoreHelper fileStoreHelper;
 	
+	@Autowired
+	private CmsFileCopier cmsFileCopier;	
+	
 	
 	public enum CmsDirectoryFetch {
 		
@@ -311,7 +314,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 	 */
 	public void removeDirectory(Long dirId) throws DatabaseException {
 		
-		Tree<CmsDirectory> dirTree = fileStoreHelper.getTree(dirId);
+		Tree<CmsDirectory> dirTree = getTree(dirId);
 		
 		logger.info(dirTree.printTree());
 		
@@ -374,8 +377,8 @@ public class CmsDirectoryRepository extends AbstractRepository {
 		}		
 		
 		// build tree for source directory, this is the tree we want to copy, in pre-order traversal (top down)
-		Tree<CmsDirectory> sourceTree = fileStoreHelper.getTree(sourceDirId);
-		logger.info("Source tree:\n" + sourceTree.printTree());
+		Tree<CmsDirectory> sourceTree = getTree(sourceDirId);
+		logger.info("Copying the following tree:\n" + sourceTree.printTree());
 		
 		CmsFileStore sourceStore = cmsFileStoreRepository.getCmsFileStoreByDirId(sourceDirId);
 		CmsFileStore targetStore = cmsFileStoreRepository.getCmsFileStoreByDirId(targetDirId);
@@ -472,7 +475,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 				// replace existing entry
 				if(needReplace && replaceExisting){
 				
-					cmsFileEntryRepository.copyReplace(sourceDir, targetDirWithFiles, sourceEntryWithData, 
+					cmsFileCopier.copyReplace(sourceDir, targetDirWithFiles, sourceEntryWithData, 
 							conflictingTargetEntry, sourceFilePath, targetFilePath, conflictTargetFilePath);
 					
 				}else if(needReplace && !replaceExisting){
@@ -483,7 +486,7 @@ public class CmsDirectoryRepository extends AbstractRepository {
 				// regular copy
 				}else{
 					
-					cmsFileEntryRepository.copy(sourceDir, targetDirWithFiles, sourceEntryWithData, sourceFilePath, targetFilePath);
+					cmsFileCopier.copy(sourceDir, targetDirWithFiles, sourceEntryWithData, sourceFilePath, targetFilePath);
 					
 				}
 
@@ -491,26 +494,33 @@ public class CmsDirectoryRepository extends AbstractRepository {
 			
 			return existingDir.getDirId();
 		
-		// create new directory under target parent dir, then copy over contents of dirToCopy
+		// create new directory under target parent dir, then copy over files
 		}else{
 			
-			CmsDirectory newTargetDir = add(targetDir, targetStore, sourceDir.getDirName());
+			// create new directory copy
+			CmsDirectory newDirCopy = add(targetDir, targetStore, sourceDir.getDirName());
 			
-			Path sourceFilePath = null, targetFilePath = null;
+			Path sourceFilePath = null;
+			Path targetFilePath = null;
 			CmsFileEntry entryWithData = null;
 			
+			// loop through source files and copy to new directory
 			for(CmsFileEntry entryToCopy : sourceDir.getFileEntries()){
 				
+				// fetch file entry with its byte[] file data
 				entryWithData = cmsFileEntryRepository.getCmsFileEntryById(entryToCopy.getFileId(), CmsFileEntryFetch.FILE_META_WITH_DATA);
 				
+				// build full paths to source and target files on file system
 				sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, entryWithData);
-				targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, newTargetDir, entryWithData); // use same file name
+				targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, newDirCopy, entryWithData); // use same file name
 				
-				cmsFileEntryRepository.copy(sourceDir, newTargetDir, entryWithData, sourceFilePath, targetFilePath);
+				// perform actual copy operation
+				cmsFileCopier.copy(sourceDir, newDirCopy, entryWithData, sourceFilePath, targetFilePath);
 				
 			}
 			
-			return newTargetDir.getDirId();
+			// return id of newly created directory
+			return newDirCopy.getDirId();
 			
 		}
 	
@@ -554,6 +564,9 @@ public class CmsDirectoryRepository extends AbstractRepository {
 		} catch (SecurityException | IOException e) {
 			throw new DatabaseException("Error creating directory on local file system. ", e);
 		}
+		
+		// TODO - check if needed
+		getEntityManager().flush();
 		
 		return childDir;
 		

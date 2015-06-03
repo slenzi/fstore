@@ -85,6 +85,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		} catch (CmsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
+			return;
 		}
 		
 		// add sub dir for fun
@@ -104,6 +105,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		} catch (CmsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
+			return;
 		}
 		
 		//
@@ -118,6 +120,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return;
 		}
 		
 		assertEquals(filePaths.size(), dir2Entries.size());
@@ -131,6 +134,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return;
 		}
 		
 		//
@@ -141,6 +145,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return;
 		}
 		
 		//
@@ -151,6 +156,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return;
 		}		
 		
 		logger.info("Tree after:");
@@ -159,6 +165,7 @@ public abstract class AbstractCopyDirectory extends AbstractTreeTest {
 		} catch (CmsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return;
 		}
 	
 	}
