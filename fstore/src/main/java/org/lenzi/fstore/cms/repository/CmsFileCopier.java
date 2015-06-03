@@ -187,12 +187,16 @@ public class CmsFileCopier extends AbstractRepository {
 	}
 	
 	/**
+	 * Used when copying directories.
 	 * 
 	 * @param sourceFileEntryId - id of file to copy
 	 * @param sourceDirId - id of directory where source file is located
 	 * @param targetDirId - id of directory where copy will be created
 	 * @param sourceStore - store for source directory
 	 * @param targetStore - store for target directory
+	 * @param replaceExisting - true to replace any existing file in the target directory if one exists with the same name,
+	 * 	false not to replace. If you pass false, and a file does exists in the target directory with the same name, then
+	 * 	a FileAlreadyExistsException will be thrown.
 	 * @return
 	 * @throws DatabaseException
 	 */
@@ -210,6 +214,7 @@ public class CmsFileCopier extends AbstractRepository {
 		Path sourceFilePath	   	   = null;
 		Path targetFilePath        = null;
 		Path existingPath          = null;
+		Path targetDirPath         = null;
 		
 		sourceDir = cmsDirectoryRepository.getCmsDirectoryById(sourceDirId, CmsDirectoryFetch.FILE_META);
 		targetDir = cmsDirectoryRepository.getCmsDirectoryById(targetDirId, CmsDirectoryFetch.FILE_META);
@@ -217,30 +222,25 @@ public class CmsFileCopier extends AbstractRepository {
 		entryToCopy = cmsFileEntryRepository.getCmsFileEntryById(sourceFileEntryId, CmsFileEntryFetch.FILE_META_WITH_DATA);
 		
 		existingEntry = targetDir.getEntryByFileName(entryToCopy.getFileName(), false);
-		
 		boolean needReplace = existingEntry != null ? true : false;
+		
+		sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, entryToCopy);
+		targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, entryToCopy); // use same name
+		targetDirPath  = fileStoreHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
 		
 		if(needReplace && replaceExisting){
 			
-			// remove existing, then do copy
-			
-			sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, entryToCopy);
-			targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, entryToCopy); // use same name
-			existingPath   = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, existingEntry);
+			existingPath = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, existingEntry);
 			
 			return copyReplace(sourceDir, targetDir, entryToCopy, existingEntry, sourceFilePath, targetFilePath, existingPath);
 			
 		}else if(needReplace && !replaceExisting){
 			
-			throw new FileAlreadyExistsException("Cannot copy file, file already exists at => " + existingPath);
+			throw new FileAlreadyExistsException("Cannot copy source file => " + sourceFilePath + " to target dir => " + 
+					targetDirPath + ". File already exists at => " + existingPath);
 			
 		}else{
-		
-			// do copy
-			
-			sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, entryToCopy);
-			targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, entryToCopy); // use same name
-			
+
 			return copy(sourceDir, targetDir, entryToCopy, sourceFilePath, targetFilePath);
 			
 		}
