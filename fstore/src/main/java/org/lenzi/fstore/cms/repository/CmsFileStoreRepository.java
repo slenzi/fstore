@@ -37,12 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Repository for dealing with cms file store operations.
  * 
- * All operations are wrapped in a new transaction.
- * 
  * @author sal
  */
 @Repository
-@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
+@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public class CmsFileStoreRepository extends AbstractRepository {
 
 	/**
@@ -204,7 +202,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 	// helper method for create operation
 	private CmsFileStore doCreateStore(Path storePath, String name, String description, boolean clearIfExists) throws DatabaseException {
 		
-		logger.info("Creating file store store for path => " + storePath.toString());
+		//logger.info("Creating file store store for path => " + storePath.toString());
 		
 		// check for existing store paths that will conflict with the new store path
 		List<CmsFileStore> conflictingStores = null;
@@ -276,7 +274,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 	 */
 	public CmsFileStore getCmsStoreByStoreId(Long storeId) throws DatabaseException {
 		
-		logger.info("Get file store by store id " + storeId);
+		//logger.info("Get file store by store id " + storeId);
 		
 		return getCmsStoreByStoreIdCriteria(storeId);
 		
@@ -291,7 +289,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 	 */
 	public CmsFileStore getCmsStoreByRootDirId(Long dirId) throws DatabaseException {
 		
-		logger.info("Get file store by root dir id " + dirId);
+		//logger.info("Get file store by root dir id " + dirId);
 		
 		return getCmsStoreByRootDirIdCriteria(dirId);
 		
@@ -336,7 +334,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 	 */
 	private CmsFileStore getCmsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
 		
-		logger.info("Get file store by store id " + storeId + " criteria");
+		//logger.info("Get file store by store id " + storeId + " criteria");
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -372,7 +370,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 	 */
 	private CmsFileStore getCmsStoreByRootDirIdCriteria(Long dirId) throws DatabaseException {
 		
-		logger.info("Get store by root dir id " + dirId + " criteria");
+		//logger.info("Get store by root dir id " + dirId + " criteria");
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		

@@ -161,6 +161,7 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		} catch (CmsServiceException e){
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return;
 		}		
 		
 		assertNotNull(movedEntry);
@@ -188,6 +189,7 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 		} catch (CmsServiceException e){
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return;
 		}
 		
 		assertNotNull(movedEntry);

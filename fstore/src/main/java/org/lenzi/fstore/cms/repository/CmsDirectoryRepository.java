@@ -43,12 +43,10 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Repository for dealing with cms directory operations.
  * 
- * All operations are wrapped in a new transaction.
- * 
  * @author sal
  */
 @Repository
-@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
+@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public class CmsDirectoryRepository extends AbstractRepository {
 
 	/**
