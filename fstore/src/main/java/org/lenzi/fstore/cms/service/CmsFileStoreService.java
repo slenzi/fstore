@@ -428,10 +428,29 @@ public class CmsFileStoreService {
 		try {
 			cmsDirectoryCopier.copyDirectory(sourceDirId, targetDirId, replaceExisting);
 		} catch (FileAlreadyExistsException e) {
-			throw new CmsServiceException("Error copying directory, file already exists. " + e.getMessage(), e);
+			throw new CmsServiceException("Error copying directory, file already exists in target dir. " + e.getMessage(), e);
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Error copying directory. " + e.getMessage(), e);
 		}
+		
+	}
+
+	/**
+	 * Move directory
+	 * 
+	 * @param sourceDirId
+	 * @param targetDirId
+	 * @param replaceExisting
+	 */
+	public void moveDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws CmsServiceException {
+		
+		try {
+			cmsDirectoryMover.moveDirectory(sourceDirId, targetDirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new CmsServiceException("Error moving directory, file already exists in target dir. " + e.getMessage(), e);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Error moving directory. " + e.getMessage(), e);
+		}		
 		
 	}	
 

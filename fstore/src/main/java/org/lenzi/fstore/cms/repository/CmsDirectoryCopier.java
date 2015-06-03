@@ -40,6 +40,10 @@ public class CmsDirectoryCopier extends AbstractRepository {
 	private Logger logger;
 	
 	@Autowired
+	@Qualifier("cmsDirectoryTree")
+	private TreeRepository<CmsDirectory> treeRepository;	
+	
+	@Autowired
 	private FileStoreHelper fileStoreHelper;
 	
 	@Autowired
@@ -50,10 +54,6 @@ public class CmsDirectoryCopier extends AbstractRepository {
 	
 	@Autowired
 	private CmsFileEntryRepository cmsFileEntryRepository;	
-	
-	@Autowired
-	@Qualifier("cmsDirectoryTree")
-	private TreeRepository<CmsDirectory> treeRepository;	
 	
 	@Autowired
 	private CmsDirectoryAdder cmsDirectoryAdder;
@@ -115,7 +115,7 @@ public class CmsDirectoryCopier extends AbstractRepository {
 		// flush any pending operations
 		getEntityManager().flush();
 		
-		// copy the dir to the target dir, returning the id of the target dir (which might be a new directory)
+		// copy the dir to the target dir, returning the id of the child dir under the target dir (which might be a new dir)
 		nextTargetParentDirId = copy(dirToCopyNode.getData().getDirId(), targetParentDirId, sourceStore, targetStore, replaceExisting);
 		
 		// walk tree and copy child directories and files

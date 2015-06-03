@@ -109,6 +109,64 @@ public class CmsFileCopier extends AbstractRepository {
 	}
 	
 	/**
+	 * Copy file entry from source dir to target dir.
+	 * 
+	 * @param sourceDir
+	 * @param targetDir
+	 * @param sourceEntry
+	 * @param sourceFilePath
+	 * @param targetFilePath
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileEntry copy(
+			CmsDirectory sourceDir, CmsDirectory targetDir, CmsFileEntry sourceEntry,
+			Path sourceFilePath, Path targetFilePath) throws DatabaseException {
+	
+		if(sourceEntry.getFile() == null){
+			throw new DatabaseException("Cannot copy file. CmsFileEntry object with id " + 
+					sourceEntry.getFileId() + " is missing it's CmsFile object. Need this data for copy.");
+		}
+		
+		logger.info("File copy, source => " + sourceFilePath + ", target => " + targetFilePath);
+		
+		// create cms file entry for meta data
+		CmsFileEntry cmsFileEntryCopy = new CmsFileEntry();
+		cmsFileEntryCopy.setDirectory(targetDir);
+		cmsFileEntryCopy.setFileName(sourceEntry.getFileName());
+		cmsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
+		persist(cmsFileEntryCopy);
+		getEntityManager().flush();
+
+		// update target cms directory with new cms file entry copy (updates linking table)
+		targetDir.addFileEntry(cmsFileEntryCopy);
+		targetDir = (CmsDirectory)merge(targetDir);
+		
+		// create cms file copy object for file byte data, and persist
+		CmsFile cmsFileCopy = new CmsFile();
+		cmsFileCopy.setFileId(cmsFileEntryCopy.getFileId());
+		cmsFileCopy.setFileData(sourceEntry.getFile().getFileData());
+		persist(cmsFileCopy);
+		getEntityManager().flush();
+		
+		// make sure objects have all data set before returning
+		cmsFileEntryCopy.setDirectory(targetDir);
+		cmsFileEntryCopy.setFile(cmsFileCopy);
+		cmsFileCopy.setFileEntry(cmsFileEntryCopy);
+		
+		// move file to new directory
+		try {
+			FileUtil.copyFile(sourceFilePath, targetFilePath);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
+		}
+		
+		return cmsFileEntryCopy;
+	}	
+	
+	/**
 	 * Copy file entry from source dir to target dir, replacing existing file in target dir.
 	 * 
 	 * @param sourceDir
@@ -245,64 +303,6 @@ public class CmsFileCopier extends AbstractRepository {
 			
 		}
 
-	}	
-	
-	/**
-	 * Copy file entry from source dir to target dir.
-	 * 
-	 * @param sourceDir
-	 * @param targetDir
-	 * @param sourceEntry
-	 * @param sourceFilePath
-	 * @param targetFilePath
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public CmsFileEntry copy(
-			CmsDirectory sourceDir, CmsDirectory targetDir, CmsFileEntry sourceEntry,
-			Path sourceFilePath, Path targetFilePath) throws DatabaseException {
-	
-		if(sourceEntry.getFile() == null){
-			throw new DatabaseException("Cannot copy file. CmsFileEntry object with id " + 
-					sourceEntry.getFileId() + " is missing it's CmsFile object. Need this data for copy.");
-		}
-		
-		logger.info("File copy, source => " + sourceFilePath + ", target => " + targetFilePath);
-		
-		// create cms file entry for meta data
-		CmsFileEntry cmsFileEntryCopy = new CmsFileEntry();
-		cmsFileEntryCopy.setDirectory(targetDir);
-		cmsFileEntryCopy.setFileName(sourceEntry.getFileName());
-		cmsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
-		persist(cmsFileEntryCopy);
-		getEntityManager().flush();
-
-		// update target cms directory with new cms file entry copy (updates linking table)
-		targetDir.addFileEntry(cmsFileEntryCopy);
-		targetDir = (CmsDirectory)merge(targetDir);
-		
-		// create cms file copy object for file byte data, and persist
-		CmsFile cmsFileCopy = new CmsFile();
-		cmsFileCopy.setFileId(cmsFileEntryCopy.getFileId());
-		cmsFileCopy.setFileData(sourceEntry.getFile().getFileData());
-		persist(cmsFileCopy);
-		getEntityManager().flush();
-		
-		// make sure objects have all data set before returning
-		cmsFileEntryCopy.setDirectory(targetDir);
-		cmsFileEntryCopy.setFile(cmsFileCopy);
-		cmsFileCopy.setFileEntry(cmsFileEntryCopy);
-		
-		// move file to new directory
-		try {
-			FileUtil.copyFile(sourceFilePath, targetFilePath);
-		} catch (SecurityException e) {
-			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
-		} catch (IOException e) {
-			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
-		}
-		
-		return cmsFileEntryCopy;
 	}
 	
 	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, CmsDirectory sourceDir, CmsDirectory targetDir, Throwable e){

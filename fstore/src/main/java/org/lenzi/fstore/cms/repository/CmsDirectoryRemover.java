@@ -104,10 +104,6 @@ public class CmsDirectoryRemover extends AbstractRepository {
 		
 	}
 	
-	
-	
-
-	
 	/**
 	 * Remove directory. All child directories should be removed first!
 	 * 
@@ -123,16 +119,18 @@ public class CmsDirectoryRemover extends AbstractRepository {
 				", path => " + dirPath);
 		
 		// remove all files in the directory
-		for(CmsFileEntry fileEntryToDelete : dirToDelete.getFileEntries()){
-			try {
-				
-				cmsFileRemover.remove(cmsStore, dirToDelete, fileEntryToDelete);
-				
-			} catch (DatabaseException e) {
-				throw new DatabaseException("Error deleting CmsFileEntry, file id => " + 
-						fileEntryToDelete.getFileId() + ", name => " + fileEntryToDelete.getFileName() +
-						", in CmsDirectory, dir id => " + dirToDelete.getDirId() + ", name => " +
-						dirToDelete.getDirName(), e);
+		if(dirToDelete.hasFileEntries()){
+			for(CmsFileEntry fileEntryToDelete : dirToDelete.getFileEntries()){
+				try {
+					
+					cmsFileRemover.remove(cmsStore, dirToDelete, fileEntryToDelete);
+					
+				} catch (DatabaseException e) {
+					throw new DatabaseException("Error deleting CmsFileEntry, file id => " + 
+							fileEntryToDelete.getFileId() + ", name => " + fileEntryToDelete.getFileName() +
+							", in CmsDirectory, dir id => " + dirToDelete.getDirId() + ", name => " +
+							dirToDelete.getDirName(), e);
+				}
 			}
 		}
 		
