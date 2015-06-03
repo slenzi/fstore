@@ -23,7 +23,17 @@ import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.FileUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * For removing cms file entries
+ * 
+ * @author sal
+ */
+@Repository
+@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 public class CmsFileRemover extends AbstractRepository {
 
 	/**

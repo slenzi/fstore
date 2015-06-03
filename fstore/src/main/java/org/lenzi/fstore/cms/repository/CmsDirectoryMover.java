@@ -2,7 +2,7 @@ package org.lenzi.fstore.cms.repository;
 
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author sal
  */
-@Service
+@Repository
 @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 public class CmsDirectoryMover extends AbstractRepository {
 

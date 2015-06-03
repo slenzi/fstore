@@ -18,7 +18,7 @@ import org.lenzi.fstore.tree.TreeNode;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author sal
  */
-@Service
+@Repository
 @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 public class CmsDirectoryCopier extends AbstractRepository {
 
