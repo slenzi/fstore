@@ -353,59 +353,6 @@ public class CmsFileEntryRepository extends AbstractRepository {
 		
 		return newCmsFileEntries;
 		
-	}
-	
-	/**
-	 * Copy a file.
-	 * 
-	 * @param fileId - id of the file to copy
-	 * @param targetDirId - id of target directory, where file will be copied to.
-	 * @param replaceExisting - pass true to replace any existing file with the same name in the target directory,
-	 * 	or pass false not to replace. If you pass false, and a file already exists in the target directory, then a
-	 * 	database exception will be thrown.
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public CmsFileEntry copyFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
-		
-		// get source information
-		CmsDirectory sourceDir = cmsDirectoryRepository.getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_META);
-		CmsFileStore sourceStore = cmsFileStoreRepository.getCmsFileStoreByDirId(sourceDir.getDirId());
-		// also fetch byte data
-		CmsFileEntry sourceEntry = getCmsFileEntryById(fileId, CmsFileEntryFetch.FILE_META_WITH_DATA);
-		
-		// get target information
-		CmsDirectory targetDir = cmsDirectoryRepository.getCmsDirectoryById(targetDirId, CmsDirectoryFetch.FILE_META);
-		CmsFileStore targetStore = cmsFileStoreRepository.getCmsFileStoreByDirId(targetDir.getDirId());
-		CmsFileEntry conflictingTargetEntry = targetDir.getEntryByFileName(sourceEntry.getFileName(), false);
-		
-		String sourceFilePath = fileStoreHelper.getAbsoluteFileString(sourceStore, sourceDir, sourceEntry);
-		String targetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, sourceEntry); // use source file name
-		
-		// will be true of we need to replace the existing file in the target directory
-		boolean needReplace = conflictingTargetEntry != null ? true : false;
-		
-		// replace existing file in target dir with file from source dir
-		if(needReplace && replaceExisting){
-			
-			String conflictingTargetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, conflictingTargetEntry);
-			
-			return copyReplace(sourceDir, targetDir, sourceEntry, conflictingTargetEntry, 
-					Paths.get(sourceFilePath), Paths.get(targetFilePath), Paths.get(conflictingTargetFilePath));
-			
-		// user specified not to replace, throw database exception
-		}else if(needReplace && !replaceExisting){
-			
-			throw new FileAlreadyExistsException("Target directory contains a file with the same name, but 'replaceExisting' param "
-					+ "was false. Cannot move file to target directory.");
-		
-		// simply copy file to target dir
-		}else{
-			
-			return copy(sourceDir, targetDir, sourceEntry, Paths.get(sourceFilePath), Paths.get(targetFilePath));
-			
-		}	
-		
 	}	
 	
 	/**
@@ -555,7 +502,60 @@ public class CmsFileEntryRepository extends AbstractRepository {
 		
 		return cmsFileEntry;
 		
-	}	
+	}
+	
+	/**
+	 * Copy a file.
+	 * 
+	 * @param fileId - id of the file to copy
+	 * @param targetDirId - id of target directory, where file will be copied to.
+	 * @param replaceExisting - pass true to replace any existing file with the same name in the target directory,
+	 * 	or pass false not to replace. If you pass false, and a file already exists in the target directory, then a
+	 * 	database exception will be thrown.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileEntry copyFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
+		
+		// get source information
+		CmsDirectory sourceDir = cmsDirectoryRepository.getCmsDirectoryByFileId(fileId, CmsDirectoryFetch.FILE_META);
+		CmsFileStore sourceStore = cmsFileStoreRepository.getCmsFileStoreByDirId(sourceDir.getDirId());
+		// also fetch byte data
+		CmsFileEntry sourceEntry = getCmsFileEntryById(fileId, CmsFileEntryFetch.FILE_META_WITH_DATA);
+		
+		// get target information
+		CmsDirectory targetDir = cmsDirectoryRepository.getCmsDirectoryById(targetDirId, CmsDirectoryFetch.FILE_META);
+		CmsFileStore targetStore = cmsFileStoreRepository.getCmsFileStoreByDirId(targetDir.getDirId());
+		CmsFileEntry conflictingTargetEntry = targetDir.getEntryByFileName(sourceEntry.getFileName(), false);
+		
+		String sourceFilePath = fileStoreHelper.getAbsoluteFileString(sourceStore, sourceDir, sourceEntry);
+		String targetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, sourceEntry); // use source file name
+		
+		// will be true of we need to replace the existing file in the target directory
+		boolean needReplace = conflictingTargetEntry != null ? true : false;
+		
+		// replace existing file in target dir with file from source dir
+		if(needReplace && replaceExisting){
+			
+			String conflictingTargetFilePath = fileStoreHelper.getAbsoluteFileString(targetStore, targetDir, conflictingTargetEntry);
+			
+			return copyReplace(sourceDir, targetDir, sourceEntry, conflictingTargetEntry, 
+					Paths.get(sourceFilePath), Paths.get(targetFilePath), Paths.get(conflictingTargetFilePath));
+			
+		// user specified not to replace, throw database exception
+		}else if(needReplace && !replaceExisting){
+			
+			throw new FileAlreadyExistsException("Target directory contains a file with the same name, but 'replaceExisting' param "
+					+ "was false. Cannot move file to target directory.");
+		
+		// simply copy file to target dir
+		}else{
+			
+			return copy(sourceDir, targetDir, sourceEntry, Paths.get(sourceFilePath), Paths.get(targetFilePath));
+			
+		}	
+		
+	}
 	
 	/**
 	 * Copy file entry from source dir to target dir, replacing existing file in target dir.
@@ -570,6 +570,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 	public CmsFileEntry copyReplace(
 			CmsDirectory sourceDir, CmsDirectory targetDir,
 			CmsFileEntry sourceEntry, CmsFileEntry conflictingTargetEntry,
@@ -637,6 +638,7 @@ public class CmsFileEntryRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 	public CmsFileEntry copy(
 			CmsDirectory sourceDir, CmsDirectory targetDir, CmsFileEntry sourceEntry,
 			Path sourceFilePath, Path targetFilePath) throws DatabaseException {
