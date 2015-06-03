@@ -157,19 +157,23 @@ public class CmsDirectoryCopier extends AbstractRepository {
 		// merge contents of dirToCopy into existing directory
 		if(needMergeDirectory){
 			
-			String sourceDirPath = fileStoreHelper.getAbsoluteDirectoryString(sourceStore, sourceDir);
-			String targetDirPath = fileStoreHelper.getAbsoluteDirectoryString(targetStore, existingDir);
+			//String sourceDirPath = fileStoreHelper.getAbsoluteDirectoryString(sourceStore, sourceDir);
+			//String targetDirPath = fileStoreHelper.getAbsoluteDirectoryString(targetStore, existingDir);
 			
-			logger.info("Merging source dir, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getDirName() + ", path => " + sourceDirPath
-					+ ", into target dir, id => " + existingDir.getDirId() + ", name => " + existingDir.getDirName() + ", path => " + targetDirPath);
+			//logger.info("Merging source dir, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getDirName() + ", path => " + sourceDirPath
+			//		+ ", into target dir, id => " + existingDir.getDirId() + ", name => " + existingDir.getDirName() + ", path => " + targetDirPath);
 			
-			Path sourceFilePath = null, targetFilePath = null, conflictTargetFilePath = null;
-			CmsFileEntry sourceEntryWithData = null, conflictingTargetEntry = null;
+			//Path sourceFilePath = null, targetFilePath = null, conflictTargetFilePath = null;
+			//CmsFileEntry sourceEntryWithData = null, conflictingTargetEntry = null;
 			
-			CmsDirectory targetDirWithFiles = cmsDirectoryRepository.getCmsDirectoryById(existingDir.getDirId(), CmsDirectoryFetch.FILE_META);
+			//CmsDirectory targetDirWithFiles = cmsDirectoryRepository.getCmsDirectoryById(existingDir.getDirId(), CmsDirectoryFetch.FILE_META);
 			
 			for(CmsFileEntry entryToCopy : sourceDir.getFileEntries()){
 				
+				cmsFileCopier.copyReplaceTraversal(entryToCopy.getFileId(), sourceDir.getDirId(), targetDir.getDirId(), 
+						sourceStore, targetStore, replaceExisting);
+				
+				/*
 				sourceEntryWithData = cmsFileEntryRepository.getCmsFileEntryById(entryToCopy.getFileId(), CmsFileEntryFetch.FILE_META_WITH_DATA);
 				
 				conflictingTargetEntry = targetDirWithFiles.getEntryByFileName(sourceEntryWithData.getFileName(), false);
@@ -197,6 +201,7 @@ public class CmsDirectoryCopier extends AbstractRepository {
 					cmsFileCopier.copy(sourceDir, targetDirWithFiles, sourceEntryWithData, sourceFilePath, targetFilePath);
 					
 				}
+				*/
 
 			}
 			

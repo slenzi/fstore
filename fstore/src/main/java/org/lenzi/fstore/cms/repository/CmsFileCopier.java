@@ -5,19 +5,26 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Root;
+
 import org.lenzi.fstore.cms.repository.CmsDirectoryRepository.CmsDirectoryFetch;
 import org.lenzi.fstore.cms.repository.CmsFileEntryRepository.CmsFileEntryFetch;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFile;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
+import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.repository.AbstractRepository;
 import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.repository.tree.TreeRepository;
 import org.lenzi.fstore.stereotype.InjectLogger;
 import org.lenzi.fstore.util.FileUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +56,11 @@ public class CmsFileCopier extends AbstractRepository {
 	private CmsFileEntryRepository cmsFileEntryRepository;
 	
 	@Autowired
-	private FileStoreHelper fileStoreHelper;	
+	private FileStoreHelper fileStoreHelper;
+	
+	@Autowired
+	@Qualifier("cmsDirectoryTree")
+	private TreeRepository<CmsDirectory> treeRepository;	
 	
 	public CmsFileCopier() {
 		
@@ -118,11 +129,20 @@ public class CmsFileCopier extends AbstractRepository {
 		if(sourceEntry.getFile() == null){
 			throw new DatabaseException("Cannot copy file. CmsFileEntry object with id " + 
 					sourceEntry.getFileId() + " is missing it's CmsFile object. Need this data for copy.");
-		}		
+		}
+		
+		logger.info("File copy-replace, source => " + sourceFilePath + ", target (replace) => " + 
+				targetFilePath + ", existing => " + conflictTargetFilePath);
 		
 		// remove existing entry from target dir, then delete it
 		CmsFileEntry entryToRemove = targetDir.removeEntryById(conflictingTargetEntry.getFileId());
-		remove(entryToRemove);
+		logger.info("Remove existing file, id => " + entryToRemove.getFileId());
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaDelete<CmsFileEntry> cmsFileDelete = cb.createCriteriaDelete(CmsFileEntry.class);
+		Root<CmsFileEntry> cmsFileRoot = cmsFileDelete.from(CmsFileEntry.class);
+		cmsFileDelete.where(cb.equal(cmsFileRoot.get(CmsFileEntry_.fileId), entryToRemove.getFileId()));
+		executeUpdate(cmsFileDelete);		
+		//remove(entryToRemove);
 		
 		// remove entry from source dir, and update
 		sourceDir.removeEntryById(sourceEntry.getFileId());
@@ -167,6 +187,67 @@ public class CmsFileCopier extends AbstractRepository {
 	}
 	
 	/**
+	 * 
+	 * @param sourceFileEntryId - id of file to copy
+	 * @param sourceDirId - id of directory where source file is located
+	 * @param targetDirId - id of directory where copy will be created
+	 * @param sourceStore - store for source directory
+	 * @param targetStore - store for target directory
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public CmsFileEntry copyReplaceTraversal(
+			Long sourceFileEntryId, Long sourceDirId, Long targetDirId,
+			CmsFileStore sourceStore, CmsFileStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
+		
+		logger.info("File copy-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
+				sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
+		
+		CmsFileEntry entryToCopy   = null;
+		CmsFileEntry existingEntry = null;
+		CmsDirectory sourceDir     = null;
+		CmsDirectory targetDir     = null;
+		Path sourceFilePath	   	   = null;
+		Path targetFilePath        = null;
+		Path existingPath          = null;
+		
+		sourceDir = cmsDirectoryRepository.getCmsDirectoryById(sourceDirId, CmsDirectoryFetch.FILE_META);
+		targetDir = cmsDirectoryRepository.getCmsDirectoryById(targetDirId, CmsDirectoryFetch.FILE_META);
+		
+		entryToCopy = cmsFileEntryRepository.getCmsFileEntryById(sourceFileEntryId, CmsFileEntryFetch.FILE_META_WITH_DATA);
+		
+		existingEntry = targetDir.getEntryByFileName(entryToCopy.getFileName(), false);
+		
+		boolean needReplace = existingEntry != null ? true : false;
+		
+		if(needReplace && replaceExisting){
+			
+			// remove existing, then do copy
+			
+			sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, entryToCopy);
+			targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, entryToCopy); // use same name
+			existingPath   = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, existingEntry);
+			
+			return copyReplace(sourceDir, targetDir, entryToCopy, existingEntry, sourceFilePath, targetFilePath, existingPath);
+			
+		}else if(needReplace && !replaceExisting){
+			
+			throw new FileAlreadyExistsException("Cannot copy file, file already exists at => " + existingPath);
+			
+		}else{
+		
+			// do copy
+			
+			sourceFilePath = fileStoreHelper.getAbsoluteFilePath(sourceStore, sourceDir, entryToCopy);
+			targetFilePath = fileStoreHelper.getAbsoluteFilePath(targetStore, targetDir, entryToCopy); // use same name
+			
+			return copy(sourceDir, targetDir, entryToCopy, sourceFilePath, targetFilePath);
+			
+		}
+
+	}	
+	
+	/**
 	 * Copy file entry from source dir to target dir.
 	 * 
 	 * @param sourceDir
@@ -185,6 +266,8 @@ public class CmsFileCopier extends AbstractRepository {
 			throw new DatabaseException("Cannot copy file. CmsFileEntry object with id " + 
 					sourceEntry.getFileId() + " is missing it's CmsFile object. Need this data for copy.");
 		}
+		
+		logger.info("File copy, source => " + sourceFilePath + ", target => " + targetFilePath);
 		
 		// create cms file entry for meta data
 		CmsFileEntry cmsFileEntryCopy = new CmsFileEntry();

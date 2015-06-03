@@ -51,6 +51,7 @@ public class CmsFileMover extends AbstractRepository {
 	@Autowired
 	private CmsDirectoryRepository cmsDirectoryRepository;	
 	
+	
 	public CmsFileMover() {
 		
 	}
@@ -124,7 +125,8 @@ public class CmsFileMover extends AbstractRepository {
 			CmsFileEntry sourceEntry, CmsFileEntry conflictingTargetEntry,
 			Path sourceFilePath, Path targetFilePath, Path conflictTargetFilePath) throws DatabaseException {
 		
-		logger.info("Replace file, id => " + conflictingTargetEntry.getFileId() + ", with file, id => " + sourceEntry.getFileId());
+		logger.info("File move-replace, source => " + sourceFilePath + ", target (replace) => " + 
+				targetFilePath + ", existing => " + conflictTargetFilePath);
 		
 		// remove existing entry from target dir, then delete it
 		CmsFileEntry entryToRemove = targetDir.removeEntryById(conflictingTargetEntry.getFileId());
