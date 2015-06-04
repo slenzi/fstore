@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	version="3.0">
 	
-	<display-name>Spring Config Sample Application</display-name>
+	<display-name>FStore Application</display-name>
 	
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
@@ -26,7 +26,7 @@
         specified for component-scanning -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>org.lenzi.fstore.config.AppConfig</param-value>
+        <param-value>org.lenzi.fstore.main.config.AppConfig</param-value>
     </context-param>
     
     <!-- specify which Spring profiles are active (we have two, "oracle" and "postgresql" -->
@@ -43,7 +43,7 @@
     
     <!-- De-register database drivers on shutdown to prevent memory leak. -->
     <listener>
-    	<listener-class>org.lenzi.fstore.listener.DatabaseDriverCleanup</listener-class>
+    	<listener-class>org.lenzi.fstore.main.listener.DatabaseDriverCleanup</listener-class>
     </listener>
 
     <!-- Declare a Spring MVC DispatcherServlet as usual -->
@@ -62,7 +62,7 @@
             and fully-qualified @Configuration classes -->
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>org.lenzi.fstore.config.WebMvcConfig</param-value>
+            <param-value>org.lenzi.fstore.main.config.WebMvcConfig</param-value>
         </init-param>
     </servlet>
     

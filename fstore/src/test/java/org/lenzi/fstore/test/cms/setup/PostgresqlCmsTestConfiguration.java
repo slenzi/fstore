@@ -5,8 +5,8 @@ package org.lenzi.fstore.test.cms.setup;
 
 import java.io.IOException;
 
-import org.lenzi.fstore.repository.tree.query.TreeQueryPostgresqlRepository;
-import org.lenzi.fstore.repository.tree.query.TreeQueryRepository;
+import org.lenzi.fstore.core.repository.tree.query.TreeQueryPostgresqlRepository;
+import org.lenzi.fstore.core.repository.tree.query.TreeQueryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,12 +31,12 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
 		basePackages={
-				"org.lenzi.fstore.model.util",
-				"org.lenzi.fstore.repository",
-				"org.lenzi.fstore.repository.model",
-				"org.lenzi.fstore.repository.model.impl",
-				"org.lenzi.fstore.service",
-				"org.lenzi.fstore.logging",
+				"org.lenzi.fstore.core.model.util",
+				"org.lenzi.fstore.core.repository",
+				"org.lenzi.fstore.core.repository.model",
+				"org.lenzi.fstore.core.repository.model.impl",
+				"org.lenzi.fstore.core.service",
+				"org.lenzi.fstore.core.logging",
 				"org.lenzi.fstore.example.repository",
 				"org.lenzi.fstore.example.repository.model.impl",
 				"org.lenzi.fstore.cms.service",

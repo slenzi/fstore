@@ -9,8 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.repository.model.impl.FSNode;
-import org.lenzi.fstore.util.DateUtil;
+import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.util.DateUtil;
 
 /**
  * Node for testing the closure repository code. Also serves as an example custom

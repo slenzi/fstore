@@ -19,9 +19,9 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.impl.FSNode;
-import org.lenzi.fstore.util.DateUtil;
+import org.lenzi.fstore.core.repository.model.DBClosure;
+import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.util.DateUtil;
 
 /**
  * Extends FSNode to model a directory in a tree.

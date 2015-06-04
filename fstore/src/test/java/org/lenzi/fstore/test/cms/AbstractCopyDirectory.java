@@ -10,12 +10,12 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
-import org.lenzi.fstore.util.FileUtil;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.service.CmsFileStoreService;
 import org.lenzi.fstore.cms.service.exception.CmsServiceException;
+import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

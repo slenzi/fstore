@@ -3,7 +3,7 @@ package org.lenzi.fstore.setup.db.oracle;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.lenzi.fstore.repository.exception.DatabaseException;
+import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

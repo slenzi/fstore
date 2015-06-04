@@ -1,9 +1,9 @@
 package org.lenzi.fstore.example.repository.tree;
 
+import org.lenzi.fstore.core.repository.exception.DatabaseException;
+import org.lenzi.fstore.core.repository.tree.AbstractTreeRepository;
+import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.tree.AbstractTreeRepository;
-import org.lenzi.fstore.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;

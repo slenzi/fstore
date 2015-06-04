@@ -2,17 +2,17 @@ package org.lenzi.fstore.example.service;
 
 import java.util.List;
 
+import org.lenzi.fstore.core.logging.ClosureLogger;
+import org.lenzi.fstore.core.model.util.NodeCopier;
+import org.lenzi.fstore.core.repository.exception.DatabaseException;
+import org.lenzi.fstore.core.repository.model.DBClosure;
+import org.lenzi.fstore.core.repository.model.impl.FSTree;
+import org.lenzi.fstore.core.repository.tree.TreeRepository;
+import org.lenzi.fstore.core.service.TreeBuilder;
+import org.lenzi.fstore.core.service.exception.ServiceException;
+import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
-import org.lenzi.fstore.logging.ClosureLogger;
-import org.lenzi.fstore.model.util.NodeCopier;
-import org.lenzi.fstore.repository.exception.DatabaseException;
-import org.lenzi.fstore.repository.model.DBClosure;
-import org.lenzi.fstore.repository.model.impl.FSTree;
-import org.lenzi.fstore.repository.tree.TreeRepository;
-import org.lenzi.fstore.service.TreeBuilder;
-import org.lenzi.fstore.service.exception.ServiceException;
-import org.lenzi.fstore.stereotype.InjectLogger;
-import org.lenzi.fstore.tree.Tree;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
