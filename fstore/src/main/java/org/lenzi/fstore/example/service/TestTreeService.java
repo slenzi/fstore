@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.NoResultException;
 
 import org.lenzi.fstore.core.logging.ClosureLogger;
+import org.lenzi.fstore.core.model.util.FSTestNodeCopier;
 import org.lenzi.fstore.core.model.util.NodeCopier;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.model.DBClosure;
@@ -43,6 +44,10 @@ public class TestTreeService {
 	
 	@Autowired
 	private TreeBuilder<FSTestNode> treeBuilder;
+	
+	@Autowired
+	protected FSTestNodeCopier testNodeCopier = null;
+	
 	
 	// debug method for testing factory generation
 	public String getClosureRepoType(){
@@ -569,7 +574,11 @@ public class TestTreeService {
 							FSTestNode nodeL = createChildNode(nodeK, new FSTestNode("L","Node L"));
 							FSTestNode nodeM = createChildNode(nodeK, new FSTestNode("M","Node M"));
 							FSTestNode nodeN = createChildNode(nodeK, new FSTestNode("N","Node N"));
-							FSTestNode nodeO = createChildNode(nodeK, new FSTestNode("O","Node O"));				
+							FSTestNode nodeO = createChildNode(nodeK, new FSTestNode("O","Node O"));
+				FSTestNode nodeP = createChildNode(nodeB, new FSTestNode("P","Node P"));
+					FSTestNode nodeQ = createChildNode(nodeP, new FSTestNode("Q","Node Q"));
+							
+			copyNode(nodeC, nodeM, true, testNodeCopier);
 
 		}
 		

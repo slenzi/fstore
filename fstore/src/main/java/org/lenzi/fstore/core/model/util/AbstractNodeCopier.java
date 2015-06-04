@@ -12,7 +12,7 @@ import org.slf4j.Logger;
  *
  * @param <N> A node object which extends DbNode
  */
-public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier<N> {
+public abstract class AbstractNodeCopier<N extends FSNode<N>> implements NodeCopier<N> {
 
 	@InjectLogger
 	private Logger logger;		
@@ -22,7 +22,7 @@ public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier
 	}
 	
 	@SuppressWarnings("rawtypes")
-	protected N createNew() throws ClassNotFoundException, InstantiationException, IllegalAccessException{
+	protected N createNew() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		String name = getCanonicalName();
 		Class clazz = Class.forName(name);
 		N node = (N) clazz.newInstance();
@@ -33,11 +33,13 @@ public abstract class AbstractNodeCopier<N extends FSNode> implements NodeCopier
 	@Override
 	public N copy(N node) {
 
-		logger.debug("Copying node of type => " + getCanonicalName());
+		//logger.info("Copying node of type => " + getCanonicalName());
 		
 		if(node == null){
 			return null;
 		}
+		
+		//logger.info("Node to copy => " + node.toString());
 		
 		N newObject = null;
 		
