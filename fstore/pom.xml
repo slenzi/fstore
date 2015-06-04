@@ -51,8 +51,10 @@
 	</properties>
 	
 	<profiles>
+	
 		<profile>
 			<id>lenzi.mac</id>
+			<!--
 			<activation>
 				<property>
 					<name>env</name>
@@ -60,12 +62,20 @@
 				</property>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			-->
 			<properties>
 				<property.file>lenzi.mac.properties</property.file>
 			</properties>
-		</profile>	
+		</profile>
+		
 		<profile>
 			<id>lenzi.frontier.pc</id>
+			<!--
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			-->			
+			<!--
 			<activation>
 				<property>
 					<name>env</name>
@@ -73,6 +83,7 @@
 				</property>
 				<activeByDefault>false</activeByDefault>
 			</activation>
+			-->
 			<properties>
 				<property.file>lenzi.frontier.pc.properties</property.file>
 			</properties>
@@ -305,6 +316,7 @@
 					<include>**/*.properties</include>
 				</includes>
 			</resource>
+			<!--
 			<resource>
 				<directory>${basedir}/src/test/resources</directory>
 				<filtering>true</filtering>
@@ -312,7 +324,8 @@
 					<include>**/*.xml</include>
 					<include>**/*.properties</include>
 				</includes>
-			</resource>		
+			</resource>
+			-->		
 		</resources>
 		
 		<plugins>

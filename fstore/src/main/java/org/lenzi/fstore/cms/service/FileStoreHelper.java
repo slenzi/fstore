@@ -31,52 +31,11 @@ public class FileStoreHelper {
 	@Qualifier("cmsDirectoryTree")
 	private TreeRepository<CmsDirectory> treeRepository;
 	
-	@Autowired
-	private TreeBuilder<CmsDirectory> treeBuilder;	
+	//@Autowired
+	//private TreeBuilder<CmsDirectory> treeBuilder;	
 	
 	public FileStoreHelper() {
 
-	}
-	
-	/**
-	 * Get printable tree
-	 * 
-	 * @deprecated - remove
-	 * 
-	 * @param dirId - id of node
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public String printTree(Long dirId) throws DatabaseException {
-		
-		Tree<CmsDirectory> sourceTree = getTree(dirId);
-		
-		return sourceTree.printTree();
-		
-	}
-	
-	/**
-	 * Get a tree for the cms directory.
-	 * 
-	 * @deprecated - remove
-	 * 
-	 * @param dirId - id of node
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public Tree<CmsDirectory> getTree(Long dirId) throws DatabaseException {
-		
-		// TODO - allow for specific fetch options (with file meta and file data if needed.)
-		
-		CmsDirectory cmsDir = treeRepository.getNodeWithChild(new CmsDirectory(dirId));
-		Tree<CmsDirectory> tree = null;
-		try {
-			tree = treeBuilder.buildTree(cmsDir);
-		} catch (ServiceException e) {
-			throw new DatabaseException("Failed to build tree from CmsDirectory node, id => " + dirId, e);
-		}
-		return tree;
-		
 	}	
 	
 	/**

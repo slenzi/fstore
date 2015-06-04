@@ -41,7 +41,9 @@ public class DataSourceConfig {
 		
 		DataSource dataSource = null;
 		
-		String jndiDataSourceName = appProps.getProperty("database.jndi.pool.main");
+		String jndiPropName = "database.jndi.pool.main";
+		
+		String jndiDataSourceName = appProps.getProperty(jndiPropName);
 		
 		if(!StringUtil.isNullEmpty(jndiDataSourceName)){
 			
@@ -55,6 +57,8 @@ public class DataSourceConfig {
 	        }
 	        
 		}else{
+			
+			logger.info("No JNDI data source name found for property => " + jndiPropName);
 			
 			dataSource = getDriverManagerDataSource();
 			

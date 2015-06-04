@@ -3,7 +3,11 @@
  */
 package org.lenzi.fstore.example.web.controller;
 
+import org.lenzi.fstore.core.repository.model.impl.FSTree;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.tree.Tree;
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.service.TestTreeService;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
@@ -36,16 +40,20 @@ public class TestController {
 		
 		logger.info("printHello called");
 		
-		/*
-		logger.info("Closure type => " + treeService.getClosureRepoType());
 		
-		Long treeId = 1L;
-		Tree<TreeMeta> tree = null;
+		FSTree<FSTestNode> fstree = getSampleTree();
+		
+		if(fstree == null){
+			handleError(model, "fs tree object is null. cannot continue.");
+			return "/test/test.jsp";
+		}
+		
+		Tree<FSTestNode> tree = null;
 		try {
-			tree = treeService.buildTree(treeId);
+			tree = treeService.buildTree(fstree.getRootNode());
 		} catch (ServiceException e) {
-			e.printStackTrace();
-			logger.error("Error builder tree for FSTree with id " + treeId);
+			handleError(model, "Error building tree for FSTree with id " + fstree.getTreeId(), e);
+			return "/test/test.jsp";
 		}
 		
 		String treeData = tree.printHtmlTree();
@@ -53,13 +61,43 @@ public class TestController {
 		StringBuffer buff = new StringBuffer();
 		buff.append("Hello! This is the \"" + appProps.getAppTitle() + "\" application.");
 		buff.append("<br><br>");
-		buff.append(treeData);
+		buff.append(treeData);		
 		
 		model.addAttribute("message", buff.toString());
-		*/
 		
 		return "/test/test.jsp";
 		
 	}
+	
+	/**
+	 * Fetch sample tree, creating it if necessary
+	 * 
+	 * @return
+	 */
+	private FSTree<FSTestNode> getSampleTree() {
+		
+		Long treeId = 1L;
+		FSTree<FSTestNode> sampleTree = null;
+		
+		try {
+			sampleTree = treeService.geTreeById(new FSTree<FSTestNode>(treeId));
+		} catch (ServiceException e) {
+			logger.error("Error getting tree for tree id => " + treeId);
+		}
+		
+		return sampleTree;
+		
+	}
+	
+	private void handleError(ModelMap model, String message){
+		logger.error(message);
+		model.addAttribute("message", message);
+	}	
+	
+	private void handleError(ModelMap model, String message, Throwable t){
+		logger.error(message + ". " + t.getMessage());
+		t.printStackTrace();
+		model.addAttribute("message", message + ". " + t.getMessage());		
+	}	
 
 }

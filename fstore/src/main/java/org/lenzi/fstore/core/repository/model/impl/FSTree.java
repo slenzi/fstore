@@ -58,6 +58,10 @@ public class FSTree<N extends FSNode<N>> implements DBTree<N> {
 	public FSTree() {
 
 	}
+	
+	public FSTree(Long treeId) {
+		this.treeId = treeId;
+	}	
 
 	/**
 	 * @param name
