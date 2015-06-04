@@ -8,7 +8,7 @@
         <property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
         <property name="connection.url">jdbc:oracle:thin:@ecog1.dfci.harvard.edu:1511:ecogtst</property>
         <property name="connection.username">ecoguser</property>
-        <property name="connection.password">ecogweb</property>
+        <property name="connection.password">*****</property>
         <!-- JDBC connection pool (use the built-in) -->
         <property name="connection.pool_size">1</property>
         
