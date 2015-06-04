@@ -14,10 +14,10 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		
 		<!-- core models -->
-      	<class>org.lenzi.fstore.repository.model.impl.FSNode</class>
-      	<class>org.lenzi.fstore.repository.model.impl.FSClosure</class>
-      	<class>org.lenzi.fstore.repository.model.impl.FSPrune</class>
-      	<class>org.lenzi.fstore.repository.model.impl.FSTree</class>
+      	<class>org.lenzi.fstore.core.repository.model.impl.FSNode</class>
+      	<class>org.lenzi.fstore.core.repository.model.impl.FSClosure</class>
+      	<class>org.lenzi.fstore.core.repository.model.impl.FSPrune</class>
+      	<class>org.lenzi.fstore.core.repository.model.impl.FSTree</class>
       	
       	<!-- test models -->
       	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>
