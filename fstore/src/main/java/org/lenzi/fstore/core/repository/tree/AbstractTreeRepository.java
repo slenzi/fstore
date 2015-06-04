@@ -909,7 +909,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.equal(treeRoot.get("treeId"), tree.getTreeId())
 				);
 		
-		FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
+		//FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
+		
+		FSTree<N> result = (FSTree<N>) getSingleResultOrNull(treeSelect);
 		
 		return result;
 		

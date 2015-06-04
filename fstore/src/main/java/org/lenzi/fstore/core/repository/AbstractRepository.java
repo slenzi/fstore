@@ -286,5 +286,47 @@ public class AbstractRepository implements Serializable {
 		this.executeUpdate(getEntityManager().createQuery(q));
 		
 	}
+	
+	protected Object getSingleResultOrNull(Query q) throws DatabaseException {
+		
+		List results = null;
+		
+		try {
+			
+			results = q.getResultList();
+			
+		}catch(IllegalStateException e){
+			throw new DatabaseException("IllegalStateException was thrown. " + e.getMessage());
+		}catch(QueryTimeoutException e){
+			throw new DatabaseException("QueryTimeoutException was thrown. " + e.getMessage());
+		}catch(TransactionRequiredException e){
+			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
+		}catch(PessimisticLockException e){
+			throw new DatabaseException("PessimisticLockException was thrown. " + e.getMessage());
+		}catch(LockTimeoutException e){
+			throw new DatabaseException("LockTimeoutException was thrown. " + e.getMessage());
+		}catch(PersistenceException e){
+			throw new DatabaseException("PersistenceException was thrown. " + e.getMessage());
+		}catch(HibernateException e){
+			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());			
+		}finally{
+	
+		}		
+		
+		if(results.isEmpty()){
+			return null;
+		}else if(results.size() == 1){
+			return results.get(0);
+		}
+		
+		throw new NonUniqueResultException();
+	}
+	
+	protected Object getSingleResultOrNull(CriteriaQuery q) throws DatabaseException {
+		
+		return getSingleResultOrNull( getEntityManager().createQuery(q) );
+		
+	}
+	
 
 }

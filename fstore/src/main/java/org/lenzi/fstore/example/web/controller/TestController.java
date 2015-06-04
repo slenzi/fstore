@@ -30,29 +30,41 @@ public class TestController {
     private ManagedProperties appProps;
     
     @Autowired
-    private TestTreeService treeService; 
+    private TestTreeService testTreeService; 
     
     @InjectLogger
     private Logger logger;
 
+    /**
+     * 
+     * 
+     * @param model
+     * @return
+     */
 	@RequestMapping(method = RequestMethod.GET)
-	public String printHello(ModelMap model) {
+	public String showSampleTree(ModelMap model) {
 		
-		logger.info("printHello called");
+		logger.info("showSampleTree called");
 		
+		FSTree<FSTestNode> sampleTree = null;
 		
-		FSTree<FSTestNode> fstree = getSampleTree();
+		try {
+			sampleTree = getSampleTree();
+		} catch (ServiceException e) {
+			handleError(model, "error getting sample tree", e);
+			return "/test/test.jsp";
+		}
 		
-		if(fstree == null){
+		if(sampleTree == null){
 			handleError(model, "fs tree object is null. cannot continue.");
 			return "/test/test.jsp";
 		}
 		
 		Tree<FSTestNode> tree = null;
 		try {
-			tree = treeService.buildTree(fstree.getRootNode());
+			tree = testTreeService.buildTree(sampleTree.getRootNode());
 		} catch (ServiceException e) {
-			handleError(model, "Error building tree for FSTree with id " + fstree.getTreeId(), e);
+			handleError(model, "Error building tree for FSTree with id " + sampleTree.getTreeId(), e);
 			return "/test/test.jsp";
 		}
 		
@@ -74,15 +86,38 @@ public class TestController {
 	 * 
 	 * @return
 	 */
-	private FSTree<FSTestNode> getSampleTree() {
+	private FSTree<FSTestNode> getSampleTree() throws ServiceException {
 		
 		Long treeId = 1L;
 		FSTree<FSTestNode> sampleTree = null;
 		
 		try {
-			sampleTree = treeService.geTreeById(new FSTree<FSTestNode>(treeId));
+			sampleTree = testTreeService.geTreeById(new FSTree<FSTestNode>(treeId));
 		} catch (ServiceException e) {
-			logger.error("Error getting tree for tree id => " + treeId);
+			logger.error("Error getting tree for tree id => " + treeId + ". " + e.getMessage());
+		}
+		
+		if(sampleTree == null){
+		
+			sampleTree = testTreeService.addTree(
+					new FSTree<FSTestNode>("Sample tree", "Sample tree description."),
+					new FSTestNode("Root","Sample root node"));
+			
+			FSTestNode nodeB = testTreeService.createChildNode(sampleTree.getRootNode(), new FSTestNode("B","Node B"));
+				FSTestNode nodeC = testTreeService.createChildNode(nodeB, new FSTestNode("C","Node C"));
+					FSTestNode nodeD = testTreeService.createChildNode(nodeC, new FSTestNode("D","Node D"));
+						FSTestNode nodeE = testTreeService.createChildNode(nodeD, new FSTestNode("E","Node E"));
+							FSTestNode nodeF = testTreeService.createChildNode(nodeE, new FSTestNode("F","Node F"));
+							FSTestNode nodeG = testTreeService.createChildNode(nodeE, new FSTestNode("G","Node G"));
+						FSTestNode nodeH = testTreeService.createChildNode(nodeD, new FSTestNode("H","Node H"));
+							FSTestNode nodeI = testTreeService.createChildNode(nodeH, new FSTestNode("I","Node I"));
+							FSTestNode nodeJ = testTreeService.createChildNode(nodeH, new FSTestNode("J","Node J"));
+						FSTestNode nodeK = testTreeService.createChildNode(nodeD, new FSTestNode("K","Node K"));
+							FSTestNode nodeL = testTreeService.createChildNode(nodeK, new FSTestNode("L","Node L"));
+							FSTestNode nodeM = testTreeService.createChildNode(nodeK, new FSTestNode("M","Node M"));
+							FSTestNode nodeN = testTreeService.createChildNode(nodeK, new FSTestNode("N","Node N"));
+							FSTestNode nodeO = testTreeService.createChildNode(nodeK, new FSTestNode("O","Node O"));				
+
 		}
 		
 		return sampleTree;

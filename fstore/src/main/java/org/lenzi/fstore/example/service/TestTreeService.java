@@ -2,6 +2,8 @@ package org.lenzi.fstore.example.service;
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 import org.lenzi.fstore.core.logging.ClosureLogger;
 import org.lenzi.fstore.core.model.util.NodeCopier;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
