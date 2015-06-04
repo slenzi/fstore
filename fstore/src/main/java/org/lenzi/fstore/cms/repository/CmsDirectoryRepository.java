@@ -16,6 +16,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.core.repository.AbstractRepository;
+import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.service.TreeBuilder;
@@ -190,12 +191,14 @@ public class CmsDirectoryRepository extends AbstractRepository {
 				
 		}		
 		
+		query.distinct(true);
 		query.select(root);
 		query.where(
 				criteriaBuilder.equal(fileEntries.get(CmsFileEntry_.fileId), fileId)
 				);
 		
-		CmsDirectory result = getEntityManager().createQuery(query).getSingleResult();
+		//CmsDirectory result = getEntityManager().createQuery(query).getSingleResult();
+		CmsDirectory result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		
 		return result;
 		
@@ -239,12 +242,14 @@ public class CmsDirectoryRepository extends AbstractRepository {
 				
 		}
 		
+		query.distinct(true);
 		query.select(root);
 		query.where(
 				criteriaBuilder.equal(root.get(CmsDirectory_.nodeId), dirId)
 				);
 		
-		CmsDirectory result = getEntityManager().createQuery(query).getSingleResult();
+		//CmsDirectory result = getEntityManager().createQuery(query).getSingleResult();
+		CmsDirectory result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		
 		return result;		
 		

@@ -1,7 +1,6 @@
 package org.lenzi.fstore.core.repository;
 
 import java.io.Serializable;
-import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -110,6 +109,8 @@ public class AbstractRepository implements Serializable {
 	/**
 	 * Executes Query.getSingleResult() for the HQL query.
 	 * 
+	 * @deprecated - use result fetcher instead
+	 * 
 	 * @param q The Query object for the HQL query.
 	 * @return An Object as the query result.
 	 * @throws DatabaseException
@@ -144,6 +145,8 @@ public class AbstractRepository implements Serializable {
 	
 	/**
 	 * Executes Query.getResultList() for the HQL query.
+	 * 
+	 * @deprecated - use result fetcher instead
 	 * 
 	 * @param q The Query object for the HQL query.
 	 * @return A List as the query result.
@@ -263,12 +266,18 @@ public class AbstractRepository implements Serializable {
 		
 	}
 	
+	/**
+	 * @deprecated - use result fetcher
+	 */
 	protected Object getSingleResult(CriteriaQuery q) throws DatabaseException {
 		
 		return getSingleResult( getEntityManager().createQuery(q) ); 
 		
 	}
 	
+	/**
+	 * @deprecated - use result fetcher
+	 */
 	protected List getResultList(CriteriaQuery q) throws DatabaseException {
 		
 		return getResultList( getEntityManager().createQuery(q) );
@@ -287,6 +296,9 @@ public class AbstractRepository implements Serializable {
 		
 	}
 	
+	/**
+	 * @deprecated - use result fetcher
+	 */
 	protected Object getSingleResultOrNull(Query q) throws DatabaseException {
 		
 		List results = null;
@@ -322,6 +334,9 @@ public class AbstractRepository implements Serializable {
 		throw new NonUniqueResultException();
 	}
 	
+	/**
+	 * @deprecated - use result fetcher
+	 */
 	protected Object getSingleResultOrNull(CriteriaQuery q) throws DatabaseException {
 		
 		return getSingleResultOrNull( getEntityManager().createQuery(q) );

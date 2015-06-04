@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
@@ -22,6 +21,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore_;
 import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.core.repository.AbstractRepository;
+import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -87,7 +87,8 @@ public class CmsFileStoreRepository extends AbstractRepository {
 		
 		List<CmsFileStore> stores = null;
 		try {
-			stores = getResultList(query);
+			//stores = getResultList(query);
+			stores = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(query));
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Error checking if any parent stores exists for path " + dirPath.toString(), e);
 		}
@@ -119,7 +120,8 @@ public class CmsFileStoreRepository extends AbstractRepository {
 		
 		List<CmsFileStore> stores = null;
 		try {
-			stores = getResultList(query);
+			//stores = getResultList(query);
+			stores = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(query));
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Error checking if any child stores exists for path " + dirPath.toString(), e);
 		}
@@ -355,9 +357,10 @@ public class CmsFileStoreRepository extends AbstractRepository {
 				cb.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		TypedQuery<CmsFileStore> tquery = getEntityManager().createQuery(query);
+		//TypedQuery<CmsFileStore> tquery = getEntityManager().createQuery(query);
+		//return tquery.getSingleResult();
 		
-		return tquery.getSingleResult();
+		return ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		
 	}	
 	
@@ -390,7 +393,8 @@ public class CmsFileStoreRepository extends AbstractRepository {
 		
 		CmsFileStore store = null;
 		try {
-			store = (CmsFileStore) this.getSingleResult(query);
+			//store = (CmsFileStore) this.getSingleResult(query);
+			store = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		} catch (Exception e) {
 			throw new DatabaseException("Error retrieving file store for for root dir id => " + dirId);
 		}

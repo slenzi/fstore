@@ -86,7 +86,7 @@ public abstract class AbstractDeleteTreeTest extends AbstractTreeTest {
 		logger.info("Tree was deleted. Let's make sure it's gone!");
 		
 		// the tree was deleted so we should expect a NoResultException when we try to fetch it.
-		exception.expect(NoResultException.class);
+		exception.expect(ServiceException.class);
 		tree = treeService.buildTree(dbTree.getRootNode());
 		
 		assertNull(tree);

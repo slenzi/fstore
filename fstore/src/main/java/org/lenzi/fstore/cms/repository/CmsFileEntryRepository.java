@@ -15,6 +15,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFile_;
 import org.lenzi.fstore.cms.service.FileStoreHelper;
 import org.lenzi.fstore.core.repository.AbstractRepository;
+import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -139,7 +140,8 @@ public class CmsFileEntryRepository extends AbstractRepository {
 		
 		}		
 		
-		CmsFile result = getEntityManager().createQuery(query).getSingleResult();
+		//CmsFile result = getEntityManager().createQuery(query).getSingleResult();
+		CmsFile result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		
 		return result;
 	}	
@@ -189,7 +191,8 @@ public class CmsFileEntryRepository extends AbstractRepository {
 				criteriaBuilder.equal(root.get(CmsFileEntry_.fileId), fileId)
 				);
 		
-		CmsFileEntry result = getEntityManager().createQuery(query).getSingleResult();
+		//CmsFileEntry result = getEntityManager().createQuery(query).getSingleResult();
+		CmsFileEntry result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		
 		return result;		
 		

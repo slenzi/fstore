@@ -23,6 +23,7 @@ import javax.persistence.criteria.SetJoin;
 import org.lenzi.fstore.core.logging.ClosureLogger;
 import org.lenzi.fstore.core.model.util.NodeCopier;
 import org.lenzi.fstore.core.repository.AbstractRepository;
+import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.model.DBClosure;
 import org.lenzi.fstore.core.repository.model.impl.FSClosure;
@@ -532,7 +533,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		} catch (IllegalArgumentException e) {
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}
-		results = getResultList(query);
+		
+		//results = getResultList(query);
+		results = ResultFetcher.getResultListOrNull(query);
 		
 		return results;			
 		
@@ -910,8 +913,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				);
 		
 		//FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
+		//FSTree<N> result = (FSTree<N>) getSingleResultOrNull(treeSelect);
 		
-		FSTree<N> result = (FSTree<N>) getSingleResultOrNull(treeSelect);
+		FSTree<N> result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(treeSelect));
 		
 		return result;
 		
@@ -957,7 +961,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
+		//FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
+		
+		FSTree<N> result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(treeSelect));
 		
 		return result;
 		
@@ -1148,7 +1154,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}		
 		
-		N nodeWithParentClosure = (N)getSingleResult(query);		
+		//N nodeWithParentClosure = (N)getSingleResult(query);
+		
+		N nodeWithParentClosure = ResultFetcher.getSingleResultOrNull(query);
 		
 		return nodeWithParentClosure;
 	}
@@ -1171,7 +1179,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}		
 		
-		N nodeWithChildClosure = (N)getSingleResult(query);		
+		//N nodeWithChildClosure = (N)getSingleResult(query);
+		
+		N nodeWithChildClosure = ResultFetcher.getSingleResultOrNull(query);
 		
 		return nodeWithChildClosure;
 	}
@@ -1488,7 +1498,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 					);
 		}
 		
-		nodeIdList = getEntityManager().createQuery(childQuery).getResultList();
+		//nodeIdList = getEntityManager().createQuery(childQuery).getResultList();
+		
+		nodeIdList = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(childQuery));
 		
 		return nodeIdList;
 		
@@ -1500,6 +1512,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * the child nodes.
 	 * 
 	 * @deprecated - not used anywhere...
+	 * 
 	 * @param node The node to fetch, plus all child nodes.
 	 * @param onlyChildren - true to only get the child nodes, false to include the node you passes in.
 	 * @return
@@ -1555,7 +1568,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
 		return result;
 	}
@@ -1596,7 +1611,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
 		return result;
 	}
@@ -1639,7 +1656,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
 		return result;
 	}	
@@ -1678,7 +1697,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
 		return result;
 	}
@@ -1705,7 +1726,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId())
 				);
 		
-		N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
 		return result;
 	}
@@ -1743,7 +1766,10 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		selectNodes.where(
 				nodeSelectRoot.get(FSNode_.nodeId).in(nodeIdList)
 				);
-		nodeList = getEntityManager().createQuery(selectNodes).getResultList();
+		
+		//nodeList = getEntityManager().createQuery(selectNodes).getResultList();
+		
+		nodeList = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(selectNodes));
 		
 		return nodeList;
 		
