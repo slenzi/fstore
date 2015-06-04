@@ -120,11 +120,11 @@ public final class Trees {
 		switch(option){
 		
 			case HTML:
-				printHtml(start, "", true, buffer);
+				printHtml(start, "", true, buffer, null);
 				break;
 			
 			case TERMINAL:
-				printTerminal(start, "", true, buffer);
+				printTerminal(start, "", true, buffer, null);
 				break;
 				
 			default:
@@ -137,6 +137,39 @@ public final class Trees {
 	}
 	
 	/**
+	 * Print a tree.
+	 * 
+	 * Traverses the tree and calls TreeNode.getData().toString() for each node.
+	 * 
+	 * @param start - the node to start at
+	 * @param option - options on how to print the tree
+	 * @param toString - specify how to convert the data object stored in each tree node into a string
+	 * @return
+	 */
+	public static <N> String printTree(TreeNode<N> start, PrintOption option, ToString<N> toString){
+		
+		StringBuffer buffer = new StringBuffer();
+		
+		switch(option){
+		
+			case HTML:
+				printHtml(start, "", true, buffer, toString);
+				break;
+			
+			case TERMINAL:
+				printTerminal(start, "", true, buffer, toString);
+				break;
+				
+			default:
+				break;
+		
+		}
+		
+		return buffer.toString();
+		
+	}	
+	
+	/**
 	 * Print for html page
 	 * 
 	 * @param node
@@ -144,19 +177,19 @@ public final class Trees {
 	 * @param isTail
 	 * @param buffer
 	 */
-	private static <N> void printHtml(TreeNode<N> node, String linePrefix, boolean isTail, StringBuffer buffer){
+	private static <N> void printHtml(TreeNode<N> node, String linePrefix, boolean isTail, StringBuffer buffer, ToString<N> toString){
 		
-		buffer.append(linePrefix + (isTail ? "|__" : "|__") + node.getData().toString() + "<br>");
+		buffer.append(linePrefix + (isTail ? "|__" : "|__") + ((toString != null) ? toString.toString(node.getData()) : node.getData().toString()) + "<br>");
 		
 		if(node.hasChildren()){
 			
 			List<TreeNode<N>> children = node.getChildren();
 		
 			for(int i = 0; i < children.size() - 1; i++) {
-				printHtml(children.get(i), linePrefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), false, buffer);
+				printHtml(children.get(i), linePrefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), false, buffer, toString);
 			}
 			if(node.getChildren().size() >= 1){
-				printHtml(children.get(children.size() - 1), linePrefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), true, buffer);
+				printHtml(children.get(children.size() - 1), linePrefix + (isTail ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "|&nbsp;&nbsp;&nbsp;&nbsp;"), true, buffer, toString);
 			}
 		}
 		
@@ -170,19 +203,19 @@ public final class Trees {
 	 * @param isTail
 	 * @param buffer
 	 */
-	private static <N> void printTerminal(TreeNode<N> node, String linePrefix, boolean isTail, StringBuffer buffer){
+	private static <N> void printTerminal(TreeNode<N> node, String linePrefix, boolean isTail, StringBuffer buffer, ToString<N> toString){
 		
-		buffer.append(linePrefix + (isTail ? "|__" : "|__") + node.getData().toString() + System.getProperty("line.separator"));
+		buffer.append(linePrefix + (isTail ? "|__" : "|__") + ((toString != null) ? toString.toString(node.getData()) : node.getData().toString()) + System.getProperty("line.separator"));
 		
 		if(node.hasChildren()){
 			
 			List<TreeNode<N>> children = node.getChildren();
 		
 			for(int i = 0; i < children.size() - 1; i++) {
-				printTerminal(children.get(i), linePrefix + (isTail ? "   " : "|  "), false, buffer);
+				printTerminal(children.get(i), linePrefix + (isTail ? "   " : "|  "), false, buffer, toString);
 			}
 			if(node.getChildren().size() >= 1){
-				printTerminal(children.get(children.size() - 1), linePrefix + (isTail ? "   " : "|  "), true, buffer);
+				printTerminal(children.get(children.size() - 1), linePrefix + (isTail ? "   " : "|  "), true, buffer, toString);
 			}
 		}
 		

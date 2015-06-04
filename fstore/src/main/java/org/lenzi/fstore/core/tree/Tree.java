@@ -40,11 +40,28 @@ public class Tree<N> {
     	
     }
     
+    /**
+     * Prints the tree, calling toString on each object stored in the tree.
+     * 
+     * @return
+     */
     public String printHtmlTree(){
     	
     	return Trees.printTree(rootNode, PrintOption.HTML);
     	
     }
+    
+    /**
+     * Print the tree, using the toString function interface to specify how to print each object in the tree.
+     * 
+     * @param toString
+     * @return
+     */
+    public String printHtmlTree(ToString<N> toString){
+    	
+    	return Trees.printTree(rootNode, PrintOption.HTML, toString);
+    	
+    }    
     
     public List<TreeNode<N>> toList(WalkOption option){
     	

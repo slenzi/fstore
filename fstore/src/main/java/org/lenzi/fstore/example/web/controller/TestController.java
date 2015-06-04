@@ -68,7 +68,8 @@ public class TestController {
 			return "/test/test.jsp";
 		}
 		
-		String treeData = tree.printHtmlTree();
+		String treeData = tree.printHtmlTree(
+				n -> { return n.getName() + ": " + n.getTestValue() ; });
 		
 		StringBuffer buff = new StringBuffer();
 		buff.append("Hello! This is the \"" + appProps.getAppTitle() + "\" application.");
