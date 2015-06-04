@@ -7,8 +7,11 @@
 	<h2>Spring-config sample application.</h2>
 	
 	<p>
-	This application demonstrates how to use class-based annotation configuration to bootstrap
-	Spring, Spring MVC, JPA + Hibernate, and a Apache CXF JAX-RS service.  No beans.xml file! 
+	This application demos how to read/write trees to a database using a closure table.
+	</p>
+	
+	<p>
+	This application also builds upon the basic tree structure for store files and directories.
 	</p>
 
 	<p>
@@ -25,15 +28,6 @@
 	
 	<p>
 		<a href="<%=request.getContextPath() %>/cxf/api/tree/1">CXF JAX-RS fetch tree with ID 1</a>
-	</p>	
-	
-	<p>
-		<a href="<%=request.getContextPath() %>/cxf/api/person">CXF JAX-RS Test</a>
-	</p>
-	
-	<p>
-		<a href="<%=request.getContextPath() %>/cxf/api/person/1">CXF JAX-RS + JPA Test. Fetch Person 1 from database.</a><br>
-		<a href="<%=request.getContextPath() %>/cxf/api/person/2">CXF JAX-RS + JPA Test. Fetch Person 2 from database.</a>
 	</p>
 
 </body>

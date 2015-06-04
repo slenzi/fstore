@@ -6,11 +6,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.core.web.rs.exception.WebServiceException;
+import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.service.TestTreeService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class TreeResource {
     Logger logger;
     
     @Autowired
-    private TestTreeService treeService;
+    private TestTreeService testTreeService;
     
 	/**
 	 * Get service name
@@ -48,11 +48,10 @@ public class TreeResource {
 	@GET
 	@Path("{treeid}")
 	@Produces(MediaType.APPLICATION_JSON)
-    public Tree<CmsDirectory> getTreeById(@PathParam("treeid") String treeid) throws WebServiceException {
+    public Tree<FSTestNode> getTreeById(@PathParam("treeid") String treeid) throws WebServiceException {
     	
-		logger.info("Fetch tree by id = " + treeid);
+		logger.info("Fetch tree by id = " + treeid);	
 		
-		/*
 		Long longTreeId = null;
 		try {
 			longTreeId = Long.parseLong(treeid);
@@ -63,9 +62,10 @@ public class TreeResource {
 					"Error parsing tree ID parameter: " + e.getMessage());
 		}    	
     	
-		Tree<TreeMeta> tree = null;
+
+		Tree<FSTestNode> tree = null;
 		try {
-			tree = treeService.buildTree(longTreeId);
+			tree = testTreeService.buildTree(new FSTestNode(longTreeId));
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error("Error building tree for tree id " + longTreeId + ". " + e.getMessage());
@@ -74,10 +74,6 @@ public class TreeResource {
 		}
 		
 		return tree;
-		*/
-		return null;
-		
-		// TODO - add this back
     	
     }
     

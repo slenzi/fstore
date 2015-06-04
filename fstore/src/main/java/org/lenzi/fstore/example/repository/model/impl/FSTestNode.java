@@ -43,6 +43,10 @@ public class FSTestNode extends FSNode<FSTestNode> {
 	public FSTestNode() {
 		
 	}
+	
+	public FSTestNode(Long id) {
+		this.setNodeId(id);
+	}
 
 	/**
 	 * @param testValue

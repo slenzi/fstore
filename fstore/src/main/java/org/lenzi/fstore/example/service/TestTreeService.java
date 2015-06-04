@@ -531,5 +531,50 @@ public class TestTreeService {
 		return treeBuilder.buildTree(n);
 		
 	}
+	
+	/**
+	 * Fetch sample tree, creating it if necessary
+	 * 
+	 * @param treeId - id of tree to fetch. If tree does not exists a new sample
+	 * 	tree will be created.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FSTree<FSTestNode> getSampleTree(Long treeId) throws ServiceException {
+		
+		FSTree<FSTestNode> sampleTree = null;
+		
+		try {
+			sampleTree = geTreeById(new FSTree<FSTestNode>(treeId));
+		} catch (ServiceException e) {
+			logger.error("Error getting tree for tree id => " + treeId + ". " + e.getMessage());
+		}
+		
+		if(sampleTree == null){
+		
+			sampleTree = addTree(
+					new FSTree<FSTestNode>("Sample tree", "Sample tree description."),
+					new FSTestNode("Root","Sample root node"));
+			
+			FSTestNode nodeB = createChildNode(sampleTree.getRootNode(), new FSTestNode("B","Node B"));
+				FSTestNode nodeC = createChildNode(nodeB, new FSTestNode("C","Node C"));
+					FSTestNode nodeD = createChildNode(nodeC, new FSTestNode("D","Node D"));
+						FSTestNode nodeE = createChildNode(nodeD, new FSTestNode("E","Node E"));
+							FSTestNode nodeF = createChildNode(nodeE, new FSTestNode("F","Node F"));
+							FSTestNode nodeG = createChildNode(nodeE, new FSTestNode("G","Node G"));
+						FSTestNode nodeH = createChildNode(nodeD, new FSTestNode("H","Node H"));
+							FSTestNode nodeI = createChildNode(nodeH, new FSTestNode("I","Node I"));
+							FSTestNode nodeJ = createChildNode(nodeH, new FSTestNode("J","Node J"));
+						FSTestNode nodeK = createChildNode(nodeD, new FSTestNode("K","Node K"));
+							FSTestNode nodeL = createChildNode(nodeK, new FSTestNode("L","Node L"));
+							FSTestNode nodeM = createChildNode(nodeK, new FSTestNode("M","Node M"));
+							FSTestNode nodeN = createChildNode(nodeK, new FSTestNode("N","Node N"));
+							FSTestNode nodeO = createChildNode(nodeK, new FSTestNode("O","Node O"));				
+
+		}
+		
+		return sampleTree;
+		
+	}	
 
 }
