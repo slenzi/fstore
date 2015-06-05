@@ -79,6 +79,11 @@ public class CmsDirectoryAdder extends AbstractRepository {
 			throw new DatabaseException("Failed to fetch parent cms directory.", e);
 		}
 		
+		if(parentDir == null){
+			throw new DatabaseException("Cannot add new directory => " + dirName + " to parent dir => " + parentDirId + 
+					". Failed to fetch parent dir from database. Returned object was null.");
+		}
+		
 		// get file store
 		CmsFileStore cmsStore = null;
 		try {

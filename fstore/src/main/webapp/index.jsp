@@ -31,11 +31,11 @@
 	<h2>CMS Tests</h2>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/cms/test/tree">Fetch sample CMS tree.</a>
+		<a href="<%=request.getContextPath() %>/spring/cms/test/makestore">Create sample file store.</a>
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/cms/res">CMS resource dispatcher test</a>
+		<a href="<%=request.getContextPath() %>/spring/cms/res">CMS resource dispatcher test.</a>
 	</p>
 	
 

@@ -44,10 +44,13 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Main service for working with cms stores, directories, and files.
  * 
+ * @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
+ * @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
+ * 
  * @author sal
  */
 @Service
-@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
+@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public class CmsFileStoreService {
 
 	@InjectLogger
@@ -480,21 +483,40 @@ public class CmsFileStoreService {
 		
 		LocalDateTime timePoint = LocalDateTime.now();
 		
+		String pathPostfix = String.format("_%d.%s.%d_%d.%d.%d",
+				timePoint.getYear(), timePoint.getMonth(), timePoint.getDayOfMonth(),
+				timePoint.getHour(), timePoint.getMinute(), timePoint.getSecond());
+		
 		String dateTime = String.format("%s %s", timePoint.format( DateTimeFormatter.ISO_DATE ), 
 				timePoint.format( DateTimeFormatter.ISO_TIME ));
 		
-		fileStore = createFileStore(storePath, "Example File Store " + dateTime, 
-				"This is an example file store, created at " + dateTime, true);
+		Path fullStorePath = Paths.get(storePath.toString() + pathPostfix);
+		
+		logger.info("Creating sample file store at => " + fullStorePath);
+		
+		try {
+			fileStore = createFileStore(fullStorePath, "Example File Store " + dateTime, 
+					"This is an example file store, created at " + dateTime, true);
+		} catch (CmsServiceException e) {
+			throw new CmsServiceException("Error creating sample file store at => " + fullStorePath);
+		}
+		
+		logger.info("Store, name => " + fileStore.getName() + " was successfully created at, path => " + fileStore.getStorePath());
+		logger.info("Store root directory, id => " + fileStore.getRooDirId() + ", name => " + fileStore.getRootDir().getDirName() + 
+				", relative path => " + fileStore.getRootDir().getRelativeDirPath());
+		
+		/*
+		logger.info("Adding some directories...");
 		
 		CmsDirectory sampleDir1 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 1");
-			CmsDirectory sampleDir1_1 = addDirectory(sampleDir1.getDirId(), "Sample directory 1-1");
-			CmsDirectory sampleDir1_2 = addDirectory(sampleDir1.getDirId(), "Sample directory 1-2");
+			addDirectory(sampleDir1.getDirId(), "Sample directory 1-1");
+			addDirectory(sampleDir1.getDirId(), "Sample directory 1-2");
 		CmsDirectory sampleDir2 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 2");
-			CmsDirectory sampleDir2_1 = addDirectory(sampleDir2.getDirId(), "Sample directory 2-1");
-			CmsDirectory sampleDir2_2 = addDirectory(sampleDir2.getDirId(), "Sample directory 2-2");
+			addDirectory(sampleDir2.getDirId(), "Sample directory 2-1");
+			addDirectory(sampleDir2.getDirId(), "Sample directory 2-2");
 		CmsDirectory sampleDir3 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 3");
-			CmsDirectory sampleDir3_1 = addDirectory(sampleDir3.getDirId(), "Sample directory 3-1");
-			CmsDirectory sampleDir3_2 = addDirectory(sampleDir3.getDirId(), "Sample directory 3-2");
+			addDirectory(sampleDir3.getDirId(), "Sample directory 3-1");
+			addDirectory(sampleDir3.getDirId(), "Sample directory 3-2");
 		
 		Resource sampleImageResource = resourceLoader.getResource("classpath:image/");
 		
@@ -544,6 +566,7 @@ public class CmsFileStoreService {
 		} catch (TreeNodeVisitException e) {
 			throw new CmsServiceException("Error while adding sample images to sample file store.", e);
 		}
+		*/
 		
 		return fileStore;
 		
