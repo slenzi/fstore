@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.service.TestTreeService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

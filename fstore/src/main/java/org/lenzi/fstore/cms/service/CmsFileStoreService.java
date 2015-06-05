@@ -3,6 +3,10 @@ package org.lenzi.fstore.cms.service;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.List;
 
 import org.lenzi.fstore.cms.repository.CmsDirectoryAdder;
@@ -25,8 +29,14 @@ import org.lenzi.fstore.cms.service.exception.CmsServiceException;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
+import org.lenzi.fstore.core.tree.TreeNodeVisitException;
+import org.lenzi.fstore.core.tree.Trees;
+import org.lenzi.fstore.core.tree.Trees.WalkOption;
+import org.lenzi.fstore.core.util.FileUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +85,9 @@ public class CmsFileStoreService {
 	
 	@Autowired
 	private CmsDirectoryRemover cmsDirectoryRemover;
+	
+	@Autowired
+	private ResourceLoader resourceLoader;
 	
 	
 	public CmsFileStoreService() {
@@ -452,6 +465,88 @@ public class CmsFileStoreService {
 			throw new CmsServiceException("Error moving directory. " + e.getMessage(), e);
 		}		
 		
-	}	
+	}
+	
+	/**
+	 * Creates a sample file store, with some directories and files.
+	 * 
+	 * @param storePath
+	 * @return
+	 * @throws CmsServiceException
+	 */
+	public CmsFileStore createSampleFileStore(Path storePath) throws CmsServiceException {
+		
+		CmsFileStore fileStore = null;
+		
+		LocalDateTime timePoint = LocalDateTime.now();
+		
+		String dateTime = String.format("%s %s", timePoint.format( DateTimeFormatter.ISO_DATE ), 
+				timePoint.format( DateTimeFormatter.ISO_TIME ));
+		
+		fileStore = createFileStore(storePath, "Example File Store " + dateTime, 
+				"This is an example file store, created at " + dateTime, true);
+		
+		CmsDirectory sampleDir1 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 1");
+			CmsDirectory sampleDir1_1 = addDirectory(sampleDir1.getDirId(), "Sample directory 1-1");
+			CmsDirectory sampleDir1_2 = addDirectory(sampleDir1.getDirId(), "Sample directory 1-2");
+		CmsDirectory sampleDir2 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 2");
+			CmsDirectory sampleDir2_1 = addDirectory(sampleDir2.getDirId(), "Sample directory 2-1");
+			CmsDirectory sampleDir2_2 = addDirectory(sampleDir2.getDirId(), "Sample directory 2-2");
+		CmsDirectory sampleDir3 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 3");
+			CmsDirectory sampleDir3_1 = addDirectory(sampleDir3.getDirId(), "Sample directory 3-1");
+			CmsDirectory sampleDir3_2 = addDirectory(sampleDir3.getDirId(), "Sample directory 3-2");
+		
+		Resource sampleImageResource = resourceLoader.getResource("classpath:image/");
+		
+		Path sampleImagePath = null;
+		try {
+			sampleImagePath = Paths.get(sampleImageResource.getFile().getAbsolutePath());
+		} catch (IOException e) {
+			throw new CmsServiceException("Error attempting to get parent path for classpath images at src/main/resource/images", e);
+		}
+		
+		// all images, at depth 1
+		List<Path> listSampleImages = null;
+		try {
+			listSampleImages = FileUtil.listFilesToDepth(sampleImagePath, 1);
+		} catch (IOException e) {
+			throw new CmsServiceException("Error attempting to get list of paths for sample images in src/main/resource/images", e);
+		}
+		
+		if(listSampleImages == null || listSampleImages.size() < 9){
+			throw new CmsServiceException("No images in classpath images folder at src/main/resources/images, or less than 9 images. Need at least 9.");
+		}
+		
+		Iterator<Path> imagePathItr = listSampleImages.iterator();
+			
+		Tree<CmsDirectory> directoryTree = getTree(fileStore.getRootDir().getDirId());
+		
+		// walk tree and add sample images to each of the directories
+		try {
+			
+			Trees.walkTree(directoryTree,
+					(treeNode) -> {
+						
+						Path nextImagePath = imagePathItr.hasNext() ? imagePathItr.next() : null;
+						
+						if(nextImagePath != null){
+							try {
+								this.addFile(nextImagePath, treeNode.getData().getDirId(), true);
+							} catch (CmsServiceException e) {
+								throw new TreeNodeVisitException("Error adding file " + nextImagePath + 
+										" to cms directory " + treeNode.getData().getDirName(), e);
+							}
+						}
+						
+					},
+					WalkOption.PRE_ORDER_TRAVERSAL);
+			
+		} catch (TreeNodeVisitException e) {
+			throw new CmsServiceException("Error while adding sample images to sample file store.", e);
+		}
+		
+		return fileStore;
+		
+	}
 
 }

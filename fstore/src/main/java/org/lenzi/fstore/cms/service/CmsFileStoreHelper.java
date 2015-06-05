@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FileStoreHelper {
+public class CmsFileStoreHelper {
 
 	@InjectLogger
 	private Logger logger;
@@ -34,7 +34,7 @@ public class FileStoreHelper {
 	//@Autowired
 	//private TreeBuilder<CmsDirectory> treeBuilder;	
 	
-	public FileStoreHelper() {
+	public CmsFileStoreHelper() {
 
 	}	
 	

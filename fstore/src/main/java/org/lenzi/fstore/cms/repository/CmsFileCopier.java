@@ -16,7 +16,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFile;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.cms.service.FileStoreHelper;
+import org.lenzi.fstore.cms.service.CmsFileStoreHelper;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
@@ -56,7 +56,7 @@ public class CmsFileCopier extends AbstractRepository {
 	private CmsFileEntryRepository cmsFileEntryRepository;
 	
 	@Autowired
-	private FileStoreHelper fileStoreHelper;
+	private CmsFileStoreHelper fileStoreHelper;
 	
 	@Autowired
 	@Qualifier("cmsDirectoryTree")

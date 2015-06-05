@@ -7,7 +7,7 @@ import org.lenzi.fstore.cms.repository.CmsDirectoryRepository.CmsDirectoryFetch;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
-import org.lenzi.fstore.cms.service.FileStoreHelper;
+import org.lenzi.fstore.cms.service.CmsFileStoreHelper;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
@@ -46,7 +46,7 @@ public class CmsDirectoryRemover extends AbstractRepository {
 	private Logger logger;	
 	
 	@Autowired
-	private FileStoreHelper fileStoreHelper;
+	private CmsFileStoreHelper fileStoreHelper;
 	
 	@Autowired
 	private CmsFileStoreRepository cmsFileStoreRepository;	

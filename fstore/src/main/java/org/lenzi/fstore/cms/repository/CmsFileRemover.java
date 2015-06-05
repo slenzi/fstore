@@ -16,7 +16,7 @@ import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry_;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileStore;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFile_;
-import org.lenzi.fstore.cms.service.FileStoreHelper;
+import org.lenzi.fstore.cms.service.CmsFileStoreHelper;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -45,7 +45,7 @@ public class CmsFileRemover extends AbstractRepository {
 	private Logger logger;
 	
 	@Autowired
-	private FileStoreHelper fileStoreHelper;
+	private CmsFileStoreHelper fileStoreHelper;
 	
 	@Autowired
 	private CmsFileStoreRepository cmsFileStoreRepository;	
