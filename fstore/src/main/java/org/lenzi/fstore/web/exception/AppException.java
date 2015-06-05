@@ -1,4 +1,4 @@
-package org.lenzi.fstore.example.web.exception;
+package org.lenzi.fstore.web.exception;
 
 public class AppException extends Exception {
 

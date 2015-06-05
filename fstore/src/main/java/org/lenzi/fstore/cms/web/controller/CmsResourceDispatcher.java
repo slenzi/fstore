@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.example.service.TestTreeService;
+import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author slenzi
  */
 @Controller
-@RequestMapping("/res")
-public class ResourceDispatcher {
+@RequestMapping("/cms/res")
+public class CmsResourceDispatcher extends AbstractSpringController {
 
     @InjectLogger
     Logger logger;
@@ -32,7 +33,7 @@ public class ResourceDispatcher {
 	/**
 	 * 
 	 */
-	public ResourceDispatcher() {
+	public CmsResourceDispatcher() {
 		
 	}
 	
@@ -41,7 +42,7 @@ public class ResourceDispatcher {
 	
 		logger.info("Dispatching request for URL => " + request.getRequestURL());
 		
-		return "/test/test.jsp";
+		return "/test/cmstest/test.jsp";
 		
 	}
 

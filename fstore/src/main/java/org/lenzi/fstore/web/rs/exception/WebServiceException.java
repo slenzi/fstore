@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.core.web.rs.exception;
+package org.lenzi.fstore.web.rs.exception;
 
 /**
  * @author slenzi

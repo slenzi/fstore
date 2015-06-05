@@ -4,31 +4,41 @@
 <html>
 <body>
 
-	<h2>Spring-config sample application.</h2>
+	<h1>FStore Test Ground</h1>
 	
 	<p>
 	This application demos how to read/write trees to a database using a closure table.
 	</p>
 	
 	<p>
-	This application also builds upon the basic tree structure for store files and directories.
+	This application also builds upon the basic tree structure to store files and directories.
 	</p>
+	
+	<h2>Sample Tree Tests</h2>
 
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/test">Fetch sample tree with ID = 1</a>
+		<a href="<%=request.getContextPath() %>/spring/example/test">Fetch sample tree.</a>
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/res">CMS Resource Dispatcher...</a>
+		<a href="<%=request.getContextPath() %>/spring/example/tree">Sample tree dispatcher test.</a>
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/tree/1">Test Tree Dispatcher...</a>
+		<a href="<%=request.getContextPath() %>/cxf/api/tree/1">CXF JAX-RS fetch sample tree.</a>
+	</p>
+	
+	<h2>CMS Tests</h2>
+	
+	<p>
+		<a href="<%=request.getContextPath() %>/spring/cms/test/tree">Fetch sample CMS tree.</a>
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/cxf/api/tree/1">CXF JAX-RS fetch tree with ID 1</a>
+		<a href="<%=request.getContextPath() %>/spring/cms/res">CMS resource dispatcher test</a>
 	</p>
+	
+
 
 </body>
 </html>
