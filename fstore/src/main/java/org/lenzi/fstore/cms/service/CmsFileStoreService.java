@@ -562,20 +562,25 @@ public class CmsFileStoreService {
 			Trees.walkTree(directoryTree,
 					(treeNode) -> {
 						
-						Path nextImagePath = imagePathItr.hasNext() ? imagePathItr.next() : null;
+						// skip root node, only add files to child nodes
+						if(!treeNode.getData().isRootNode()){
 						
-						if(nextImagePath != null){
-							try {
-								
-								cmsFileAdder.addFile(nextImagePath, treeNode.getData().getDirId(), true);
-								
-							} catch (DatabaseException e) {
-								throw new TreeNodeVisitException("DatabaseException while adding file " + nextImagePath + 
-										" to cms directory " + treeNode.getData().getDirName(), e);
-							} catch (IOException e) {
-								throw new TreeNodeVisitException("IOException while adding file " + nextImagePath + 
-										" to cms directory " + treeNode.getData().getDirName(), e);						
+							Path nextImagePath = imagePathItr.hasNext() ? imagePathItr.next() : null;
+							
+							if(nextImagePath != null){
+								try {
+									
+									cmsFileAdder.addFile(nextImagePath, treeNode.getData().getDirId(), true);
+									
+								} catch (DatabaseException e) {
+									throw new TreeNodeVisitException("DatabaseException while adding file " + nextImagePath + 
+											" to cms directory " + treeNode.getData().getDirName(), e);
+								} catch (IOException e) {
+									throw new TreeNodeVisitException("IOException while adding file " + nextImagePath + 
+											" to cms directory " + treeNode.getData().getDirName(), e);						
+								}
 							}
+							
 						}
 						
 					},
