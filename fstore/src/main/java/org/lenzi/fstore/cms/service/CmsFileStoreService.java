@@ -478,6 +478,8 @@ public class CmsFileStoreService {
 	/**
 	 * Creates a sample file store, with some directories and files.
 	 * 
+	 * Directly uses CmsFileStoreAdder, CmsDirectoryAdder, and CmsFileAdder
+	 * 
 	 * @param storePath
 	 * @return
 	 * @throws CmsServiceException
@@ -502,9 +504,11 @@ public class CmsFileStoreService {
 		// use cmsFileStoreRepository directly rather than calling service method, this will uses the
 		// spring proxy and correct transaction
 		try {
+			
 			fileStore = cmsFileStoreAdder.createFileStore(
 					fullStorePath, "Example File Store " + dateTime, 
 					"This is an example file store, created at " + dateTime, true);
+			
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Error creating sample file store at => " + fullStorePath, e);
 		}
@@ -518,15 +522,19 @@ public class CmsFileStoreService {
 		// use cmsDirectoryAdder directly rather than calling service method, this will uses the
 		// spring proxy and correct transaction
 		try {
+			
 			CmsDirectory sampleDir1 = cmsDirectoryAdder.addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 1");
 				cmsDirectoryAdder.addDirectory(sampleDir1.getDirId(), "Sample directory 1-1");
 				cmsDirectoryAdder.addDirectory(sampleDir1.getDirId(), "Sample directory 1-2");
+			
 			CmsDirectory sampleDir2 = cmsDirectoryAdder.addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 2");
 				cmsDirectoryAdder.addDirectory(sampleDir2.getDirId(), "Sample directory 2-1");
 				cmsDirectoryAdder.addDirectory(sampleDir2.getDirId(), "Sample directory 2-2");
+			
 			CmsDirectory sampleDir3 = cmsDirectoryAdder.addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 3");
 				cmsDirectoryAdder.addDirectory(sampleDir3.getDirId(), "Sample directory 3-1");
 				cmsDirectoryAdder.addDirectory(sampleDir3.getDirId(), "Sample directory 3-2");
+				
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Error adding new directory. " + e.getMessage(), e);
 		}
@@ -578,6 +586,115 @@ public class CmsFileStoreService {
 								} catch (IOException e) {
 									throw new TreeNodeVisitException("IOException while adding file " + nextImagePath + 
 											" to cms directory " + treeNode.getData().getDirName(), e);						
+								}
+							}
+							
+						}
+						
+					},
+					WalkOption.PRE_ORDER_TRAVERSAL);
+			
+		} catch (TreeNodeVisitException e) {
+			throw new CmsServiceException("Error while adding sample images to sample file store.", e);
+		}
+		
+		return fileStore;
+		
+	}
+	
+	/**
+	 * Creates a sample file store, with some directories and files.
+	 * 
+	 * Does NOT, directly use CmsFileStoreAdder, CmsDirectoryAdder, and CmsFileAdder. Instead we call the service
+	 * methods from this class.
+	 * 
+	 * @param storePath
+	 * @return
+	 * @throws CmsServiceException
+	 */
+	public CmsFileStore createSampleFileStoreAlt(Path storePath) throws CmsServiceException {
+		
+		CmsFileStore fileStore = null;
+		
+		LocalDateTime timePoint = LocalDateTime.now();
+		
+		String pathPostfix = String.format("_%d.%s.%d_%d.%d.%d",
+				timePoint.getYear(), timePoint.getMonth(), timePoint.getDayOfMonth(),
+				timePoint.getHour(), timePoint.getMinute(), timePoint.getSecond());
+		
+		String dateTime = String.format("%s %s", timePoint.format( DateTimeFormatter.ISO_DATE ), 
+				timePoint.format( DateTimeFormatter.ISO_TIME ));
+		
+		Path fullStorePath = Paths.get(storePath.toString() + pathPostfix);
+		
+		logger.info("Creating sample file store at => " + fullStorePath);
+
+		fileStore = createFileStore(
+				fullStorePath, "Example File Store " + dateTime, 
+				"This is an example file store, created at " + dateTime, true);
+		
+		logger.info("Store, name => " + fileStore.getName() + " was successfully created at, path => " + fileStore.getStorePath());
+		logger.info("Store root directory, id => " + fileStore.getRooDirId() + ", name => " + fileStore.getRootDir().getDirName() + 
+				", relative path => " + fileStore.getRootDir().getRelativeDirPath());
+	
+		logger.info("Adding some directories...");
+	
+		CmsDirectory sampleDir1 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 1");
+			addDirectory(sampleDir1.getDirId(), "Sample directory 1-1");
+			addDirectory(sampleDir1.getDirId(), "Sample directory 1-2");
+		
+		CmsDirectory sampleDir2 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 2");
+			addDirectory(sampleDir2.getDirId(), "Sample directory 2-1");
+			addDirectory(sampleDir2.getDirId(), "Sample directory 2-2");
+		
+		CmsDirectory sampleDir3 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 3");
+			addDirectory(sampleDir3.getDirId(), "Sample directory 3-1");
+			addDirectory(sampleDir3.getDirId(), "Sample directory 3-2");
+		
+		Resource sampleImageResource = resourceLoader.getResource("classpath:image/");
+		
+		Path sampleImagePath = null;
+		try {
+			sampleImagePath = Paths.get(sampleImageResource.getFile().getAbsolutePath());
+		} catch (IOException e) {
+			throw new CmsServiceException("Error attempting to get parent path for classpath images at src/main/resource/images", e);
+		}
+		
+		// all images, at depth 1
+		List<Path> listSampleImages = null;
+		try {
+			listSampleImages = FileUtil.listFilesToDepth(sampleImagePath, 1);
+		} catch (IOException e) {
+			throw new CmsServiceException("Error attempting to get list of paths for sample images in src/main/resource/images", e);
+		}
+		
+		if(listSampleImages == null || listSampleImages.size() < 9){
+			throw new CmsServiceException("No images in classpath images folder at src/main/resources/images, or less than 9 images. Need at least 9.");
+		}
+		
+		Iterator<Path> imagePathItr = listSampleImages.iterator();
+			
+		Tree<CmsDirectory> directoryTree = getTree(fileStore.getRootDir().getDirId());
+		
+		// walk tree and add sample images to each of the directories
+		try {
+			
+			Trees.walkTree(directoryTree,
+					(treeNode) -> {
+						
+						// skip root node, only add files to child nodes
+						if(!treeNode.getData().isRootNode()){
+						
+							Path nextImagePath = imagePathItr.hasNext() ? imagePathItr.next() : null;
+							
+							if(nextImagePath != null){
+								try {
+									
+									addFile(nextImagePath, treeNode.getData().getDirId(), true);
+									
+								} catch (CmsServiceException e) {
+									throw new TreeNodeVisitException("Error while adding file " + nextImagePath + 
+											" to cms directory " + treeNode.getData().getDirName(), e);
 								}
 							}
 							

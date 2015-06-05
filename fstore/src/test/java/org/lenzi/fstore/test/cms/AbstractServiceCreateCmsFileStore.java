@@ -45,7 +45,10 @@ public abstract class AbstractServiceCreateCmsFileStore extends AbstractTreeTest
 		CmsFileStore store = null;
 		
 		try {
-			store = storeService.createSampleFileStore(examplePath);
+			
+			//store = storeService.createSampleFileStore(examplePath);
+			store = storeService.createSampleFileStoreAlt(examplePath);
+			
 		} catch (CmsServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

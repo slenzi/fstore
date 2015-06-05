@@ -299,6 +299,8 @@
 		
 		<!-- define resources that will be filtered -->
 		<resources>
+		
+			<!-- filter java, xml, and properties files from main source folder -->
 			<resource>
 				<directory>${basedir}/src/main/java</directory>
 				<filtering>true</filtering>
@@ -308,6 +310,8 @@
 					<include>**/*.properties</include>
 				</includes>
 			</resource>
+			
+			<!-- filter xml and property files from resources folder -->
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>
 				<filtering>true</filtering>
@@ -316,6 +320,17 @@
 					<include>**/*.properties</include>
 				</includes>
 			</resource>
+			
+			<!-- make sure we get other resource from resources folder, but don't filter them (breaks binary files) -->
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</resource>
+			
 			<!--
 			<resource>
 				<directory>${basedir}/src/test/resources</directory>
