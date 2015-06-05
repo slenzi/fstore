@@ -144,7 +144,7 @@ public class CmsFileStoreRepository extends AbstractRepository {
 	 * @return A list of all stores which match any of the three conditions listed above.
 	 * @throws DatabaseException
 	 */
-	private List<CmsFileStore> validatePath(Path dirPath) throws DatabaseException {
+	public List<CmsFileStore> validatePath(Path dirPath) throws DatabaseException {
 		
 		// TODO - bug in pattern matching
 		
@@ -160,110 +160,6 @@ public class CmsFileStoreRepository extends AbstractRepository {
 		Collections.sort(dupFree);
 		
 		return dupFree;
-		
-	}
-	
-	/**
-	 * Create a new file store
-	 * 
-	 * existing store path:
-	 * /a/b/c
-	 * /e/f
-	 * 
-	 * good new store paths:
-	 * /e/g
-	 * /a/b/d
-	 * 
-	 * bad new store paths: new file store cannot have same path, and path cannot be a sub dir of an existing file store.
-	 * /a       - parent of existing store
-	 * /a/b     - parent of existing store
-	 * /a/b/c   - match of existing store
-	 * /a/b/c/e - child of existing store
-	 * /e		- parent of existing store
-	 * /e/f     - match of existing store
-	 * /e/f/g   - child of existing store
-	 * 
-	 * @param storePath - path to where all files will be stored
-	 * @param name - name of the file store
-	 * @param description - description of the file store
-	 * @param clearIfExists - if the 'dirPath' currently exists on the file system, and contains files, pass true to wipe
-	 * 	everything in the directory. If you pass false, and the directory contains files, a DatabaseException will be thrown.
-	 * 
-	 * @return a reference to the newly created file store object
-	 * 
-	 * @throws DatabaseException - If the 'dirPath' exists on the file system and contains files, and 'clearIfExists' is false.
-	 * 	Also throws a DatabaseException if data cannot be persisted.
-	 */
-	public CmsFileStore createFileStore(Path storePath, String name, String description, boolean clearIfExists) throws DatabaseException {
-		
-		CmsFileStore store = doCreateStore(storePath, name, description, clearIfExists);
-		
-		return store;
-		
-	}
-	// helper method for create operation
-	private CmsFileStore doCreateStore(Path storePath, String name, String description, boolean clearIfExists) throws DatabaseException {
-		
-		//logger.info("Creating file store store for path => " + storePath.toString());
-		
-		// check for existing store paths that will conflict with the new store path
-		List<CmsFileStore> conflictingStores = null;
-		try {
-			conflictingStores = validatePath(storePath);
-		} catch (Exception e) {
-			throw new DatabaseException("Error checking for conflicting store paths.", e);
-		}
-		if(conflictingStores != null && conflictingStores.size() > 0){
-			StringBuffer buf = new StringBuffer();
-			buf.append("The following existing files stores conflict with the new file store path " + storePath.toString() + 
-					System.getProperty("line.separator"));
-			buf.append("New file store path must not be the same as an existing file store path. Additionally, new path "
-					+ "must not be a child directory of an existing store path, and must not be a parent directory of "
-					+ "an existing store path." + System.getProperty("line.separator"));
-			for(CmsFileStore store : conflictingStores){
-				buf.append("Store name: " + store.getName() + ", store path: " + store.getStorePath() + System.getProperty("line.separator"));
-			}
-			throw new DatabaseException(buf.toString());
-		}
- 		
-		// create root directory for new file store
-		CmsDirectory storeRootDir = null;
-		try {
-			
-			storeRootDir = treeRepository.addRootNode(new CmsDirectory(storePath.getFileName().toString(), File.separator));
-			
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to create root directory tree node for file store, name => " + 
-					name + ", path => " + storePath.toString(), e);
-		}
-		
-		// create new file store and save to db
-		CmsFileStore fileStore = new CmsFileStore();
-		fileStore.setName(name);
-		fileStore.setDescription(description);
-		fileStore.setNodeId(storeRootDir.getDirId());
-		fileStore.setStorePath(storePath.toString());
-		fileStore.setDateCreated(DateUtil.getCurrentTime());
-		fileStore.setDateUpdated(DateUtil.getCurrentTime());
-		
-		try {
-			persist(fileStore);
-		}catch(DatabaseException e){
-			throw new DatabaseException("Error saving file store entry to database. ", e);
-		}
-		
-		getEntityManager().flush();
-		
-		// want to avoid insert operation...
-		fileStore.setRootDir(storeRootDir);
-		
-		try {
-			fileStoreHelper.createDirOnFileSystem(storePath, true);
-		} catch (SecurityException | IOException e) {
-			throw new DatabaseException("Error creating directory on local file system. ", e);
-		}
-		
-		return fileStore;		
 		
 	}
 	

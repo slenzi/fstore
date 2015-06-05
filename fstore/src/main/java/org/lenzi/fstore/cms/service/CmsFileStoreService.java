@@ -21,6 +21,7 @@ import org.lenzi.fstore.cms.repository.CmsFileEntryRepository;
 import org.lenzi.fstore.cms.repository.CmsFileEntryRepository.CmsFileEntryFetch;
 import org.lenzi.fstore.cms.repository.CmsFileMover;
 import org.lenzi.fstore.cms.repository.CmsFileRemover;
+import org.lenzi.fstore.cms.repository.CmsFileStoreAdder;
 import org.lenzi.fstore.cms.repository.CmsFileStoreRepository;
 import org.lenzi.fstore.cms.repository.model.impl.CmsDirectory;
 import org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry;
@@ -46,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
  * @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
+ * @Transactional(propagation=Propagation.PROPAGATION_MANDATORY, rollbackFor=Throwable.class)
  * 
  * @author sal
  */
@@ -64,6 +66,9 @@ public class CmsFileStoreService {
 	
 	@Autowired
 	private CmsFileEntryRepository cmsFileEntryRepository;
+	
+	@Autowired
+	private CmsFileStoreAdder cmsFileStoreAdder;
 
 	@Autowired
 	private CmsFileAdder cmsFileAdder;	
@@ -182,7 +187,7 @@ public class CmsFileStoreService {
 		
 		CmsFileStore cmsStore = null;
 		try {
-			cmsStore = cmsFileStoreRepository.createFileStore(storePath, name, description, clearIfExists);
+			cmsStore = cmsFileStoreAdder.createFileStore(storePath, name, description, clearIfExists);
 		} catch (DatabaseException e) {
 			throw new CmsServiceException("Error creating store. " + e.getMessage(), e);
 		}
@@ -493,30 +498,38 @@ public class CmsFileStoreService {
 		Path fullStorePath = Paths.get(storePath.toString() + pathPostfix);
 		
 		logger.info("Creating sample file store at => " + fullStorePath);
-		
+
+		// use cmsFileStoreRepository directly rather than calling service method, this will uses the
+		// spring proxy and correct transaction
 		try {
-			fileStore = createFileStore(fullStorePath, "Example File Store " + dateTime, 
+			fileStore = cmsFileStoreAdder.createFileStore(
+					fullStorePath, "Example File Store " + dateTime, 
 					"This is an example file store, created at " + dateTime, true);
-		} catch (CmsServiceException e) {
-			throw new CmsServiceException("Error creating sample file store at => " + fullStorePath);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Error creating sample file store at => " + fullStorePath, e);
 		}
 		
 		logger.info("Store, name => " + fileStore.getName() + " was successfully created at, path => " + fileStore.getStorePath());
 		logger.info("Store root directory, id => " + fileStore.getRooDirId() + ", name => " + fileStore.getRootDir().getDirName() + 
 				", relative path => " + fileStore.getRootDir().getRelativeDirPath());
-		
-		/*
+	
 		logger.info("Adding some directories...");
 		
-		CmsDirectory sampleDir1 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 1");
-			addDirectory(sampleDir1.getDirId(), "Sample directory 1-1");
-			addDirectory(sampleDir1.getDirId(), "Sample directory 1-2");
-		CmsDirectory sampleDir2 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 2");
-			addDirectory(sampleDir2.getDirId(), "Sample directory 2-1");
-			addDirectory(sampleDir2.getDirId(), "Sample directory 2-2");
-		CmsDirectory sampleDir3 = addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 3");
-			addDirectory(sampleDir3.getDirId(), "Sample directory 3-1");
-			addDirectory(sampleDir3.getDirId(), "Sample directory 3-2");
+		// use cmsDirectoryAdder directly rather than calling service method, this will uses the
+		// spring proxy and correct transaction
+		try {
+			CmsDirectory sampleDir1 = cmsDirectoryAdder.addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 1");
+				cmsDirectoryAdder.addDirectory(sampleDir1.getDirId(), "Sample directory 1-1");
+				cmsDirectoryAdder.addDirectory(sampleDir1.getDirId(), "Sample directory 1-2");
+			CmsDirectory sampleDir2 = cmsDirectoryAdder.addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 2");
+				cmsDirectoryAdder.addDirectory(sampleDir2.getDirId(), "Sample directory 2-1");
+				cmsDirectoryAdder.addDirectory(sampleDir2.getDirId(), "Sample directory 2-2");
+			CmsDirectory sampleDir3 = cmsDirectoryAdder.addDirectory(fileStore.getRootDir().getDirId(), "Sample directory 3");
+				cmsDirectoryAdder.addDirectory(sampleDir3.getDirId(), "Sample directory 3-1");
+				cmsDirectoryAdder.addDirectory(sampleDir3.getDirId(), "Sample directory 3-2");
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Error adding new directory. " + e.getMessage(), e);
+		}
 		
 		Resource sampleImageResource = resourceLoader.getResource("classpath:image/");
 		
@@ -553,10 +566,15 @@ public class CmsFileStoreService {
 						
 						if(nextImagePath != null){
 							try {
-								this.addFile(nextImagePath, treeNode.getData().getDirId(), true);
-							} catch (CmsServiceException e) {
-								throw new TreeNodeVisitException("Error adding file " + nextImagePath + 
+								
+								cmsFileAdder.addFile(nextImagePath, treeNode.getData().getDirId(), true);
+								
+							} catch (DatabaseException e) {
+								throw new TreeNodeVisitException("DatabaseException while adding file " + nextImagePath + 
 										" to cms directory " + treeNode.getData().getDirName(), e);
+							} catch (IOException e) {
+								throw new TreeNodeVisitException("IOException while adding file " + nextImagePath + 
+										" to cms directory " + treeNode.getData().getDirName(), e);						
 							}
 						}
 						
@@ -566,7 +584,6 @@ public class CmsFileStoreService {
 		} catch (TreeNodeVisitException e) {
 			throw new CmsServiceException("Error while adding sample images to sample file store.", e);
 		}
-		*/
 		
 		return fileStore;
 		
