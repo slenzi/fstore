@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.core.repository.AbstractRepository;
+import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -211,7 +212,8 @@ public class TreeQueryPostgresqlRepository extends AbstractRepository implements
 	public long getSequenceValue(String nativeSequenceQuery) throws DatabaseException {
 
 		Query query = getEntityManager().createNativeQuery(nativeSequenceQuery);
-		BigInteger result = (BigInteger)getSingleResult(query);
+		//BigInteger result = (BigInteger)getSingleResult(query);
+		BigInteger result = ResultFetcher.getSingleResultOrNull(query);
 		long sequenceId = result.longValue();
 		return sequenceId;		
 		

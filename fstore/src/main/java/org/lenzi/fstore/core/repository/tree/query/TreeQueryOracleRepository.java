@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import javax.persistence.Query;
 
 import org.lenzi.fstore.core.repository.AbstractRepository;
+import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -209,7 +210,8 @@ public class TreeQueryOracleRepository extends AbstractRepository implements Tre
 	public long getSequenceValue(String nativeSequenceQuery) throws DatabaseException {
 
 		Query query = getEntityManager().createNativeQuery(nativeSequenceQuery);
-		BigDecimal result = (BigDecimal)getSingleResult(query);
+		//BigDecimal result = (BigDecimal)getSingleResult(query);
+		BigDecimal result = ResultFetcher.getSingleResultOrNull(query);
 		long sequenceId = result.longValue();
 		return sequenceId;			
 		

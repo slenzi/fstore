@@ -107,74 +107,6 @@ public class AbstractRepository implements Serializable {
 	}
 	
 	/**
-	 * Executes Query.getSingleResult() for the HQL query.
-	 * 
-	 * @deprecated - use result fetcher instead
-	 * 
-	 * @param q The Query object for the HQL query.
-	 * @return An Object as the query result.
-	 * @throws DatabaseException
-	 */
-	protected Object getSingleResult(Query q) throws DatabaseException {
-		try {
-			return q.getSingleResult();
-		}catch(NoResultException e){
-			logger.warn("NoResultException was thrown. No results for HQL query " + q.toString());
-			return null;
-		}catch(NonUniqueResultException  e){
-			logger.warn("NonUniqueResultException was thrown. Should be single result but got more than one for HQL query " + q.toString());
-			return null;			
-		}catch(IllegalStateException e){
-			throw new DatabaseException("IllegalStateException was thrown. " + e.getMessage());
-		}catch(QueryTimeoutException e){
-			throw new DatabaseException("QueryTimeoutException was thrown. " + e.getMessage());
-		}catch(TransactionRequiredException e){
-			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
-		}catch(PessimisticLockException e){
-			throw new DatabaseException("PessimisticLockException was thrown. " + e.getMessage());
-		}catch(LockTimeoutException e){
-			throw new DatabaseException("LockTimeoutException was thrown. " + e.getMessage());
-		}catch(PersistenceException e){
-			throw new DatabaseException("PersistenceException was thrown. " + e.getMessage());
-		}catch(HibernateException e){
-			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());			
-		}finally{
-	
-		}		
-	}
-	
-	/**
-	 * Executes Query.getResultList() for the HQL query.
-	 * 
-	 * @deprecated - use result fetcher instead
-	 * 
-	 * @param q The Query object for the HQL query.
-	 * @return A List as the query result.
-	 * @throws DatabaseException
-	 */
-	protected List getResultList(Query q) throws DatabaseException {
-		try {
-			return q.getResultList();
-		}catch(IllegalStateException e){
-			throw new DatabaseException("IllegalStateException was thrown. " + e.getMessage());
-		}catch(QueryTimeoutException e){
-			throw new DatabaseException("QueryTimeoutException was thrown. " + e.getMessage());
-		}catch(TransactionRequiredException e){
-			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
-		}catch(PessimisticLockException e){
-			throw new DatabaseException("PessimisticLockException was thrown. " + e.getMessage());
-		}catch(LockTimeoutException e){
-			throw new DatabaseException("LockTimeoutException was thrown. " + e.getMessage());
-		}catch(PersistenceException e){
-			throw new DatabaseException("PersistenceException was thrown. " + e.getMessage());
-		}catch(HibernateException e){
-			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());			
-		}finally{
-	
-		}		
-	}
-	
-	/**
 	 * Executes Query.executeUpdate() for the native SQL query.
 	 * 
 	 * @param q The Query object for the native SQL query.
@@ -228,6 +160,13 @@ public class AbstractRepository implements Serializable {
 		
 	}
 	
+	/**
+	 * Merge entity
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws DatabaseException
+	 */
 	protected Object merge(Object entity) throws DatabaseException {
 		
 		try {
@@ -254,6 +193,12 @@ public class AbstractRepository implements Serializable {
 		
 	}	
 	
+	/**
+	 * Remove entity
+	 * 
+	 * @param entity
+	 * @throws DatabaseException
+	 */
 	protected void remove(Object entity)  throws DatabaseException {
 		
 		try {
@@ -267,38 +212,128 @@ public class AbstractRepository implements Serializable {
 	}
 	
 	/**
-	 * @deprecated - use result fetcher
+	 * Execute update query
+	 * 
+	 * @param q
+	 * @throws DatabaseException
 	 */
-	protected Object getSingleResult(CriteriaQuery q) throws DatabaseException {
-		
-		return getSingleResult( getEntityManager().createQuery(q) ); 
-		
-	}
-	
-	/**
-	 * @deprecated - use result fetcher
-	 */
-	protected List getResultList(CriteriaQuery q) throws DatabaseException {
-		
-		return getResultList( getEntityManager().createQuery(q) );
-		
-	}
-	
 	protected void executeUpdate(CriteriaQuery q) throws DatabaseException {
 		
 		this.executeUpdate(getEntityManager().createQuery(q));
 		
 	}
 	
+	/**
+	 * Execute delete query
+	 * 
+	 * @param q
+	 * @throws DatabaseException
+	 */
 	protected void executeUpdate(CriteriaDelete q) throws DatabaseException {
 		
 		this.executeUpdate(getEntityManager().createQuery(q));
 		
 	}
 	
+	
+	/**
+	 * Executes Query.getSingleResult() for the HQL query.
+	 * 
+	 * @deprecated - use result fetcher instead
+	 * 
+	 * @param q The Query object for the HQL query.
+	 * @return An Object as the query result.
+	 * @throws DatabaseException
+	 */
+	/*
+	protected Object getSingleResult(Query q) throws DatabaseException {
+		try {
+			return q.getSingleResult();
+		}catch(NoResultException e){
+			logger.warn("NoResultException was thrown. No results for HQL query " + q.toString());
+			return null;
+		}catch(NonUniqueResultException  e){
+			logger.warn("NonUniqueResultException was thrown. Should be single result but got more than one for HQL query " + q.toString());
+			return null;			
+		}catch(IllegalStateException e){
+			throw new DatabaseException("IllegalStateException was thrown. " + e.getMessage());
+		}catch(QueryTimeoutException e){
+			throw new DatabaseException("QueryTimeoutException was thrown. " + e.getMessage());
+		}catch(TransactionRequiredException e){
+			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
+		}catch(PessimisticLockException e){
+			throw new DatabaseException("PessimisticLockException was thrown. " + e.getMessage());
+		}catch(LockTimeoutException e){
+			throw new DatabaseException("LockTimeoutException was thrown. " + e.getMessage());
+		}catch(PersistenceException e){
+			throw new DatabaseException("PersistenceException was thrown. " + e.getMessage());
+		}catch(HibernateException e){
+			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());			
+		}finally{
+	
+		}		
+	}
+	*/
+	
+	/**
+	 * Executes Query.getResultList() for the HQL query.
+	 * 
+	 * @deprecated - use result fetcher instead
+	 * 
+	 * @param q The Query object for the HQL query.
+	 * @return A List as the query result.
+	 * @throws DatabaseException
+	 */
+	/*
+	protected List getResultList(Query q) throws DatabaseException {
+		try {
+			return q.getResultList();
+		}catch(IllegalStateException e){
+			throw new DatabaseException("IllegalStateException was thrown. " + e.getMessage());
+		}catch(QueryTimeoutException e){
+			throw new DatabaseException("QueryTimeoutException was thrown. " + e.getMessage());
+		}catch(TransactionRequiredException e){
+			throw new DatabaseException("TransactionRequiredException was thrown. " + e.getMessage());
+		}catch(PessimisticLockException e){
+			throw new DatabaseException("PessimisticLockException was thrown. " + e.getMessage());
+		}catch(LockTimeoutException e){
+			throw new DatabaseException("LockTimeoutException was thrown. " + e.getMessage());
+		}catch(PersistenceException e){
+			throw new DatabaseException("PersistenceException was thrown. " + e.getMessage());
+		}catch(HibernateException e){
+			throw new DatabaseException("HibernateException was thrown. " + e.getMessage());			
+		}finally{
+	
+		}		
+	}
+	*/
+	
 	/**
 	 * @deprecated - use result fetcher
 	 */
+	/*
+	protected Object getSingleResult(CriteriaQuery q) throws DatabaseException {
+		
+		return getSingleResult( getEntityManager().createQuery(q) ); 
+		
+	}
+	*/
+	
+	/**
+	 * @deprecated - use result fetcher
+	 */
+	/*
+	protected List getResultList(CriteriaQuery q) throws DatabaseException {
+		
+		return getResultList( getEntityManager().createQuery(q) );
+		
+	}
+	*/
+	
+	/**
+	 * @deprecated - use result fetcher
+	 */
+	/*
 	protected Object getSingleResultOrNull(Query q) throws DatabaseException {
 		
 		List results = null;
@@ -333,15 +368,18 @@ public class AbstractRepository implements Serializable {
 		
 		throw new NonUniqueResultException();
 	}
+	*/
 	
 	/**
 	 * @deprecated - use result fetcher
 	 */
+	/*
 	protected Object getSingleResultOrNull(CriteriaQuery q) throws DatabaseException {
 		
 		return getSingleResultOrNull( getEntityManager().createQuery(q) );
 		
 	}
+	*/
 	
 
 }
