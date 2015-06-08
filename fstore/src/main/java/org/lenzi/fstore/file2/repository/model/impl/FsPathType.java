@@ -7,7 +7,7 @@ package org.lenzi.fstore.file2.repository.model.impl;
  * @author sal
  *
  */
-public enum PathType {
+public enum FsPathType {
 
 	// path denotes a file
 	FILE("FILE"),		
@@ -17,7 +17,7 @@ public enum PathType {
 	
 	private String type;
 	
-	PathType(String type){
+	FsPathType(String type){
 		this.type = type;
 	}
 
@@ -36,9 +36,9 @@ public enum PathType {
 	 * @param type
 	 * @return
 	 */
-	public static PathType get(String type){
+	public static FsPathType get(String type){
 		if (type != null) {
-			for (PathType pathType : PathType.values()) {
+			for (FsPathType pathType : FsPathType.values()) {
 				if (type.equalsIgnoreCase(pathType.type)) {
 					return pathType;
 				}

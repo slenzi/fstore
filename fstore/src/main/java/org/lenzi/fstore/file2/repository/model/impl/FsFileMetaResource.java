@@ -13,21 +13,21 @@ import javax.persistence.Transient;
  *
  */
 @Entity
-@DiscriminatorValue("DIRECTORY")
-@Table(name="FS_DIRECTORY_2")
-public class FSDirectory2 extends FSPath {
+@DiscriminatorValue("FsFileMetaResource")
+@Table(name="FS_FILE_META_RESOURCE")
+public class FsFileMetaResource extends FsPathResource {
 
 	/**
 	 * 
 	 */
 	@Transient
-	private static final long serialVersionUID = 6270101278822512023L;
+	private static final long serialVersionUID = 2220744795886332761L;
 
 	/**
 	 * 
 	 */
-	public FSDirectory2() {
-		
+	public FsFileMetaResource() {
+
 	}
 
 }
