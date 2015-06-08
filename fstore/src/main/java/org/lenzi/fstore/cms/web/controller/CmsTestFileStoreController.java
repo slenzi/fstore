@@ -66,7 +66,8 @@ public class CmsTestFileStoreController extends AbstractSpringController {
 		
 		Tree<CmsDirectory> cmsTree = null;
 		try {
-			cmsTree = cmsFileStoreService.getTree(sampleStore.getRootDir().getDirId());
+			//cmsTree = cmsFileStoreService.getTree(sampleStore.getRootDir().getDirId());
+			cmsTree = cmsFileStoreService.getTreeWithFileMeta(sampleStore.getRootDir().getDirId());
 		} catch (CmsServiceException e) {
 			handleError(logger, "Error building tree for cms file store => " + sampleStore.getName(), model, e);
 			return "/test/cmstest/test.jsp";
@@ -77,7 +78,9 @@ public class CmsTestFileStoreController extends AbstractSpringController {
 		// print cms directory tree. show directory name and absolute path for each directory in the tree
 		String treeData = cmsTree.printHtmlTree(
 				n -> { 
-					return n.getName() + ": " + cmsFileStoreHelper.getAbsoluteDirectoryString(finalStore, n);
+					return n.getName() + ": " + 
+							cmsFileStoreHelper.getAbsoluteDirectoryString(finalStore, n) + 
+							((n.hasFileEntries()) ? " (File Count: " + n.getFileEntries().size() + ")" : " (No file entries)");
 				});
 		
 		model.addAttribute("test-data", treeData);

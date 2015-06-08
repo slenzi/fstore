@@ -126,7 +126,24 @@ public class CmsFileStoreService {
 			throw new CmsServiceException("Error fetching tree for directory, id => " + dirId + ". " + e.getMessage(), e);
 		}
 		
-	}	
+	}
+	
+	/**
+	 * Get tree for directory, and include CmsFileEntry objects for each directory (just meta, no binary data.)
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws CmsServiceException
+	 */
+	public Tree<CmsDirectory> getTreeWithFileMeta(Long dirId) throws CmsServiceException {
+		
+		try {
+			return cmsDirectoryRepository.getTreeWithFileMeta(dirId);
+		} catch (DatabaseException e) {
+			throw new CmsServiceException("Error fetching tree for directory, id => " + dirId + ". " + e.getMessage(), e);
+		}
+		
+	}
 	
 	/**
 	 * Get full path for directory

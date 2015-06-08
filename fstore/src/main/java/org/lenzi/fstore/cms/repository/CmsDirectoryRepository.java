@@ -1,11 +1,14 @@
 package org.lenzi.fstore.cms.repository;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
@@ -18,6 +21,10 @@ import org.lenzi.fstore.cms.service.CmsFileStoreHelper;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
+import org.lenzi.fstore.core.repository.model.impl.FSClosure;
+import org.lenzi.fstore.core.repository.model.impl.FSClosure_;
+import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.model.impl.FSNode_;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.service.TreeBuilder;
 import org.lenzi.fstore.core.service.exception.ServiceException;
@@ -112,7 +119,30 @@ public class CmsDirectoryRepository extends AbstractRepository {
 		}
 		return tree;
 		
-	}	
+	}
+	
+	/**
+	 * Get directory tree, with file meta
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public Tree<CmsDirectory> getTreeWithFileMeta(Long dirId) throws DatabaseException {
+		
+		// TODO - allow for specific fetch options (with file meta and file data if needed.)
+		
+		CmsDirectory cmsDir = getDirectoryWithChild(dirId);
+		
+		Tree<CmsDirectory> tree = null;
+		try {
+			tree = treeBuilder.buildTree(cmsDir);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from CmsDirectory node, id => " + dirId, e);
+		}
+		return tree;
+		
+	}
 	
 	/**
 	 * Get the full absolute path for a cms directory.
@@ -253,6 +283,54 @@ public class CmsDirectoryRepository extends AbstractRepository {
 		
 		return result;		
 		
-	}	
+	}
+	
+	/**
+	 * Fetches the directory, plus all child directories. Includes CmsFileEntry objects for all directories (just
+	 * the meta data, not any binary data.)
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private CmsDirectory getDirectoryWithChild(Long dirId) throws DatabaseException {
+		
+		logger.info("Getting directory whith child data, id => " + dirId);
+		
+		// TODO - left join when getting file entries
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<CmsDirectory> query = criteriaBuilder.createQuery(CmsDirectory.class);
+		Root<CmsDirectory> root = query.from(CmsDirectory.class);
+		
+		SetJoin<CmsDirectory, FSClosure> childClosureJoin = root.join(CmsDirectory_.childClosure, JoinType.LEFT);
+		
+		Fetch<CmsDirectory, CmsFileEntry> fileEntriesFetch =  root.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+		
+		Fetch<CmsDirectory, FSClosure> childClosureFetch =  root.fetch(CmsDirectory_.childClosure, JoinType.LEFT);
+		
+		Fetch parentNodeFetch = childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		Fetch childNodeFetch = childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		childNodeFetch.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+		childNodeFetch.fetch(CmsDirectory_.fileEntries, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( criteriaBuilder.equal(root.get(CmsDirectory_.nodeId), dirId) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );
+		
+		query.distinct(true);
+		query.select(root);
+		query.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
+		
+		CmsDirectory result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
+		
+		return result;
+	}
 
 }
