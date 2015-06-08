@@ -24,7 +24,7 @@ public class FsHelper {
 	private Logger logger;
 	
 	@Autowired
-	@Qualifier("DirectoryTree")
+	@Qualifier("FsDirectoryTree")
 	private TreeRepository<FsDirectory> treeRepository;
 	
 	public FsHelper() {

@@ -49,8 +49,7 @@ public class FsPathResourceTreeRepository extends AbstractTreeRepository<FsPathR
 
 	@Override
 	public String getRepositoryName() {
-		// TODO Auto-generated method stub
-		return null;
+		return getClass().getName();
 	}
 
 }

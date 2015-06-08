@@ -22,11 +22,16 @@
       	<!-- test models -->
       	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>
       	
-      	<!-- cms models -->
+      	<!-- file models -->
       	<class>org.lenzi.fstore.file.repository.model.impl.FsDirectory</class>
       	<class>org.lenzi.fstore.file.repository.model.impl.FsFileEntry</class>
       	<class>org.lenzi.fstore.file.repository.model.impl.FsFile</class>
-      	<class>org.lenzi.fstore.file.repository.model.impl.FsFileStore</class>	      	
+      	<class>org.lenzi.fstore.file.repository.model.impl.FsFileStore</class>
+      	
+      	<!-- file 2 test models -->
+      	<class>org.lenzi.fstore.file2.repository.model.impl.FsPathResource</class>
+      	<class>org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource</class>
+      	<class>org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource</class>        		      	
     
         <properties>
         
@@ -47,7 +52,7 @@
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             -->
           
-            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
             
             <property name="hibernate.jdbc.batch_size" value="25"/>

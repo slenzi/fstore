@@ -45,7 +45,7 @@ public class FsDirectoryAdder extends AbstractRepository {
 	private FsDirectoryRepository fsDirectoryRepository;
 	
 	@Autowired
-	@Qualifier("DirectoryTree")
+	@Qualifier("FsDirectoryTree")
 	private TreeRepository<FsDirectory> treeRepository;	
 	
 	public FsDirectoryAdder() {
@@ -71,6 +71,8 @@ public class FsDirectoryAdder extends AbstractRepository {
 			throw new DatabaseException("Dir name param is null.");
 		}
 		
+		logger.info("getting parent dir..");
+		
 		// get parent dir
 		FsDirectory parentDir = null;
 		try {
@@ -83,6 +85,8 @@ public class FsDirectoryAdder extends AbstractRepository {
 			throw new DatabaseException("Cannot add new directory => " + dirName + " to parent dir => " + parentDirId + 
 					". Failed to fetch parent dir from database. Returned object was null.");
 		}
+		
+		logger.info("getting file store..");
 		
 		// get file store
 		FsFileStore fsFileStore = null;

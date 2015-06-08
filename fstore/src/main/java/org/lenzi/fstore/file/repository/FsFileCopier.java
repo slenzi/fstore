@@ -59,7 +59,7 @@ public class FsFileCopier extends AbstractRepository {
 	private FsHelper fsHelper;
 	
 	@Autowired
-	@Qualifier("DirectoryTree")
+	@Qualifier("FsDirectoryTree")
 	private TreeRepository<FsDirectory> treeRepository;	
 	
 	public FsFileCopier() {

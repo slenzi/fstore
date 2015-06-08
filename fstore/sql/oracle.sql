@@ -29,6 +29,10 @@ drop table FS_DIRECTORY;
 drop table FS_DIR_FILE_LINK;
 drop table FS_FILE_STORE;
 
+drop table FS_PATH_RESOURCE;
+drop table FS_FILE_META_RESOURCE;
+drop table FS_DIRECTORY_RESOURCE;
+
 create table FS_NODE ( 
 	NODE_ID NUMBER(15,0) NOT NULL, 
 	PARENT_NODE_ID NUMBER(15,0) NOT NULL, 
@@ -110,6 +114,22 @@ create table FS_FILE_STORE (
 	CREATION_DATE date NOT NULL, 
 	UPDATED_DATE date NOT NULL, 	
 	PRIMARY KEY (STORE_ID) 
+);
+
+create table FS_PATH_RESOURCE ( 
+	NODE_ID NUMBER(15,0) NOT NULL, 
+	NAME VARCHAR2(250) NOT NULL,
+	PRIMARY KEY (NODE_ID) 
+);
+create table FS_FILE_META_RESOURCE ( 
+	NODE_ID NUMBER(15,0) NOT NULL, 
+	FILE_SIZE NUMBER(15,0) NOT NULL,
+	PRIMARY KEY (NODE_ID) 
+);
+create table FS_DIRECTORY_RESOURCE ( 
+	NODE_ID NUMBER(15,0) NOT NULL, 
+	OTHER_VALUE VARCHAR2(250) NOT NULL,
+	PRIMARY KEY (NODE_ID) 
 );
 
 create unique index fs_parent_depth_child_idx on fs_closure(parent_node_id,depth,child_node_id);

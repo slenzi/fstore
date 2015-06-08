@@ -42,7 +42,7 @@ public class FsDirectoryMover extends AbstractRepository {
 	private Logger logger;
 	
 	@Autowired
-	@Qualifier("DirectoryTree")
+	@Qualifier("FsDirectoryTree")
 	private TreeRepository<FsDirectory> treeRepository;		
 	
 	@Autowired

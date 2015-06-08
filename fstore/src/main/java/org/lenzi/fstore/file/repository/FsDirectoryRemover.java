@@ -58,7 +58,7 @@ public class FsDirectoryRemover extends AbstractRepository {
 	private FsFileRemover fsFileRemover;
 	
 	@Autowired
-	@Qualifier("DirectoryTree")
+	@Qualifier("FsDirectoryTree")
 	private TreeRepository<FsDirectory> treeRepository;	
 	
 	/**

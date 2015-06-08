@@ -40,7 +40,7 @@ public class FsDirectoryCopier extends AbstractRepository {
 	private Logger logger;
 	
 	@Autowired
-	@Qualifier("DirectoryTree")
+	@Qualifier("FsDirectoryTree")
 	private TreeRepository<FsDirectory> treeRepository;	
 	
 	@Autowired

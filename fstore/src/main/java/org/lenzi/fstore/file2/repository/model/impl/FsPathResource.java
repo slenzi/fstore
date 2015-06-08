@@ -26,7 +26,7 @@ import org.lenzi.fstore.core.repository.model.impl.FSNode;
 @Table(name = "FS_PATH_RESOURCE")
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="PATH_TYPE", discriminatorType=DiscriminatorType.STRING)
-public abstract class FsPathResource extends FSNode<FsPathResource> {
+public abstract class FsPathResource extends FSNode<FsPathResource> implements FsResource {
 
 	/**
 	 * 
@@ -73,7 +73,7 @@ public abstract class FsPathResource extends FSNode<FsPathResource> {
 	 */
 	@Override
 	public String toString() {
-		return "FSPathResource [name=" + name + "]";
+		return FsPathResource.class.getName() + " [name=" + name + "]";
 	}
 
 }

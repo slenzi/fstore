@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author sal
  *
  */
-@Repository("DirectoryTree")
+@Repository("FsDirectoryTree")
 @Transactional(propagation=Propagation.REQUIRED)
 public class FsDirectoryTreeRepository extends AbstractTreeRepository<FsDirectory> {
 
