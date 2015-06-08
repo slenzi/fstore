@@ -6,12 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
-import org.lenzi.fstore.core.service.TreeBuilder;
-import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
@@ -31,72 +27,69 @@ public class FsHelper {
 	@Qualifier("DirectoryTree")
 	private TreeRepository<FsDirectory> treeRepository;
 	
-	//@Autowired
-	//private TreeBuilder<CmsDirectory> treeBuilder;	
-	
 	public FsHelper() {
 
 	}	
 	
 	/**
-	 * Joins the CmsStore path and the relative CmsDirectory path to get the full/absolute path
+	 * Joins the FsFileStore path and the relative FsDirectory path to get the full/absolute path
 	 * to the directory on the file system
 	 * 
-	 * @param cmsStore
-	 * @param cmsDirectory
+	 * @param fsStore
+	 * @param fsDirectory
 	 * @return
 	 */
-	public String getAbsoluteDirectoryString(FsFileStore cmsStore, FsDirectory cmsDirectory){
+	public String getAbsoluteDirectoryString(FsFileStore fsStore, FsDirectory fsDirectory){
 		
-		String dirRelativePath = cmsDirectory.getRelativeDirPath();
+		String dirRelativePath = fsDirectory.getRelativeDirPath();
 		if(!dirRelativePath.startsWith(File.separator)){
 			dirRelativePath = File.separator + dirRelativePath;
 		}
-		return cmsStore.getStorePath() + dirRelativePath;		
+		return fsStore.getStorePath() + dirRelativePath;		
 		
 	}
 	
 	/**
-	 * Joins the CmsStore path, relative CmsDirectory path, and CmsFileEntry file name to
+	 * Joins the FsFileStore path, relative FsDirectory path, and FsFileEntry file name to
 	 * get the full/absolute path to the file on the file system.
 	 * 
-	 * @param cmsStore
-	 * @param cmsDirectory
-	 * @param cmsFileEntry
+	 * @param fsStore
+	 * @param fsDirectory
+	 * @param fsFileEntry
 	 * @return
 	 */
-	public String getAbsoluteFileString(FsFileStore cmsStore, FsDirectory cmsDirectory, FsFileEntry cmsFileEntry){
+	public String getAbsoluteFileString(FsFileStore fsStore, FsDirectory fsDirectory, FsFileEntry fsFileEntry){
 		
-		return getAbsoluteDirectoryString(cmsStore, cmsDirectory) + File.separator + cmsFileEntry.getFileName();	
+		return getAbsoluteDirectoryString(fsStore, fsDirectory) + File.separator + fsFileEntry.getFileName();	
 		
 	}
 	
 	/**
-	 * Joins the CmsStore path and the relative CmsDirectory path to get the full/absolute path
+	 * Joins the FsFileStore path and the relative FsDirectory path to get the full/absolute path
 	 * to the directory on the file system
 	 * 
-	 * @param cmsStore
-	 * @param cmsDirectory
+	 * @param fsStore
+	 * @param fsDirectory
 	 * @return
 	 */
-	public Path getAbsoluteDirectoryPath(FsFileStore cmsStore, FsDirectory cmsDirectory){
+	public Path getAbsoluteDirectoryPath(FsFileStore fsStore, FsDirectory fsDirectory){
 		
-		return Paths.get(getAbsoluteDirectoryString(cmsStore, cmsDirectory));
+		return Paths.get(getAbsoluteDirectoryString(fsStore, fsDirectory));
 		
 	}
 	
 	/**
-	 * Joins the CmsStore path, relative CmsDirectory path, and CmsFileEntry file name to
+	 * Joins the FsFileStore path, relative FsDirectory path, and FsFileEntry file name to
 	 * get the full/absolute path to the file on the file system.
 	 * 
-	 * @param cmsStore
-	 * @param cmsDirectory
-	 * @param cmsFileEntry
+	 * @param fsStore
+	 * @param fsDirectory
+	 * @param fsFileEntry
 	 * @return
 	 */
-	public Path getAbsoluteFilePath(FsFileStore cmsStore, FsDirectory cmsDirectory, FsFileEntry cmsFileEntry){
+	public Path getAbsoluteFilePath(FsFileStore fsStore, FsDirectory fsDirectory, FsFileEntry fsFileEntry){
 		
-		return Paths.get(getAbsoluteFileString(cmsStore, cmsDirectory, cmsFileEntry));
+		return Paths.get(getAbsoluteFileString(fsStore, fsDirectory, fsFileEntry));
 		
 	}
 	

@@ -93,14 +93,14 @@ public class FsFileEntryRepository extends AbstractRepository {
 	/**
 	 * Get absolute file path
 	 * 
-	 * @param cmsStore
-	 * @param cmsDirectory
-	 * @param cmsFileEntry
+	 * @param fsFileStore
+	 * @param fsDirectory
+	 * @param fsFileEntry
 	 * @return
 	 */
-	public Path getAbsoluteFilePath(FsFileStore cmsStore, FsDirectory cmsDirectory, FsFileEntry cmsFileEntry){
+	public Path getAbsoluteFilePath(FsFileStore fsFileStore, FsDirectory fsDirectory, FsFileEntry fsFileEntry){
 		
-		return fsHelper.getAbsoluteFilePath(cmsStore, cmsDirectory, cmsFileEntry);
+		return fsHelper.getAbsoluteFilePath(fsFileStore, fsDirectory, fsFileEntry);
 		
 	}
 	

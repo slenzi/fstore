@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Repository for dealing with cms file store operations.
+ * Repository for dealing with file store operations.
  * 
  * @author sal
  */

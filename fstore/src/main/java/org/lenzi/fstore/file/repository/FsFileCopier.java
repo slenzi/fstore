@@ -131,28 +131,28 @@ public class FsFileCopier extends AbstractRepository {
 		logger.info("File copy, source => " + sourceFilePath + ", target => " + targetFilePath);
 		
 		// create file entry for meta data
-		FsFileEntry cmsFileEntryCopy = new FsFileEntry();
-		cmsFileEntryCopy.setDirectory(targetDir);
-		cmsFileEntryCopy.setFileName(sourceEntry.getFileName());
-		cmsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
-		persist(cmsFileEntryCopy);
+		FsFileEntry fsFileEntryCopy = new FsFileEntry();
+		fsFileEntryCopy.setDirectory(targetDir);
+		fsFileEntryCopy.setFileName(sourceEntry.getFileName());
+		fsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
+		persist(fsFileEntryCopy);
 		getEntityManager().flush();
 
 		// update target directory with new file entry copy (updates linking table)
-		targetDir.addFileEntry(cmsFileEntryCopy);
+		targetDir.addFileEntry(fsFileEntryCopy);
 		targetDir = (FsDirectory)merge(targetDir);
 		
 		// create file copy object for file byte data, and persist
-		FsFile cmsFileCopy = new FsFile();
-		cmsFileCopy.setFileId(cmsFileEntryCopy.getFileId());
-		cmsFileCopy.setFileData(sourceEntry.getFile().getFileData());
-		persist(cmsFileCopy);
+		FsFile fsFileCopy = new FsFile();
+		fsFileCopy.setFileId(fsFileEntryCopy.getFileId());
+		fsFileCopy.setFileData(sourceEntry.getFile().getFileData());
+		persist(fsFileCopy);
 		getEntityManager().flush();
 		
 		// make sure objects have all data set before returning
-		cmsFileEntryCopy.setDirectory(targetDir);
-		cmsFileEntryCopy.setFile(cmsFileCopy);
-		cmsFileCopy.setFileEntry(cmsFileEntryCopy);
+		fsFileEntryCopy.setDirectory(targetDir);
+		fsFileEntryCopy.setFile(fsFileCopy);
+		fsFileCopy.setFileEntry(fsFileEntryCopy);
 		
 		// move file to new directory
 		try {
@@ -163,7 +163,7 @@ public class FsFileCopier extends AbstractRepository {
 			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
 		}
 		
-		return cmsFileEntryCopy;
+		return fsFileEntryCopy;
 	}	
 	
 	/**
@@ -207,28 +207,28 @@ public class FsFileCopier extends AbstractRepository {
 		sourceDir = (FsDirectory)merge(sourceDir);	
 		
 		// create file entry for meta data
-		FsFileEntry cmsFileEntryCopy = new FsFileEntry();
-		cmsFileEntryCopy.setDirectory(targetDir);
-		cmsFileEntryCopy.setFileName(sourceEntry.getFileName());
-		cmsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
-		persist(cmsFileEntryCopy);
+		FsFileEntry fsFileEntryCopy = new FsFileEntry();
+		fsFileEntryCopy.setDirectory(targetDir);
+		fsFileEntryCopy.setFileName(sourceEntry.getFileName());
+		fsFileEntryCopy.setFileSize(sourceEntry.getFileSize());
+		persist(fsFileEntryCopy);
 		getEntityManager().flush();
 
 		// update target directory with new file entry copy (updates linking table)
-		targetDir.addFileEntry(cmsFileEntryCopy);
+		targetDir.addFileEntry(fsFileEntryCopy);
 		targetDir = (FsDirectory)merge(targetDir);
 		
 		// create cms file copy object for file byte data, and persist
-		FsFile cmsFileCopy = new FsFile();
-		cmsFileCopy.setFileId(cmsFileEntryCopy.getFileId());
-		cmsFileCopy.setFileData(sourceEntry.getFile().getFileData());
-		persist(cmsFileCopy);
+		FsFile fsFileCopy = new FsFile();
+		fsFileCopy.setFileId(fsFileEntryCopy.getFileId());
+		fsFileCopy.setFileData(sourceEntry.getFile().getFileData());
+		persist(fsFileCopy);
 		getEntityManager().flush();
 		
 		// make sure objects have all data set before returning
-		cmsFileEntryCopy.setDirectory(targetDir);
-		cmsFileEntryCopy.setFile(cmsFileCopy);
-		cmsFileCopy.setFileEntry(cmsFileEntryCopy);
+		fsFileEntryCopy.setDirectory(targetDir);
+		fsFileEntryCopy.setFile(fsFileCopy);
+		fsFileCopy.setFileEntry(fsFileEntryCopy);
 		
 		// remove conflicting file, then copy over new file
 		try {
@@ -240,7 +240,7 @@ public class FsFileCopier extends AbstractRepository {
 			throw buildDatabaseExceptionCopyError(sourceFilePath, targetFilePath, sourceDir, targetDir, e);
 		}
 		
-		return cmsFileEntryCopy;
+		return fsFileEntryCopy;
 
 	}
 	
@@ -265,10 +265,10 @@ public class FsFileCopier extends AbstractRepository {
 		logger.info("File copy-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
 				sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
 		
-		FsFileEntry entryToCopy   = null;
-		FsFileEntry existingEntry = null;
-		FsDirectory sourceDir     = null;
-		FsDirectory targetDir     = null;
+		FsFileEntry entryToCopy    = null;
+		FsFileEntry existingEntry  = null;
+		FsDirectory sourceDir      = null;
+		FsDirectory targetDir      = null;
 		Path sourceFilePath	   	   = null;
 		Path targetFilePath        = null;
 		Path existingPath          = null;

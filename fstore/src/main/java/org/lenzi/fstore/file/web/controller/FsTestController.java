@@ -64,10 +64,10 @@ public class FsTestController extends AbstractSpringController {
 			return "/test/filetest/test.jsp";
 		}
 		
-		Tree<FsDirectory> cmsTree = null;
+		Tree<FsDirectory> dirTree = null;
 		try {
-			//cmsTree = cmsFileStoreService.getTree(sampleStore.getRootDir().getDirId());
-			cmsTree = fsFileStoreService.getTreeWithFileMeta(sampleStore.getRootDir().getDirId());
+			//dirTree = fsFileStoreService.getTree(sampleStore.getRootDir().getDirId());
+			dirTree = fsFileStoreService.getTreeWithFileMeta(sampleStore.getRootDir().getDirId());
 		} catch (FsServiceException e) {
 			handleError(logger, "Error building tree for file store => " + sampleStore.getName(), model, e);
 			return "/test/filetest/test.jsp";
@@ -75,8 +75,8 @@ public class FsTestController extends AbstractSpringController {
 		
 		final FsFileStore finalStore = sampleStore;
 		
-		// print cms directory tree. show directory name and absolute path for each directory in the tree
-		String treeData = cmsTree.printHtmlTree(
+		// print directory tree. show directory name and absolute path for each directory in the tree
+		String treeData = dirTree.printHtmlTree(
 				n -> { 
 					return n.getName() + ": " + 
 							fsHelper.getAbsoluteDirectoryString(finalStore, n) + 

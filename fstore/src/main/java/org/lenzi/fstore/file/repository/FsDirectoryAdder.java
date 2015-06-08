@@ -85,14 +85,14 @@ public class FsDirectoryAdder extends AbstractRepository {
 		}
 		
 		// get file store
-		FsFileStore cmsStore = null;
+		FsFileStore fsFileStore = null;
 		try {
-			cmsStore = fsFileStoreRepository.getFsFileStoreByDirId(parentDir.getDirId());
+			fsFileStore = fsFileStoreRepository.getFsFileStoreByDirId(parentDir.getDirId());
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch file store for dir id => " + parentDir.getDirId(), e);
 		}
 		
-		return add(parentDir, cmsStore, dirName);
+		return add(parentDir, fsFileStore, dirName);
 		
 	}
 	
@@ -100,18 +100,18 @@ public class FsDirectoryAdder extends AbstractRepository {
 	 * Add directory
 	 * 
 	 * @param parentDir
-	 * @param cmsStore
+	 * @param fsFileStore
 	 * @param dirName
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsDirectory add(FsDirectory parentDir, FsFileStore cmsStore, String dirName) throws DatabaseException {
+	public FsDirectory add(FsDirectory parentDir, FsFileStore fsFileStore, String dirName) throws DatabaseException {
 		
-		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + cmsStore.getName());
+		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + fsFileStore.getName());
 		
 		// CmsDirectory.getRelativeDirPath() returns a path relative to the store path
-		Path storePath = Paths.get(cmsStore.getStorePath());
-		Path childPath =  Paths.get(cmsStore.getStorePath() + parentDir.getRelativeDirPath() + File.separator + dirName);
+		Path storePath = Paths.get(fsFileStore.getStorePath());
+		Path childPath =  Paths.get(fsFileStore.getStorePath() + parentDir.getRelativeDirPath() + File.separator + dirName);
 		Path childRelativePath = storePath.relativize(childPath);
 		String sChildRelativePath = childRelativePath.toString();
 		if(!sChildRelativePath.startsWith(File.separator)){

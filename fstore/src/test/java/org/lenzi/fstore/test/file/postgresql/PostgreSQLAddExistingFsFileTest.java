@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractCreateFsFileStore;
+import org.lenzi.fstore.test.file.AbstractAddExistingFsFile;
 import org.lenzi.fstore.test.file.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("postgresql")
 @ActiveProfiles({"postgresql"})
-public class PostgreSQLCreateCmsFileStoreTest extends AbstractCreateFsFileStore {
+public class PostgreSQLAddExistingFsFileTest extends AbstractAddExistingFsFile {
 
 	@Autowired
 	private PostgresqlCmsTestConfiguration configuration = null;	
@@ -32,17 +32,17 @@ public class PostgreSQLCreateCmsFileStoreTest extends AbstractCreateFsFileStore 
 	/**
 	 * 
 	 */
-	public PostgreSQLCreateCmsFileStoreTest() {
+	public PostgreSQLAddExistingFsFileTest() {
 
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.test.cms.AbstractCreateFileStore#getTestFileStorePath()
+	 * @see org.lenzi.fstore.test.cms.AbstractAddFile#getTestFileStorePath()
 	 */
 	@Override
 	public String getTestFileStorePath() {
-		
-		return "/Users/slenzi/Programming/file_store/sample_create";
+
+		return "/Users/slenzi/Programming/file_store/sample_upload_existing";
 		
 	}
 

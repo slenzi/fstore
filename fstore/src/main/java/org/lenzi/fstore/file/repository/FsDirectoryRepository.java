@@ -130,11 +130,11 @@ public class FsDirectoryRepository extends AbstractRepository {
 		
 		// TODO - allow for specific fetch options (with file meta and file data if needed.)
 		
-		FsDirectory cmsDir = getFsDirectoryWithChild(dirId);
+		FsDirectory fsDir = getFsDirectoryWithChild(dirId);
 		
 		Tree<FsDirectory> tree = null;
 		try {
-			tree = treeBuilder.buildTree(cmsDir);
+			tree = treeBuilder.buildTree(fsDir);
 		} catch (ServiceException e) {
 			throw new DatabaseException("Failed to build tree from FsDirectory node, id => " + dirId, e);
 		}
@@ -152,22 +152,22 @@ public class FsDirectoryRepository extends AbstractRepository {
 	public Path getAbsoluteDirectoryPath(Long cmsDirId) throws DatabaseException {
 		
 		// get directory
-		FsDirectory cmsDirectory = null;
+		FsDirectory fsdir = null;
 		try {
-			cmsDirectory = getFsDirectoryById(cmsDirId, FsDirectoryFetch.FILE_META);
+			fsdir = getFsDirectoryById(cmsDirId, FsDirectoryFetch.FILE_META);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to retrieve FsDirectory", e);
 		}
 		
 		// get file store for directory
-		FsFileStore store = null;
+		FsFileStore fsFileStore = null;
 		try {
-			store = fsFileStoreRepository.getFsFileStoreByDirId(cmsDirectory.getDirId());
+			fsFileStore = fsFileStoreRepository.getFsFileStoreByDirId(fsdir.getDirId());
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch file store for dir id => " + cmsDirectory.getDirId(), e);
+			throw new DatabaseException("Failed to fetch file store for dir id => " + fsdir.getDirId(), e);
 		}
 		
-		return fsHelper.getAbsoluteDirectoryPath(store, cmsDirectory);
+		return fsHelper.getAbsoluteDirectoryPath(fsFileStore, fsdir);
 		
 	}	
 	

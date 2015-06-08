@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractCopyFsFile;
+import org.lenzi.fstore.test.file.AbstractGetFsFileEntry;
 import org.lenzi.fstore.test.file.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("postgresql")
 @ActiveProfiles({"postgresql"})
-public class PostgreSQLCopyFileTest extends AbstractCopyFsFile {
+public class PostgreSQLGetFsFileEntryTest extends AbstractGetFsFileEntry {
 
 	@Autowired
 	private PostgresqlCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class PostgreSQLCopyFileTest extends AbstractCopyFsFile {
 	/**
 	 * 
 	 */
-	public PostgreSQLCopyFileTest() {
+	public PostgreSQLGetFsFileEntryTest() {
 
 	}
 
@@ -42,7 +42,7 @@ public class PostgreSQLCopyFileTest extends AbstractCopyFsFile {
 	@Override
 	public String getTestFileStorePath() {
 
-		return "/Users/slenzi/Programming/file_store/sample_copy_file";
+		return "/Users/slenzi/Programming/file_store/sample_file_entry_fetch";
 		
 	}
 

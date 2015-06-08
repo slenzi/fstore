@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("postgresql")
 @ActiveProfiles({"postgresql"})
-public class PostgreSQLRemoveDirectoryTest extends AbstractRemoveFsDirectory {
+public class PostgreSQLRemoveFsDirectoryTest extends AbstractRemoveFsDirectory {
 
 	@Autowired
 	private PostgresqlCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class PostgreSQLRemoveDirectoryTest extends AbstractRemoveFsDirectory {
 	/**
 	 * 
 	 */
-	public PostgreSQLRemoveDirectoryTest() {
+	public PostgreSQLRemoveFsDirectoryTest() {
 
 	}
 

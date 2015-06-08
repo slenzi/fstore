@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * For removing cms file entries
+ * For removing file entries
  * 
  * @author sal
  */
@@ -101,17 +101,17 @@ public class FsFileRemover extends AbstractRepository {
 			//remove(new CmsFile(fileEntry.getFileId())); // needed?  we have CASCADE set to ALL
 			//remove(fileEntry);
 			
-			// delete cms file
-			CriteriaDelete<FsFile> cmsFileDelete = cb.createCriteriaDelete(FsFile.class);
-			Root<FsFile> cmsFileRoot = cmsFileDelete.from(FsFile.class);
-			cmsFileDelete.where(cb.equal(cmsFileRoot.get(FsFile_.fileId), fileEntry.getFileId()));
-			executeUpdate(cmsFileDelete);
+			// delete fs file
+			CriteriaDelete<FsFile> fsFileDelete = cb.createCriteriaDelete(FsFile.class);
+			Root<FsFile> fsFileRoot = fsFileDelete.from(FsFile.class);
+			fsFileDelete.where(cb.equal(fsFileRoot.get(FsFile_.fileId), fileEntry.getFileId()));
+			executeUpdate(fsFileDelete);
 			
-			// delete cms file entry
-			CriteriaDelete<FsFileEntry> cmsFileEntryDelete = cb.createCriteriaDelete(FsFileEntry.class);
-			Root<FsFileEntry> cmsFileEntryRoot = cmsFileEntryDelete.from(FsFileEntry.class);
-			cmsFileEntryDelete.where(cb.equal(cmsFileEntryRoot.get(FsFileEntry_.fileId), fileEntry.getFileId()));
-			executeUpdate(cmsFileEntryDelete);
+			// delete fs file entry
+			CriteriaDelete<FsFileEntry> fsFileEntryDelete = cb.createCriteriaDelete(FsFileEntry.class);
+			Root<FsFileEntry> fsFileEntryRoot = fsFileEntryDelete.from(FsFileEntry.class);
+			fsFileEntryDelete.where(cb.equal(fsFileEntryRoot.get(FsFileEntry_.fileId), fileEntry.getFileId()));
+			executeUpdate(fsFileEntryDelete);
 			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to remove file from database for file id => " + fileEntry.getFileId(), e);

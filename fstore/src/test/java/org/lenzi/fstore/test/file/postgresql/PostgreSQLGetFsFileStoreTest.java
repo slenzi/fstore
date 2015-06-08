@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractAddFsFileBulk;
+import org.lenzi.fstore.test.file.AbstractGetFsFileStore;
 import org.lenzi.fstore.test.file.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("postgresql")
 @ActiveProfiles({"postgresql"})
-public class PostgreSQLBulkAddFileTest extends AbstractAddFsFileBulk {
+public class PostgreSQLGetFsFileStoreTest extends AbstractGetFsFileStore {
 
 	@Autowired
 	private PostgresqlCmsTestConfiguration configuration = null;	
@@ -32,17 +32,17 @@ public class PostgreSQLBulkAddFileTest extends AbstractAddFsFileBulk {
 	/**
 	 * 
 	 */
-	public PostgreSQLBulkAddFileTest() {
+	public PostgreSQLGetFsFileStoreTest() {
 
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.test.cms.AbstractAddFile#getTestFileStorePath()
+	 * @see org.lenzi.fstore.test.cms.AbstractCreateFileStore#getTestFileStorePath()
 	 */
 	@Override
 	public String getTestFileStorePath() {
-
-		return "/Users/slenzi/Programming/file_store/sample_upload_bulk";
+		
+		return "/Users/slenzi/Programming/file_store/sample_fetch";
 		
 	}
 

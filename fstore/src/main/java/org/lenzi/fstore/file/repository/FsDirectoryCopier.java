@@ -86,6 +86,7 @@ public class FsDirectoryCopier extends AbstractRepository {
 		
 		// build tree for source directory, this is the tree we want to copy, in pre-order traversal (top down)
 		Tree<FsDirectory> sourceTree = fsDirectoryRepository.getTree(sourceDirId);
+		
 		logger.info("Copying the following tree:\n" + sourceTree.printTree());
 		
 		FsFileStore sourceStore = fsFileStoreRepository.getFsFileStoreByDirId(sourceDirId);

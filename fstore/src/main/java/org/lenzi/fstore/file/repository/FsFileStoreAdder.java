@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * For creating cms file stores
+ * For creating file stores
  * 
  * @author slenzi
  */
