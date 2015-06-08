@@ -47,10 +47,10 @@
         
         <mapping class="org.lenzi.fstore.example.repository.model.impl.FSTestNode"/>
         
-      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsDirectory"/>
-      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry"/>
-      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsFile"/>
-      	<mapping class="org.lenzi.fstore.cms.repository.model.impl.CmsFileStore"/>	  
+      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsDirectory"/>
+      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsFileEntry"/>
+      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsFile"/>
+      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsFileStore"/>	  
     
     </session-factory>
     

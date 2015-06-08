@@ -7,8 +7,8 @@ drop sequence TEST.FS_LINK_ID_SEQUENCE;
 drop sequence TEST.FS_PRUNE_ID_SEQUENCE;
 drop sequence TEST.FS_TREE_ID_SEQUENCE;
 
-drop sequence TEST.FS_CMS_FILE_ID_SEQUENCE;
-drop sequence TEST.FS_CMS_STORE_ID_SEQUENCE;
+drop sequence TEST.FS_FILE_ID_SEQUENCE;
+drop sequence TEST.FS_STORE_ID_SEQUENCE;
 
 drop index TEST.fs_parent_depth_child_idx;
 drop index TEST.fs_child_parent_depth_idx;	
@@ -20,11 +20,11 @@ drop table TEST.FS_TREE;
 
 drop table TEST.FS_TEST_NODE;
 
-drop table TEST.FS_CMS_FILE;
-drop table TEST.FS_CMS_FILE_ENTRY;
-drop table TEST.FS_CMS_DIRECTORY;
-drop table TEST.FS_CMS_DIR_FILE_LINK;
-drop table TEST.FS_CMS_FILE_STORE;
+drop table TEST.FS_FILE;
+drop table TEST.FS_FILE_ENTRY;
+drop table TEST.FS_DIRECTORY;
+drop table TEST.FS_DIR_FILE_LINK;
+drop table TEST.FS_FILE_STORE;
 
 create table TEST.FS_NODE ( 
 	NODE_ID NUMERIC(15,0) NOT NULL, 
@@ -68,7 +68,7 @@ create table TEST.FS_TEST_NODE (
 );
 
 /* example node for modeling a directory */
-create table TEST.FS_CMS_DIRECTORY ( 
+create table TEST.FS_DIRECTORY ( 
 	NODE_ID NUMERIC(15,0) NOT NULL, 
 	DIR_NAME CHARACTER VARYING(250),
 	RELATIVE_DIR_PATH CHARACTER VARYING(250),
@@ -76,14 +76,14 @@ create table TEST.FS_CMS_DIRECTORY (
 );
 
 /* link file to directory */
-create table TEST.FS_CMS_DIR_FILE_LINK (
+create table TEST.FS_DIR_FILE_LINK (
 	NODE_ID NUMERIC(15,0) NOT NULL,
 	FILE_ID NUMERIC(15,0) NOT NULL,
 	PRIMARY KEY(NODE_ID,FILE_ID)
 );
 
 /* for storing file meta */
-create table TEST.FS_CMS_FILE_ENTRY ( 
+create table TEST.FS_FILE_ENTRY ( 
 	FILE_ID NUMERIC(15,0) NOT NULL,
 	FILE_SIZE NUMERIC(15,0) NOT NULL,
 	FILE_NAME CHARACTER VARYING(250),
@@ -91,14 +91,14 @@ create table TEST.FS_CMS_FILE_ENTRY (
 );
 
 /* for storing binary data  */
-create table TEST.FS_CMS_FILE ( 
+create table TEST.FS_FILE ( 
 	FILE_ID NUMERIC(15,0) NOT NULL,
 	FILE_DATA OID NOT NULL,
 	PRIMARY KEY (FILE_ID) 
 );
 
 /* list of file stores */
-create table TEST.FS_CMS_FILE_STORE ( 
+create table TEST.FS_FILE_STORE ( 
 	STORE_ID NUMERIC(15,0) NOT NULL,
 	STORE_NAME CHARACTER VARYING(250) NOT NULL,
 	STORE_DESCRIPTION CHARACTER VARYING(4000) NOT NULL,
@@ -136,13 +136,13 @@ START WITH 1
 CACHE 10  
 NO CYCLE;
 
-CREATE SEQUENCE TEST.FS_CMS_FILE_ID_SEQUENCE  
+CREATE SEQUENCE TEST.FS_FILE_ID_SEQUENCE  
 INCREMENT BY 1 
 START WITH 1 
 CACHE 10  
 NO CYCLE;
 
-CREATE SEQUENCE TEST.FS_CMS_STORE_ID_SEQUENCE  
+CREATE SEQUENCE TEST.FS_STORE_ID_SEQUENCE  
 INCREMENT BY 1 
 START WITH 1 
 CACHE 10  

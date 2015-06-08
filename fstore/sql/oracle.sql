@@ -10,8 +10,8 @@ drop sequence FS_LINK_ID_SEQUENCE;
 drop sequence FS_PRUNE_ID_SEQUENCE;
 drop sequence FS_TREE_ID_SEQUENCE;
 
-drop sequence FS_CMS_FILE_ID_SEQUENCE;
-drop sequence FS_CMS_STORE_ID_SEQUENCE;
+drop sequence FS_FILE_ID_SEQUENCE;
+drop sequence FS_STORE_ID_SEQUENCE;
 
 drop index fs_parent_depth_child_idx;
 drop index fs_child_parent_depth_idx;
@@ -23,11 +23,11 @@ drop table FS_TREE;
 
 drop table FS_TEST_NODE;
 
-drop table FS_CMS_FILE;
-drop table FS_CMS_FILE_ENTRY;
-drop table FS_CMS_DIRECTORY;
-drop table FS_CMS_DIR_FILE_LINK;
-drop table FS_CMS_FILE_STORE;
+drop table FS_FILE;
+drop table FS_FILE_ENTRY;
+drop table FS_DIRECTORY;
+drop table FS_DIR_FILE_LINK;
+drop table FS_FILE_STORE;
 
 create table FS_NODE ( 
 	NODE_ID NUMBER(15,0) NOT NULL, 
@@ -71,7 +71,7 @@ create table FS_TEST_NODE (
 );
 
 /* example node for modeling a directory */
-create table FS_CMS_DIRECTORY ( 
+create table FS_DIRECTORY ( 
 	NODE_ID NUMBER(15,0) NOT NULL, 
 	DIR_NAME VARCHAR2(250) NOT NULL,
 	RELATIVE_DIR_PATH VARCHAR2(250) NOT NULL,
@@ -79,14 +79,14 @@ create table FS_CMS_DIRECTORY (
 );
 
 /* link file to directory */
-create table FS_CMS_DIR_FILE_LINK (
+create table FS_DIR_FILE_LINK (
 	NODE_ID NUMBER(15,0) NOT NULL,
 	FILE_ID NUMBER(15,0) NOT NULL,
 	PRIMARY KEY(NODE_ID,FILE_ID)
 );
 
 /* for storing file meta */
-create table FS_CMS_FILE_ENTRY ( 
+create table FS_FILE_ENTRY ( 
 	FILE_ID NUMBER(15,0) NOT NULL,
 	FILE_SIZE NUMBER(15,0) NOT NULL,
 	FILE_NAME VARCHAR2(250) NOT NULL, 
@@ -94,14 +94,14 @@ create table FS_CMS_FILE_ENTRY (
 );
 
 /* for storing binary data  */
-create table FS_CMS_FILE ( 
+create table FS_FILE ( 
 	FILE_ID NUMBER(15,0) NOT NULL,
 	FILE_DATA BLOB NOT NULL,
 	PRIMARY KEY (FILE_ID) 
 );
 
 /* list of file stores */
-create table FS_CMS_FILE_STORE ( 
+create table FS_FILE_STORE ( 
 	STORE_ID NUMBER(15,0) NOT NULL,
 	STORE_NAME VARCHAR2(250) NOT NULL,
 	STORE_DESCRIPTION VARCHAR2(4000) NOT NULL,
@@ -151,7 +151,7 @@ CACHE 10
 ORDER  
 NOCYCLE;
 
-CREATE SEQUENCE FS_CMS_FILE_ID_SEQUENCE  
+CREATE SEQUENCE FS_FILE_ID_SEQUENCE  
 MINVALUE 1 
 MAXVALUE 999999999999999999999999999  
 INCREMENT BY 1 
@@ -160,7 +160,7 @@ CACHE 10
 ORDER  
 NOCYCLE;
 
-CREATE SEQUENCE FS_CMS_STORE_ID_SEQUENCE  
+CREATE SEQUENCE FS_STORE_ID_SEQUENCE  
 MINVALUE 1 
 MAXVALUE 999999999999999999999999999  
 INCREMENT BY 1 

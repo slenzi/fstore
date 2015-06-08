@@ -23,10 +23,10 @@
       	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>
       	
       	<!-- cms models -->
-      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsDirectory</class>
-      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsFileEntry</class>
-      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsFile</class>
-      	<class>org.lenzi.fstore.cms.repository.model.impl.CmsFileStore</class>			      	
+      	<class>org.lenzi.fstore.file.repository.model.impl.FsDirectory</class>
+      	<class>org.lenzi.fstore.file.repository.model.impl.FsFileEntry</class>
+      	<class>org.lenzi.fstore.file.repository.model.impl.FsFile</class>
+      	<class>org.lenzi.fstore.file.repository.model.impl.FsFileStore</class>			      	
     
         <properties>
         	
