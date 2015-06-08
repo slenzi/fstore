@@ -28,7 +28,7 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractMoveDirectory extends AbstractTreeTest {
+public abstract class AbstractCopyFsDirectory extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -38,7 +38,7 @@ public abstract class AbstractMoveDirectory extends AbstractTreeTest {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public AbstractMoveDirectory() {
+	public AbstractCopyFsDirectory() {
 
 	}
 
@@ -49,7 +49,7 @@ public abstract class AbstractMoveDirectory extends AbstractTreeTest {
 	@Rollback(false)
 	public void doCopyDirectory() {
 		
-		logTestTitle("Move directory test");
+		logTestTitle("Copy directory test");
 		
 		assertNotNull(resourceLoader);
 		
@@ -88,20 +88,18 @@ public abstract class AbstractMoveDirectory extends AbstractTreeTest {
 		}
 		
 		// add sub dir for fun
-		FsDirectory dir1 = null, dir2 = null, dir3 = null, dir4 = null, dir5 = null;
-		FsDirectory dir6 = null, dir7 = null, dir8 = null, dir9 = null;
+		FsDirectory dir1 = null, dir2 = null, dir3 = null, dir4 = null, dir5 = null, dir6 = null, dir7 = null, dir8 = null;
 		try {
 			
 			dir1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), "dir1");
 				dir2 = storeService.addDirectory(dir1.getDirId(), "dir2");
 					dir3 = storeService.addDirectory(dir2.getDirId(), "dir3");
 					dir4 = storeService.addDirectory(dir2.getDirId(), "dir4");
-						dir5 = storeService.addDirectory(dir4.getDirId(), "dir5");
-							dir6 = storeService.addDirectory(dir5.getDirId(), "dir6");
+				dir5 = storeService.addDirectory(dir1.getDirId(), "dir5");
+					dir6 = storeService.addDirectory(dir5.getDirId(), "dir6");
 				dir7 = storeService.addDirectory(dir1.getDirId(), "dir7");
 					// dir 8 has same name as dir 2 so we can test merging
 					dir8 = storeService.addDirectory(dir7.getDirId(), "dir2");
-				dir9 = storeService.addDirectory(dir1.getDirId(), "dir9");
 			
 		} catch (FsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
@@ -139,10 +137,10 @@ public abstract class AbstractMoveDirectory extends AbstractTreeTest {
 		}
 		
 		//
-		// do move - this copy does not require replacing files
+		// do copy - this copy does not require replacing files
 		//
 		try {
-			storeService.moveDirectory(dir4.getDirId(), dir9.getDirId(), true);
+			storeService.copyDirectory(dir2.getDirId(), dir5.getDirId(), true);
 		} catch (FsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
@@ -150,10 +148,10 @@ public abstract class AbstractMoveDirectory extends AbstractTreeTest {
 		}
 		
 		//
-		// do move - this copy DOES require merging directories and replacing files
+		// do copy - this copy DOES require merging directories and replacing files
 		//
 		try {
-			storeService.moveDirectory(dir2.getDirId(), dir7.getDirId(), true);
+			storeService.copyDirectory(dir2.getDirId(), dir7.getDirId(), true);
 		} catch (FsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();

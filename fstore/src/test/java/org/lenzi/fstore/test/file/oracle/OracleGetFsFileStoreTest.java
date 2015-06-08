@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractRemoveDirectory;
+import org.lenzi.fstore.test.file.AbstractGetFsFileStore;
 import org.lenzi.fstore.test.file.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class OracleRemoveDirectoryTest extends AbstractRemoveDirectory {
+public class OracleGetFsFileStoreTest extends AbstractGetFsFileStore {
 
 	@Autowired
 	private OracleCmsTestConfiguration configuration = null;	
@@ -32,23 +32,19 @@ public class OracleRemoveDirectoryTest extends AbstractRemoveDirectory {
 	/**
 	 * 
 	 */
-	public OracleRemoveDirectoryTest() {
+	public OracleGetFsFileStoreTest() {
 
 	}
-
-
 	
 	/* (non-Javadoc)
-	 * @see org.lenzi.fstore.test.cms.AbstractAddFile#getTestFileStorePath()
+	 * @see org.lenzi.fstore.test.cms.AbstractCreateFileStore#getTestFileStorePath()
 	 */
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/file_store/sample_remove_directory";
+		return "C:/temp/file_store/sample_fetch";
 		
 	}
-
-
 
 	@Test
 	public void testWiring(){

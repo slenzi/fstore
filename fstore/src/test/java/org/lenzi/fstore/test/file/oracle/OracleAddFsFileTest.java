@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractAddExistingFile;
+import org.lenzi.fstore.test.file.AbstractAddFsFile;
 import org.lenzi.fstore.test.file.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class OracleAddExistingFileTest extends AbstractAddExistingFile {
+public class OracleAddFsFileTest extends AbstractAddFsFile {
 
 	@Autowired
 	private OracleCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class OracleAddExistingFileTest extends AbstractAddExistingFile {
 	/**
 	 * 
 	 */
-	public OracleAddExistingFileTest() {
+	public OracleAddFsFileTest() {
 
 	}
 
@@ -44,7 +44,7 @@ public class OracleAddExistingFileTest extends AbstractAddExistingFile {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/file_store/sample_upload_existing";
+		return "C:/temp/file_store/sample_upload";
 		
 	}
 

@@ -24,14 +24,14 @@ import org.springframework.test.annotation.Rollback;
 /**
  * @author sal
  */
-public abstract class AbstractAddChildCmsDirectory extends AbstractTreeTest {
+public abstract class AbstractAddChildFsDirectory extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
 	private FsService storeService;
 	
-	public AbstractAddChildCmsDirectory() {
+	public AbstractAddChildFsDirectory() {
 		
 	}
 	

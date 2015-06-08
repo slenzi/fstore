@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractCreateCmsFileStore;
+import org.lenzi.fstore.test.file.AbstractCreateFsFileStore;
 import org.lenzi.fstore.test.file.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("postgresql")
 @ActiveProfiles({"postgresql"})
-public class PostgreSQLCreateCmsFileStoreTest extends AbstractCreateCmsFileStore {
+public class PostgreSQLCreateCmsFileStoreTest extends AbstractCreateFsFileStore {
 
 	@Autowired
 	private PostgresqlCmsTestConfiguration configuration = null;	

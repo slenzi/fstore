@@ -17,14 +17,14 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractGetCmsFileStore extends AbstractTreeTest {
+public abstract class AbstractGetFsFileStore extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
 	private FsService storeService;
 	
-	public AbstractGetCmsFileStore() {
+	public AbstractGetFsFileStore() {
 		
 	}
 

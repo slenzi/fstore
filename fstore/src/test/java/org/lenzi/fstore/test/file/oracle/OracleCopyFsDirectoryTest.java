@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractMoveFile;
+import org.lenzi.fstore.test.file.AbstractCopyFsDirectory;
 import org.lenzi.fstore.test.file.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class OracleMoveFileTest extends AbstractMoveFile {
+public class OracleCopyFsDirectoryTest extends AbstractCopyFsDirectory {
 
 	@Autowired
 	private OracleCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class OracleMoveFileTest extends AbstractMoveFile {
 	/**
 	 * 
 	 */
-	public OracleMoveFileTest() {
+	public OracleCopyFsDirectoryTest() {
 
 	}
 
@@ -44,7 +44,7 @@ public class OracleMoveFileTest extends AbstractMoveFile {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/file_store/sample_move_file";
+		return "C:/temp/file_store/sample_copy_dir";
 		
 	}
 

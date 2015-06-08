@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractCreateCmsFileStore;
+import org.lenzi.fstore.test.file.AbstractCreateFsFileStore;
 import org.lenzi.fstore.test.file.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class OracleCreateCmsFileStoreTest extends AbstractCreateCmsFileStore {
+public class OracleCreateFsFileStoreTest extends AbstractCreateFsFileStore {
 
 	@Autowired
 	private OracleCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class OracleCreateCmsFileStoreTest extends AbstractCreateCmsFileStore {
 	/**
 	 * 
 	 */
-	public OracleCreateCmsFileStoreTest() {
+	public OracleCreateFsFileStoreTest() {
 
 	}
 	

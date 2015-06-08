@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -29,7 +28,7 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
+public abstract class AbstractAddFsFileBulk extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -39,7 +38,7 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public AbstractRemoveDirectory() {
+	public AbstractAddFsFileBulk() {
 
 	}
 
@@ -48,9 +47,9 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 	 */
 	@Test
 	@Rollback(false)
-	public void doRemoveDirectory() throws Exception {
+	public void doAddBulkFile() {
 		
-		logTestTitle("Remove directory test");
+		logTestTitle("Add bulk file test");
 		
 		assertNotNull(resourceLoader);
 		
@@ -87,63 +86,25 @@ public abstract class AbstractRemoveDirectory extends AbstractTreeTest {
 			e.printStackTrace();
 		}
 		
-		// add sub dir 1
-		final String subDirName1 = "sub1";
-		FsDirectory subTest1 = null;
+		// add sub dir for fun
+		final String subDirName = "upload_bulk";
+		FsDirectory subTest = null;
 		try {
-			subTest1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
+			subTest = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName);
 		} catch (FsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
 		}
 		
-		// add sub dir 2
-		final String subDirName2 = "sub2";
-		FsDirectory subTest2 = null;
+		List<FsFileEntry> fileEntries = null;
 		try {
-			subTest2 = storeService.addDirectory(subTest1.getDirId(), subDirName2);
-		} catch (FsServiceException e) {
-			logger.error("Failed to add child directory to dir => " + subTest1.getNodeId() + ". " + e.getMessage());
-			e.printStackTrace();
-		}
-		
-		if(filePaths.size() < 4){
-			throw new Exception("Need at least 4 files to run this test. Check " + sourceDirPath.toString());
-		}
-		
-		List<Path> firstTwo = new ArrayList<Path>();
-		firstTwo.add(filePaths.get(0));
-		firstTwo.add(filePaths.get(1));
-		
-		//
-		// add first two files to first directory
-		//
-		List<FsFileEntry> fileEntriesGroup1 = null;
-		try {
-			fileEntriesGroup1 = storeService.addFile(firstTwo, subTest1.getDirId(), true);
+			fileEntries = storeService.addFile(filePaths, subTest.getDirId(), true);
 		} catch (FsServiceException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		
-		//
-		// add all files to second directory
-		//
-		List<FsFileEntry> fileEntriesGroup2 = null;
-		try {
-			fileEntriesGroup2 = storeService.addFile(filePaths, subTest2.getDirId(), true);
-		} catch (FsServiceException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
-		
-		assertEquals(firstTwo.size(), fileEntriesGroup1.size());
-		assertEquals(filePaths.size(), fileEntriesGroup2.size());
-		
-		//
-		// Perform delete on first directory
-		//
-		storeService.removeDirectory(subTest1.getDirId());
+		assertEquals(filePaths.size(), fileEntries.size());
 	
 	}
 	

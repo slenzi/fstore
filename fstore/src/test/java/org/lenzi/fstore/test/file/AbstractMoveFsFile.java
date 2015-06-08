@@ -27,7 +27,7 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractMoveFile extends AbstractTreeTest {
+public abstract class AbstractMoveFsFile extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -37,7 +37,7 @@ public abstract class AbstractMoveFile extends AbstractTreeTest {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public AbstractMoveFile() {
+	public AbstractMoveFsFile() {
 
 	}
 

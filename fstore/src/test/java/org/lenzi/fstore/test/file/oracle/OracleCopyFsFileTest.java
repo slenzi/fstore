@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file.AbstractBulkAddFile;
+import org.lenzi.fstore.test.file.AbstractCopyFsFile;
 import org.lenzi.fstore.test.file.setup.OracleCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class OracleBulkAddFileTest extends AbstractBulkAddFile {
+public class OracleCopyFsFileTest extends AbstractCopyFsFile {
 
 	@Autowired
 	private OracleCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class OracleBulkAddFileTest extends AbstractBulkAddFile {
 	/**
 	 * 
 	 */
-	public OracleBulkAddFileTest() {
+	public OracleCopyFsFileTest() {
 
 	}
 
@@ -44,7 +44,7 @@ public class OracleBulkAddFileTest extends AbstractBulkAddFile {
 	@Override
 	public String getTestFileStorePath() {
 		
-		return "C:/temp/file_store/sample_upload_bulk";
+		return "C:/temp/file_store/sample_copy_file";
 		
 	}
 

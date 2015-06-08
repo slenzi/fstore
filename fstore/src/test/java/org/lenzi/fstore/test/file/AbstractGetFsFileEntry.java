@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.lenzi.fstore.file.repository.FsFileEntryRepository.FsFileEntryFetch;
 import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
 import org.lenzi.fstore.file.repository.model.impl.FsFileStore;
@@ -28,7 +29,7 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractRemoveFile extends AbstractTreeTest {
+public abstract class AbstractGetFsFileEntry extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -38,7 +39,7 @@ public abstract class AbstractRemoveFile extends AbstractTreeTest {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public AbstractRemoveFile() {
+	public AbstractGetFsFileEntry() {
 
 	}
 
@@ -47,9 +48,9 @@ public abstract class AbstractRemoveFile extends AbstractTreeTest {
 	 */
 	@Test
 	@Rollback(false)
-	public void doRemoveFile() {
+	public void doGetCmsFileEntry() {
 		
-		logTestTitle("Remove file test");
+		logTestTitle("Fetch Cms File Entry test");
 		
 		assertNotNull(resourceLoader);
 		
@@ -68,17 +69,17 @@ public abstract class AbstractRemoveFile extends AbstractTreeTest {
 		FsFileStore fileStore = null;
 		try {
 			fileStore = storeService.createFileStore(
-					examplePath, "Example File Store", "This is an example file store to test removing files.", false);
+					examplePath, "Example File Store", "This is an example file store to test fetching of file entries.", false);
 		} catch (FsServiceException e) {
 			logger.error("Failed to create new file store. " + e.getMessage());
 			e.printStackTrace();
 		}
 		
 		// add sub dir 
-		final String subDirName = "upload_test";
-		FsDirectory subTest = null;
+		final String subDirName1 = "file_entry_fetch";
+		FsDirectory subTest1 = null;
 		try {
-			subTest = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName);
+			subTest1 = storeService.addDirectory(fileStore.getRootDir().getDirId(), subDirName1);
 		} catch (FsServiceException e) {
 			logger.error("Failed to add child directory to dir => " + fileStore.getRootDir().getNodeId() + ". " + e.getMessage());
 			e.printStackTrace();
@@ -89,13 +90,9 @@ public abstract class AbstractRemoveFile extends AbstractTreeTest {
 		try {
 			
 			logger.info("Test file => " + sourcePath.toString());
-			logger.info("Size => " + Files.size(sourcePath));
 			
-			fileEntry = storeService.addFile(sourcePath, subTest.getDirId(), true);
+			fileEntry = storeService.addFile(sourcePath, subTest1.getDirId(), true);
 			
-		}catch(IOException e){
-			logger.error(e.getMessage());
-			e.printStackTrace();
 		} catch (FsServiceException e) {
 			logger.error("Error adding file. " + e.getMessage());
 			e.printStackTrace();
@@ -106,35 +103,39 @@ public abstract class AbstractRemoveFile extends AbstractTreeTest {
 		assertNotNull(fileEntry.getDirectory().getFileEntries());
 		assertNotNull(fileEntry.getFile());
 		
-		logger.info("CmsFileEntry:");
+		logger.info("FsFileEntry:");
 		logger.info(fileEntry.toString());
 		
 		Path dirPath = null;
 		try {
 			dirPath = storeService.getAbsoluteDirectoryPath(fileEntry.getDirectory().getDirId());
 		} catch (FsServiceException e) {
-			logger.error("Error getting path for cms directory. " + e.getMessage());
+			logger.error("Error getting path for directory. " + e.getMessage());
 			e.printStackTrace();
 		}
 		
 		assertNotNull(dirPath);
 		logger.info("Path of directory => " + dirPath.toString());
-		String fullFilePath = dirPath + File.separator + fileEntry.getFileName();
+		String fullFilePath = dirPath.toString() + File.separator + fileEntry.getFileName();
 		Path targetPath = Paths.get(fullFilePath);
-		logger.info("Path of cms file => " + targetPath.toString());
+		logger.info("Path of file => " + targetPath.toString());
 		assertTrue(Files.exists(targetPath));
 		
-		//
-		// perform delete
-		//
+		FsFileEntry sampleEntry = null;
 		try {
-			storeService.removeFile(fileEntry.getFileId());
+			sampleEntry = storeService.getFsFileEntryById(fileEntry.getFileId(), FsFileEntryFetch.FILE_META_WITH_DATA_AND_DIR);
 		} catch (FsServiceException e) {
-			logger.error("Error removing file id => " + fileEntry.getFileId() + ". " + e.getMessage());
+			logger.error("Error getting file entry. " + e.getMessage());
 			e.printStackTrace();
 		}
 		
-		assertTrue(!Files.exists(targetPath));
+		assertNotNull(sampleEntry);
+		assertNotNull(sampleEntry.getDirectory());
+		assertNotNull(sampleEntry.getDirectory().getFileEntries());
+		assertNotNull(sampleEntry.getFile());
+		
+		logger.info("Fetched FsFileEntry:");
+		logger.info(fileEntry.toString());
 	
 	}
 	

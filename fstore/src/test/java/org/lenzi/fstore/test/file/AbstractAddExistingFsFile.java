@@ -9,7 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
 import org.lenzi.fstore.file.repository.model.impl.FsFileStore;
@@ -28,7 +30,7 @@ import org.springframework.test.annotation.Rollback;
  * @author slenzi
  *
  */
-public abstract class AbstractAddFile extends AbstractTreeTest {
+public abstract class AbstractAddExistingFsFile extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -38,7 +40,10 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public AbstractAddFile() {
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
+	public AbstractAddExistingFsFile() {
 
 	}
 
@@ -47,19 +52,22 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 	 */
 	@Test
 	@Rollback(false)
-	public void doAddFile() {
+	public void doAddExistingFile() throws FsServiceException, IOException {
 		
-		logTestTitle("Add file test");
+		logTestTitle("Add existing file test");
 		
 		assertNotNull(resourceLoader);
 		
-		// get test file for upload to database
-		Resource sourceResource = resourceLoader.getResource("classpath:image/honey_badger.JPG");
-		Path sourcePath = null;
+		Resource sourceResource1 = resourceLoader.getResource("classpath:image/honey_badger.JPG");
+		Resource sourceResource2 = resourceLoader.getResource("classpath:image/other/honey_badger.JPG");
+		
+		// get test files
+		Path sourcePath1 = null, sourcePath2 = null;
 		try {
-			sourcePath = Paths.get(sourceResource.getFile().getAbsolutePath());
+			sourcePath1 = Paths.get(sourceResource1.getFile().getAbsolutePath());
+			sourcePath2 = Paths.get(sourceResource2.getFile().getAbsolutePath());
 		} catch (IOException e) {
-			logger.error("Failed to get file resource." + e.getMessage());
+			logger.error("Failed to get file resources." + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -88,9 +96,9 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		FsFileEntry fileEntry = null;
 		try {
 			
-			logger.info("Test file => " + sourcePath.toString());
+			logger.info("Resource 1 => " + sourcePath1.toString());
 			
-			fileEntry = storeService.addFile(sourcePath, subTest1.getDirId(), true);
+			fileEntry = storeService.addFile(sourcePath1, subTest1.getDirId(), true);
 			
 		} catch (FsServiceException e) {
 			logger.error("Error adding file. " + e.getMessage());
@@ -105,6 +113,9 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		logger.info("FsFileEntry:");
 		logger.info(fileEntry.toString());
 		
+		//
+		// check file on disk
+		//
 		Path dirPath = null;
 		try {
 			dirPath = storeService.getAbsoluteDirectoryPath(fileEntry.getDirectory().getDirId());
@@ -119,7 +130,38 @@ public abstract class AbstractAddFile extends AbstractTreeTest {
 		Path targetPath = Paths.get(fullFilePath);
 		logger.info("Path of file => " + targetPath.toString());
 		assertTrue(Files.exists(targetPath));
-	
+		
+		//
+		// persist second version of file with same name
+		//
+		//exception.expect(DatabaseException.class);
+		FsFileEntry updatedEntry = storeService.addFile(sourcePath2, subTest1.getDirId(), true);
+				
+		assertNotNull(updatedEntry);
+		assertNotNull(updatedEntry.getDirectory());
+		assertNotNull(updatedEntry.getDirectory().getFileEntries());
+		assertNotNull(updatedEntry.getFile());
+		
+		logger.info("Updated FsFileEntry:");
+		logger.info(updatedEntry.toString());
+		
+		//
+		// re-check file on disk
+		//
+		try {
+			dirPath = storeService.getAbsoluteDirectoryPath(updatedEntry.getDirectory().getDirId());
+		} catch (FsServiceException e) {
+			logger.error("Error getting path for directory. " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		assertNotNull(dirPath);
+		logger.info("Path of directory => " + dirPath.toString());
+		fullFilePath = dirPath.toString() + File.separator + updatedEntry.getFileName();
+		targetPath = Paths.get(fullFilePath);
+		logger.info("Path of file => " + targetPath.toString());
+		assertTrue(Files.exists(targetPath));		
+		
 	}
 	
 	public abstract String getTestFileStorePath();
