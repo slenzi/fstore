@@ -9,7 +9,6 @@ import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.slf4j.Logger;

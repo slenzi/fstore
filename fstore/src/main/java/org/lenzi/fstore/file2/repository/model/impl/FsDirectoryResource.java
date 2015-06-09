@@ -61,7 +61,7 @@ public class FsDirectoryResource extends FsPathResource {
 	 */
 	@Override
 	public String toString() {
-		return FsDirectoryResource.class.getName() + " [otherValue=" + otherValue + "]";
+		return super.toString() + ", " + FsDirectoryResource.class.getName() + " [otherValue=" + otherValue + "]";
 	}
 
 }
