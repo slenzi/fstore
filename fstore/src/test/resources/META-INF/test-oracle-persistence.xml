@@ -31,7 +31,8 @@
       	<!-- file 2 test models -->
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsPathResource</class>
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource</class>
-      	<class>org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource</class>     				      	
+      	<class>org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource</class>
+      	<class>org.lenzi.fstore.file2.repository.model.impl.FsResourceStore</class>     				      	
     
         <properties>
         	
@@ -41,7 +42,7 @@
         	-->
             <property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver"/>
             <property name="hibernate.connection.username" value="ecoguser"/>
-            <property name="hibernate.connection.password" value="*****"/>
+            <property name="hibernate.connection.password" value="ecogweb"/>
             <!-- specify default schema so you don't have to hard code schema on each entity  -->
             <property name="hibernate.default_schema" value="ecoguser"/>
             <property name="hibernate.connection.url" value="jdbc:oracle:thin:@ecog1.dfci.harvard.edu:1511:ecogtst"/>
@@ -56,7 +57,7 @@
             -->
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             
-            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
             
             <property name="hibernate.jdbc.batch_size" value="25"/>

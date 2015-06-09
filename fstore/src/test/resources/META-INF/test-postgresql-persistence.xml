@@ -31,7 +31,8 @@
       	<!-- file 2 test models -->
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsPathResource</class>
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource</class>
-      	<class>org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource</class>        		      	
+      	<class>org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource</class>
+      	<class>org.lenzi.fstore.file2.repository.model.impl.FsResourceStore</class>        		      	
     
         <properties>
         

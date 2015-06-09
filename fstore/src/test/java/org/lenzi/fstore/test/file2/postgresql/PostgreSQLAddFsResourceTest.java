@@ -40,9 +40,9 @@ public class PostgreSQLAddFsResourceTest extends AbstractAddFsResource {
 	 * @see org.lenzi.fstore.test.cms.AbstractCreateFileStore#getTestFileStorePath()
 	 */
 	@Override
-	public String getTestFileStorePath() {
+	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_add_child";
+		return "/Users/slenzi/Programming/file_store/sample_add_root_dir";
 		
 	}
 

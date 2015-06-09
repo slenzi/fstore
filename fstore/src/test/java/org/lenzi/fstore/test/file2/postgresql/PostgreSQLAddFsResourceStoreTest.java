@@ -1,14 +1,14 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.file2.oracle;
+package org.lenzi.fstore.test.file2.postgresql;
 
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file2.setup.OracleCmsTestConfiguration;
-import org.lenzi.fstore.test.file2.AbstractAddFsResource;
+import org.lenzi.fstore.test.file2.AbstractAddFsResourceStore;
+import org.lenzi.fstore.test.file2.setup.PostgresqlCmsTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,18 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-@Transactional("oracle")
-@ActiveProfiles({"oracle"})
-public class OracleAddFsResourceTest extends AbstractAddFsResource {
+@ContextConfiguration(classes=PostgresqlCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@Transactional("postgresql")
+@ActiveProfiles({"postgresql"})
+public class PostgreSQLAddFsResourceStoreTest extends AbstractAddFsResourceStore {
 
 	@Autowired
-	private OracleCmsTestConfiguration configuration = null;	
+	private PostgresqlCmsTestConfiguration configuration = null;	
 	
 	/**
 	 * 
 	 */
-	public OracleAddFsResourceTest() {
+	public PostgreSQLAddFsResourceStoreTest() {
 
 	}
 	
@@ -42,7 +42,7 @@ public class OracleAddFsResourceTest extends AbstractAddFsResource {
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_add_root_dir";
+		return "/Users/slenzi/Programming/file_store/sample_resource_store";
 		
 	}
 

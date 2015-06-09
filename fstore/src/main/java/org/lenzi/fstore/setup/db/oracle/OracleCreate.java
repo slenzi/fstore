@@ -153,10 +153,23 @@ public class OracleCreate {
 	private String SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE =
 		"create table FS_DIRECTORY_RESOURCE ( " +  
 		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
-		"	OTHER_VALUE VARCHAR2(250) NOT NULL, " + 
+		"	RELATIVE_DIR_PATH VARCHAR2(250) NOT NULL, " + 
 		"	PRIMARY KEY (NODE_ID) " + 
-		")";			
-		
+		")";
+	private String SQL_DROP_TABLE_FS_RESOURCE_STORE =
+		"drop table FS_RESOURCE_STORE";	
+	private String SQL_CREATE_TABLE_FS_RESOURCE_STORE =
+		"create table FS_RESOURCE_STORE ( " +  
+		"	STORE_ID NUMBER(15,0) NOT NULL, " + 
+		"	STORE_NAME VARCHAR2(250) NOT NULL, " + 
+		"	STORE_DESCRIPTION VARCHAR2(4000) NOT NULL, " + 
+		"	STORE_PATH VARCHAR2(2000) NOT NULL, " + 
+		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
+		"	CREATION_DATE date NOT NULL,  " + 
+		"	UPDATED_DATE date NOT NULL,  " + 
+		"	PRIMARY KEY (STORE_ID)  " + 
+		")";	
+	
 	private String SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD =
 		"drop index fs_parent_depth_child_idx";
 	private String SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD =
@@ -282,7 +295,8 @@ public class OracleCreate {
 		// file 2 tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();		
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		
 	}
 	
@@ -320,7 +334,8 @@ public class OracleCreate {
 		// file 2 tables
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();		
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		
 	}
 	

@@ -39,7 +39,7 @@ public class FsResourceAdder extends AbstractRepository {
 	private TreeRepository<FsPathResource> treeRepository;
 	
 	@Autowired
-	private FsDirectoryResourceRepository fsDirResRepo;
+	private FsDirectoryResourceRepository fsDirResRepository;
 
 	/**
 	 * 
@@ -65,7 +65,7 @@ public class FsResourceAdder extends AbstractRepository {
 		try {
 			
 			dirResource = (FsDirectoryResource) treeRepository.addRootNode(
-					new FsDirectoryResource(dirName, "Other value"));
+					new FsDirectoryResource(dirName, File.separator));
 			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to create new root directory resource.", e);
@@ -97,7 +97,7 @@ public class FsResourceAdder extends AbstractRepository {
 		FsDirectoryResource parentDir = null;
 		
 		try {
-			parentDir = fsDirResRepo.getResourceById(parentDirId);
+			parentDir = fsDirResRepository.getResourceById(parentDirId);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + parentDirId, e);
 		}

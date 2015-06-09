@@ -8,7 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.test.file2.setup.OracleCmsTestConfiguration;
-import org.lenzi.fstore.test.file2.AbstractAddFsResource;
+import org.lenzi.fstore.test.file2.AbstractAddFsResourceStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
-public class OracleAddFsResourceTest extends AbstractAddFsResource {
+public class OracleAddFsResourceStoreTest extends AbstractAddFsResourceStore {
 
 	@Autowired
 	private OracleCmsTestConfiguration configuration = null;	
@@ -32,7 +32,7 @@ public class OracleAddFsResourceTest extends AbstractAddFsResource {
 	/**
 	 * 
 	 */
-	public OracleAddFsResourceTest() {
+	public OracleAddFsResourceStoreTest() {
 
 	}
 	
@@ -42,7 +42,7 @@ public class OracleAddFsResourceTest extends AbstractAddFsResource {
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_add_root_dir";
+		return "C:/temp/file_store/sample_resource_store";
 		
 	}
 

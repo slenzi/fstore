@@ -5,9 +5,12 @@ package org.lenzi.fstore.test.file2;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.junit.Test;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
-import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
@@ -18,36 +21,38 @@ import org.springframework.test.annotation.Rollback;
 /**
  * @author sal
  */
-public abstract class AbstractAddFsResource extends AbstractTreeTest {
+public abstract class AbstractAddFsResourceStore extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
 	private FsResourceService fsResourceService;
 	
-	public AbstractAddFsResource() {
+	public AbstractAddFsResourceStore() {
 		
 	}
 	
 	@Test
 	@Rollback(false)
-	public void addRootDirectoryResource() {
+	public void addResourceStore() {
 		
-		logTestTitle("Adding root directory resource");
+		logTestTitle("Adding resource store");
 		
-		FsDirectoryResource rootDirResource = null;
+		FsResourceStore store = null;
+		
+		Path storePath = Paths.get(getTestStorePath());
 		
 		try {
-			rootDirResource = fsResourceService.addRootDirectory("Sample_directory_resource");
+			store = fsResourceService.createResourceStore(storePath, "Sample Resource Store", "Sample resource store description", true);
 		} catch (FsServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
 		}
 		
-		assertNotNull(rootDirResource);
+		assertNotNull(store);
 		
-		logger.info("Root directory resource => " + rootDirResource);
+		logger.info("Resource Store => " + store);
 		
 	}
 	

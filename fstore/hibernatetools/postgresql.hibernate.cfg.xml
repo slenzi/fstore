@@ -55,6 +55,7 @@
       	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource"/>
       	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource"/>
       	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsPathResource"/>	  
+    	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsResourceStore"/>
     
     </session-factory>
     

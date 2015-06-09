@@ -155,8 +155,21 @@ public class PostgreSQLCreate {
 	private String SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE =
 		"create table " + SCHEMA + "FS_DIRECTORY_RESOURCE ( " +  
 		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	OTHER_VALUE CHARACTER VARYING(250) NOT NULL, " + 
+		"	RELATIVE_DIR_PATH CHARACTER VARYING(250) NOT NULL, " + 
 		"	PRIMARY KEY (NODE_ID) " + 
+		")";
+	private String SQL_DROP_TABLE_FS_RESOURCE_STORE =
+		"drop table " + SCHEMA + "FS_RESOURCE_STORE";	
+	private String SQL_CREATE_TABLE_FS_RESOURCE_STORE =
+		"create table " + SCHEMA + "FS_RESOURCE_STORE ( " +  
+		"	STORE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	STORE_NAME CHARACTER VARYING(250) NOT NULL, " + 
+		"	STORE_DESCRIPTION CHARACTER VARYING(4000) NOT NULL, " + 
+		"	STORE_PATH CHARACTER VARYING(2000) NOT NULL, " + 
+		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	CREATION_DATE TIMESTAMP NOT NULL,  " + 
+		"	UPDATED_DATE TIMESTAMP NOT NULL,  " + 
+		"	PRIMARY KEY (STORE_ID)  " + 
 		")";	
 		
 	private String SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD =
@@ -266,7 +279,8 @@ public class PostgreSQLCreate {
 		// file 2 tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();		
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		
 	}
 	
@@ -304,7 +318,8 @@ public class PostgreSQLCreate {
 		// file 2 tables
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();		
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		
 	}
 	
