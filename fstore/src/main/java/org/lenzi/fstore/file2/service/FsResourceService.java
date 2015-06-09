@@ -50,5 +50,11 @@ public class FsResourceService {
 		return fsDirRes;
 		
 	}
+	
+	public FsDirectoryResource addChildDirectory(Long parentDirId, String name) throws FsServiceException {
+		
+		return null;
+		
+	}
 
 }

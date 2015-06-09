@@ -74,5 +74,41 @@ public class FsResourceAdder extends AbstractRepository {
 		return dirResource;
 		
 	}
+	
+	/**
+	 * Add child directory resource
+	 * 
+	 * @param parentDirId
+	 * @param dirName
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FsDirectoryResource addChildDirectoryResource(Long parentDirId, String dirName) throws DatabaseException {
+		
+		// TODO - check if parent dir already contains dir with same name
+		
+		if(parentDirId == null){
+			throw new DatabaseException("Parent dir id param is null.");
+		}
+		if(dirName == null){
+			throw new DatabaseException("Dir name param is null.");
+		}
+		
+		FsDirectoryResource parentDir = null;
+		
+		try {
+			parentDir = fsDirResRepo.getResourceById(parentDirId);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + parentDirId, e);
+		}
+		
+		if(parentDir == null){
+			throw new DatabaseException("Cannot add new directory => " + dirName + " to parent dir => " + parentDirId + 
+					". Failed to fetch parent dir from database. Returned object was null.");
+		}
+		
+		return null;
+	
+	}
 
 }
