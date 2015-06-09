@@ -33,21 +33,37 @@ public class FsDirectoryResource extends FsPathResource {
 	@Fetch(FetchMode.JOIN)
 	FsResourceStore resourceStore = null;	
 	
-	/**
-	 * 
-	 */
 	public FsDirectoryResource() {
+		
+		super();
+		
+		init(null, null, null);
 		
 	}
 	
 	public FsDirectoryResource(Long dirId) {
-		setNodeId(dirId);
+		
+		super();
+		
+		init(dirId, null, null);
+		
 	}
 	
-	public FsDirectoryResource(String name, String relativeDirPath) {
+	public FsDirectoryResource(String name, String relativePath) {
+		
 		super();
+		
+		init(null, name, relativePath);
+		
+	}
+	
+	private void init(Long dirId, String name, String relativePath){
+		
+		setNodeId(dirId);
 		setName(name);
-		setRelativePath(relativeDirPath);
+		setRelativePath(relativePath);
+		setPathType(FsPathType.DIRECTORY);
+		
 	}
 	
 	public Long getDirId(){

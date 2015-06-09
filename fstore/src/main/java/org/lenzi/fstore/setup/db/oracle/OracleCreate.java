@@ -138,6 +138,7 @@ public class OracleCreate {
 		"create table FS_PATH_RESOURCE ( " +  
 		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
 		"	NAME VARCHAR2(250) NOT NULL, " +
+		"	PATH_TYPE VARCHAR2(250) NOT NULL, " + 
 		"	RELATIVE_PATH VARCHAR2(250) NOT NULL, " + 
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";

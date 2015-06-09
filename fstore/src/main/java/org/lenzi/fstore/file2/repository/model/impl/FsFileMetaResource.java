@@ -35,15 +35,28 @@ public class FsFileMetaResource extends FsPathResource {
 	@PrimaryKeyJoinColumn
 	private FsFileResource fileResource = null;
 
-	/**
-	 * 
-	 */
-	public FsFileMetaResource() {
 
+	public FsFileMetaResource() {
+		
+		super();
+		
+		init(null);
+		
 	}
 
 	public FsFileMetaResource(Long fileId) {
+		
+		super();
+		
+		init(fileId);		
+	
+	}
+	
+	private void init(Long fileId){
+		
 		setNodeId(fileId);
+		setPathType(FsPathType.FILE);
+		
 	}
 
 	/**

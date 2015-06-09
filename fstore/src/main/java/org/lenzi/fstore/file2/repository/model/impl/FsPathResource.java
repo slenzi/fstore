@@ -43,11 +43,9 @@ public class FsPathResource extends FSNode<FsPathResource> implements FsResource
 	
 	// file store (if path is a root node)
 	
-	/*
 	@Column(name = "PATH_TYPE", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private PathType pathType;
-	*/
+	private FsPathType pathType;
 	
 	/**
 	 * 
@@ -88,15 +86,27 @@ public class FsPathResource extends FSNode<FsPathResource> implements FsResource
 		this.relativePath = relativePath;
 	}
 
+	/**
+	 * @return the pathType
+	 */
+	public FsPathType getPathType() {
+		return pathType;
+	}
+
+	/**
+	 * @param pathType the pathType to set
+	 */
+	public void setPathType(FsPathType pathType) {
+		this.pathType = pathType;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "FsPathResource [name=" + name + ", relativePath="
-				+ relativePath + "]";
+				+ relativePath + ", pathType=" + pathType.getType() + "]";
 	}
-
-
 
 }
