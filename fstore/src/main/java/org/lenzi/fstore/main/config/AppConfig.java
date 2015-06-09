@@ -22,7 +22,12 @@ import org.springframework.stereotype.Controller;
  */
 @Configuration
 @ComponentScan(
-	basePackages = {"org.lenzi.fstore.main","org.lenzi.fstore.core","org.lenzi.fstore.example","org.lenzi.fstore.file"},
+	basePackages = {
+			"org.lenzi.fstore.main",
+			"org.lenzi.fstore.core",
+			"org.lenzi.fstore.example",
+			"org.lenzi.fstore.file",
+			"org.lenzi.fstore.file2"},
 	excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class),
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
