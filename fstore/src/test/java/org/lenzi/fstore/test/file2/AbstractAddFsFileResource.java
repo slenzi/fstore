@@ -5,39 +5,58 @@ package org.lenzi.fstore.test.file2;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.test.AbstractTreeTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.Rollback;
 
 /**
  * @author sal
  */
-public abstract class AbstractAddFsDirectoryResource extends AbstractTreeTest {
+public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
 	@Autowired
 	private FsResourceService fsResourceService;
 	
-	public AbstractAddFsDirectoryResource() {
+	@Autowired
+	private ResourceLoader resourceLoader;
+	
+	public AbstractAddFsFileResource() {
 		
 	}
 	
 	@Test
 	@Rollback(false)
-	public void addDirectoryResource() {
+	public void addFileResource() {
 		
-		logTestTitle("Adding directory resource");
+		logTestTitle("Adding file resource");
+		
+		assertNotNull(resourceLoader);
+		
+		// get test file for upload to database
+		Resource sourceResource = resourceLoader.getResource("classpath:image/honey_badger.JPG");
+		Path sourcePath = null;
+		try {
+			sourcePath = Paths.get(sourceResource.getFile().getAbsolutePath());
+		} catch (IOException e) {
+			logger.error("Failed to get file resource." + e.getMessage());
+			e.printStackTrace();
+		}		
 		
 		FsResourceStore store = null;
 		
@@ -76,6 +95,19 @@ public abstract class AbstractAddFsDirectoryResource extends AbstractTreeTest {
 		assertNotNull(dirResource2);
 		assertNotNull(dirResource2_1);
 		assertNotNull(dirResource3);
+		
+		logger.info("Adding files...");
+		
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsResourceService.addFileResource(sourcePath, store.getRootDirectoryResource().getDirId(), true);
+		} catch (FsServiceException e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			return;
+		}
+		
+		// assertNotNull(fileResource);
 		
 	}
 	

@@ -1,13 +1,16 @@
 package org.lenzi.fstore.file2.service;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
+import org.lenzi.fstore.file2.repository.FsFileResourceAdder;
 import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +34,11 @@ public class FsResourceService {
 	private FsResourceStoreAdder fsResourceStoreAdder;
 	
 	@Autowired
-	private FsDirectoryResourceAdder fsResourcAdder;
+	private FsDirectoryResourceAdder fsDirectoryResourceAdder;
+	
+	@Autowired
+	private FsFileResourceAdder fsFileResourceAdder;
+	
 	
 	public FsResourceService() {
 		
@@ -71,11 +78,35 @@ public class FsResourceService {
 		
 		FsDirectoryResource dirResource = null;
 		try {
-			dirResource = fsResourcAdder.addDirectoryResource(parentDirId, name);
+			dirResource = fsDirectoryResourceAdder.addDirectoryResource(parentDirId, name);
 		} catch (DatabaseException e) {
 			throw new FsServiceException("Error adding directory to parent directory, id => " + parentDirId, e);
 		}
 		return dirResource;
+		
+	}
+	
+	/**
+	 * Add new file
+	 * 
+	 * @param fileToAdd
+	 * @param parentDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws FsServiceException
+	 */
+	public FsFileMetaResource addFileResource(Path fileToAdd, Long parentDirId, boolean replaceExisting) throws FsServiceException {
+		
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsFileResourceAdder.addFileResource(fileToAdd, parentDirId, replaceExisting);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database error adding file resource => " + fileToAdd.toString() + ", to directory, id => " + parentDirId, e);
+		} catch (IOException e) {
+			throw new FsServiceException("IO error adding file resource => " + fileToAdd.toString() + ", to directory, id => " + parentDirId, e);
+		}
+		
+		return fileResource;
 		
 	}
 	
@@ -94,7 +125,7 @@ public class FsResourceService {
 		FsDirectoryResource dirResource = null;
 		
 		try {
-			dirResource = fsResourcAdder.addRootDirectoryResource(dirName);
+			dirResource = fsDirectoryResourceAdder.addRootDirectoryResource(dirName);
 		} catch (DatabaseException e) {
 			throw new FsServiceException("Error adding root directory", e);
 		}

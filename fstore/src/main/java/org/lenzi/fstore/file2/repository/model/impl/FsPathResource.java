@@ -6,7 +6,6 @@ package org.lenzi.fstore.file2.repository.model.impl;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.InheritanceType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -26,7 +25,7 @@ import org.lenzi.fstore.core.repository.model.impl.FSNode;
 @Table(name = "FS_PATH_RESOURCE")
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="PATH_TYPE", discriminatorType=DiscriminatorType.STRING)
-public class FsPathResource extends FSNode<FsPathResource> implements FsResource {
+public abstract class FsPathResource extends FSNode<FsPathResource> implements FsResource {
 
 	/**
 	 * 

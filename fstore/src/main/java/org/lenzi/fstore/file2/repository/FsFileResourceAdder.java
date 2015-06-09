@@ -84,13 +84,18 @@ public class FsFileResourceAdder extends AbstractRepository {
 		
 		FsDirectoryResource dirResource = null;
 		try {
-			dirResource = (FsDirectoryResource) treeRepository.getNodeWithChild(new FsPathResource(fsDirId), 1);
+			dirResource = (FsDirectoryResource) treeRepository.getNodeWithChild(new FsDirectoryResource(fsDirId), 1);
 		} catch (Exception e) {
 			throw new DatabaseException("Failed to fetch depth-1 resources for path resource, id => " + fsDirId, e);
 		}
 		if(dirResource != null){
 			dirResource.getChildClosure().stream().forEach(closure -> {
-				logger.info("Path resource, id => " + closure.getChildNode().getNodeId() + ", name => " + closure.getChildNode().getName() );
+				logger.info("Path resource " +
+						", id => " + closure.getChildNode().getNodeId() + 
+						", name => " + closure.getChildNode().getName() + 
+						", type => " + closure.getChildNode().getPathType().getType() +
+						", depth => " + closure.getDepth()
+						);
 			});
 		}else{
 			logger.error("No path resource for id => " + fsDirId);

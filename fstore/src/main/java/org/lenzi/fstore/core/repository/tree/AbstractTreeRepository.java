@@ -163,6 +163,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	}
 
 	/**
+	 * 
 	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries, up to the
 	 * specified max depth
 	 */
@@ -541,8 +542,14 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 	}
 	
-	// a newer version of the deprecated getClosure method. this function is not complete... still not exactly sure how
-	// to make it work
+	// TODO - not tested
+	/**
+	 * Criteria version.
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DatabaseException
+	 */
 	private List<DBClosure<N>> getClosureCriteria(N node) throws DatabaseException {
 		
 		if(node == null){
@@ -559,9 +566,23 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		CriteriaQuery<FSClosure> nodeSelect = criteriaBuilder.createQuery(type);
 		Root<FSClosure> nodeSelectRoot = nodeSelect.from(type);
 		
-		//Join<FSClosure,N> childClosureJoin = nodeSelectRoot.join(FSClosure_.childNode, JoinType.LEFT);
+		Join<FSClosure,FSNode> childClosureJoin = nodeSelectRoot.join(FSClosure_.childNode, JoinType.LEFT);
 		
-		return null;
+		Fetch<FSClosure,FSNode> childClosureFetch = nodeSelectRoot.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSClosure_.parentNodeId), node.getNodeId()) );
+		//andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSClosure_.depth), MAX_DEPTH) );
+		
+		nodeSelect.distinct(true);
+		nodeSelect.select(nodeSelectRoot);
+		nodeSelect.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+
+		List<DBClosure<N>> result = ResultFetcher.getResultListOrNull( getEntityManager().createQuery(nodeSelect));
+		
+		return result;
 		
 	}
 	
@@ -1618,6 +1639,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		return result;
 	}
 	
+	// TODO - doesn't seem to work properly
 	/**
 	 * Get a node with it's child closure data, and fetch the parent and child nodes for the closure entries.
 	 * 
@@ -1628,7 +1650,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 */
 	private N getNodeWithChildClosureCriteria(N node, int maxDepth) throws DatabaseException {
 		
-		logger.info("Getting node with child closure criteria => " + node.getNodeId());
+		logger.info("Getting node with child closure criteria => " + node.getNodeId() + " at max depth " + maxDepth);
 		
 		Class<N> type = (Class<N>) node.getClass();
 		
