@@ -14,8 +14,6 @@ import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.FileUtil;
-import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
-import org.lenzi.fstore.file.repository.model.impl.FsFileStore;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -109,7 +107,6 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		}
 		
 		FsDirectoryResource parentDir = null;
-		
 		try {
 			parentDir = fsDirectoryResourceRepository.getDirectoryResourceById(parentDirId);
 		} catch (DatabaseException e) {
@@ -147,7 +144,7 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		
 		// CmsDirectory.getRelativeDirPath() returns a path relative to the store path
 		Path storePath = Paths.get(fsFileStore.getStorePath());
-		Path childPath =  Paths.get(fsFileStore.getStorePath() + parentDir.getRelativeDirPath() + File.separator + dirName);
+		Path childPath =  Paths.get(fsFileStore.getStorePath() + parentDir.getRelativePath() + File.separator + dirName);
 		Path childRelativePath = storePath.relativize(childPath);
 		String sChildRelativePath = childRelativePath.toString();
 		if(!sChildRelativePath.startsWith(File.separator)){

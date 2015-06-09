@@ -3,7 +3,6 @@
  */
 package org.lenzi.fstore.file2.repository.model.impl;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -28,10 +27,6 @@ public class FsDirectoryResource extends FsPathResource {
 	@Transient
 	private static final long serialVersionUID = 6270101278822512023L;
 	
-	// path relative to store root dir path
-	@Column(name = "RELATIVE_DIR_PATH", nullable = false)
-	private String relativeDirPath;	
-	
 	// read / write permissions.
 	
 	@OneToOne(mappedBy="rootDirectoryResource", optional=true)
@@ -52,25 +47,11 @@ public class FsDirectoryResource extends FsPathResource {
 	public FsDirectoryResource(String name, String relativeDirPath) {
 		super();
 		setName(name);
-		this.relativeDirPath = relativeDirPath;
+		setRelativePath(relativeDirPath);
 	}
 	
 	public Long getDirId(){
 		return getNodeId();
-	}
-
-	/**
-	 * @return the relativeDirPath
-	 */
-	public String getRelativeDirPath() {
-		return relativeDirPath;
-	}
-
-	/**
-	 * @param relativeDirPath the relativeDirPath to set
-	 */
-	public void setRelativeDirPath(String relativeDirPath) {
-		this.relativeDirPath = relativeDirPath;
 	}
 
 	/**
@@ -92,7 +73,7 @@ public class FsDirectoryResource extends FsPathResource {
 	 */
 	@Override
 	public String toString() {
-		return super.toString() + ", " + FsDirectoryResource.class.getName() + " [relativeDirPath=" + relativeDirPath + "]";
+		return super.toString() + ", " + FsDirectoryResource.class.getName() + ", have store => " + ((resourceStore != null) ? "true" : "false");
 	}
 
 }

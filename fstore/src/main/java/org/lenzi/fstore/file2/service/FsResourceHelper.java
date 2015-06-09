@@ -46,7 +46,7 @@ public class FsResourceHelper {
 	 */
 	public String getAbsoluteDirectoryString(FsResourceStore fsStore, FsDirectoryResource fsDirectory){
 		
-		String dirRelativePath = fsDirectory.getRelativeDirPath();
+		String dirRelativePath = fsDirectory.getRelativePath();
 		if(!dirRelativePath.startsWith(File.separator)){
 			dirRelativePath = File.separator + dirRelativePath;
 		}

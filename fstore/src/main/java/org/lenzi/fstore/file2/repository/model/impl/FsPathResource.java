@@ -26,7 +26,7 @@ import org.lenzi.fstore.core.repository.model.impl.FSNode;
 @Table(name = "FS_PATH_RESOURCE")
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="PATH_TYPE", discriminatorType=DiscriminatorType.STRING)
-public abstract class FsPathResource extends FSNode<FsPathResource> implements FsResource {
+public class FsPathResource extends FSNode<FsPathResource> implements FsResource {
 
 	/**
 	 * 
@@ -38,6 +38,8 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	private String name;
 	
 	// relative path (relative to store path)
+	@Column(name = "RELATIVE_PATH", nullable = false)
+	private String relativePath;	
 	
 	// file store (if path is a root node)
 	
@@ -52,6 +54,10 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	 */
 	public FsPathResource() {
 		
+	}
+	
+	public FsPathResource(Long id) {
+		setNodeId(id);
 	}
 
 	/**
@@ -68,12 +74,29 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 		this.name = name;
 	}
 
+	/**
+	 * @return the relativePath
+	 */
+	public String getRelativePath() {
+		return relativePath;
+	}
+
+	/**
+	 * @param relativePath the relativePath to set
+	 */
+	public void setRelativePath(String relativePath) {
+		this.relativePath = relativePath;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return FsPathResource.class.getName() + " [name=" + name + "]";
+		return "FsPathResource [name=" + name + ", relativePath="
+				+ relativePath + "]";
 	}
+
+
 
 }

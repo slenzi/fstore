@@ -139,7 +139,8 @@ public class PostgreSQLCreate {
 	private String SQL_CREATE_TABLE_FS_PATH_RESOURCE =
 		"create table " + SCHEMA + "FS_PATH_RESOURCE ( " +  
 		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	NAME CHARACTER VARYING(250) NOT NULL, " + 
+		"	NAME CHARACTER VARYING(250) NOT NULL, " +
+		"	RELATIVE_PATH CHARACTER VARYING(250) NOT NULL, " +
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
 	private String SQL_DROP_TABLE_FS_FILE_META_RESOURCE =
@@ -150,12 +151,19 @@ public class PostgreSQLCreate {
 		"	FILE_SIZE NUMERIC(15,0) NOT NULL, " + 
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
+	private String SQL_DROP_TABLE_FS_FILE_RESOURCE =
+		"drop table " + SCHEMA + "FS_FILE_RESOURCE";	
+	private String SQL_CREATE_TABLE_FS_FILE_RESOURCE =
+		"create table " + SCHEMA + "FS_FILE_RESOURCE ( " +  
+		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	FILE_DATA OID NOT NULL, " + 
+		"	PRIMARY KEY (NODE_ID) " + 
+		")";	
 	private String SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE =
 		"drop table " + SCHEMA + "FS_DIRECTORY_RESOURCE";	
 	private String SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE =
 		"create table " + SCHEMA + "FS_DIRECTORY_RESOURCE ( " +  
 		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	RELATIVE_DIR_PATH CHARACTER VARYING(250) NOT NULL, " + 
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
 	private String SQL_DROP_TABLE_FS_RESOURCE_STORE =
@@ -279,6 +287,7 @@ public class PostgreSQLCreate {
 		// file 2 tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		
@@ -318,6 +327,7 @@ public class PostgreSQLCreate {
 		// file 2 tables
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		

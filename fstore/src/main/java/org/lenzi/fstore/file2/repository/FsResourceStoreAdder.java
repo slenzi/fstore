@@ -46,7 +46,7 @@ public class FsResourceStoreAdder extends AbstractRepository {
 	private TreeRepository<FsPathResource> treeRepository;
 	
 	@Autowired
-	private FsDirectoryResourceRepository fsDirResRepository;
+	private FsDirectoryResourceRepository fsDirectoryResourceRepository;
 	
 	@Autowired
 	private FsResourceStoreRepository fsResourceStoreRepository;
