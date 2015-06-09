@@ -70,7 +70,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @param dirPath
 	 * @return
 	 */
-	public List<FsResourceStore> getParentFileStores(Path dirPath) throws DatabaseException {
+	public List<FsResourceStore> getParentStores(Path dirPath) throws DatabaseException {
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -102,7 +102,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @param dirPath
 	 * @return
 	 */
-	public List<FsResourceStore> getChildFileStores(Path dirPath) throws DatabaseException {
+	public List<FsResourceStore> getChildStores(Path dirPath) throws DatabaseException {
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -148,8 +148,8 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		
 		List<FsResourceStore> conflictingStores = new ArrayList<FsResourceStore>();
 		
-		conflictingStores.addAll( CollectionUtil.emptyListIfNull(getParentFileStores(dirPath)) );
-		conflictingStores.addAll( CollectionUtil.emptyListIfNull(getChildFileStores(dirPath)) );
+		conflictingStores.addAll( CollectionUtil.emptyListIfNull(getParentStores(dirPath)) );
+		conflictingStores.addAll( CollectionUtil.emptyListIfNull(getChildStores(dirPath)) );
 		
 		List<FsResourceStore> dupFree = conflictingStores.parallelStream().distinct().collect(Collectors.toList());
 		
@@ -166,11 +166,11 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsResourceStore getFsStoreByStoreId(Long storeId) throws DatabaseException {
+	public FsResourceStore getStoreByStoreId(Long storeId) throws DatabaseException {
 		
 		//logger.info("Get file store by store id " + storeId);
 		
-		return getFsStoreByStoreIdCriteria(storeId);
+		return getStoreByStoreIdCriteria(storeId);
 		
 	}
 	
@@ -181,11 +181,11 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsResourceStore getFsStoreByRootDirId(Long dirId) throws DatabaseException {
+	public FsResourceStore getStoreByRootDirectoryId(Long dirId) throws DatabaseException {
 		
 		//logger.info("Get file store by root dir id " + dirId);
 		
-		return getFsStoreByRootDirIdCriteria(dirId);
+		return getStoreByRootDirectoryIdCriteria(dirId);
 		
 	}
 	
@@ -199,7 +199,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsResourceStore getFsFileStoreByDirId(Long dirId) throws DatabaseException {
+	public FsResourceStore getStoreByDirectoryId(Long dirId) throws DatabaseException {
 		
 		FsDirectoryResource rootDir = null;
 		try {
@@ -210,7 +210,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		
 		FsResourceStore store = null;
 		try {
-			store = getFsStoreByRootDirId(rootDir.getDirId());
+			store = getStoreByRootDirectoryId(rootDir.getDirId());
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Erro fetching file store by root dir id => " + rootDir.getDirId(), e);
 		}
@@ -226,7 +226,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private FsResourceStore getFsStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
+	private FsResourceStore getStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
 		
 		//logger.info("Get file store by store id " + storeId + " criteria");
 		
@@ -260,7 +260,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private FsResourceStore getFsStoreByRootDirIdCriteria(Long dirId) throws DatabaseException {
+	private FsResourceStore getStoreByRootDirectoryIdCriteria(Long dirId) throws DatabaseException {
 		
 		//logger.info("Get store by root dir id " + dirId + " criteria");
 		

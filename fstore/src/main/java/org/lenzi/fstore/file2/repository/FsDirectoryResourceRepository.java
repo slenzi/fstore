@@ -44,7 +44,7 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsDirectoryResource getResourceById(Long dirId) throws DatabaseException {
+	public FsDirectoryResource getDirectoryResourceById(Long dirId) throws DatabaseException {
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<FsDirectoryResource> query = criteriaBuilder.createQuery(FsDirectoryResource.class);

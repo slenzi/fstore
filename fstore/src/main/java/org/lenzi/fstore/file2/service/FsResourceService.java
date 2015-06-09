@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
-import org.lenzi.fstore.file2.repository.FsResourceAdder;
+import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
 import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -31,7 +31,7 @@ public class FsResourceService {
 	private FsResourceStoreAdder fsResourceStoreAdder;
 	
 	@Autowired
-	private FsResourceAdder fsResourcAdder;
+	private FsDirectoryResourceAdder fsResourcAdder;
 	
 	public FsResourceService() {
 		
@@ -57,11 +57,33 @@ public class FsResourceService {
 		}
 		return store;
 		
-	}	
+	}
+	
+	/**
+	 * Add new directory
+	 * 
+	 * @param parentDirId
+	 * @param name
+	 * @return
+	 * @throws FsServiceException
+	 */
+	public FsDirectoryResource addDirectoryResource(Long parentDirId, String name) throws FsServiceException {
+		
+		FsDirectoryResource dirResource = null;
+		try {
+			dirResource = fsResourcAdder.addDirectoryResource(parentDirId, name);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Error adding directory to parent directory, id => " + parentDirId, e);
+		}
+		return dirResource;
+		
+	}
 	
 	// TODO - test method. remove later.
 	/**
 	 * Add directory 
+	 * 
+	 * @deprecated - remove
 	 * 
 	 * @param dirName
 	 * @return
@@ -69,21 +91,15 @@ public class FsResourceService {
 	 */
 	public FsDirectoryResource addRootDirectory(String dirName) throws FsServiceException {
 		
-		FsDirectoryResource fsDirRes = null;
+		FsDirectoryResource dirResource = null;
 		
 		try {
-			fsDirRes = fsResourcAdder.addRootDirectoryResource(dirName);
+			dirResource = fsResourcAdder.addRootDirectoryResource(dirName);
 		} catch (DatabaseException e) {
-			throw new FsServiceException("Error adding root directory",e);
+			throw new FsServiceException("Error adding root directory", e);
 		}
 		
-		return fsDirRes;
-		
-	}
-	
-	public FsDirectoryResource addChildDirectory(Long parentDirId, String name) throws FsServiceException {
-		
-		return null;
+		return dirResource;
 		
 	}
 
