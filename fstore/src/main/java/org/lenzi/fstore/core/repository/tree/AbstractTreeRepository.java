@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
@@ -1173,9 +1174,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
-		}		
-		
-		//N nodeWithParentClosure = (N)getSingleResult(query);
+		}	
 		
 		N nodeWithParentClosure = ResultFetcher.getSingleResultOrNull(query);
 		
@@ -1198,9 +1197,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			query.setParameter("nodeId", node.getNodeId());
 		} catch (IllegalArgumentException e) {
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
-		}		
-		
-		//N nodeWithChildClosure = (N)getSingleResult(query);
+		}
 		
 		N nodeWithChildClosure = ResultFetcher.getSingleResultOrNull(query);
 		
@@ -1623,7 +1620,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
-		//andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
 		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );
 		
 		nodeSelect.distinct(true);
@@ -1631,8 +1627,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		nodeSelect.where(
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
-		
-		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
 		
 		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
@@ -1659,26 +1653,27 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		CriteriaQuery<N> nodeSelect = criteriaBuilder.createQuery(type);
 		Root<N> nodeSelectRoot = nodeSelect.from(type);
 		
-		SetJoin<N, FSClosure> childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.LEFT);
+		SetJoin<N, FSClosure> childClosureJoin = nodeSelectRoot.join(FSNode_.childClosure, JoinType.INNER);
 		
-		Fetch<N, FSClosure> childClosureFetch =  nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.LEFT);
+		Path<Integer> closureDepth = childClosureJoin.get(FSClosure_.depth);
 		
-		childClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
-		childClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		Fetch<N, FSClosure> childClosureFetch = nodeSelectRoot.fetch(FSNode_.childClosure, JoinType.INNER);
+		
+		childClosureFetch.fetch(FSClosure_.parentNode, JoinType.INNER);
+		childClosureFetch.fetch(FSClosure_.childNode, JoinType.INNER);
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
-		//andPredicates.add( criteriaBuilder.greaterThan(childClosureJoin.get(FSClosure_.depth), 0) );
-		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );
-		andPredicates.add( criteriaBuilder.lessThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), maxDepth) );
+		//andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );
+		//andPredicates.add( criteriaBuilder.lessThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), maxDepth) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(closureDepth, 0) );
+		andPredicates.add( criteriaBuilder.lessThanOrEqualTo(closureDepth, maxDepth) );
 		
 		nodeSelect.distinct(true);
 		nodeSelect.select(nodeSelectRoot);
 		nodeSelect.where(
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
-		
-		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
 		
 		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
@@ -1710,7 +1705,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
-		//andPredicates.add( criteriaBuilder.greaterThan(parentClosureJoin.get(FSClosure_.depth), 0) );
 		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(parentClosureJoin.get(FSClosure_.depth), 0) );
 		
 		nodeSelect.distinct(true);
@@ -1718,8 +1712,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		nodeSelect.where(
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
-		
-		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
 		
 		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
@@ -1747,8 +1739,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		nodeSelect.where(
 				criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId())
 				);
-		
-		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
 		
 		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
