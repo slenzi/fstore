@@ -159,7 +159,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	@Override
 	public N getNodeWithChild(N node) throws DatabaseException {
 		
-		return getNodeWithChildClosureCriteria(node);
+		//return getNodeWithChildClosureCriteria(node);
+		
+		return getNodeWithChildClosureHql(node);
 		
 	}
 
@@ -216,8 +218,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
 		}
 		
-		//closureLogger.logClosure(parentClosure);
-		
 		// loop through closure data and locate the depth-1 entry. this is the closure entry that specifies the node's immediate parent.
 		N parentNode = null;
 		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(parentClosure)){
@@ -252,7 +252,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		logger.info("Get child nodes for node => " + node.getNodeId());
 		
-		N thisNode = getNodeWithChildClosureCriteria(node);
+		//N thisNode = getNodeWithChildClosureCriteria(node);
+		N thisNode = getNodeWithChildClosureHql(node, 1);
+		
 		if(thisNode == null){
 			throw new DatabaseException("Failed to fetch node with it's child closure data");
 		}
@@ -300,8 +302,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		if(parentClosure == null || parentClosure.size() == 0){
 			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
 		}
-		
-		//closureLogger.logClosure(parentClosure);
 		
 		// loop through closure data and locate the the node where isRootNode() is true.
 		N rootNode = null;
@@ -538,7 +538,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("IllegalArgumentException was thrown. " + e.getMessage(), e);
 		}
 		
-		//results = getResultList(query);
 		results = ResultFetcher.getResultListOrNull(query);
 		
 		return results;			
@@ -622,9 +621,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			// Get closure data for the sub-tree we are copying
 			List<DBClosure<N>> closureList = getClosure(nodeToCopy);
 			
-			//logger.debug("Fetched closure data for node => " + nodeToCopy.getNodeId());
-			//closureLogger.logClosure(closureList);
-			
 			if(closureList == null || closureList.size() == 0){
 				throw new DatabaseException("Move error. No closure list for node " + nodeToCopy.getNodeId());
 			}
@@ -645,15 +641,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			
 			//HashMap<Long,List<N>> treeMap = buildMapFromClosure(closureList);
 			HashMap<Long,List<N>> treeMap = closureMapBuilder.buildChildMapFromClosure(closureList);
-			
-			/*
-			for(Long nextNodeId : treeMap.keySet()){
-				logger.info("Children of node = > " + nextNodeId);
-				for(N nextNode : CollectionUtil.emptyIfNull(treeMap.get(nextNodeId))){
-					logger.info("Node " + nextNode.getNodeId() + "(" + nextNode.getName() + ")" + " is a child of " + nextNodeId);
-				}
-			}
-			*/
 
 			// get children for root node of sub-tree
 			List<N> childList = treeMap.get(rootNode.getNodeId());	
@@ -936,9 +923,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.equal(treeRoot.get("treeId"), tree.getTreeId())
 				);
 		
-		//FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
-		//FSTree<N> result = (FSTree<N>) getSingleResultOrNull(treeSelect);
-		
 		FSTree<N> result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(treeSelect));
 		
 		return result;
@@ -984,8 +968,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		treeSelect.where(
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
-		
-		//FSTree<N> result = getEntityManager().createQuery(treeSelect).getSingleResult();
 		
 		FSTree<N> result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(treeSelect));
 		
@@ -1399,6 +1381,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * 
 	 * @deprecated - replaced with handlePostRemove(..) method
 	 */
+	/*
 	private void postOrderTraversalRemoveCallback(Tree<N> treeToDelete, boolean childrenOnly) throws DatabaseException {
 		if(treeToDelete == null){
 			throw new DatabaseException("Cannot perform post-order traversal of tree to delete nodes. Tree object is null.");
@@ -1411,9 +1394,11 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			postOrderTraversalRemoveCallback(treeToDelete.getRootNode());
 		}
 	}
+	*/
 	/**
 	 * @deprecated - replaced with handlePostRemove(..) method
 	 */
+	/*
 	private void postOrderTraversalRemoveCallback(TreeNode<N> nodeToDelete) throws DatabaseException {
 		if(nodeToDelete.hasChildren()){
 			for(TreeNode<N> childNode : nodeToDelete.getChildren()){
@@ -1424,6 +1409,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			postRemove(nodeToDelete.getData());
 		}
 	}
+	*/
 	
 	/**
 	 * Delete the node and all its children, or just its children.
@@ -1517,9 +1503,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 					criteriaBuilder.equal(closureRoot.get(FSClosure_.parentNodeId), nodeId)
 					);
 		}
-		
-		//nodeIdList = getEntityManager().createQuery(childQuery).getResultList();
-		
+
 		nodeIdList = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(childQuery));
 		
 		return nodeIdList;
@@ -1538,6 +1522,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @return
 	 * @throws DatabaseException
 	 */
+	/*
 	public List<N> getNodes(N node, boolean onlyChildren) throws DatabaseException {
 	
 		List<Long> nodeIdList = getNodeIdList(node, onlyChildren);
@@ -1547,6 +1532,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		return nodeList;
 		
 	}
+	*/
 	
 	/**
 	 * Get a node with it's parent and child closure data, and fetch the parent and child nodes for the closure entries
@@ -1588,14 +1574,65 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
 				);
 		
-		//N result = getEntityManager().createQuery(nodeSelect).getSingleResult();
-		
 		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
 		
 		return result;
 	}
 	
 	/**
+	 * The criteria version of this query was not working so here we have the HQL version...
+	 * 
+	 * @param node
+	 * @param maxDepth
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private N getNodeWithChildClosureHql(N node, int maxDepth) throws DatabaseException {
+		
+		String selectQuery =
+				"select distinct r from " + node.getClass().getName() + " as r " +
+				"inner join fetch r.childClosure cc " +
+				"inner join fetch cc.childNode cn " +
+				"inner join fetch cc.parentNode pn " +
+				"where r.nodeId = :nodeid " +
+				"and cc.depth <= :depth";
+		
+		Query query = getEntityManager().createQuery(selectQuery);
+		query.setParameter("nodeid", node.getNodeId());
+		query.setParameter("depth", maxDepth);
+		
+		return ResultFetcher.getSingleResultOrNull(query);
+		
+	}
+	
+	/**
+	 * The criteria version of this query was not working so here we have the HQL version...
+	 * 
+	 * @param node
+	 * @param maxDepth
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private N getNodeWithChildClosureHql(N node) throws DatabaseException {
+		
+		String selectQuery =
+				"select distinct r from " + node.getClass().getName() + " as r " +
+				"inner join fetch r.childClosure cc " +
+				"inner join fetch cc.childNode cn " +
+				"inner join fetch cc.parentNode pn " +
+				"where r.nodeId = :nodeid";
+		
+		Query query = getEntityManager().createQuery(selectQuery);
+		query.setParameter("nodeid", node.getNodeId());
+		
+		return ResultFetcher.getSingleResultOrNull(query);
+		
+	}	
+	
+	/**
+	 * @deprecated - the criteria version which takes a second parameter for maxDepth was not work. This one was
+	 * also deprecated to be consistent.
+	 * 
 	 * Get a node with it's child closure data, and fetch the parent and child nodes for the closure entries
 	 * 
 	 * @param node - The node to fetch (with node ID set)
@@ -1636,33 +1673,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	}
 	
 	/**
-	 * The criteria version of this query was not working so here we have the HQL version...
+	 * @deprecated - doesn't seem to work properly, closure entries deeper than maxDepth are wrongfully being returned.
 	 * 
-	 * @param node
-	 * @param maxDepth
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private N getNodeWithChildClosureHql(N node, int maxDepth) throws DatabaseException {
-		
-		String selectQuery =
-				"select distinct r from " + node.getClass().getName() + " as r " +
-				"inner join fetch r.childClosure cc " +
-				"inner join fetch cc.childNode cn " +
-				"inner join fetch cc.parentNode pn " +
-				"where r.nodeId = :nodeid " +
-				"and cc.depth <= :depth";
-		
-		Query query = getEntityManager().createQuery(selectQuery);
-		query.setParameter("nodeid", node.getNodeId());
-		query.setParameter("depth", maxDepth);
-		
-		return ResultFetcher.getSingleResultOrNull(query);
-		
-	}
-	
-	// TODO - doesn't seem to work properly
-	/**
 	 * Get a node with it's child closure data, and fetch the parent and child nodes for the closure entries.
 	 * 
 	 * @param node - The node to fetch (with node ID set)
@@ -1673,15 +1685,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	private N getNodeWithChildClosureCriteria(N node, int maxDepth) throws DatabaseException {
 		
 		logger.info("Getting node with child closure criteria => " + node.getNodeId() + " at max depth " + maxDepth);
-		
-		/*
-		select distinct r from FsDirectoryResource as r
-		inner join fetch r.childClosure cc
-		inner join fetch cc.childNode cn
-		inner join fetch cc.parentNode pn
-		where r.nodeId = 1
-		and cc.depth <= 1
-		 */
 		
 		Class<N> type = (Class<N>) node.getClass();
 		
@@ -1812,8 +1815,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		selectNodes.where(
 				nodeSelectRoot.get(FSNode_.nodeId).in(nodeIdList)
 				);
-		
-		//nodeList = getEntityManager().createQuery(selectNodes).getResultList();
 		
 		nodeList = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(selectNodes));
 		

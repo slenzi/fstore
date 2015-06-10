@@ -8,9 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.lenzi.fstore.core.logging.ClosureLogger;
-import org.lenzi.fstore.core.repository.model.DBClosure;
 import org.lenzi.fstore.core.service.exception.ServiceException;
-import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.service.TestTreeService;
 import org.lenzi.fstore.test.AbstractTreeTest;
