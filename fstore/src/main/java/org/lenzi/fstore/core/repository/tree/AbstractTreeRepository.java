@@ -171,7 +171,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	@Override
 	public N getNodeWithChild(N node, int maxDepth) throws DatabaseException {
 		
-		return getNodeWithChildClosureCriteria(node, maxDepth);
+		//return getNodeWithChildClosureCriteria(node, maxDepth);
+		
+		return getNodeWithChildClosureHql(node, maxDepth);
 		
 	}
 
@@ -1633,6 +1635,32 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		return result;
 	}
 	
+	/**
+	 * The criteria version of this query was not working so here we have the HQL version...
+	 * 
+	 * @param node
+	 * @param maxDepth
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private N getNodeWithChildClosureHql(N node, int maxDepth) throws DatabaseException {
+		
+		String selectQuery =
+				"select distinct r from " + node.getClass().getName() + " as r " +
+				"inner join fetch r.childClosure cc " +
+				"inner join fetch cc.childNode cn " +
+				"inner join fetch cc.parentNode pn " +
+				"where r.nodeId = :nodeid " +
+				"and cc.depth <= :depth";
+		
+		Query query = getEntityManager().createQuery(selectQuery);
+		query.setParameter("nodeid", node.getNodeId());
+		query.setParameter("depth", maxDepth);
+		
+		return ResultFetcher.getSingleResultOrNull(query);
+		
+	}
+	
 	// TODO - doesn't seem to work properly
 	/**
 	 * Get a node with it's child closure data, and fetch the parent and child nodes for the closure entries.
@@ -1645,6 +1673,15 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	private N getNodeWithChildClosureCriteria(N node, int maxDepth) throws DatabaseException {
 		
 		logger.info("Getting node with child closure criteria => " + node.getNodeId() + " at max depth " + maxDepth);
+		
+		/*
+		select distinct r from FsDirectoryResource as r
+		inner join fetch r.childClosure cc
+		inner join fetch cc.childNode cn
+		inner join fetch cc.parentNode pn
+		where r.nodeId = 1
+		and cc.depth <= 1
+		 */
 		
 		Class<N> type = (Class<N>) node.getClass();
 		
@@ -1664,9 +1701,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), node.getNodeId()) );
-		//andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), 0) );
-		//andPredicates.add( criteriaBuilder.lessThanOrEqualTo(childClosureJoin.get(FSClosure_.depth), maxDepth) );
-		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(closureDepth, 0) );
 		andPredicates.add( criteriaBuilder.lessThanOrEqualTo(closureDepth, maxDepth) );
 		
 		nodeSelect.distinct(true);

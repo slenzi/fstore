@@ -233,25 +233,6 @@ public class FsResourceStore implements Comparable<FsResourceStore>, Serializabl
 		} else if (!storeId.equals(other.storeId))
 			return false;
 		return true;
-	}
-
-	public String toString(){
-		
-		StringBuffer buf = new StringBuffer();
-		
-		buf.append("[");
-		buf.append(", id => '" + getStoreId() + "'");
-		buf.append(", name => '" + getName() + "'");
-		buf.append(", description => '" + getDescription() + "'");
-		buf.append(", path => '" + getStorePath() + "'");
-		buf.append(", node id => '" + getNodeId() + "'");
-		buf.append(", \nroot dir => '" + getRootDirectoryResource() + "'");
-		buf.append(", dt_created => '" + DateUtil.defaultFormat(getDateCreated()) + "'");
-		buf.append(", dt_updated => '" + DateUtil.defaultFormat(getDateUpdated()) + "'");
-		buf.append("]");
-		
-		return buf.toString();
-		
 	}	
 	
 }

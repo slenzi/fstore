@@ -176,4 +176,19 @@ public class FSClosure<N extends FSNode<N>> implements DBClosure<N> {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		
+		return "FSClosure [linkId=" + linkId + ", parentNodeId=" + parentNodeId
+				+ ", childNodeId=" + childNodeId + ", depth=" + depth
+				+ ", parentNode=" + ((parentNode != null) ? parentNode.getName() : "")
+				+ ", childNode=" + ((childNode != null) ? childNode.getName() : "")
+				+ "]";
+	}
+	
+	
+
 }

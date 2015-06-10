@@ -82,14 +82,6 @@ public class FsDirectoryResource extends FsPathResource {
 	 */
 	public void setResourceStore(FsResourceStore resourceStore) {
 		this.resourceStore = resourceStore;
-	}	
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return super.toString() + ", " + FsDirectoryResource.class.getName() + ", have store => " + ((resourceStore != null) ? "true" : "false");
 	}
 
 }
