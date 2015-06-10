@@ -6,14 +6,18 @@ package org.lenzi.fstore.file2.repository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
+import org.lenzi.fstore.core.repository.model.DBClosure;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceHelper;
 import org.slf4j.Logger;
@@ -88,19 +92,49 @@ public class FsFileResourceAdder extends AbstractRepository {
 		} catch (Exception e) {
 			throw new DatabaseException("Failed to fetch depth-1 resources for path resource, id => " + fsDirId, e);
 		}
-		if(dirResource != null){
-			dirResource.getChildClosure().stream().forEach(closure -> {
-				logger.info("Path resource " +
-						", id => " + closure.getChildNode().getNodeId() + 
-						", name => " + closure.getChildNode().getName() + 
-						", type => " + closure.getChildNode().getPathType().getType() +
-						", depth => " + closure.getDepth()
-						);
-			});
-		}else{
-			logger.error("No path resource for id => " + fsDirId);
+		if(dirResource == null){
+			throw new DatabaseException("Failed to fetch directory for id => " + fsDirId + ". Returned object was null.");
 		}
 		
+		// see if there is an existing file in the directory with the same name
+		Optional<DBClosure<FsPathResource>> matchingClosure = dirResource.getChildClosure().stream()
+			.filter(closure -> {
+	
+				// check if there is an existing child file resource with the same name (case insensitive)
+				FsPathResource resource = closure.getChildNode();
+				if(resource.getPathType().equals(FsPathType.FILE)){
+					return resource.getName().equalsIgnoreCase(fileName);
+				}
+				
+				return false;
+					
+			})
+			.findFirst();
+		
+		FsFileMetaResource existingFileResource = null;
+		if(matchingClosure.isPresent()){
+			
+			existingFileResource = (FsFileMetaResource) matchingClosure.get().getChildNode();
+			
+			logger.info("Need to replace existing file resource, id => " + existingFileResource.getNodeId() + ", name => " + existingFileResource.getName());
+			
+		}else{
+			
+			logger.info("No existing resource with same name. No need to worry about replacing!");
+			
+		}
+		
+		/*
+		dirResource.getChildClosure().stream().forEach(closure -> {
+			logger.info("Path resource " +
+					", id => " + closure.getChildNode().getNodeId() + 
+					", name => " + closure.getChildNode().getName() + 
+					", type => " + closure.getChildNode().getPathType().getType() +
+					", depth => " + closure.getDepth()
+					);
+		});
+		*/
+
 		FsDirectoryResource parentDir = null;
 		try {
 			parentDir = fsDirectoryResourceRepository.getDirectoryResourceById(fsDirId);
