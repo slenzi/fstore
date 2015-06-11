@@ -50,7 +50,7 @@ public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest
 	
 	@Test
 	@Rollback(false)
-	public void addFileResource() {
+	public void addExistingFileResource() {
 		
 		logTestTitle("Adding existing file resource");
 		
@@ -129,8 +129,10 @@ public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest
 		assertTrue(Files.exists(filePath));
 		try {
 			assertEquals(Files.size(sourcePath1), Files.size(filePath));
-		} catch (IOException e1) {
-			logger.error("Error checking if file sizes are the same");
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("Error checking if file sizes are the same, " + e.getMessage(), e);
+			return;
 		}
 		logger.info("File was added at => " + filePath.toString());
 		
@@ -156,8 +158,10 @@ public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest
 		assertTrue(Files.exists(filePathUpdated));
 		try {
 			assertEquals(Files.size(sourcePath2), Files.size(filePathUpdated));
-		} catch (IOException e1) {
-			logger.error("Error checking if file sizes are the same");
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("Error checking if file sizes are the same, " + e.getMessage(), e);
+			return;
 		}		
 		logger.info("File was updated at => " + filePathUpdated.toString());		
 		

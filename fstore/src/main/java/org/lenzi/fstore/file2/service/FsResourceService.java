@@ -1,6 +1,7 @@
 package org.lenzi.fstore.file2.service;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
 import org.lenzi.fstore.file2.repository.FsFileResourceAdder;
+import org.lenzi.fstore.file2.repository.FsFileResourceCopier;
 import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
@@ -39,6 +41,9 @@ public class FsResourceService {
 	
 	@Autowired
 	private FsFileResourceAdder fsFileResourceAdder;
+	
+	@Autowired
+	private FsFileResourceCopier fsFileResourceCopier;
 	
 	
 	public FsResourceService() {
@@ -132,6 +137,29 @@ public class FsResourceService {
 		}
 		
 		return fileResources;
+		
+	}
+	
+	/**
+	 * Copy file
+	 * 
+	 * @param fileId
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws FsServiceException
+	 */
+	public FsFileMetaResource copyFileResource(Long fileId, Long dirId, boolean replaceExisting) throws FsServiceException {
+		
+		FsFileMetaResource copyResource = null;
+		try {
+			copyResource = fsFileResourceCopier.copyFile(fileId, dirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new FsServiceException("File already exists exception when copying file resource, id => " + fileId + " to directory, id => " + dirId, e);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database exception when copying file resource, id => " + fileId + " to directory, id => " + dirId, e);
+		}
+		return copyResource;
 		
 	}
 	

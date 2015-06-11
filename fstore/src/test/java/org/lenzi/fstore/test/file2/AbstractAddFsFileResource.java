@@ -125,8 +125,10 @@ public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
 		assertTrue(Files.exists(filePath));
 		try {
 			assertEquals(Files.size(sourcePath), Files.size(filePath));
-		} catch (IOException e1) {
-			logger.error("Error checking if file sizes are the same");
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error("Error checking if file sizes are the same, " + e.getMessage(), e);
+			return;
 		}		
 		logger.info("File was added at => " + filePath.toString());
 		
