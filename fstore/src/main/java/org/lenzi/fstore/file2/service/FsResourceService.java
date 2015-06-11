@@ -11,6 +11,9 @@ import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
 import org.lenzi.fstore.file2.repository.FsFileResourceAdder;
 import org.lenzi.fstore.file2.repository.FsFileResourceCopier;
+import org.lenzi.fstore.file2.repository.FsFileResourceRemover;
+import org.lenzi.fstore.file2.repository.FsFileResourceRepository;
+import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
@@ -34,6 +37,9 @@ public class FsResourceService {
 	private Logger logger;
 	
 	@Autowired
+	private FsFileResourceRepository fsFileResourceRepository;
+	
+	@Autowired
 	private FsResourceStoreAdder fsResourceStoreAdder;
 	
 	@Autowired
@@ -45,8 +51,31 @@ public class FsResourceService {
 	@Autowired
 	private FsFileResourceCopier fsFileResourceCopier;
 	
+	@Autowired
+	private FsFileResourceRemover fsFileResourceRemover;
+	
 	
 	public FsResourceService() {
+		
+	}
+	
+	/**
+	 * Fetch file resource
+	 * 
+	 * @param fileId
+	 * @param fetch
+	 * @return
+	 * @throws FsServiceException
+	 */
+	public FsFileMetaResource getFileResource(Long fileId, FsFileResourceFetch fetch) throws FsServiceException {
+		
+		FsFileMetaResource resource = null;
+		try {
+			resource = fsFileResourceRepository.getFileEntry(fileId, fetch);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Error fetching file resource, id => " + fileId + ". " + e.getMessage(), e);
+		}
+		return resource;
 		
 	}
 	
@@ -160,6 +189,22 @@ public class FsResourceService {
 			throw new FsServiceException("Database exception when copying file resource, id => " + fileId + " to directory, id => " + dirId, e);
 		}
 		return copyResource;
+		
+	}
+	
+	/**
+	 * Remove file
+	 * 
+	 * @param fileId
+	 * @throws FsServiceException
+	 */
+	public void removeFileResource(Long fileId) throws FsServiceException {
+		
+		try {
+			fsFileResourceRemover.removeFile(fileId);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database error removing file resource, id => " + fileId, e);
+		}
 		
 	}
 	

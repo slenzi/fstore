@@ -9,15 +9,22 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Root;
+
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.FileUtil;
+import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
+import org.lenzi.fstore.file.repository.model.impl.FsFileEntry_;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -218,7 +225,14 @@ public class FsFileResourceCopier extends AbstractRepository {
 		logger.info("File copy-replace, source => " + absoluteSourceFilePath.toString() + ", target (replace) => " + 
 				absoluteTargetFilePath + ", existing => " + absoluteExistingFilePath);
 		
-		// remove existing entry from target dir (cascade delete FsFileResource)
+		// remove FsFileResource
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaDelete<FsFileResource> cmsFileDelete = cb.createCriteriaDelete(FsFileResource.class);
+		Root<FsFileResource> cmsFileRoot = cmsFileDelete.from(FsFileResource.class);
+		cmsFileDelete.where(cb.equal(cmsFileRoot.get(FsFileResource_.nodeId), conflictingTargetEntry.getFileId()));
+		executeUpdate(cmsFileDelete);
+		
+		// remove FsFileMetaResource (tree node)
 		logger.info("Remove existing file, id => " + conflictingTargetEntry.getFileId());
 		treeRepository.removeNode(conflictingTargetEntry);
 
