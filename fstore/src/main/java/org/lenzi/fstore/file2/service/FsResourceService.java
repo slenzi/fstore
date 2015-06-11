@@ -2,6 +2,7 @@ package org.lenzi.fstore.file2.service;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -87,7 +88,7 @@ public class FsResourceService {
 	}
 	
 	/**
-	 * Add new file
+	 * Add or replace file
 	 * 
 	 * @param fileToAdd
 	 * @param parentDirId
@@ -107,6 +108,30 @@ public class FsResourceService {
 		}
 		
 		return fileResource;
+		
+	}
+	
+	/**
+	 * Add or replace list of files
+	 * 
+	 * @param filesToAdd
+	 * @param parentDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws FsServiceException
+	 */
+	public List<FsFileMetaResource> addFileResource(List<Path> filesToAdd, Long parentDirId, boolean replaceExisting) throws FsServiceException {
+		
+		List<FsFileMetaResource> fileResources = null;
+		try {
+			fileResources = fsFileResourceAdder.addFileResource(filesToAdd, parentDirId, replaceExisting);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database error adding file resources to directory, id => " + parentDirId, e);
+		} catch (IOException e) {
+			throw new FsServiceException("IO error adding file resources to directory, id => " + parentDirId, e);
+		}
+		
+		return fileResources;
 		
 	}
 	

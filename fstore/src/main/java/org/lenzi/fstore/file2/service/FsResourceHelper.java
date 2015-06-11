@@ -10,6 +10,7 @@ import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.slf4j.Logger;
@@ -63,13 +64,11 @@ public class FsResourceHelper {
 	 * @param fsFileEntry
 	 * @return
 	 */
-	/*
 	public String getAbsoluteFileString(FsResourceStore fsStore, FsDirectoryResource fsDirectory, FsFileMetaResource fsFileEntry){
 		
-		return getAbsoluteDirectoryString(fsStore, fsDirectory) + File.separator + fsFileEntry.getFileName();	
+		return getAbsoluteDirectoryString(fsStore, fsDirectory) + File.separator + fsFileEntry.getName();
 		
 	}
-	*/
 	
 	/**
 	 * Joins the FsFileStore path and the relative FsDirectory path to get the full/absolute path
@@ -94,13 +93,11 @@ public class FsResourceHelper {
 	 * @param fsFileEntry
 	 * @return
 	 */
-	/*
 	public Path getAbsoluteFilePath(FsResourceStore fsStore, FsDirectoryResource fsDirectory, FsFileMetaResource fsFileEntry){
 		
 		return Paths.get(getAbsoluteFileString(fsStore, fsDirectory, fsFileEntry));
 		
 	}
-	*/
 	
 	/**
 	 * Create directory on file system

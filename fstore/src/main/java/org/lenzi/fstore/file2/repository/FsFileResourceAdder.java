@@ -8,6 +8,8 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
@@ -69,7 +71,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 	}
 	
 	/**
-	 * Add file
+	 * Add or replace file
 	 * 
 	 * @param fileToAdd
 	 * @param fsDirId
@@ -129,6 +131,88 @@ public class FsFileResourceAdder extends AbstractRepository {
 			return add(fileToAdd, parentDir, store);
 			
 		}
+		
+	}
+	
+	/**
+	 * Add or replace a batch of files
+	 * 
+	 * @param filesToAdd
+	 * @param fsDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	public List<FsFileMetaResource> addFileResource(List<Path> filesToAdd, Long fsDirId, boolean replaceExisting) throws DatabaseException, IOException {
+		
+		if(filesToAdd == null || filesToAdd.size() == 0){
+			throw new DatabaseException("Files to add list is null or empty");
+		}
+		for(Path p : filesToAdd){
+			if(!Files.exists(p)){
+				throw new IOException("File does not exist => " + p.toString());
+			}
+			if(Files.isDirectory(p)){
+				throw new IOException("Path is a directory => " + p.toString());
+			}			
+		}
+		
+		FsDirectoryResource parentDir = null;
+		try {
+			parentDir = fsDirectoryResourceRepository.getDirectoryResourceById(fsDirId);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + fsDirId, e);
+		}
+		
+		FsResourceStore store = null;
+		try {
+			store = fsResourceStoreRepository.getStoreByDirectoryId(fsDirId);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch resource store for dir id => " + fsDirId, e);
+		}
+		
+		FsFileMetaResource addedFile = null;
+		List<FsFileMetaResource> addedFiles = new ArrayList<FsFileMetaResource>();
+		
+		for(Path fileToAdd : filesToAdd){
+			
+			String fileName = fileToAdd.getFileName().toString();
+			
+			FsFileMetaResource existingFileResource = null;
+			try {
+				existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, fsDirId, false);
+			} catch (DatabaseException e) {
+				throw new DatabaseException("Failed to check if directory => " + fsDirId + " already contains file with name => " + fileName, e);
+			}			
+			
+			boolean needReplace = existingFileResource != null ? true : false;
+			Path absoluteDirPath= fsResourceHelper.getAbsoluteDirectoryPath(store, parentDir);
+			
+			if(needReplace && !replaceExisting){
+				
+				throw new DatabaseException("File " + fileName + " already exists in directory " + parentDir.getName() + 
+						" at path " + absoluteDirPath + ". Cannot replace existing file because 'replaceExisting' param is false.");
+				
+			}else if(needReplace && replaceExisting){
+				
+				// do replace
+				addedFile = addReplace(fileToAdd, existingFileResource, parentDir, store);
+				
+				addedFiles.add(addedFile);
+				
+			}else{
+				
+				// do add
+				addedFile = add(fileToAdd, parentDir, store);
+				
+				addedFiles.add(addedFile);
+				
+			}			
+			
+		}
+		
+		return addedFiles;
 		
 	}
 	
