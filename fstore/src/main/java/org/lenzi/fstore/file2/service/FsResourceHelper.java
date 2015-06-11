@@ -119,6 +119,44 @@ public class FsResourceHelper {
 			throw new SecurityException("Cannot read and write to directory " + path.toString());
 		}		
 		
-	}	
+	}
+	
+	/**
+	 * Build absolute path for resource that will be placed under 'fsDirectory'.
+	 * 
+	 * @param fsStore - the resource store for the directory
+	 * @param fsDirectory - the directory where the new path resource will be placed
+	 * @param pathName -  the name of the new path resource (sub dir name or file name)
+	 * @return the absolute path for the new path resource
+	 */
+	public Path getAbsolutePath(FsResourceStore fsStore, FsDirectoryResource fsDirectory, String pathName) {
+		
+		return Paths.get(fsStore.getStorePath() + fsDirectory.getRelativePath() + File.separator + pathName);
+		
+	}
+	
+	/**
+	 * Build relative path for resource that will be placed under 'fsDirectory'.
+	 * 
+	 * @param fsStore - the resource store for the directory
+	 * @param fsDirectory - the directory where the new path resource will be placed
+	 * @param pathName -  the name of the new path resource (sub dir name or file name)
+	 * @return the relative path for the new path resource
+	 */
+	public String getRelativePath(FsResourceStore fsStore, FsDirectoryResource fsDirectory, String pathName){
+		
+		Path storePath = Paths.get(fsStore.getStorePath());
+		Path childPath =  Paths.get(fsStore.getStorePath() + fsDirectory.getRelativePath() + File.separator + pathName);
+		
+		Path childRelativePath = storePath.relativize(childPath);
+		
+		String sChildRelativePath = childRelativePath.toString();
+		if(!sChildRelativePath.startsWith(File.separator)){
+			sChildRelativePath = File.separator + sChildRelativePath;
+		}
+		
+		return sChildRelativePath;
+		
+	}
 
 }

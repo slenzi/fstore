@@ -17,6 +17,7 @@ import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.service.FsResourceHelper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,6 +51,9 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 	
 	@Autowired
 	private FsResourceStoreRepository fsResourceStoreRepository;
+	
+	@Autowired
+	private FsResourceHelper fsResourceHelper;
 
 	/**
 	 * 
@@ -133,39 +137,33 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 	 * Add directory resource
 	 * 
 	 * @param parentDir
-	 * @param fsFileStore
+	 * @param fsResourceStore
 	 * @param dirName
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsDirectoryResource add(FsDirectoryResource parentDir, FsResourceStore fsFileStore, String dirName) throws DatabaseException {
+	public FsDirectoryResource add(FsDirectoryResource parentDir, FsResourceStore fsResourceStore, String dirName) throws DatabaseException {
 		
-		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + fsFileStore.getName());
+		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + fsResourceStore.getName());
 		
-		// CmsDirectory.getRelativeDirPath() returns a path relative to the store path
-		Path storePath = Paths.get(fsFileStore.getStorePath());
-		Path childPath =  Paths.get(fsFileStore.getStorePath() + parentDir.getRelativePath() + File.separator + dirName);
-		Path childRelativePath = storePath.relativize(childPath);
-		String sChildRelativePath = childRelativePath.toString();
-		if(!sChildRelativePath.startsWith(File.separator)){
-			sChildRelativePath = File.separator + sChildRelativePath;
-		}
+		Path absolutePath   = fsResourceHelper.getAbsolutePath(fsResourceStore, parentDir, dirName);
+		String relativePath = fsResourceHelper.getRelativePath(fsResourceStore, parentDir, dirName);
 		
 		// add new child dir
-		logger.info("Child dir path => " + childPath.toString());
+		logger.info("Child dir path => " + absolutePath.toString());
 		
 		FsDirectoryResource childDir = null;
 		try {
 			
 			childDir = (FsDirectoryResource) treeRepository.addChildNode(
-					parentDir, new FsDirectoryResource(dirName, sChildRelativePath) );
+					parentDir, new FsDirectoryResource(dirName, relativePath) );
 			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Error adding new directory to parent dir => " + parentDir.getDirId(), e);
 		}
 		
 		try {
-			createDirOnFileSystem(childPath, true);
+			createDirOnFileSystem(absolutePath, true);
 		} catch (SecurityException | IOException e) {
 			throw new DatabaseException("Error creating directory on local file system. ", e);
 		}

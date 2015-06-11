@@ -20,6 +20,7 @@ import org.lenzi.fstore.file.repository.model.impl.FsFile;
 import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
 import org.lenzi.fstore.file.repository.model.impl.FsFileStore;
 import org.lenzi.fstore.file.service.FsHelper;
+import org.lenzi.fstore.file2.repository.FsFileResourceRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -47,7 +48,7 @@ public class FsFileAdder extends AbstractRepository {
 	private FsFileStoreRepository fsFileStoreRepository;	
 	
 	@Autowired
-	private FsDirectoryRepository fsDirectoryRepository;	
+	private FsDirectoryRepository fsDirectoryRepository;
 	
 	@Autowired
 	private FsHelper fsHelper;	

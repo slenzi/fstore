@@ -98,16 +98,20 @@ public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
 		
 		logger.info("Adding files...");
 		
-		FsFileMetaResource fileResource = null;
+		FsFileMetaResource fileMetaResource = null;
 		try {
-			fileResource = fsResourceService.addFileResource(sourcePath, store.getRootDirectoryResource().getDirId(), true);
+			fileMetaResource = fsResourceService.addFileResource(sourcePath, store.getRootDirectoryResource().getDirId(), true);
 		} catch (FsServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
 		}
 		
-		// assertNotNull(fileResource);
+		assertNotNull(fileMetaResource);
+		assertNotNull(fileMetaResource.getFileResource());
+		assertNotNull(fileMetaResource.getFileResource().getFileData());
+		
+		logger.info("Added file => " + fileMetaResource.getRelativePath());
 		
 	}
 	

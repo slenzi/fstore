@@ -58,6 +58,10 @@ public class FsFileMetaResource extends FsPathResource {
 		setPathType(FsPathType.FILE);
 		
 	}
+	
+	public Long getFileId(){
+		return getNodeId();
+	}
 
 	/**
 	 * @return the fileSize
