@@ -11,6 +11,7 @@ import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
 import org.lenzi.fstore.file2.repository.FsFileResourceAdder;
 import org.lenzi.fstore.file2.repository.FsFileResourceCopier;
+import org.lenzi.fstore.file2.repository.FsFileResourceMover;
 import org.lenzi.fstore.file2.repository.FsFileResourceRemover;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
@@ -53,6 +54,9 @@ public class FsResourceService {
 	
 	@Autowired
 	private FsFileResourceRemover fsFileResourceRemover;
+	
+	@Autowired
+	private FsFileResourceMover fsFileResourceMover;	
 	
 	
 	public FsResourceService() {
@@ -191,6 +195,29 @@ public class FsResourceService {
 		return copyResource;
 		
 	}
+	
+	/**
+	 * Move file
+	 * 
+	 * @param fileId
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws FsServiceException
+	 */
+	public FsFileMetaResource moveFileResource(Long fileId, Long dirId, boolean replaceExisting) throws FsServiceException {
+		
+		FsFileMetaResource copyResource = null;
+		try {
+			copyResource = fsFileResourceMover.moveFile(fileId, dirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new FsServiceException("File already exists exception when moving file resource, id => " + fileId + " to directory, id => " + dirId, e);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database exception when moving file resource, id => " + fileId + " to directory, id => " + dirId, e);
+		}
+		return copyResource;
+		
+	}	
 	
 	/**
 	 * Remove file

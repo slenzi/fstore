@@ -30,7 +30,7 @@ import org.springframework.test.annotation.Rollback;
 /**
  * @author sal
  */
-public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
+public abstract class AbstractMoveFsFileResource extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -44,7 +44,7 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 	private FsResourceHelper fsResourceHelper;
 	
 	
-	public AbstractCopyFsFileResource() {
+	public AbstractMoveFsFileResource() {
 		
 	}
 	
@@ -52,7 +52,7 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 	@Rollback(false)
 	public void copyFileResource() {
 		
-		logTestTitle("Copying file resource");
+		logTestTitle("Move file resource");
 		
 		assertNotNull(resourceLoader);
 		
@@ -163,12 +163,12 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 		logger.info("File was added at => " + filePath2.toString());
 		logger.info("File was added at => " + filePath3.toString());
 		
-		logger.info("Peforming 1 copy operations (does not involve a replace)...");
+		logger.info("Peforming 1 move operations (does not involve a replace)...");
 		
-		FsFileMetaResource copyFileMetaResource1 = null;
+		FsFileMetaResource moveFileMetaResource1 = null;
 		try {
 			
-			copyFileMetaResource1 = fsResourceService.copyFileResource(fileMetaResource1.getFileId(), dirResource2_1.getDirId(), true);
+			moveFileMetaResource1 = fsResourceService.moveFileResource(fileMetaResource1.getFileId(), dirResource2_1.getDirId(), true);
 			
 		} catch (FsServiceException e) {
 			e.printStackTrace();
@@ -176,29 +176,29 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 			return;
 		}
 		
-		assertNotNull(copyFileMetaResource1);
-		assertNotNull(copyFileMetaResource1.getFileResource());
-		assertNotNull(copyFileMetaResource1.getFileResource().getFileMetaResource());
-		assertNotNull(copyFileMetaResource1.getFileResource().getFileData());	
+		assertNotNull(moveFileMetaResource1);
+		//assertNotNull(moveFileMetaResource1.getFileResource());
+		//assertNotNull(moveFileMetaResource1.getFileResource().getFileMetaResource());
+		//assertNotNull(moveFileMetaResource1.getFileResource().getFileData());	
 		
-		Path copyFilePath1 = fsResourceHelper.getAbsoluteFilePath(store, dirResource2_1, copyFileMetaResource1);
-		assertNotNull(copyFilePath1);
-		assertTrue(Files.exists(copyFilePath1));
+		Path moveFilePath1 = fsResourceHelper.getAbsoluteFilePath(store, dirResource2_1, moveFileMetaResource1);
+		assertNotNull(moveFilePath1);
+		assertTrue(Files.exists(moveFilePath1));
 		try {
-			assertEquals(Files.size(sourcePath1), Files.size(copyFilePath1));
+			assertEquals(Files.size(sourcePath1), Files.size(moveFilePath1));
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error("Error checking if file sizes are the same, " + e.getMessage(), e);
 			return;
 		}
-		logger.info("File was copied at => " + copyFilePath1.toString());
+		logger.info("File was moved to => " + moveFilePath1.toString());
 	
-		logger.info("Peforming one copy operation that involves needing to replace existing file...");
+		logger.info("Peforming one move operation that involves needing to replace existing file...");
 		
-		FsFileMetaResource copyFileMetaResource3 = null;
+		FsFileMetaResource moveFileMetaResource3 = null;
 		try {
 			
-			copyFileMetaResource3 = fsResourceService.copyFileResource(fileMetaResource3.getFileId(), dirResource1.getDirId(), true);
+			moveFileMetaResource3 = fsResourceService.moveFileResource(fileMetaResource3.getFileId(), dirResource1.getDirId(), true);
 			
 		} catch (FsServiceException e) {
 			e.printStackTrace();
@@ -206,22 +206,22 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 			return;
 		}
 		
-		assertNotNull(copyFileMetaResource3);
-		assertNotNull(copyFileMetaResource3.getFileResource());
-		assertNotNull(copyFileMetaResource3.getFileResource().getFileMetaResource());
-		assertNotNull(copyFileMetaResource3.getFileResource().getFileData());
+		assertNotNull(moveFileMetaResource3);
+		//assertNotNull(moveFileMetaResource3.getFileResource());
+		//assertNotNull(moveFileMetaResource3.getFileResource().getFileMetaResource());
+		//assertNotNull(moveFileMetaResource3.getFileResource().getFileData());
 		
-		Path copyFilePath3 = fsResourceHelper.getAbsoluteFilePath(store, dirResource1, copyFileMetaResource3);
-		assertNotNull(copyFilePath3);
-		assertTrue(Files.exists(copyFilePath3));
+		Path moveFilePath3 = fsResourceHelper.getAbsoluteFilePath(store, dirResource1, moveFileMetaResource3);
+		assertNotNull(moveFilePath3);
+		assertTrue(Files.exists(moveFilePath3));
 		try {
-			assertEquals(Files.size(sourcePath2), Files.size(copyFilePath3));
+			assertEquals(Files.size(sourcePath2), Files.size(moveFilePath3));
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error("Error checking if file sizes are the same, " + e.getMessage(), e);
 			return;
 		}
-		logger.info("File was copied at => " + copyFilePath3.toString());		
+		logger.info("File was moved to => " + moveFilePath3.toString());		
 		
 	}
 	
