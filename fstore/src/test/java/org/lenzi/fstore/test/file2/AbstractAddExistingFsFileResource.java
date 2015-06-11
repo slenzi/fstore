@@ -30,7 +30,7 @@ import org.springframework.test.annotation.Rollback;
 /**
  * @author sal
  */
-public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
+public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -44,7 +44,7 @@ public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
 	private FsResourceHelper fsResourceHelper;
 	
 	
-	public AbstractAddFsFileResource() {
+	public AbstractAddExistingFsFileResource() {
 		
 	}
 	
@@ -52,24 +52,28 @@ public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
 	@Rollback(false)
 	public void addFileResource() {
 		
-		logTestTitle("Adding file resource");
+		logTestTitle("Adding existing file resource");
 		
 		assertNotNull(resourceLoader);
 		
 		// get test file for upload to database
-		Resource sourceResource = resourceLoader.getResource("classpath:image/honey_badger.JPG");
-		Path sourcePath = null;
+		Resource sourceResource1 = resourceLoader.getResource("classpath:image/honey_badger.JPG");
+		Resource sourceResource2 = resourceLoader.getResource("classpath:image/other/honey_badger.JPG");
+		Path sourcePath1 = null;
+		Path sourcePath2 = null;
 		try {
-			sourcePath = Paths.get(sourceResource.getFile().getAbsolutePath());
+			sourcePath1 = Paths.get(sourceResource1.getFile().getAbsolutePath());
+			sourcePath2 = Paths.get(sourceResource2.getFile().getAbsolutePath());
 		} catch (IOException e) {
-			logger.error("Failed to get file resource." + e.getMessage());
+			logger.error("Failed to get file resources for test." + e.getMessage());
 			e.printStackTrace();
-		}		
+		}
+		
+		assertNotNull(sourcePath1);
+		assertNotNull(sourcePath2);
 		
 		FsResourceStore store = null;
-		
 		Path storePath = Paths.get(getTestStorePath());
-		
 		try {
 			store = fsResourceService.createResourceStore(storePath, "Sample Resource Store", "Sample resource store description", true);
 		} catch (FsServiceException e) {
@@ -104,11 +108,11 @@ public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
 		assertNotNull(dirResource2_1);
 		assertNotNull(dirResource3);
 		
-		logger.info("Adding files...");
+		logger.info("Adding files to test replace...");
 		
 		FsFileMetaResource fileMetaResource = null;
 		try {
-			fileMetaResource = fsResourceService.addFileResource(sourcePath, store.getRootDirectoryResource().getDirId(), true);
+			fileMetaResource = fsResourceService.addFileResource(sourcePath1, store.getRootDirectoryResource().getDirId(), true);
 		} catch (FsServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
@@ -124,11 +128,38 @@ public abstract class AbstractAddFsFileResource extends AbstractTreeTest {
 		assertNotNull(filePath);
 		assertTrue(Files.exists(filePath));
 		try {
-			assertEquals(Files.size(sourcePath), Files.size(filePath));
+			assertEquals(Files.size(sourcePath1), Files.size(filePath));
+		} catch (IOException e1) {
+			logger.error("Error checking if file sizes are the same");
+		}
+		logger.info("File was added at => " + filePath.toString());
+		
+		logger.info("Peform replace by adding file with same name to existing directory...");
+		
+		
+		FsFileMetaResource fileMetaResourceUpdated = null;
+		try {
+			fileMetaResourceUpdated = fsResourceService.addFileResource(sourcePath2, store.getRootDirectoryResource().getDirId(), true);
+		} catch (FsServiceException e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			return;
+		}
+		
+		assertNotNull(fileMetaResourceUpdated);
+		assertNotNull(fileMetaResourceUpdated.getFileResource());
+		assertNotNull(fileMetaResourceUpdated.getFileResource().getFileMetaResource());
+		assertNotNull(fileMetaResourceUpdated.getFileResource().getFileData());
+		
+		Path filePathUpdated = fsResourceHelper.getAbsoluteFilePath(store, store.getRootDirectoryResource(), fileMetaResource);
+		assertNotNull(filePathUpdated);
+		assertTrue(Files.exists(filePathUpdated));
+		try {
+			assertEquals(Files.size(sourcePath2), Files.size(filePathUpdated));
 		} catch (IOException e1) {
 			logger.error("Error checking if file sizes are the same");
 		}		
-		logger.info("File was added at => " + filePath.toString());
+		logger.info("File was updated at => " + filePathUpdated.toString());		
 		
 	}
 	

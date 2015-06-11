@@ -156,7 +156,7 @@ public abstract class AbstractAddFsFileResourceBulk extends AbstractTreeTest {
 			assertNotNull(meta.getFileResource().getFileData());
 			Path filePath = fsResourceHelper.getAbsoluteFilePath(finalStore, finalRootDir, meta);
 			assertNotNull(filePath);
-			assertTrue(Files.exists(filePath));
+			assertTrue(Files.exists(filePath));		
 			logger.info("File was added at => " + filePath.toString());
 		});
 		

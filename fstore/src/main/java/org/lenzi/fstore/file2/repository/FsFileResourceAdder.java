@@ -377,6 +377,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 	}
 	
 	/**
+	 * Builds exception for copy error
 	 * 
 	 * @param source
 	 * @param target
