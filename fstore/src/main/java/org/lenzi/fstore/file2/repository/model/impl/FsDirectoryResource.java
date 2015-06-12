@@ -17,7 +17,7 @@ import org.hibernate.annotations.FetchMode;
  *
  */
 @Entity
-@DiscriminatorValue("FsDirectoryResource")
+//@DiscriminatorValue("FsDirectoryResource") - not needed when using JOINED inheritance
 @Table(name="FS_DIRECTORY_RESOURCE")
 public class FsDirectoryResource extends FsPathResource {
 

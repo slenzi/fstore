@@ -24,7 +24,7 @@ import org.lenzi.fstore.core.util.DateUtil;
  */
 // @OnDelete(action = OnDeleteAction.CASCADE)
 @Entity
-@DiscriminatorValue("TestNode")
+//@DiscriminatorValue("TestNode") - not needed when using JOINED inheritance
 @Table(name="FS_TEST_NODE")
 public class FSTestNode extends FSNode<FSTestNode> {
 

@@ -9,6 +9,8 @@ import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
+import org.lenzi.fstore.file2.repository.FsDirectoryResourceRemover;
+import org.lenzi.fstore.file2.repository.FsDirectoryResourceRepository;
 import org.lenzi.fstore.file2.repository.FsFileResourceAdder;
 import org.lenzi.fstore.file2.repository.FsFileResourceCopier;
 import org.lenzi.fstore.file2.repository.FsFileResourceMover;
@@ -16,6 +18,7 @@ import org.lenzi.fstore.file2.repository.FsFileResourceRemover;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
+import org.lenzi.fstore.file2.repository.FsResourceStoreRepository;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -37,26 +40,37 @@ public class FsResourceService {
 	@InjectLogger
 	private Logger logger;
 	
+	//
+	// resource store operators
+	//
 	@Autowired
-	private FsFileResourceRepository fsFileResourceRepository;
-	
+	private FsResourceStoreRepository fsResourceStoreRepository;
 	@Autowired
 	private FsResourceStoreAdder fsResourceStoreAdder;
 	
+	//
+	// file resource operators
+	//
 	@Autowired
-	private FsDirectoryResourceAdder fsDirectoryResourceAdder;
-	
+	private FsFileResourceRepository fsFileResourceRepository;
 	@Autowired
 	private FsFileResourceAdder fsFileResourceAdder;
-	
 	@Autowired
 	private FsFileResourceCopier fsFileResourceCopier;
-	
+	@Autowired
+	private FsFileResourceMover fsFileResourceMover;	
 	@Autowired
 	private FsFileResourceRemover fsFileResourceRemover;
 	
+	//
+	// directory resource operators
+	//
 	@Autowired
-	private FsFileResourceMover fsFileResourceMover;	
+	private FsDirectoryResourceRepository fsDirectoryResourceRepository;
+	@Autowired
+	private FsDirectoryResourceAdder fsDirectoryResourceAdder;
+	@Autowired
+	private FsDirectoryResourceRemover fsDirectoryResourceRemover;	
 	
 	
 	public FsResourceService() {
@@ -231,6 +245,22 @@ public class FsResourceService {
 			fsFileResourceRemover.removeFile(fileId);
 		} catch (DatabaseException e) {
 			throw new FsServiceException("Database error removing file resource, id => " + fileId, e);
+		}
+		
+	}
+	
+	/**
+	 * Remove directory, along with all child directories and files.
+	 * 
+	 * @param dirId
+	 * @throws FsServiceException
+	 */
+	public void removeDirectoryResource(Long dirId) throws FsServiceException {
+		
+		try {
+			fsDirectoryResourceRemover.removeDirectory(dirId);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database error removing directory resource, id => " + dirId, e);
 		}
 		
 	}

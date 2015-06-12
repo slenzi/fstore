@@ -18,7 +18,7 @@ import javax.persistence.Transient;
  *
  */
 @Entity
-@DiscriminatorValue("FsFileMetaResource")
+//@DiscriminatorValue("FsFileMetaResource") - not needed when using JOINED inheritance
 @Table(name="FS_FILE_META_RESOURCE")
 public class FsFileMetaResource extends FsPathResource {
 

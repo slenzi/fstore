@@ -5,7 +5,6 @@ package org.lenzi.fstore.file2.repository;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -101,7 +100,7 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 		FsResourceStore fsStore = fsResourceStoreRepository.getStoreByDirectoryId(rootDir.getDirId());
 		
 		//
-		// walk tree in post-order traversal, deleting resources from the bottom up.
+		// Walk tree in post-order traversal, deleting resources from the bottom up.
 		//
 		try {
 			
@@ -109,6 +108,11 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 					(treeNode) -> {
 						
 						FsPathResource resourceToDelete = treeNode.getData();
+						
+						logger.info("Deleting path resource " +
+								", id => " + resourceToDelete.getNodeId() + 
+								", name => " + resourceToDelete.getName() + 
+								", type => " + resourceToDelete.getPathType().getType());
 						
 						try {
 							
@@ -157,6 +161,8 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 	 */
 	private void removeDirectoryResource(FsPathResource resource, FsResourceStore fsStore) throws DatabaseException {
 		
+		logger.info("Remove directory resource, id => " + resource.getNodeId() + ", name => " + resource.getName());
+		
 		// cast to directory resource
 		FsDirectoryResource dirResource = null;
 		try {
@@ -187,7 +193,16 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 		
 	}
 	
+	/**
+	 * Delete file resource
+	 * 
+	 * @param resource
+	 * @param fsStore
+	 * @throws DatabaseException
+	 */
 	private void removeFileResource(FsPathResource resource, FsResourceStore fsStore) throws DatabaseException {
+		
+		logger.info("Remove file resource, id => " + resource.getNodeId() + ", name => " + resource.getName());
 		
 		// cast to file meta resource
 		FsFileMetaResource fileMetaResource = null;

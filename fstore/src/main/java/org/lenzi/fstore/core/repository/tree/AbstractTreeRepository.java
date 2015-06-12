@@ -44,6 +44,7 @@ import org.lenzi.fstore.core.util.CollectionUtil;
 import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.core.repository.model.impl.FSClosure_;
 import org.lenzi.fstore.core.repository.model.impl.FSNode_;
+import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -1643,8 +1644,24 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	
 	private N getNodeWithChildClosureHql(Long nodeId, Class<N> clazz) throws DatabaseException {
 		
+		logger.info("getNodeWithChildClosureHql(Long, Class)");
+		
+		/*
+		logger.info("Clazz => " + clazz);
+		logger.info("Clazz name => " + clazz.getName());
+		logger.info("Clazz canonical name => " + clazz.getCanonicalName());
+		logger.info("Clazz simple name => " + clazz.getSimpleName());
+		logger.info("Clazz type name => " + clazz.getTypeName());
+		
+		logger.info("Clazz class => " + clazz.getClass());
+		logger.info("Clazz class name => " + clazz.getClass().getName());
+		logger.info("Clazz class canonical name => " + clazz.getClass().getCanonicalName());
+		logger.info("Clazz class simple name => " + clazz.getClass().getSimpleName());
+		logger.info("Clazz class type name => " + clazz.getClass().getTypeName());
+		*/
+		
 		String selectQuery =
-				"select distinct r from " + clazz.getClass().getName() + " as r " +
+				"select distinct r from " + clazz.getCanonicalName() + " as r " +
 				"inner join fetch r.childClosure cc " +
 				"inner join fetch cc.childNode cn " +
 				"inner join fetch cc.parentNode pn " +

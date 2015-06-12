@@ -13,11 +13,13 @@ import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.service.TreeBuilder;
 import org.lenzi.fstore.core.service.exception.ServiceException;
+import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -36,6 +38,9 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	 * 
 	 */
 	private static final long serialVersionUID = 7010548771117300824L;
+	
+	@InjectLogger
+	private Logger logger;	
 	
 	@Autowired
 	@Qualifier("FsPathResourceTree")
@@ -60,6 +65,8 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	 * @throws DatabaseException
 	 */
 	public Tree<FsPathResource> getTree(Long dirId) throws DatabaseException {
+		
+		logger.info("Fetching tree for resource, id => " + dirId);
 		
 		FsPathResource pathResource = treeRepository.getNodeWithChild(dirId, FsPathResource.class);
 		Tree<FsPathResource> tree = null;

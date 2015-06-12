@@ -30,7 +30,7 @@ public class OracleCreate {
 		"create table FS_NODE ( " +
 		"	NODE_ID NUMBER(15,0) NOT NULL, " +
 		"	PARENT_NODE_ID NUMBER(15,0) NOT NULL, " +
-		"   NODE_TYPE VARCHAR2(100) NOT NULL, " +
+		//"   NODE_TYPE VARCHAR2(100) NOT NULL, " +
 		"	NAME VARCHAR2(250) NOT NULL, " +
 		"	CREATION_DATE date NOT NULL, " +
 		"	UPDATED_DATE date NOT NULL, " +

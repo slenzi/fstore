@@ -34,8 +34,9 @@ import org.lenzi.fstore.core.repository.model.DBNode;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="NODE_TYPE", discriminatorType=DiscriminatorType.STRING)
-@DiscriminatorValue("BaseNode")
+// - not needed when using JOINED inheritance
+//@DiscriminatorColumn(name="NODE_TYPE", discriminatorType=DiscriminatorType.STRING)
+//@DiscriminatorValue("BaseNode") 
 @Table(name = "FS_NODE")
 public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 

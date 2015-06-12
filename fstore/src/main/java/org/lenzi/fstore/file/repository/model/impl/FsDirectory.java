@@ -28,7 +28,7 @@ import org.lenzi.fstore.core.util.DateUtil;
  * @author sal
  */
 @Entity
-@DiscriminatorValue("FsDirectory")
+//@DiscriminatorValue("FsDirectory") - not needed when using JOINED inheritance
 @Table(name="FS_DIRECTORY")
 public class FsDirectory extends FSNode<FsDirectory> {
 
