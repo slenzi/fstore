@@ -264,11 +264,11 @@ public class FsFileResourceMover extends AbstractRepository {
 	 * @throws DatabaseException
 	 * @throws FileAlreadyExistsException
 	 */
-	public FsFileMetaResource copyReplaceTraversal(
+	public FsFileMetaResource moveReplaceTraversal(
 			Long sourceFileEntryId, Long sourceDirId, Long targetDirId,
 			FsResourceStore sourceStore, FsResourceStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
-		logger.info("File copy-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
+		logger.info("File move-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
 				sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
 		
 		FsFileMetaResource entryToMove = null;
