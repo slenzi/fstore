@@ -3,6 +3,8 @@
  */
 package org.lenzi.fstore.file2.repository;
 
+import java.util.Optional;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -10,6 +12,7 @@ import javax.persistence.criteria.Root;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
+import org.lenzi.fstore.core.repository.model.DBClosure;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.service.TreeBuilder;
 import org.lenzi.fstore.core.service.exception.ServiceException;
@@ -19,6 +22,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -125,5 +129,62 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 		return parentResource;
 		
 	}
+	
+	/**
+	 * Check if the directory contains child directory with the specified name
+	 * 
+	 * @param dirName - dir name to check for
+	 * @param dirId - directory to check
+	 * @param caseSensitive - true for case sensitive match, false otherwise.
+	 * @return The FsDirectoryResource for the matching child directory, if one exists
+	 * @throws DatabaseException
+	 */
+	public FsDirectoryResource haveExistingChildDirectory(String dirName, Long dirId, boolean caseSensitive) throws DatabaseException {
+		
+		FsDirectoryResource dirResource = null;
+		try {
+			dirResource = (FsDirectoryResource) treeRepository.getNodeWithChild(new FsDirectoryResource(dirId), 1);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch depth-1 resources for path resource, id => " + dirId, e);
+		} catch (ClassCastException e){
+			throw new DatabaseException("Path resource for node id, => " + dirId + 
+					" does not appear to be a " + FsDirectoryResource.class.getName(), e);
+		}
+		if(dirResource == null){
+			throw new DatabaseException("Failed to fetch directory for id => " + dirId + ". Returned object was null.");
+		}
+		// check each child node on each child closure entry
+		Optional<DBClosure<FsPathResource>> matchingClosure = dirResource.getChildClosure().stream()
+			.filter(closure -> {
+				// check if there is an existing child directory resource with the same name
+				FsPathResource resource = closure.getChildNode();
+				if(resource.getPathType().equals(FsPathType.DIRECTORY)){
+					if(caseSensitive){
+						return resource.getName().equals(dirName);
+					}else{
+						return resource.getName().equalsIgnoreCase(dirName);
+					}
+				}
+				return false;	
+			})
+			.findFirst();
+		
+		FsDirectoryResource existingChildDirectoryResource = null;
+		
+		if(matchingClosure.isPresent()){
+			
+			existingChildDirectoryResource = (FsDirectoryResource) matchingClosure.get().getChildNode();
+			
+			logger.info("Need to replace/merge existing child directory resource, id => " + existingChildDirectoryResource.getNodeId() + 
+					", name => " + existingChildDirectoryResource.getName());
+			
+		}else{
+			
+			logger.info("No existing child directory resource with same name. No need to worry about replacing/merging!");
+			
+		}		
+		
+		return existingChildDirectoryResource;
+	}	
 
 }

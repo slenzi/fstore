@@ -101,7 +101,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			return copyReplace(sourceStore, targetStore, sourceDir, targetDir, sourceEntry, conflictingTargetEntry);
+			return copyReplace(sourceStore, targetStore, /*sourceDir,*/ targetDir, sourceEntry, conflictingTargetEntry);
 			
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
@@ -112,7 +112,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// simply copy file to target dir
 		}else{
 			
-			return copy(sourceStore, targetStore, sourceDir, targetDir, sourceEntry);
+			return copy(sourceStore, targetStore, /*sourceDir,*/ targetDir, sourceEntry);
 			
 		}		
 		
@@ -131,7 +131,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 */
 	public FsFileMetaResource copy(
 			FsResourceStore sourceStore, FsResourceStore targetStore,
-			FsDirectoryResource sourceDir, FsDirectoryResource targetDir,
+			/*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir,
 			FsFileMetaResource sourceEntry) throws DatabaseException {
 	
 		if(sourceEntry.getFileResource() == null){
@@ -142,7 +142,8 @@ public class FsFileResourceCopier extends AbstractRepository {
 		String newFileName = sourceEntry.getName();
 		String relativeFilePath = fsResourceHelper.getRelativePath(targetStore, targetDir, newFileName);
 		Path absoluteDirPath	= fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
-		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		//Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceEntry);
 		Path absoluteTargetFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, sourceEntry);
 		
 		logger.info("File copy, source => " + absoluteSourceFilePath.toString() + ", target => " + absoluteTargetFilePath.toString());
@@ -178,13 +179,13 @@ public class FsFileResourceCopier extends AbstractRepository {
 			Files.copy(absoluteSourceFilePath, absoluteTargetFilePath);
 			
 		} catch (FileAlreadyExistsException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (DirectoryNotEmptyException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (IOException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (SecurityException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		}
 		
 		return persistedMetaResource;
@@ -205,7 +206,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 */
 	public FsFileMetaResource copyReplace(
 			FsResourceStore sourceStore, FsResourceStore targetStore,
-			FsDirectoryResource sourceDir, FsDirectoryResource targetDir,
+			/*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir,
 			FsFileMetaResource sourceEntry, FsFileMetaResource conflictingTargetEntry) throws DatabaseException {
 		
 		if(sourceEntry.getFileResource() == null){
@@ -216,7 +217,8 @@ public class FsFileResourceCopier extends AbstractRepository {
 		String newFileName = sourceEntry.getName();
 		String relativeFilePath = fsResourceHelper.getRelativePath(targetStore, targetDir, newFileName);
 		Path absoluteDirPath = fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
-		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		//Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceEntry);
 		Path absoluteTargetFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, sourceEntry);
 		Path absoluteExistingFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, conflictingTargetEntry);
 		
@@ -267,13 +269,13 @@ public class FsFileResourceCopier extends AbstractRepository {
 			FileUtil.copyFile(absoluteSourceFilePath, absoluteTargetFilePath);
 			
 		} catch (FileAlreadyExistsException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (DirectoryNotEmptyException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (IOException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (SecurityException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		}
 		
 		return persistedMetaResource;
@@ -294,18 +296,18 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 * @throws FileAlreadyExistsException
 	 */
 	public FsFileMetaResource copyReplaceTraversal(
-			Long sourceFileEntryId, Long sourceDirId, Long targetDirId,
+			Long sourceFileEntryId, /*Long sourceDirId,*/ Long targetDirId,
 			FsResourceStore sourceStore, FsResourceStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
-		logger.info("File copy-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
-				sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
+		//logger.info("File copy-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
+		//		sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
 		
 		FsFileMetaResource entryToCopy = null;
 		FsFileMetaResource existingEntry = null;
-		FsDirectoryResource sourceDir = null;
+		//FsDirectoryResource sourceDir = null;
 		FsDirectoryResource targetDir = null;
 		
-		sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
+		//sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
 		targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
 		
 		entryToCopy = fsFileResourceRepository.getFileEntry(sourceFileEntryId, FsFileResourceFetch.FILE_META_WITH_DATA);
@@ -318,7 +320,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			return copyReplace(sourceStore, targetStore, sourceDir, targetDir, entryToCopy, existingEntry);
+			return copyReplace(sourceStore, targetStore, /*sourceDir,*/ targetDir, entryToCopy, existingEntry);
 			
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
@@ -329,7 +331,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// simply copy file to target dir
 		}else{
 			
-			return copy(sourceStore, targetStore, sourceDir, targetDir, entryToCopy);
+			return copy(sourceStore, targetStore, /*sourceDir,*/ targetDir, entryToCopy);
 			
 		}
 
@@ -345,12 +347,12 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 * @param e
 	 * @return
 	 */
-	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, FsDirectoryResource sourceDir, FsDirectoryResource targetDir, Throwable e){
+	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, /*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir, Throwable e){
 		
 		StringBuffer buf = new StringBuffer();
 		String cr = System.getProperty("line.separator");
 		buf.append("Error copying file => " + source.toString() + " to target file => " + target.toString() + cr);
-		buf.append("Source directory, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getName() + cr);
+		//buf.append("Source directory, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getName() + cr);
 		buf.append("Target directory, id => " + targetDir.getDirId() + ", name => " + targetDir.getName() + cr);
 		buf.append("Throwable => " + e.getClass().getName() + cr);
 		buf.append("Message => " + e.getMessage() + cr);
