@@ -11,6 +11,9 @@ import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
+import org.lenzi.fstore.core.service.TreeBuilder;
+import org.lenzi.fstore.core.service.exception.ServiceException;
+import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
@@ -36,7 +39,10 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	
 	@Autowired
 	@Qualifier("FsPathResourceTree")
-	private TreeRepository<FsPathResource> treeRepository;	
+	private TreeRepository<FsPathResource> treeRepository;
+	
+	@Autowired
+	private TreeBuilder<FsPathResource> treeBuilder;
 	
 	
 	/**
@@ -44,6 +50,26 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	 */
 	public FsDirectoryResourceRepository() {
 
+	}
+	
+	/**
+	 * Get tree for directory. Tree contains both directories and files so resulting tree type is of FsPathResource.
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public Tree<FsPathResource> getTree(Long dirId) throws DatabaseException {
+		
+		FsPathResource pathResource = treeRepository.getNodeWithChild(dirId, FsPathResource.class);
+		Tree<FsPathResource> tree = null;
+		try {
+			tree = treeBuilder.buildTree(pathResource);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from FsDirectory node, id => " + dirId, e);
+		}
+		return tree;
+		
 	}
 	
 	/**

@@ -28,9 +28,10 @@ public interface TreeRepository<N extends FSNode<N>> {
 	public N getNodeWithParent(N node) throws DatabaseException;
 	// include child closure data, with nodes
 	public N getNodeWithChild(N node) throws DatabaseException;
+	public N getNodeWithChild(Long nodeId, Class<N> clazz) throws DatabaseException;
 	// include child closure data, with nodes, up to a certain depth
 	public N getNodeWithChild(N node, int maxDepth) throws DatabaseException;
-	// inlcude both parent and child closure data, with nodes
+	// include both parent and child closure data, with nodes
 	public N getNodewithParentChild(N node) throws DatabaseException;
 	
 	/**

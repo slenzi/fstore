@@ -166,6 +166,18 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	}
 
 	/**
+	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries.
+	 * 
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getNodeWithChild(java.lang.Long, java.lang.Class)
+	 */
+	@Override
+	public N getNodeWithChild(Long nodeId, Class<N> clazz) throws DatabaseException {
+		
+		return getNodeWithChildClosureHql(nodeId, clazz);
+		
+	}
+
+	/**
 	 * 
 	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries, up to the
 	 * specified max depth
@@ -1627,7 +1639,23 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		return ResultFetcher.getSingleResultOrNull(query);
 		
-	}	
+	}
+	
+	private N getNodeWithChildClosureHql(Long nodeId, Class<N> clazz) throws DatabaseException {
+		
+		String selectQuery =
+				"select distinct r from " + clazz.getClass().getName() + " as r " +
+				"inner join fetch r.childClosure cc " +
+				"inner join fetch cc.childNode cn " +
+				"inner join fetch cc.parentNode pn " +
+				"where r.nodeId = :nodeid";
+		
+		Query query = getEntityManager().createQuery(selectQuery);
+		query.setParameter("nodeid", nodeId);
+		
+		return ResultFetcher.getSingleResultOrNull(query);
+		
+	}
 	
 	/**
 	 * @deprecated - the criteria version which takes a second parameter for maxDepth was not work. This one was
