@@ -104,7 +104,7 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	 */
 	@Override
 	public String toString() {
-		return "FsPathResource [name=" + name + ", relativePath="
+		return "FsPathResource [id=" + getNodeId() + ", name=" + name + ", relativePath="
 				+ relativePath + ", pathType=" + pathType.getType() + "]";
 	}
 

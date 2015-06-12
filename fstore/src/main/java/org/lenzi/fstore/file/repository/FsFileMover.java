@@ -17,8 +17,10 @@ import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file.repository.FsDirectoryRepository.FsDirectoryFetch;
 import org.lenzi.fstore.file.repository.FsFileEntryRepository.FsFileEntryFetch;
 import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
+import org.lenzi.fstore.file.repository.model.impl.FsFile;
 import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
 import org.lenzi.fstore.file.repository.model.impl.FsFileStore;
+import org.lenzi.fstore.file.repository.model.impl.FsFile_;
 import org.lenzi.fstore.file.service.FsHelper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,13 +175,22 @@ public class FsFileMover extends AbstractRepository {
 		
 		// remove existing entry from target dir, then delete it
 		FsFileEntry entryToRemove = targetDir.removeEntryById(conflictingTargetEntry.getFileId());
+		
 		logger.info("Remove existing file, id => " + entryToRemove.getFileId());
+		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		CriteriaDelete<FsFileEntry> cmsFileDelete = cb.createCriteriaDelete(FsFileEntry.class);
-		Root<FsFileEntry> cmsFileRoot = cmsFileDelete.from(FsFileEntry.class);
-		cmsFileDelete.where(cb.equal(cmsFileRoot.get(FsFileEntry_.fileId), entryToRemove.getFileId()));
-		executeUpdate(cmsFileDelete);
-		//remove(entryToRemove);
+		
+		// remove existing FsFile
+		CriteriaDelete<FsFile> fsFileDelete = cb.createCriteriaDelete(FsFile.class);
+		Root<FsFile> fsFileRoot = fsFileDelete.from(FsFile.class);
+		fsFileDelete.where(cb.equal(fsFileRoot.get(FsFile_.fileId), entryToRemove.getFileId()));
+		executeUpdate(fsFileDelete);
+		
+		// remove existing FsFileEntry
+		CriteriaDelete<FsFileEntry> fsFileEntryDelete = cb.createCriteriaDelete(FsFileEntry.class);
+		Root<FsFileEntry> fsFileEntryRoot = fsFileEntryDelete.from(FsFileEntry.class);
+		fsFileEntryDelete.where(cb.equal(fsFileEntryRoot.get(FsFileEntry_.fileId), entryToRemove.getFileId()));
+		executeUpdate(fsFileEntryDelete);
 		
 		logger.info("Move source file, id => " + sourceEntry.getFileId() + ", from source dir, id => " + sourceDir.getDirId() +
 				", to target dir, id => " + targetDir.getDirId());

@@ -109,10 +109,7 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 						
 						FsPathResource resourceToDelete = treeNode.getData();
 						
-						logger.info("Deleting path resource " +
-								", id => " + resourceToDelete.getNodeId() + 
-								", name => " + resourceToDelete.getName() + 
-								", type => " + resourceToDelete.getPathType().getType());
+						//logger.info("Deleting path resource " + ", id => " + resourceToDelete.getNodeId() + ", name => " + resourceToDelete.getName() + ", type => " + resourceToDelete.getPathType().getType());
 						
 						try {
 							
@@ -161,7 +158,8 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 	 */
 	private void removeDirectoryResource(FsPathResource resource, FsResourceStore fsStore) throws DatabaseException {
 		
-		logger.info("Remove directory resource, id => " + resource.getNodeId() + ", name => " + resource.getName());
+		logger.info("Remove directory resource, id => " + resource.getNodeId() + 
+				", name => " + resource.getName() + ", type => " + resource.getPathType().getType());
 		
 		// cast to directory resource
 		FsDirectoryResource dirResource = null;
@@ -202,7 +200,8 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 	 */
 	private void removeFileResource(FsPathResource resource, FsResourceStore fsStore) throws DatabaseException {
 		
-		logger.info("Remove file resource, id => " + resource.getNodeId() + ", name => " + resource.getName());
+		logger.info("Remove file resource, id => " + resource.getNodeId() + 
+				", name => " + resource.getName() + ", type => " + resource.getPathType().getType());
 		
 		// cast to file meta resource
 		FsFileMetaResource fileMetaResource = null;
