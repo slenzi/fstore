@@ -53,7 +53,7 @@ public abstract class AbstractRemoveFsFileResource extends AbstractTreeTest {
 	
 	@Test
 	@Rollback(false)
-	public void addFileResource() {
+	public void removeFileResource() {
 		
 		logTestTitle("Remove file resource");
 		

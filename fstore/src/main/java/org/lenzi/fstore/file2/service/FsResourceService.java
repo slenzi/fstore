@@ -7,8 +7,10 @@ import java.util.List;
 
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
+import org.lenzi.fstore.file2.repository.FsDirectoryResourceCopier;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceRemover;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceRepository;
 import org.lenzi.fstore.file2.repository.FsFileResourceAdder;
@@ -21,6 +23,7 @@ import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
 import org.lenzi.fstore.file2.repository.FsResourceStoreRepository;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +73,31 @@ public class FsResourceService {
 	@Autowired
 	private FsDirectoryResourceAdder fsDirectoryResourceAdder;
 	@Autowired
-	private FsDirectoryResourceRemover fsDirectoryResourceRemover;	
+	private FsDirectoryResourceRemover fsDirectoryResourceRemover;
+	@Autowired
+	private FsDirectoryResourceCopier fsDirectoryResourceCopier;
 	
 	
 	public FsResourceService() {
+		
+	}
+	
+	/**
+	 * Get tree
+	 * 
+	 * @param dirId - id of directory resource
+	 * @return
+	 * @throws FsServiceException
+	 */
+	public Tree<FsPathResource> getTree(Long dirId) throws FsServiceException {
+		
+		Tree<FsPathResource> resourceTree = null;
+		try {
+			resourceTree = fsDirectoryResourceRepository.getTree(dirId);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Error fetching resource tree, dir id => " + dirId + ". " + e.getMessage(), e);
+		}
+		return resourceTree;
 		
 	}
 	
@@ -261,6 +285,26 @@ public class FsResourceService {
 			fsDirectoryResourceRemover.removeDirectory(dirId);
 		} catch (DatabaseException e) {
 			throw new FsServiceException("Database error removing directory resource, id => " + dirId, e);
+		}
+		
+	}
+	
+	/**
+	 * Copy directory
+	 * 
+	 * @param sourceDirId
+	 * @param targetDirId
+	 * @param replaceExisting
+	 * @throws FsServiceException
+	 */
+	public void copyDirectoryResource(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws FsServiceException {
+		
+		try {
+			fsDirectoryResourceCopier.copyDirectory(sourceDirId, targetDirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new FsServiceException("File already exists exception when copying source directory, id => " + sourceDirId + " to targey directory, id => " + targetDirId, e);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database exception when copying source directory, id => " + sourceDirId + " to targey directory, id => " + targetDirId, e);
 		}
 		
 	}

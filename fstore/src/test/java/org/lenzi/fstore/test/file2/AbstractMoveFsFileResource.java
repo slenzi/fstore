@@ -50,7 +50,7 @@ public abstract class AbstractMoveFsFileResource extends AbstractTreeTest {
 	
 	@Test
 	@Rollback(false)
-	public void copyFileResource() {
+	public void moveFileResource() {
 		
 		logTestTitle("Move file resource");
 		

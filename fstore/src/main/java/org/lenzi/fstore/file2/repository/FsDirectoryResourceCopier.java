@@ -15,7 +15,6 @@ import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
-import org.lenzi.fstore.file2.service.FsResourceHelper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -83,7 +82,7 @@ public class FsDirectoryResourceCopier extends AbstractRepository {
 		// build tree for source directory, this is the tree we want to copy, in pre-order traversal (top down)
 		Tree<FsPathResource> sourceTree = fsDirectoryResourceRepository.getTree(sourceDirId);
 		
-		logger.info("Copying the following tree:\n" + sourceTree.printTree());
+		//logger.info("Copying the following tree:\n" + sourceTree.printTree());
 		
 		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
 		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
