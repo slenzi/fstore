@@ -38,7 +38,7 @@ public class FsResourceHelper {
 	}	
 	
 	/**
-	 * Joins the FsFileStore path and the relative FsDirectory path to get the full/absolute path
+	 * Joins the FsResourceStore path and the relative FsDirectoryResource path to get the full/absolute path
 	 * to the directory on the file system
 	 * 
 	 * @param fsStore
@@ -47,16 +47,34 @@ public class FsResourceHelper {
 	 */
 	public String getAbsoluteDirectoryString(FsResourceStore fsStore, FsDirectoryResource fsDirectory){
 		
-		String dirRelativePath = fsDirectory.getRelativePath();
-		if(!dirRelativePath.startsWith(File.separator)){
-			dirRelativePath = File.separator + dirRelativePath;
+		String relPath = fsDirectory.getRelativePath();
+		if(!relPath.startsWith(File.separator)){
+			relPath = File.separator + relPath;
 		}
-		return fsStore.getStorePath() + dirRelativePath;		
+		return fsStore.getStorePath() + relPath;		
 		
 	}
 	
 	/**
-	 * Joins the FsFileStore path, relative FsDirectory path, and FsFileEntry file name to
+	 * Joins the FsResourceStore path and the relative FsFileMetaResource path to get the full/absolute path
+	 * to the file on the file system
+	 * 
+	 * @param fsStore
+	 * @param fsFileEntry
+	 * @return
+	 */
+	public String getAbsoluteFileString(FsResourceStore fsStore, FsFileMetaResource fsFileEntry){
+		
+		String relPath = fsFileEntry.getRelativePath();
+		if(!relPath.startsWith(File.separator)){
+			relPath = File.separator + relPath;
+		}
+		return fsStore.getStorePath() + relPath;		
+		
+	}
+	
+	/**
+	 * Joins the FsResourceStore path, relative FsDirectoryResource path, and FsFileMetaResource file name to
 	 * get the full/absolute path to the file on the file system.
 	 * 
 	 * @param fsStore
@@ -71,7 +89,7 @@ public class FsResourceHelper {
 	}
 	
 	/**
-	 * Joins the FsFileStore path and the relative FsDirectory path to get the full/absolute path
+	 * Joins the FsResourceStore path and the relative FsDirectoryResource path to get the full/absolute path
 	 * to the directory on the file system
 	 * 
 	 * @param fsStore
@@ -85,7 +103,7 @@ public class FsResourceHelper {
 	}
 	
 	/**
-	 * Joins the FsFileStore path, relative FsDirectory path, and FsFileEntry file name to
+	 * Joins the FsResourceStore path, relative FsDirectoryResource path, and FsFileMetaResource file name to
 	 * get the full/absolute path to the file on the file system.
 	 * 
 	 * @param fsStore
@@ -96,6 +114,20 @@ public class FsResourceHelper {
 	public Path getAbsoluteFilePath(FsResourceStore fsStore, FsDirectoryResource fsDirectory, FsFileMetaResource fsFileEntry){
 		
 		return Paths.get(getAbsoluteFileString(fsStore, fsDirectory, fsFileEntry));
+		
+	}
+	
+	/**
+	 * Joins the FsResourceStore path and the relative FsFileMetaResource path to get the full/absolute path
+	 * to the file on the file system
+	 * 
+	 * @param fsStore
+	 * @param fsFileEntry
+	 * @return
+	 */
+	public Path getAbsoluteFilePath(FsResourceStore fsStore, FsFileMetaResource fsFileEntry){
+		
+		return Paths.get(getAbsoluteFileString(fsStore, fsFileEntry));
 		
 	}
 	

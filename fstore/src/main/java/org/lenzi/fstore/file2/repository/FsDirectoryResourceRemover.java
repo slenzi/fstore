@@ -4,7 +4,12 @@
 package org.lenzi.fstore.file2.repository;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Root;
 
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
@@ -16,6 +21,9 @@ import org.lenzi.fstore.core.tree.Trees;
 import org.lenzi.fstore.core.tree.Trees.WalkOption;
 import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -76,14 +84,24 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 		
 		Tree<FsPathResource> resourceTree = fsDirectoryResourceRepository.getTree(dirId);
 		
+		logger.info("Resource tree to delete:");
 		logger.info(resourceTree.printTree());
 		
-		FsDirectoryResource fsDirectory = fsDirectoryResourceRepository.getDirectoryResourceById(dirId);
+		FsPathResource rootResource = resourceTree.getRootNode().getData();
+		FsDirectoryResource rootDir = null;
+		try {
+			rootDir = (FsDirectoryResource) rootResource;
+		} catch (ClassCastException e) {
+			throw new DatabaseException("Error deleting directory resource. " + FsPathResource.class.getName() + 
+					" with node id " + rootResource.getNodeId() + " does not appear to be a " + FsDirectoryResource.class.getName());
+		}
 		
-		FsResourceStore fsStore = fsResourceStoreRepository.getStoreByDirectoryId(fsDirectory.getDirId());
+		//FsDirectoryResource fsDirectory = fsDirectoryResourceRepository.getDirectoryResourceById(dirId);
+		
+		FsResourceStore fsStore = fsResourceStoreRepository.getStoreByDirectoryId(rootDir.getDirId());
 		
 		//
-		// walk tree in post-order traversal, deleting one directory at a time
+		// walk tree in post-order traversal, deleting resources from the bottom up.
 		//
 		try {
 			
@@ -92,83 +110,118 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 						
 						FsPathResource resourceToDelete = treeNode.getData();
 						
-						// TODO - must delete files before deleting dir!
-						
-						if(resourceToDelete.getPathType().equals(FsPathType.DIRECTORY)){
-							
-							// remove dir
-							
-						}else if(resourceToDelete.getPathType().equals(FsPathType.FILE)){
-							
-							// remove file
-							
-						}else{
-							throw new DatabaseException("Unknown path resource type for node, id => " + 
-									resourceToDelete.getNodeId() + ", type => " + resourceToDelete.getPathType().getType());
-						}
-						
 						try {
 							
-							remove(fsStore, dirToDelete);
+							if(resourceToDelete.getPathType().equals(FsPathType.DIRECTORY)){
+								
+								// remove dir
+								removeDirectoryResource(resourceToDelete, fsStore);
+								
+							}else if(resourceToDelete.getPathType().equals(FsPathType.FILE)){
+								
+								// remove file
+								this.removeFileResource(resourceToDelete, fsStore);
+								
+							}else{
+								
+								throw new DatabaseException("Unknown path resource type for node, id => " + 
+										resourceToDelete.getNodeId() + ", type => " + resourceToDelete.getPathType().getType());
+								
+							}							
 							
 						} catch (DatabaseException e) {
-							throw new TreeNodeVisitException(e.getMessage(), e);
+							
+							throw new TreeNodeVisitException("Error deleting path resource, id => " + 
+									resourceToDelete.getNodeId() + ", type => " + resourceToDelete.getPathType().getType() + ". " + e.getMessage(), e);
+							
 						}
 						
 					},
 					WalkOption.POST_ORDER_TRAVERSAL);
 			
 		} catch (TreeNodeVisitException e) {
-			throw new DatabaseException("Error deleting directory, id => " + dirTree.getRootNode().getData().getDirId() + 
-					", name => " + dirTree.getRootNode().getData().getName(), e);
+			
+			throw new DatabaseException("Error deleting directory, id => " + rootDir.getDirId() + 
+					", name => " + rootDir.getName(), e);
+			
 		}
 		
 	}
 	
 	/**
-	 * Remove directory. All child directories should be removed first!
+	 * Delete directory resource
 	 * 
-	 * @param cmsStore
-	 * @param dirToDelete
+	 * @param resource
+	 * @param fsStore
 	 * @throws DatabaseException
 	 */
-	private void remove(FsResourceStore cmsStore, FsDirectoryResource dirToDelete) throws DatabaseException {
+	private void removeDirectoryResource(FsPathResource resource, FsResourceStore fsStore) throws DatabaseException {
 		
-		String dirPath = fsResourceHelper.getAbsoluteDirectoryString(cmsStore, dirToDelete);
-		
-		logger.info("Removing directory, id => " + dirToDelete.getDirId() + ", name => " + dirToDelete.getName() +
-				", path => " + dirPath);
-		
-		// remove all files in the directory
-		if(dirToDelete.hasFileEntries()){
-			for(FsFileEntry fileEntryToDelete : dirToDelete.getFileEntries()){
-				try {
-					
-					fsFileResourceRemover.remove(cmsStore, dirToDelete, fileEntryToDelete);
-					
-				} catch (DatabaseException e) {
-					throw new DatabaseException("Error deleting FsFileEntry, file id => " + 
-							fileEntryToDelete.getFileId() + ", name => " + fileEntryToDelete.getFileName() +
-							", in FsDirectoryResource, dir id => " + dirToDelete.getDirId() + ", name => " +
-							dirToDelete.getName(), e);
-				}
-			}
+		// cast to directory resource
+		FsDirectoryResource dirResource = null;
+		try {
+			dirResource = (FsDirectoryResource) resource;
+		} catch (ClassCastException e) {
+			throw new DatabaseException("Error deleting directory resource. " + FsPathResource.class.getName() + 
+					" with node id " + resource.getNodeId() + " does not appear to be a " + FsDirectoryResource.class.getName());
 		}
 		
 		// remove the directory
 		try {
-			treeRepository.removeNode(dirToDelete);
+			treeRepository.removeNode(dirResource);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Error deleting FsDirectoryResource, dir id => " + 
-					dirToDelete.getDirId() + ", name => " + dirToDelete.getName(), e);
+			throw new DatabaseException("Error deleting " + FsDirectoryResource.class.getName() + ", dir id => " + 
+					dirResource.getDirId() + ", name => " + dirResource.getName(), e);
 		}
+		
+		Path dirPath = fsResourceHelper.getAbsoluteDirectoryPath(fsStore, dirResource);
 		
 		// remove dir on file system
 		try {
-			FileUtil.deletePath(Paths.get(dirPath));
+			FileUtil.deletePath(dirPath);
 		} catch (IOException e) {
-			throw new DatabaseException("Error deleting physical directory on file system for FsDirectoryResource, dir id => " + 
-					dirToDelete.getDirId() + ", name => " + dirToDelete.getName() + ", path => " + dirPath, e);
+			throw new DatabaseException("Error deleting physical directory on file system for " + 
+					FsDirectoryResource.class.getName() + ", dir id => " + 
+					dirResource.getDirId() + ", name => " + dirResource.getName() + ", path => " + dirPath, e);
+		}
+		
+	}
+	
+	private void removeFileResource(FsPathResource resource, FsResourceStore fsStore) throws DatabaseException {
+		
+		// cast to file meta resource
+		FsFileMetaResource fileMetaResource = null;
+		try {
+			fileMetaResource = (FsFileMetaResource) resource;
+		} catch (ClassCastException e) {
+			throw new DatabaseException("Error deleting file resource. " + FsPathResource.class.getName() + 
+					" with node id " + resource.getNodeId() + " does not appear to be a " + FsFileMetaResource.class.getName());
+		}
+		
+		// remove FsFileResource data
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaDelete<FsFileResource> cmsFileDelete = cb.createCriteriaDelete(FsFileResource.class);
+		Root<FsFileResource> cmsFileRoot = cmsFileDelete.from(FsFileResource.class);
+		cmsFileDelete.where(cb.equal(cmsFileRoot.get(FsFileResource_.nodeId), fileMetaResource.getFileId()));
+		executeUpdate(cmsFileDelete);
+		
+		// remove FsFileMetaResource tree node
+		try {
+			treeRepository.removeNode(fileMetaResource);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error deleting " + FsFileMetaResource.class.getName() + ", file id => " + 
+					fileMetaResource.getFileId() + ", name => " + fileMetaResource.getName(), e);
+		}
+		
+		Path filePath = fsResourceHelper.getAbsoluteFilePath(fsStore, fileMetaResource);
+		
+		// remove file on file system
+		try {
+			FileUtil.deletePath(filePath);
+		} catch (IOException e) {
+			throw new DatabaseException("Error deleting physical directory on file system for " + 
+					FsDirectoryResource.class.getName() + ", dir id => " + 
+					fileMetaResource.getFileId() + ", name => " + filePath.getFileName().toString() + ", path => " + filePath, e);
 		}
 		
 	}
