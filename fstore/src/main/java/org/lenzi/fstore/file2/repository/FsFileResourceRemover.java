@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
+@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Throwable.class)
 public class FsFileResourceRemover extends AbstractRepository {
 
 	/**

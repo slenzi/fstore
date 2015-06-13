@@ -221,7 +221,7 @@ public abstract class AbstractCopyFsDirectoryResource extends AbstractTreeTest {
 		}
 		assertNotNull(resourceTree);
 		
-		logger.info("Tree after copy test: " + resourceTree.printTree());		
+		logger.info("Tree after copy test:\n" + resourceTree.printTree());		
 		
 		logger.info("Done");
 		

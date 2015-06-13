@@ -221,7 +221,7 @@ public abstract class AbstractMoveFsDirectoryResource extends AbstractTreeTest {
 		}
 		assertNotNull(resourceTree);
 		
-		logger.info("Tree after move test: " + resourceTree.printTree());		
+		logger.info("Tree after move test:\n" + resourceTree.printTree());		
 		
 		logger.info("Done");
 		
