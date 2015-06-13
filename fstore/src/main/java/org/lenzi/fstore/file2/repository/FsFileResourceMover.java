@@ -100,7 +100,7 @@ public class FsFileResourceMover extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			return moveReplace(sourceStore, targetStore, sourceDir, targetDir, sourceEntry, conflictingTargetEntry);
+			return moveReplace(sourceStore, targetStore, /*sourceDir,*/ targetDir, sourceEntry, conflictingTargetEntry);
 			
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
@@ -111,7 +111,7 @@ public class FsFileResourceMover extends AbstractRepository {
 		// simply move file to target dir
 		}else{
 			
-			return move(sourceStore, targetStore, sourceDir, targetDir, sourceEntry);
+			return move(sourceStore, targetStore, /*sourceDir,*/ targetDir, sourceEntry);
 			
 		}		
 		
@@ -130,7 +130,7 @@ public class FsFileResourceMover extends AbstractRepository {
 	 */
 	public FsFileMetaResource move(
 			FsResourceStore sourceStore, FsResourceStore targetStore,
-			FsDirectoryResource sourceDir, FsDirectoryResource targetDir,
+			/*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir,
 			FsFileMetaResource sourceEntry) throws DatabaseException {
 	
 		if(sourceEntry.getFileResource() == null){
@@ -140,8 +140,7 @@ public class FsFileResourceMover extends AbstractRepository {
 		
 		String newFileName = sourceEntry.getName();
 		String relativeFilePath = fsResourceHelper.getRelativePath(targetStore, targetDir, newFileName);
-		//Path absoluteDirPath	= fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
-		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceEntry);
 		Path absoluteTargetFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, sourceEntry);
 		
 		logger.info("File move, source => " + absoluteSourceFilePath.toString() + ", target => " + absoluteTargetFilePath.toString());
@@ -163,13 +162,13 @@ public class FsFileResourceMover extends AbstractRepository {
 			FileUtil.moveFile(absoluteSourceFilePath, absoluteTargetFilePath);
 			
 		} catch (FileAlreadyExistsException e){
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (DirectoryNotEmptyException e){
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (IOException e) {
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (SecurityException e) {
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		}
 		
 		return movedNode;
@@ -190,7 +189,7 @@ public class FsFileResourceMover extends AbstractRepository {
 	 */
 	public FsFileMetaResource moveReplace(
 			FsResourceStore sourceStore, FsResourceStore targetStore,
-			FsDirectoryResource sourceDir, FsDirectoryResource targetDir,
+			/*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir,
 			FsFileMetaResource sourceEntry, FsFileMetaResource conflictingTargetEntry) throws DatabaseException {
 		
 		if(sourceEntry.getFileResource() == null){
@@ -200,8 +199,9 @@ public class FsFileResourceMover extends AbstractRepository {
 		
 		String newFileName = sourceEntry.getName();
 		String relativeFilePath = fsResourceHelper.getRelativePath(targetStore, targetDir, newFileName);
-		Path absoluteDirPath = fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
-		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		//Path absoluteDirPath = fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
+		//Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceEntry);
 		Path absoluteTargetFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, sourceEntry);
 		Path absoluteExistingFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, conflictingTargetEntry);
 		
@@ -238,13 +238,13 @@ public class FsFileResourceMover extends AbstractRepository {
 			FileUtil.moveFile(absoluteSourceFilePath, absoluteTargetFilePath);			
 			
 		} catch (FileAlreadyExistsException e){
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (DirectoryNotEmptyException e){
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (IOException e) {
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		} catch (SecurityException e) {
-			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, sourceDir, targetDir, e);
+			throw buildDatabaseExceptionMoveError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
 		}
 		
 		return movedNode;
@@ -265,18 +265,18 @@ public class FsFileResourceMover extends AbstractRepository {
 	 * @throws FileAlreadyExistsException
 	 */
 	public FsFileMetaResource moveReplaceTraversal(
-			Long sourceFileEntryId, Long sourceDirId, Long targetDirId,
+			Long sourceFileEntryId, /*Long sourceDirId,*/ Long targetDirId,
 			FsResourceStore sourceStore, FsResourceStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
-		logger.info("File move-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
-				sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
+		//logger.info("File move-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
+		//		sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
 		
 		FsFileMetaResource entryToMove = null;
 		FsFileMetaResource existingEntry = null;
-		FsDirectoryResource sourceDir = null;
+		//FsDirectoryResource sourceDir = null;
 		FsDirectoryResource targetDir = null;
 		
-		sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
+		//sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
 		targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
 		
 		entryToMove = fsFileResourceRepository.getFileEntry(sourceFileEntryId, FsFileResourceFetch.FILE_META);
@@ -289,7 +289,7 @@ public class FsFileResourceMover extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			return moveReplace(sourceStore, targetStore, sourceDir, targetDir, entryToMove, existingEntry);
+			return moveReplace(sourceStore, targetStore, /*sourceDir,*/ targetDir, entryToMove, existingEntry);
 			
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
@@ -300,7 +300,7 @@ public class FsFileResourceMover extends AbstractRepository {
 		// simply move file to target dir
 		}else{
 			
-			return move(sourceStore, targetStore, sourceDir, targetDir, entryToMove);
+			return move(sourceStore, targetStore, /*sourceDir,*/ targetDir, entryToMove);
 			
 		}
 
@@ -316,12 +316,12 @@ public class FsFileResourceMover extends AbstractRepository {
 	 * @param e
 	 * @return
 	 */
-	private DatabaseException buildDatabaseExceptionMoveError(Path source, Path target, FsDirectoryResource sourceDir, FsDirectoryResource targetDir, Throwable e){
+	private DatabaseException buildDatabaseExceptionMoveError(Path source, Path target, /*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir, Throwable e){
 		
 		StringBuffer buf = new StringBuffer();
 		String cr = System.getProperty("line.separator");
 		buf.append("Error moving file => " + source.toString() + " to target file => " + target.toString() + cr);
-		buf.append("Source directory, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getName() + cr);
+		//buf.append("Source directory, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getName() + cr);
 		buf.append("Target directory, id => " + targetDir.getDirId() + ", name => " + targetDir.getName() + cr);
 		buf.append("Throwable => " + e.getClass().getName() + cr);
 		buf.append("Message => " + e.getMessage() + cr);

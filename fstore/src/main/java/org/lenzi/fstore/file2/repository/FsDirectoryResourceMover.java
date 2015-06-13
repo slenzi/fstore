@@ -49,6 +49,9 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 	private FsDirectoryResourceAdder fsDirectoryResourceAdder;
 	
 	@Autowired
+	private FsDirectoryResourceRemover fsDirectoryResourceRemover;
+	
+	@Autowired
 	private FsResourceStoreRepository fsResourceStoreRepository;
 	
 	@Autowired
@@ -88,7 +91,10 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
 		
 		// start move at root node (dir) of source tree, and walk tree in pre-order traversal
-		moveDirectoryTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);		
+		moveDirectoryTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);
+		
+		// remove source dir and all child dirs.
+		fsDirectoryResourceRemover.removeDirectory(sourceTree.getRootNode().getData().getNodeId());
 		
 	}
 	
@@ -132,7 +138,7 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 			
 			//fsFileResourceCopier.copyReplaceTraversal(resourceToCopy.getNodeId(), targetParentDirId, sourceStore, targetStore, replaceExisting);
 			
-			fsFileResourceMover.moveReplaceTraversal(resourceToMove.getNodeId(), sourceDirId, targetDirId, sourceStore, targetStore, replaceExisting);
+			fsFileResourceMover.moveReplaceTraversal(resourceToMove.getNodeId(), targetParentDirId, sourceStore, targetStore, replaceExisting);
 			
 		}else{
 			

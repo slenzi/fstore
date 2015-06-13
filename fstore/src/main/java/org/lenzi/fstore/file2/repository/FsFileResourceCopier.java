@@ -141,8 +141,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		
 		String newFileName = sourceEntry.getName();
 		String relativeFilePath = fsResourceHelper.getRelativePath(targetStore, targetDir, newFileName);
-		Path absoluteDirPath	= fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
-		//Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
+		Path absoluteDirPath = fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
 		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceEntry);
 		Path absoluteTargetFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, sourceEntry);
 		
@@ -217,7 +216,6 @@ public class FsFileResourceCopier extends AbstractRepository {
 		String newFileName = sourceEntry.getName();
 		String relativeFilePath = fsResourceHelper.getRelativePath(targetStore, targetDir, newFileName);
 		Path absoluteDirPath = fsResourceHelper.getAbsoluteDirectoryPath(targetStore, targetDir);
-		//Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceDir, sourceEntry);
 		Path absoluteSourceFilePath = fsResourceHelper.getAbsoluteFilePath(sourceStore, sourceEntry);
 		Path absoluteTargetFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, sourceEntry);
 		Path absoluteExistingFilePath = fsResourceHelper.getAbsoluteFilePath(targetStore, targetDir, conflictingTargetEntry);

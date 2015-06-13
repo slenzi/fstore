@@ -11,6 +11,7 @@ import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceCopier;
+import org.lenzi.fstore.file2.repository.FsDirectoryResourceMover;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceRemover;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceRepository;
 import org.lenzi.fstore.file2.repository.FsFileResourceAdder;
@@ -76,6 +77,8 @@ public class FsResourceService {
 	private FsDirectoryResourceRemover fsDirectoryResourceRemover;
 	@Autowired
 	private FsDirectoryResourceCopier fsDirectoryResourceCopier;
+	@Autowired
+	private FsDirectoryResourceMover fsDirectoryResourceMover;
 	
 	
 	public FsResourceService() {
@@ -305,6 +308,26 @@ public class FsResourceService {
 			throw new FsServiceException("File already exists exception when copying source directory, id => " + sourceDirId + " to targey directory, id => " + targetDirId, e);
 		} catch (DatabaseException e) {
 			throw new FsServiceException("Database exception when copying source directory, id => " + sourceDirId + " to targey directory, id => " + targetDirId, e);
+		}
+		
+	}
+	
+	/**
+	 * Move directory
+	 * 
+	 * @param sourceDirId
+	 * @param targetDirId
+	 * @param replaceExisting
+	 * @throws FsServiceException
+	 */
+	public void moveDirectoryResource(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws FsServiceException {
+		
+		try {
+			fsDirectoryResourceMover.moveDirectory(sourceDirId, targetDirId, replaceExisting);
+		} catch (FileAlreadyExistsException e) {
+			throw new FsServiceException("File already exists exception when moving source directory, id => " + sourceDirId + " to targey directory, id => " + targetDirId, e);
+		} catch (DatabaseException e) {
+			throw new FsServiceException("Database exception when moving source directory, id => " + sourceDirId + " to targey directory, id => " + targetDirId, e);
 		}
 		
 	}
