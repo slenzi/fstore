@@ -132,14 +132,22 @@ public class FsFileResourceRepository extends AbstractRepository {
 		// check each child node on each child closure entry
 		Optional<DBClosure<FsPathResource>> matchingClosure = dirResource.getChildClosure().stream()
 			.filter(closure -> {
-				// check if there is an existing child file resource with the same name
-				FsPathResource resource = closure.getChildNode();
-				if(resource.getPathType().equals(FsPathType.FILE)){
-					if(caseSensitive){
-						return resource.getName().equals(fileName);
-					}else{
-						return resource.getName().equalsIgnoreCase(fileName);
+				
+				// TODO - check this code!
+				
+				// ignore depth-0 closure entries (a resource is a child of itself at depth-0)
+				if(closure.getDepth() > 0){
+				
+					// check if there is an existing child file resource with the same name
+					FsPathResource resource = closure.getChildNode();
+					if(resource.getPathType().equals(FsPathType.FILE)){
+						if(caseSensitive){
+							return resource.getName().equals(fileName);
+						}else{
+							return resource.getName().equalsIgnoreCase(fileName);
+						}
 					}
+					
 				}
 				return false;	
 			})
