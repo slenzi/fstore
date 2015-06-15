@@ -155,7 +155,7 @@ create table FS_RESOURCE_STORE (
 );
 
 /**
- * Constraints
+ * File 2 Constraints
  */
 ALTER TABLE FS_FILE_RESOURCE ADD CONSTRAINT FK_FS_FILE_RESOURCE
   FOREIGN KEY (NODE_ID)
@@ -174,13 +174,13 @@ ALTER TABLE FS_PATH_RESOURCE ADD CONSTRAINT FK_FS_PATH_RESOURCE
   REFERENCES FS_NODE(NODE_ID);
 
 /**
- * Indexes
+ * Core Indexes
  */
 create unique index fs_parent_depth_child_idx on fs_closure(parent_node_id,depth,child_node_id);
 create unique index fs_child_parent_depth_idx on fs_closure(child_node_id,parent_node_id,depth);	
 
 /**
- * Sequences
+ * Core Sequences
  */
 CREATE SEQUENCE FS_NODE_ID_SEQUENCE  
 MINVALUE 1 

@@ -152,7 +152,7 @@ create table TEST.FS_RESOURCE_STORE (
 );
 
 /**
- * Constraints
+ * File 2 Constraints
  */
 ALTER TABLE TEST.FS_FILE_RESOURCE ADD CONSTRAINT FK_FS_FILE_RESOURCE
   FOREIGN KEY (NODE_ID)
@@ -171,13 +171,13 @@ ALTER TABLE TEST.FS_PATH_RESOURCE ADD CONSTRAINT FK_FS_PATH_RESOURCE
   REFERENCES TEST.FS_NODE(NODE_ID);
 
 /**
- * Indexes
+ * Core Indexes
  */
 create unique index fs_parent_depth_child_idx on TEST.fs_closure(parent_node_id,depth,child_node_id);
 create unique index fs_child_parent_depth_idx on TEST.fs_closure(child_node_id,parent_node_id,depth);	
 
 /**
- * Sequences
+ * Core Sequences
  */
 CREATE SEQUENCE TEST.FS_NODE_ID_SEQUENCE  
 INCREMENT BY 1 

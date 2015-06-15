@@ -3,11 +3,19 @@ package org.lenzi.fstore.file2.service;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.List;
 
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
+import org.lenzi.fstore.core.tree.TreeNodeVisitException;
+import org.lenzi.fstore.core.tree.Trees;
+import org.lenzi.fstore.core.tree.Trees.WalkOption;
+import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceCopier;
@@ -26,8 +34,11 @@ import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +54,9 @@ public class FsResourceService {
 
 	@InjectLogger
 	private Logger logger;
+	
+	@Autowired
+	private ResourceLoader resourceLoader;
 	
 	//
 	// resource store operators
@@ -353,6 +367,117 @@ public class FsResourceService {
 		}
 		
 		return dirResource;
+		
+	}
+	
+	/**
+	 * Creates a sample file store with some file resources from classpath src/main/resources/images directory.
+	 * 
+	 * @param storePath - path where store will be created
+	 * @return reference to newly created file store
+	 * @throws FsServiceException
+	 */
+	public FsResourceStore createSampleResourceStore(Path storePath) throws FsServiceException {
+		
+		FsResourceStore fsStore = null;
+		
+		LocalDateTime timePoint = LocalDateTime.now();
+		
+		String pathPostfix = String.format("_%d.%s.%d_%d.%d.%d",
+				timePoint.getYear(), timePoint.getMonth(), timePoint.getDayOfMonth(),
+				timePoint.getHour(), timePoint.getMinute(), timePoint.getSecond());
+		
+		String dateTime = String.format("%s %s", timePoint.format( DateTimeFormatter.ISO_DATE ), 
+				timePoint.format( DateTimeFormatter.ISO_TIME ));
+		
+		Path fullStorePath = Paths.get(storePath.toString() + pathPostfix);
+		
+		logger.info("Creating sample file store at => " + fullStorePath);
+
+		fsStore = createResourceStore(fullStorePath, "Example File Store " + dateTime, 
+				"This is an example file store, created at " + dateTime, true);
+		
+		logger.info("Store, name => " + fsStore.getName() + " was successfully created at, path => " + 
+				fsStore.getStorePath());
+		logger.info("Store root directory, id => " + fsStore.getRootDirectoryResource().getDirId() + 
+				", name => " + fsStore.getRootDirectoryResource().getName() + 
+				", relative path => " + fsStore.getRootDirectoryResource().getRelativePath());
+	
+		logger.info("Adding some directories...");
+	
+		FsDirectoryResource sampleDir1 = addDirectoryResource(fsStore.getRootDirectoryResource().getDirId(), "Sample directory 1");
+			addDirectoryResource(sampleDir1.getDirId(), "Sample directory 1-1");
+			addDirectoryResource(sampleDir1.getDirId(), "Sample directory 1-2");
+		
+		FsDirectoryResource sampleDir2 = addDirectoryResource(fsStore.getRootDirectoryResource().getDirId(), "Sample directory 2");
+			addDirectoryResource(sampleDir2.getDirId(), "Sample directory 2-1");
+			addDirectoryResource(sampleDir2.getDirId(), "Sample directory 2-2");
+		
+		FsDirectoryResource sampleDir3 = addDirectoryResource(fsStore.getRootDirectoryResource().getDirId(), "Sample directory 3");
+			addDirectoryResource(sampleDir3.getDirId(), "Sample directory 3-1");
+			addDirectoryResource(sampleDir3.getDirId(), "Sample directory 3-2");
+		
+		Resource sampleImageResource = resourceLoader.getResource("classpath:image/");
+		
+		Path sampleImagePath = null;
+		try {
+			sampleImagePath = Paths.get(sampleImageResource.getFile().getAbsolutePath());
+		} catch (IOException e) {
+			throw new FsServiceException("Error attempting to get parent path for classpath images at src/main/resource/images", e);
+		}
+		
+		// all images, at depth 1
+		List<Path> listSampleImages = null;
+		try {
+			listSampleImages = FileUtil.listFilesToDepth(sampleImagePath, 1);
+		} catch (IOException e) {
+			throw new FsServiceException("Error attempting to get list of paths for sample images in src/main/resource/images", e);
+		}
+		
+		if(listSampleImages == null || listSampleImages.size() < 9){
+			throw new FsServiceException("No images in classpath images folder at src/main/resources/images, or less than 9 images. Need at least 9.");
+		}
+		
+		Iterator<Path> imagePathItr = listSampleImages.iterator();
+			
+		Tree<FsPathResource> pathTree = getTree(fsStore.getRootDirectoryResource().getDirId());
+		
+		// walk tree and add sample images to each of the directories
+		try {
+			
+			Trees.walkTree(pathTree,
+					(treeNode) -> {
+						
+						if(treeNode.getData().getPathType().equals(FsPathType.DIRECTORY)){
+						
+							// skip root directory for file store and only add files to child directories
+							if(!treeNode.getData().isRootNode()){
+							
+								Path nextImagePath = imagePathItr.hasNext() ? imagePathItr.next() : null;
+								
+								if(nextImagePath != null){
+									try {
+										
+										addFileResource(nextImagePath, treeNode.getData().getNodeId(), true);
+										
+									} catch (FsServiceException e) {
+										throw new TreeNodeVisitException("Error while adding file " + nextImagePath + 
+												" to directory " + treeNode.getData().getName(), e);
+									}
+								}
+								
+							}							
+							
+						}
+						
+					},
+					WalkOption.PRE_ORDER_TRAVERSAL);
+			
+		} catch (TreeNodeVisitException e) {
+			throw new FsServiceException("Error while adding sample images to sample file store.", e);
+		}
+		
+		return fsStore;
 		
 	}
 
