@@ -24,6 +24,12 @@ public class OracleCreate {
 	@PersistenceContext
 	private EntityManager entityManager;		
 	
+	
+	/***********************************************************************************
+	 * 
+	 * core tree tables
+	 * 
+	 */
 	private String SQL_DROP_TABLE_FS_NODE =
 		"drop table FS_NODE";
 	private String SQL_CREATE_TABLE_FS_NODE =
@@ -36,7 +42,6 @@ public class OracleCreate {
 		"	UPDATED_DATE date NOT NULL, " +
 		"	PRIMARY KEY (NODE_ID) " +
 		")";
-		
 	private String SQL_DROP_TABLE_FS_CLOSURE =
 		"drop table FS_CLOSURE";	
 	private String SQL_CREATE_TABLE_FS_CLOSURE =
@@ -47,8 +52,6 @@ public class OracleCreate {
 		"	DEPTH NUMBER(5,0) NOT NULL, " +
 		"	PRIMARY KEY (LINK_ID) " +
 		")";
-		
-	// prune table is used in delete operations (e.g., deleteNode(nodeId) method)
 	private String SQL_DROP_TABLE_FS_PRUNE =
 		"drop table FS_PRUNE";	
 	private String SQL_CREATE_TABLE_FS_PRUNE =
@@ -57,7 +60,6 @@ public class OracleCreate {
 		"	NODE_ID NUMBER(15,0) NOT NULL, " +
 		"	PRIMARY KEY (PRUNE_ID,NODE_ID) " +
 		")";
-		
 	private String SQL_DROP_TABLE_FS_TREE =
 		"drop table FS_TREE";		
 	private String SQL_CREATE_TABLE_FS_TREE =
@@ -71,6 +73,11 @@ public class OracleCreate {
 		"	PRIMARY KEY (TREE_ID) " +
 		")";
 	
+	/***********************************************************************************
+	 * 
+	 * test table
+	 * 
+	 */
 	private String SQL_DROP_TABLE_FS_TEST_NODE =
 		"drop table FS_TEST_NODE";
 	private String SQL_CREATE_TABLE_FS_TEST_NODE =
@@ -80,6 +87,11 @@ public class OracleCreate {
 		"	PRIMARY KEY (NODE_ID) " +
 		")";
 	
+	/***********************************************************************************
+	 * 
+	 * File 1 tables
+	 * 
+	 */
 	private String SQL_DROP_TABLE_FS_DIRECTORY =
 		"drop table FS_DIRECTORY";	
 	private String SQL_CREATE_TABLE_FS_DIRECTORY =
@@ -89,7 +101,6 @@ public class OracleCreate {
 		"	RELATIVE_DIR_PATH VARCHAR2(250) NOT NULL, " +
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
-	
 	private String SQL_DROP_TABLE_FS_DIR_FILE_LINK =
 		"drop table FS_DIR_FILE_LINK";
 	private String SQL_CREATE_TABLE_FS_DIR_FILE_LINK =
@@ -98,7 +109,6 @@ public class OracleCreate {
 		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
 		"	PRIMARY KEY(NODE_ID,FILE_ID) " + 
 		")";
-	
 	private String SQL_DROP_TABLE_FS_FILE_ENTRY =
 		"drop table FS_FILE_ENTRY";	
 	private String SQL_CREATE_TABLE_FS_FILE_ENTRY =
@@ -108,7 +118,6 @@ public class OracleCreate {
 		"	FILE_NAME VARCHAR2(250) NOT NULL, " +  
 		"	PRIMARY KEY (FILE_ID) " +  
 		")";
-	
 	private String SQL_DROP_TABLE_FS_FILE =
 		"drop table FS_FILE";	
 	private String SQL_CREATE_TABLE_FS_FILE =
@@ -117,7 +126,6 @@ public class OracleCreate {
 		"	FILE_DATA BLOB NOT NULL, " + 
 		"	PRIMARY KEY (FILE_ID) " + 
 		")";
-	
 	private String SQL_DROP_TABLE_FS_FILE_STORE =
 		"drop table FS_FILE_STORE";	
 	private String SQL_CREATE_TABLE_FS_FILE_STORE =
@@ -132,6 +140,11 @@ public class OracleCreate {
 		"	PRIMARY KEY (STORE_ID)  " + 
 		")";
 	
+	/***********************************************************************************
+	 * 
+	 * File 2 tables
+	 * 
+	 */
 	private String SQL_DROP_TABLE_FS_PATH_RESOURCE =
 		"drop table FS_PATH_RESOURCE";	
 	private String SQL_CREATE_TABLE_FS_PATH_RESOURCE =
@@ -177,18 +190,57 @@ public class OracleCreate {
 		"	CREATION_DATE date NOT NULL,  " + 
 		"	UPDATED_DATE date NOT NULL,  " + 
 		"	PRIMARY KEY (STORE_ID)  " + 
-		")";	
+		")";
 	
+	/***********************************************************************************
+	 * 
+	 * Constraints
+	 * 
+	 */
+	private String SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE =
+		"ALTER TABLE FS_FILE_RESOURCE DROP CONSTRAINT FK_FS_FILE_RESOURCE";		
+	private String SQL_CREATE_CONSTRAINT_FK_FS_FILE_RESOURCE =
+		"ALTER TABLE FS_FILE_RESOURCE ADD CONSTRAINT FK_FS_FILE_RESOURCE " +  
+		"  FOREIGN KEY (NODE_ID) " +  
+		"  REFERENCES FS_FILE_META_RESOURCE(NODE_ID)";
+	private String SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE =
+		"ALTER TABLE FS_FILE_META_RESOURCE DROP CONSTRAINT FK_FS_FILE_META_RESOURCE";		
+	private String SQL_CREATE_CONSTRAINT_FK_FS_FILE_META_RESOURCE =
+		"ALTER TABLE FS_FILE_META_RESOURCE ADD CONSTRAINT FK_FS_FILE_META_RESOURCE " +  
+		"  FOREIGN KEY (NODE_ID) " +  
+		"  REFERENCES FS_PATH_RESOURCE(NODE_ID)";
+	private String SQL_DROP_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE =
+		"ALTER TABLE FS_DIRECTORY_RESOURCE DROP CONSTRAINT FK_FS_DIRECTORY_RESOURCE";		
+	private String SQL_CREATE_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE =
+		"ALTER TABLE FS_DIRECTORY_RESOURCE ADD CONSTRAINT FK_FS_DIRECTORY_RESOURCE " +  
+		"  FOREIGN KEY (NODE_ID) " +  
+		"  REFERENCES FS_PATH_RESOURCE(NODE_ID)";
+	private String SQL_DROP_CONSTRAINT_FK_FS_PATH_RESOURCE =
+		"ALTER TABLE FS_PATH_RESOURCE DROP CONSTRAINT FK_FS_PATH_RESOURCE";		
+	private String SQL_CREATE_CONSTRAINT_FK_FS_PATH_RESOURCE =
+		"ALTER TABLE FS_PATH_RESOURCE ADD CONSTRAINT FK_FS_PATH_RESOURCE " +  
+		"  FOREIGN KEY (NODE_ID) " +  
+		"  REFERENCES FS_NODE(NODE_ID)";
+	
+	/***********************************************************************************
+	 * 
+	 * Indexes
+	 * 
+	 */
 	private String SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD =
 		"drop index fs_parent_depth_child_idx";
 	private String SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD =
 		"create unique index fs_parent_depth_child_idx on fs_closure(parent_node_id,depth,child_node_id)";
-	
 	private String SQL_DROP_INDEX_FS_CHILD_PARENT_DEPTH =
 		"drop index fs_child_parent_depth_idx";	
 	private String SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH =
 		"create unique index fs_child_parent_depth_idx on fs_closure(child_node_id,parent_node_id,depth)";	
 	
+	/***********************************************************************************
+	 * 
+	 * Sequences
+	 * 
+	 */
 	private String SQL_DROP_SEQUENCE_FS_NODE_ID =
 		"drop sequence FS_NODE_ID_SEQUENCE";
 	private String SQL_CREATE_SEQUENCE_FS_NODE_ID =
@@ -200,7 +252,6 @@ public class OracleCreate {
 		"CACHE 10  " +
 		"ORDER  " +
 		"NOCYCLE";
-		
 	private String SQL_DROP_SEQUENCE_FS_LINK_ID =
 		"drop sequence FS_LINK_ID_SEQUENCE";	
 	private String SQL_CREATE_SEQUENCE_FS_LINK_ID =
@@ -212,7 +263,6 @@ public class OracleCreate {
 		"CACHE 10  " +
 		"ORDER  " +
 		"NOCYCLE";
-		
 	// used in our prune table
 	private String SQL_DROP_SEQUENCE_FS_PRUNE_ID =
 		"drop sequence FS_PRUNE_ID_SEQUENCE";	
@@ -225,7 +275,6 @@ public class OracleCreate {
 		"CACHE 10  " +
 		"ORDER  " +
 		"NOCYCLE";
-		
 	private String SQL_DROP_SEQUENCE_FS_TREE_ID =
 		"drop sequence FS_TREE_ID_SEQUENCE";	
 	private String SQL_CREATE_SEQUENCE_FS_TREE_ID =
@@ -237,7 +286,6 @@ public class OracleCreate {
 		"CACHE 10  " +
 		"ORDER  " +
 		"NOCYCLE";
-	
 	private String SQL_DROP_SEQUENCE_FS_FILE_ID =
 		"drop sequence FS_FILE_ID_SEQUENCE";	
 	private String SQL_CREATE_SEQUENCE_FS_FILE_ID =
@@ -249,7 +297,6 @@ public class OracleCreate {
 		"CACHE 10  " +
 		"ORDER  " +
 		"NOCYCLE";
-	
 	private String SQL_DROP_SEQUENCE_FS_STORE_ID =
 		"drop sequence FS_STORE_ID_SEQUENCE";	
 	private String SQL_CREATE_SEQUENCE_FS_STORE_ID =
@@ -261,6 +308,7 @@ public class OracleCreate {
 		"CACHE 10  " +
 		"ORDER  " +
 		"NOCYCLE";	
+	
 	
 	public OracleCreate() {
 		
@@ -308,6 +356,12 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		
+		// file 2 constraints
+		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();
+		
 	}
 	
 	/**
@@ -316,6 +370,12 @@ public class OracleCreate {
 	 * @throws DatabaseException
 	 */
 	public void dropDatabase() throws DatabaseException {
+		
+		// file 2 constraints
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();
 		
 		// core
 		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
