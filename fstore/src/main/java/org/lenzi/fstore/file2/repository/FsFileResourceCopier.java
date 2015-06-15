@@ -135,7 +135,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsFileMetaResource copy(
+	private FsFileMetaResource copy(
 			FsResourceStore sourceStore, FsResourceStore targetStore,
 			/*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir,
 			FsFileMetaResource sourceEntry) throws DatabaseException {
@@ -209,7 +209,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsFileMetaResource copyReplace(
+	private FsFileMetaResource copyReplace(
 			FsResourceStore sourceStore, FsResourceStore targetStore,
 			/*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir,
 			FsFileMetaResource sourceEntry, FsFileMetaResource conflictingTargetEntry) throws DatabaseException {
@@ -300,24 +300,17 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 * @throws FileAlreadyExistsException
 	 */
 	public FsFileMetaResource copyReplaceTraversal(
-			Long sourceFileEntryId, /*Long sourceDirId,*/ Long targetDirId,
+			Long sourceFileEntryId, Long targetDirId,
 			FsResourceStore sourceStore, FsResourceStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
-		//logger.info("File copy-replace traversal, source file id => " + sourceFileEntryId + ", source dir id => " + 
-		//		sourceDirId + ", target dir id => " + targetDirId + ", replace existing? => " + replaceExisting);
+		// TODO - consider passing in target dir object with all it's child closure data
 		
 		FsFileMetaResource entryToCopy = null;
 		FsFileMetaResource existingEntry = null;
-		//FsDirectoryResource sourceDir = null;
 		FsDirectoryResource targetDir = null;
 		
-		//sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
-		//targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
 		targetDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(targetDirId, 1);
-		
 		entryToCopy = fsFileResourceRepository.getFileEntry(sourceFileEntryId, FsFileResourceFetch.FILE_META_WITH_DATA);
-		
-		//existingEntry = fsFileResourceRepository.haveExistingFile(entryToCopy.getName(), targetDir.getDirId(), false);
 		existingEntry = fsFileResourceRepository.haveExistingFile(entryToCopy.getName(), targetDir, false);
 		
 		// will be true of we need to replace the existing file in the target directory
@@ -326,7 +319,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			return copyReplace(sourceStore, targetStore, /*sourceDir,*/ targetDir, entryToCopy, existingEntry);
+			return copyReplace(sourceStore, targetStore, targetDir, entryToCopy, existingEntry);
 			
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
@@ -337,7 +330,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// simply copy file to target dir
 		}else{
 			
-			return copy(sourceStore, targetStore, /*sourceDir,*/ targetDir, entryToCopy);
+			return copy(sourceStore, targetStore, targetDir, entryToCopy);
 			
 		}
 
@@ -353,12 +346,11 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 * @param e
 	 * @return
 	 */
-	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, /*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir, Throwable e){
+	private DatabaseException buildDatabaseExceptionCopyError(Path source, Path target, FsDirectoryResource targetDir, Throwable e){
 		
 		StringBuffer buf = new StringBuffer();
 		String cr = System.getProperty("line.separator");
 		buf.append("Error copying file => " + source.toString() + " to target file => " + target.toString() + cr);
-		//buf.append("Source directory, id => " + sourceDir.getDirId() + ", name => " + sourceDir.getName() + cr);
 		buf.append("Target directory, id => " + targetDir.getDirId() + ", name => " + targetDir.getName() + cr);
 		buf.append("Throwable => " + e.getClass().getName() + cr);
 		buf.append("Message => " + e.getMessage() + cr);

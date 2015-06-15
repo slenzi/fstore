@@ -210,9 +210,13 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 				FsPathResource resource = closure.getChildNode();
 				if(resource.getPathType().equals(FsPathType.DIRECTORY)){
 					if(caseSensitive){
-						matchingChildDirs.add((FsDirectoryResource) resource);
+						if(resource.getName().equals(dirName)){
+							matchingChildDirs.add((FsDirectoryResource) resource);
+						}
 					}else{
-						matchingChildDirs.add((FsDirectoryResource) resource);
+						if(resource.getName().equalsIgnoreCase(dirName)){
+							matchingChildDirs.add((FsDirectoryResource) resource);
+						}
 					}
 				}				
 				

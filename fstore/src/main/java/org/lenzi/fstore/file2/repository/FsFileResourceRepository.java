@@ -160,9 +160,13 @@ public class FsFileResourceRepository extends AbstractRepository {
 				FsPathResource resource = closure.getChildNode();
 				if(resource.getPathType().equals(FsPathType.FILE)){
 					if(caseSensitive){
-						matchingChildFiles.add((FsFileMetaResource) resource);
+						if(resource.getName().equals(dirName)){
+							matchingChildFiles.add((FsFileMetaResource) resource);
+						}
 					}else{
-						matchingChildFiles.add((FsFileMetaResource) resource);
+						if(resource.getName().equalsIgnoreCase(dirName)){
+							matchingChildFiles.add((FsFileMetaResource) resource);
+						}
 					}
 				}				
 				

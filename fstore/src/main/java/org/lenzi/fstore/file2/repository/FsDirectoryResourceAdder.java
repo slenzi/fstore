@@ -100,8 +100,6 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 	 */
 	public FsDirectoryResource addDirectoryResource(Long parentDirId, String dirName) throws DatabaseException {
 		
-		// TODO - check if parent dir already contains dir with same name
-		
 		if(parentDirId == null){
 			throw new DatabaseException("Parent dir id param is null.");
 		}
@@ -111,9 +109,9 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		
 		FsDirectoryResource parentDir = null;
 		try {
-			parentDir = fsDirectoryResourceRepository.getDirectoryResourceById(parentDirId);
+			parentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(parentDirId, 1);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + parentDirId, e);
+			throw new DatabaseException("Failed to fetch parent directory with depth-1 children, parent dir id => " + parentDirId, e);
 		}
 		
 		if(parentDir == null){
@@ -143,19 +141,26 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 	 */
 	public FsDirectoryResource add(FsDirectoryResource parentDir, FsResourceStore fsResourceStore, String dirName) throws DatabaseException {
 		
-		logger.info("Adding child dir " + dirName + " to parent dir " + parentDir.getName() + " for store " + fsResourceStore.getName());
+		logger.info("Adding child dir '" + dirName + "' to parent dir '" + parentDir.getName() + "' for store '" + fsResourceStore.getName() + "'");
+		
+		FsDirectoryResource existingChildDir = fsDirectoryResourceRepository.haveExistingChildDirectory(dirName, parentDir, false);
+		
+		if(existingChildDir != null){
+			throw new DatabaseException("Parent directory, id => " + parentDir.getDirId() + " name => " + parentDir.getName() +
+					", already contains a child directory with the name => " + existingChildDir.getName() + 
+					". Cannot add new directory '" + dirName + "' because it has the same name.");
+		}
 		
 		Path absolutePath   = fsResourceHelper.getAbsolutePath(fsResourceStore, parentDir, dirName);
 		String relativePath = fsResourceHelper.getRelativePath(fsResourceStore, parentDir, dirName);
 		
 		// add new child dir
-		logger.info("Child dir path => " + absolutePath.toString());
+		//logger.info("Child dir path => " + absolutePath.toString());
 		
 		FsDirectoryResource childDir = null;
 		try {
 			
-			childDir = (FsDirectoryResource) treeRepository.addChildNode(
-					parentDir, new FsDirectoryResource(dirName, relativePath) );
+			childDir = (FsDirectoryResource) treeRepository.addChildNode(parentDir, new FsDirectoryResource(dirName, relativePath) );
 			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Error adding new directory to parent dir => " + parentDir.getDirId(), e);
