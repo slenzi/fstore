@@ -170,8 +170,10 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 		FsDirectoryResource existingDir = null;
 		
 		sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
-		targetParentDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetParentDirId);
-		existingDir = fsDirectoryResourceRepository.haveExistingChildDirectory(sourceDir.getName(), targetParentDirId, false);
+		//targetParentDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetParentDirId);
+		targetParentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(targetParentDirId, 1);
+		//existingDir = fsDirectoryResourceRepository.haveExistingChildDirectory(sourceDir.getName(), targetParentDirId, false);
+		existingDir = fsDirectoryResourceRepository.haveExistingChildDirectory(sourceDir.getName(), targetParentDir, false);
 		
 		boolean needMergeDirectory = existingDir != null ? true : false;
 		

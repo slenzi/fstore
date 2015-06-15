@@ -90,7 +90,10 @@ public class FsFileResourceAdder extends AbstractRepository {
 		}
 		
 		String fileName = fileToAdd.getFileName().toString();
+		FsDirectoryResource parentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(fsDirId, 1);
+		FsFileMetaResource existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, parentDir, false);
 		
+		/*
 		FsFileMetaResource existingFileResource = null;
 		try {
 			existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, fsDirId, false);
@@ -104,6 +107,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + fsDirId, e);
 		}
+		*/
 		
 		FsResourceStore store = null;
 		try {
@@ -158,12 +162,16 @@ public class FsFileResourceAdder extends AbstractRepository {
 			}			
 		}
 		
+		FsDirectoryResource parentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(fsDirId, 1);
+		
+		/*
 		FsDirectoryResource parentDir = null;
 		try {
 			parentDir = fsDirectoryResourceRepository.getDirectoryResourceById(fsDirId);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + fsDirId, e);
 		}
+		*/
 		
 		FsResourceStore store = null;
 		try {
@@ -179,12 +187,22 @@ public class FsFileResourceAdder extends AbstractRepository {
 			
 			String fileName = fileToAdd.getFileName().toString();
 			
+			/*
 			FsFileMetaResource existingFileResource = null;
 			try {
 				existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, fsDirId, false);
 			} catch (DatabaseException e) {
 				throw new DatabaseException("Failed to check if directory => " + fsDirId + " already contains file with name => " + fileName, e);
-			}			
+			}
+			*/
+			
+			FsFileMetaResource existingFileResource = null;
+			try {
+				existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, parentDir, false);
+			} catch (DatabaseException e) {
+				throw new DatabaseException("Failed to check if directory => " + parentDir.getDirId() + 
+						" already contains file with name => " + fileName, e);
+			}
 			
 			boolean needReplace = existingFileResource != null ? true : false;
 			Path absoluteDirPath= fsResourceHelper.getAbsoluteDirectoryPath(store, parentDir);

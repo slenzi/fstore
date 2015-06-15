@@ -3,6 +3,8 @@
  */
 package org.lenzi.fstore.file2.repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -43,6 +45,9 @@ public class FsFileResourceRepository extends AbstractRepository {
 	
 	@InjectLogger
 	private Logger logger;
+	
+	@Autowired
+	private FsDirectoryResourceRepository fsDirectoryResourceRepository;
 	
 	@Autowired
 	@Qualifier("FsPathResourceTree")
@@ -107,68 +112,87 @@ public class FsFileResourceRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Check if the directory already contains a file resource with the same name
+	 * check at specified depth
 	 * 
-	 * @param fileName - the name to check for
-	 * @param dirId - the directory to check
-	 * @param caseSensitive - true for case sensitive match, false otherwise.
-	 * @return The FsFileMetaResource for the matching file if one exists.
+	 * @param fileName
+	 * @param dirId
+	 * @param caseSensitive
+	 * @param maxDepth
+	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsFileMetaResource haveExistingFile(String fileName, Long dirId, boolean caseSensitive) throws DatabaseException {
+	public List<FsFileMetaResource> haveExistingFile(String fileName, Long dirId, boolean caseSensitive, int maxDepth) throws DatabaseException {
 		
-		FsDirectoryResource dirResource = null;
-		try {
-			dirResource = (FsDirectoryResource) treeRepository.getNodeWithChild(new FsDirectoryResource(dirId), 1);
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch depth-1 resources for path resource, id => " + dirId, e);
-		} catch (ClassCastException e){
-			throw new DatabaseException("Path resource for node id, => " + dirId + 
-					" does not appear to be a " + FsDirectoryResource.class.getName(), e);
-		}
-		if(dirResource == null){
-			throw new DatabaseException("Failed to fetch directory for id => " + dirId + ". Returned object was null.");
-		}
-		// check each child node on each child closure entry
-		Optional<DBClosure<FsPathResource>> matchingClosure = dirResource.getChildClosure().stream()
-			.filter(closure -> {
-				
-				// TODO - check this code!
-				
-				// ignore depth-0 closure entries (a resource is a child of itself at depth-0)
-				if(closure.getDepth() > 0){
-				
-					// check if there is an existing child file resource with the same name
-					FsPathResource resource = closure.getChildNode();
-					if(resource.getPathType().equals(FsPathType.FILE)){
-						if(caseSensitive){
-							return resource.getName().equals(fileName);
-						}else{
-							return resource.getName().equalsIgnoreCase(fileName);
-						}
-					}
-					
-				}
-				return false;	
-			})
-			.findFirst();
+		FsDirectoryResource dirResource = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(dirId, maxDepth);
 		
-		FsFileMetaResource existingFileResource = null;
-		
-		if(matchingClosure.isPresent()){
+		List<FsFileMetaResource> childFiles = haveExistingFile(fileName, dirResource, caseSensitive, maxDepth);
 			
-			existingFileResource = (FsFileMetaResource) matchingClosure.get().getChildNode();
-			
-			logger.info("Need to replace existing file resource, id => " + existingFileResource.getNodeId() + 
-					", name => " + existingFileResource.getName());
-			
-		}else{
-			
-			logger.info("No existing resource with same name. No need to worry about replacing!");
-			
-		}		
-		
-		return existingFileResource;
+		return childFiles;
 	}
+	
+	/**
+	 * check at specified depth
+	 * 
+	 * @param dirName
+	 * @param dirResource
+	 * @param caseSensitive
+	 * @param maxDepth
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public List<FsFileMetaResource> haveExistingFile(String dirName, FsDirectoryResource dirResource, boolean caseSensitive, int maxDepth) throws DatabaseException {
+		
+		if(dirResource == null){
+			throw new DatabaseException("Directory resource paramter is null");
+		}
+		if(!dirResource.hasChildClosure()){
+			return null;
+		}
+		
+		List<FsFileMetaResource> matchingChildFiles = new ArrayList<FsFileMetaResource>();
+		
+		for(DBClosure<FsPathResource> closure : dirResource.getChildClosure()){
+			
+			// TODO - check this depth code!
+			if(closure.getDepth() > 0 && closure.getDepth() <= maxDepth){
+				
+				// check if there is an existing child directory resource with the same name
+				FsPathResource resource = closure.getChildNode();
+				if(resource.getPathType().equals(FsPathType.FILE)){
+					if(caseSensitive){
+						matchingChildFiles.add((FsFileMetaResource) resource);
+					}else{
+						matchingChildFiles.add((FsFileMetaResource) resource);
+					}
+				}				
+				
+			}
+			
+		}
+		
+		return matchingChildFiles.size() > 0 ? matchingChildFiles : null;
+		
+	}
+	
+	/**
+	 * check at depth 1
+	 * 
+	 * @param fileName
+	 * @param dirResource
+	 * @param caseSensitive
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FsFileMetaResource haveExistingFile(String fileName, FsDirectoryResource dirResource, boolean caseSensitive) throws DatabaseException {
+		
+		List<FsFileMetaResource> childFiles = haveExistingFile(fileName, dirResource, caseSensitive, 1);
+		
+		if(childFiles != null && childFiles.size() > 0){
+			return childFiles.get(0);
+		}
+			
+		return null;
+	}
+
 
 }

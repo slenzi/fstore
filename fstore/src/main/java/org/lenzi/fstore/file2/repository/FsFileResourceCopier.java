@@ -85,16 +85,22 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 */
 	public FsFileMetaResource copyFile(Long fileId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
+		//
 		// get source information
+		//
 		FsDirectoryResource sourceDir = fsDirectoryResourceRepository.getDirectoryResourceByFileId(fileId);
 		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(sourceDir.getDirId());
 		FsFileMetaResource sourceEntry = fsFileResourceRepository.getFileEntry(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		
+		//
 		// get target information
-		FsDirectoryResource targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
-		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(sourceDir.getDirId());
-		FsFileMetaResource conflictingTargetEntry = fsFileResourceRepository.haveExistingFile(sourceEntry.getName(), targetDir.getDirId(), false);
-			
+		//
+		//FsDirectoryResource targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
+		FsDirectoryResource targetDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(targetDirId, 1);
+		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDir.getDirId());
+		//FsFileMetaResource conflictingTargetEntry = fsFileResourceRepository.haveExistingFile(sourceEntry.getName(), targetDir.getDirId(), false);
+		FsFileMetaResource conflictingTargetEntry = fsFileResourceRepository.haveExistingFile(sourceEntry.getName(), targetDir, false);	
+		
 		// will be true of we need to replace the existing file in the target directory
 		boolean needReplace = conflictingTargetEntry != null ? true : false;
 		
@@ -306,11 +312,13 @@ public class FsFileResourceCopier extends AbstractRepository {
 		FsDirectoryResource targetDir = null;
 		
 		//sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
-		targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
+		//targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
+		targetDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(targetDirId, 1);
 		
 		entryToCopy = fsFileResourceRepository.getFileEntry(sourceFileEntryId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		
-		existingEntry = fsFileResourceRepository.haveExistingFile(entryToCopy.getName(), targetDir.getDirId(), false);
+		//existingEntry = fsFileResourceRepository.haveExistingFile(entryToCopy.getName(), targetDir.getDirId(), false);
+		existingEntry = fsFileResourceRepository.haveExistingFile(entryToCopy.getName(), targetDir, false);
 		
 		// will be true of we need to replace the existing file in the target directory
 		boolean needReplace = existingEntry != null ? true : false;

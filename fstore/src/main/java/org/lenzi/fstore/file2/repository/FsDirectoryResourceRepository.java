@@ -145,9 +145,9 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 
 		FsDirectoryResource dirResource = null;
 		try {
-			dirResource = (FsDirectoryResource) treeRepository.getNodeWithChild(new FsDirectoryResource(dirId), 1);
+			dirResource = (FsDirectoryResource) treeRepository.getNodeWithChild(new FsDirectoryResource(dirId), maxDepth);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch depth-1 resources for path resource, id => " + dirId, e);
+			throw new DatabaseException("Failed to fetch resources to depth " + maxDepth + " for path resource, id => " + dirId, e);
 		} catch (ClassCastException e){
 			throw new DatabaseException("Path resource for node id, => " + dirId + 
 					" does not appear to be a " + FsDirectoryResource.class.getName(), e);
@@ -158,6 +158,25 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 		
 		return dirResource;
 		
+	}
+	
+	/**
+	 * Check if the directory contains child directory with matching name, up to the specified depth.
+	 * 
+	 * @param dirName - dir name to check for
+	 * @param dirId - directory to check
+	 * @param caseSensitive - true for case sensitive match, false otherwise.
+	 *  @param maxDepth - fetches children path resources up to this max depth. Use Integer.MAX_VALUE for no restriction.
+	 * @return A list of all matching child dirs, or null if none.
+	 * @throws DatabaseException
+	 */
+	public List<FsDirectoryResource> haveExistingChildDirectory(String dirName, Long dirId, boolean caseSensitive, int maxDepth) throws DatabaseException {
+		
+		FsDirectoryResource dirResource = getDirectoryResourceWithChildren(dirId, maxDepth);
+		
+		List<FsDirectoryResource> childDirs = haveExistingChildDirectory(dirName, dirResource, caseSensitive, maxDepth);
+			
+		return childDirs;
 	}
 	
 	/**
@@ -175,6 +194,9 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 		
 		if(dirResource == null){
 			throw new DatabaseException("Directory resource paramter is null");
+		}
+		if(!dirResource.hasChildClosure()){
+			return null;
 		}
 		
 		List<FsDirectoryResource> matchingChildDirs = new ArrayList<FsDirectoryResource>();
@@ -203,69 +225,24 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Check if the directory contains child directory at depth-1 with the specified name (does not check entire sub tree)
+	 * check at depth-1
 	 * 
-	 * @param dirName - dir name to check for
-	 * @param dirId - directory to check
-	 * @param caseSensitive - true for case sensitive match, false otherwise.
-	 * @return The FsDirectoryResource for the matching child directory, if one exists
+	 * @param dirName
+	 * @param dirResource
+	 * @param caseSensitive
+	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsDirectoryResource haveExistingChildDirectory(String dirName, Long dirId, boolean caseSensitive) throws DatabaseException {
+	public FsDirectoryResource haveExistingChildDirectory(String dirName, FsDirectoryResource dirResource, boolean caseSensitive) throws DatabaseException {
 		
-		FsDirectoryResource dirResource = null;
-		try {
-			dirResource = (FsDirectoryResource) treeRepository.getNodeWithChild(new FsDirectoryResource(dirId), 1);
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch depth-1 resources for path resource, id => " + dirId, e);
-		} catch (ClassCastException e){
-			throw new DatabaseException("Path resource for node id, => " + dirId + 
-					" does not appear to be a " + FsDirectoryResource.class.getName(), e);
+		List<FsDirectoryResource> childList = haveExistingChildDirectory(dirName, dirResource, caseSensitive, 1);
+		
+		if(childList != null && childList.size() > 1){
+			return childList.get(0);
 		}
-		if(dirResource == null){
-			throw new DatabaseException("Failed to fetch directory for id => " + dirId + ". Returned object was null.");
-		}
-		// check each child node on each child closure entry
-		Optional<DBClosure<FsPathResource>> matchingClosure = dirResource.getChildClosure().stream()
-			.filter(closure -> {
-				
-				// TODO - check this code!
-				
-				// ignore depth-0 closure entries (a resource is a child of itself at depth-0)
-				if(closure.getDepth() > 0){
-					
-					// check if there is an existing child directory resource with the same name
-					FsPathResource resource = closure.getChildNode();
-					if(resource.getPathType().equals(FsPathType.DIRECTORY)){
-						if(caseSensitive){
-							return resource.getName().equals(dirName);
-						}else{
-							return resource.getName().equalsIgnoreCase(dirName);
-						}
-					}		
-					
-				}
-				return false;
-				
-			})
-			.findFirst();
 		
-		FsDirectoryResource existingChildDirectoryResource = null;
+		return null;
 		
-		if(matchingClosure.isPresent()){
-			
-			existingChildDirectoryResource = (FsDirectoryResource) matchingClosure.get().getChildNode();
-			
-			logger.info("Need to replace/merge existing child directory resource, id => " + existingChildDirectoryResource.getNodeId() + 
-					", name => " + existingChildDirectoryResource.getName());
-			
-		}else{
-			
-			logger.info("No existing child directory resource with same name. No need to worry about replacing/merging!");
-			
-		}		
-		
-		return existingChildDirectoryResource;
 	}
 
 }
