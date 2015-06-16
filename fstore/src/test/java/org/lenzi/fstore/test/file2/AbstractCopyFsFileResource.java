@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -78,7 +78,7 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 		
 		try {
 			store = fsResourceService.createResourceStore(storePath, "Sample Resource Store", "Sample resource store description", true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -99,7 +99,7 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 			dirResource2 = fsResourceService.addDirectoryResource(store.getRootDirectoryResource().getDirId(), "Sample directory 2");
 				dirResource2_1 = fsResourceService.addDirectoryResource(dirResource2.getDirId(), "Sample directory 2_1");
 			dirResource3 = fsResourceService.addDirectoryResource(store.getRootDirectoryResource().getDirId(), "Sample directory 3");
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -119,7 +119,7 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 			fileMetaResource1 = fsResourceService.addFileResource(sourcePath1, store.getRootDirectoryResource().getDirId(), true);
 			fileMetaResource2 = fsResourceService.addFileResource(sourcePath1, dirResource1.getDirId(), true);
 			fileMetaResource3 = fsResourceService.addFileResource(sourcePath2, dirResource3.getDirId(), true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -170,7 +170,7 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 			
 			copyFileMetaResource1 = fsResourceService.copyFileResource(fileMetaResource1.getFileId(), dirResource2_1.getDirId(), true);
 			
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -200,7 +200,7 @@ public abstract class AbstractCopyFsFileResource extends AbstractTreeTest {
 			
 			copyFileMetaResource3 = fsResourceService.copyFileResource(fileMetaResource3.getFileId(), dirResource1.getDirId(), true);
 			
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;

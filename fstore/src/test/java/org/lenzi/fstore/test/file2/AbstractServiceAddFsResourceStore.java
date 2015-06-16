@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.tree.Tree;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceService;
@@ -50,7 +50,7 @@ public abstract class AbstractServiceAddFsResourceStore extends AbstractTreeTest
 		
 			fsStore = fsResourceService.createSampleResourceStore(examplePath);
 			
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
@@ -63,7 +63,7 @@ public abstract class AbstractServiceAddFsResourceStore extends AbstractTreeTest
 		Tree<FsPathResource> resourceTree = null;
 		try {
 			resourceTree = fsResourceService.getTree(fsStore.getRootDirectoryResource().getDirId());
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;

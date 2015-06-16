@@ -2,10 +2,10 @@ package org.lenzi.fstore.file2.task;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +45,7 @@ public class AddFileTask extends AbstractFsStoreTask {
 	}
 
 	@Override
-	public void doWork() throws FsServiceException {
+	public void doWork() throws ServiceException {
 		
 		Consumer<String> logInfo = this::printInfo;
 		
@@ -67,9 +67,9 @@ public class AddFileTask extends AbstractFsStoreTask {
 
 	}
 	
-	private void doAddFile() throws FsServiceException {
+	private FsFileMetaResource doAddFile() throws ServiceException {
 		
-		getFsResourceService().addFileResource(filePath, dirId, replaceExisting);
+		return getFsResourceService().addFileResource(filePath, dirId, replaceExisting);
 		
 	}
 	

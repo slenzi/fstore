@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.test.AbstractTreeTest;
@@ -44,7 +44,7 @@ public abstract class AbstractAddFsResourceStore extends AbstractTreeTest {
 		
 		try {
 			store = fsResourceService.createResourceStore(storePath, "Sample Resource Store", "Sample resource store description", true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;

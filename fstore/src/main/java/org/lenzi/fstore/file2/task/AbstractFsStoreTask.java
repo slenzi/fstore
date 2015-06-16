@@ -3,9 +3,8 @@ package org.lenzi.fstore.file2.task;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
-import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +111,6 @@ public abstract class AbstractFsStoreTask implements FsStoreTask, Serializable {
 		return fsResourceService;
 	}
 
-	public abstract void doWork() throws FsServiceException;
+	public abstract void doWork() throws ServiceException;
 
 }

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 
 
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,9 +18,10 @@ import java.util.List;
 
 
 
+
 import org.junit.Test;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.util.FileUtil;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -92,7 +94,7 @@ public abstract class AbstractAddFsFileResourceBulk extends AbstractTreeTest {
 		try {
 			store = fsResourceService.createResourceStore(storePath, "Sample Resource Store", 
 					"Sample resource store description", true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -111,7 +113,7 @@ public abstract class AbstractAddFsFileResourceBulk extends AbstractTreeTest {
 			dirResource1 = fsResourceService.addDirectoryResource(store.getRootDirectoryResource().getDirId(), "Sample directory 1");
 			dirResource2 = fsResourceService.addDirectoryResource(store.getRootDirectoryResource().getDirId(), "Sample directory 2");
 				dirResource2_1 = fsResourceService.addDirectoryResource(dirResource2.getDirId(), "Sample directory 2_1");
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -131,7 +133,7 @@ public abstract class AbstractAddFsFileResourceBulk extends AbstractTreeTest {
 			fileMetaResources1 = fsResourceService.addFileResource(filePaths.subList(0, 3), store.getRootDirectoryResource().getDirId(), true);
 			fileMetaResources2 = fsResourceService.addFileResource(filePaths.subList(3, 6), dirResource2.getDirId(), true);
 			fileMetaResources3 = fsResourceService.addFileResource(filePaths.subList(6, 9), dirResource2_1.getDirId(), true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;

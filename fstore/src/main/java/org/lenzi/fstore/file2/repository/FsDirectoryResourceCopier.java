@@ -70,7 +70,7 @@ public class FsDirectoryResourceCopier extends AbstractRepository {
 	 * @throws DatabaseException
 	 * @throws FileAlreadyExistsException
 	 */
-	public void copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
+	public Long copyDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 
 		if(sourceDirId == null){
 			throw new DatabaseException("Cannot copy directory, source dir id param is null");
@@ -88,7 +88,7 @@ public class FsDirectoryResourceCopier extends AbstractRepository {
 		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
 		
 		// start copy at root node (dir) of source tree, and walk tree in pre-order traversal
-		copyDirectoryTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);		
+		return copyDirectoryTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);		
 		
 	}
 	
@@ -102,7 +102,7 @@ public class FsDirectoryResourceCopier extends AbstractRepository {
 	 * @throws DatabaseException
 	 * @throws FileAlreadyExistsException
 	 */
-	private void copyDirectoryTraversal(TreeNode<FsPathResource> pathResourceNode, Long targetParentDirId, 
+	private Long copyDirectoryTraversal(TreeNode<FsPathResource> pathResourceNode, Long targetParentDirId, 
 			FsResourceStore sourceStore, FsResourceStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
 		Long nextTargetParentDirId = null;
@@ -139,6 +139,8 @@ public class FsDirectoryResourceCopier extends AbstractRepository {
 					". Don't know how to copy path type.");
 			
 		}
+		
+		return nextTargetParentDirId;
 	
 	}
 	

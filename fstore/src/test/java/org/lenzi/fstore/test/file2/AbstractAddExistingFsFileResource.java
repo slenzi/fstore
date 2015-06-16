@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -76,7 +76,7 @@ public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest
 		Path storePath = Paths.get(getTestStorePath());
 		try {
 			store = fsResourceService.createResourceStore(storePath, "Sample Resource Store", "Sample resource store description", true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -97,7 +97,7 @@ public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest
 			dirResource2 = fsResourceService.addDirectoryResource(store.getRootDirectoryResource().getDirId(), "Sample directory 2");
 				dirResource2_1 = fsResourceService.addDirectoryResource(dirResource2.getDirId(), "Sample directory 2_1");
 			dirResource3 = fsResourceService.addDirectoryResource(store.getRootDirectoryResource().getDirId(), "Sample directory 3");
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -113,7 +113,7 @@ public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest
 		FsFileMetaResource fileMetaResource = null;
 		try {
 			fileMetaResource = fsResourceService.addFileResource(sourcePath1, store.getRootDirectoryResource().getDirId(), true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -142,7 +142,7 @@ public abstract class AbstractAddExistingFsFileResource extends AbstractTreeTest
 		FsFileMetaResource fileMetaResourceUpdated = null;
 		try {
 			fileMetaResourceUpdated = fsResourceService.addFileResource(sourcePath2, store.getRootDirectoryResource().getDirId(), true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;

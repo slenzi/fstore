@@ -73,7 +73,7 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 	 * @throws DatabaseException
 	 * @throws FileAlreadyExistsException
 	 */
-	public void moveDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
+	public Long moveDirectory(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 
 		if(sourceDirId == null){
 			throw new DatabaseException("Cannot move directory, source dir id param is null");
@@ -91,10 +91,12 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
 		
 		// start move at root node (dir) of source tree, and walk tree in pre-order traversal
-		moveDirectoryTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);
+		Long dirId = moveDirectoryTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);
 		
 		// remove source dir and all child dirs.
 		fsDirectoryResourceRemover.removeDirectory(sourceTree.getRootNode().getData().getNodeId());
+		
+		return dirId;
 		
 	}
 	
@@ -108,7 +110,7 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 	 * @throws DatabaseException
 	 * @throws FileAlreadyExistsException
 	 */
-	private void moveDirectoryTraversal(TreeNode<FsPathResource> pathResourceNode, Long targetParentDirId, 
+	private Long moveDirectoryTraversal(TreeNode<FsPathResource> pathResourceNode, Long targetParentDirId, 
 			FsResourceStore sourceStore, FsResourceStore targetStore, boolean replaceExisting) throws DatabaseException, FileAlreadyExistsException {
 		
 		Long nextTargetParentDirId = null;
@@ -147,6 +149,8 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 					". Don't know how to move path type.");
 			
 		}
+		
+		return nextTargetParentDirId;
 	
 	}
 	

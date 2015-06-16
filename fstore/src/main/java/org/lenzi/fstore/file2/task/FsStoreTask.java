@@ -3,7 +3,7 @@ package org.lenzi.fstore.file2.task;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.lenzi.fstore.file.service.exception.FsServiceException;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 
 public interface FsStoreTask extends Serializable {
 
@@ -17,6 +17,6 @@ public interface FsStoreTask extends Serializable {
 	
 	public Long getTargetStoreId();
 	
-	public void doWork() throws FsServiceException;
+	public void doWork() throws ServiceException;
 	
 }

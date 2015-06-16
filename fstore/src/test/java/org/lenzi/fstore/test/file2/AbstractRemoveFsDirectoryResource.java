@@ -14,8 +14,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
+import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.util.FileUtil;
-import org.lenzi.fstore.file.service.exception.FsServiceException;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -88,7 +88,7 @@ public abstract class AbstractRemoveFsDirectoryResource extends AbstractTreeTest
 		try {
 			store = fsResourceService.createResourceStore(storePath, "Sample Resource Store", 
 					"Sample resource store description", true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -115,7 +115,7 @@ public abstract class AbstractRemoveFsDirectoryResource extends AbstractTreeTest
 				dirResource2_3 = fsResourceService.addDirectoryResource(dirResource2.getDirId(), "Sample directory 2_3");
 					dirResource2_3_1 = fsResourceService.addDirectoryResource(dirResource2_3.getDirId(), "Sample directory 2_3_1");
 					dirResource2_3_2 = fsResourceService.addDirectoryResource(dirResource2_3.getDirId(), "Sample directory 2_3_2");
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -138,7 +138,7 @@ public abstract class AbstractRemoveFsDirectoryResource extends AbstractTreeTest
 			fileMetaResources1 = fsResourceService.addFileResource(filePaths.subList(0, 3), dirResource2_2.getDirId(), true);
 			fileMetaResources2 = fsResourceService.addFileResource(filePaths.subList(3, 6), dirResource2_3_1.getDirId(), true);
 			fileMetaResources3 = fsResourceService.addFileResource(filePaths.subList(6, 9), dirResource2_3_2.getDirId(), true);
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
@@ -191,7 +191,7 @@ public abstract class AbstractRemoveFsDirectoryResource extends AbstractTreeTest
 		
 		try {
 			fsResourceService.removeDirectoryResource(dirResource2.getDirId());
-		} catch (FsServiceException e) {
+		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			return;
