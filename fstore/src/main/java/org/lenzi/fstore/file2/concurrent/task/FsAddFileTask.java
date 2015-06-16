@@ -1,7 +1,7 @@
-package org.lenzi.fstore.file2.task;
+package org.lenzi.fstore.file2.concurrent.task;
 
 import java.nio.file.Path;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
  * @author sal
  */
 @Service
-public class AddFileTask extends AbstractFsStoreTask {
+public class FsAddFileTask extends AbstractFsTask<FsFileMetaResource> {
 
 	@InjectLogger
 	private Logger logger;
@@ -26,7 +26,6 @@ public class AddFileTask extends AbstractFsStoreTask {
 	
 	private boolean replaceExisting = false;
 	
-	
 	/**
 	 * 
 	 */
@@ -34,36 +33,29 @@ public class AddFileTask extends AbstractFsStoreTask {
 
 	/**
 	 * @param filePath - path to file to be added
-	 * @param dirId - id of directory where fill will be added
+	 * @param dirId - id of directory where file will be added
 	 * @param replaceExisting - true to replace existing file, false not to.
 	 */
-	public AddFileTask(Path filePath, Long dirId, boolean replaceExisting) {
+	public FsAddFileTask(Path filePath, Long dirId, boolean replaceExisting) {
+		
 		super();
+		
+		setCompletableFuture(new CompletableFuture<FsFileMetaResource>());
+		
 		this.filePath = filePath;
 		this.dirId = dirId;
 		this.replaceExisting = replaceExisting;
+		
 	}
 
 	@Override
-	public void doWork() throws ServiceException {
+	public FsFileMetaResource doWork() throws ServiceException {
+	
+		FsFileMetaResource resource = null;
 		
-		Consumer<String> logInfo = this::printInfo;
+		resource = doAddFile();
 		
-		logInfo.accept("Add file task started.");
-		
-		for(int i=1; i<=10; i++){
-			
-			logInfo.accept("Add file task => " + i + "...");
-			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-		}
-		
-		logInfo.accept("Add file task ended.");
+		return resource;
 
 	}
 	
@@ -73,8 +65,6 @@ public class AddFileTask extends AbstractFsStoreTask {
 		
 	}
 	
-	private void printInfo(String s){
-		logger.info(s);
-	}
+
 
 }
