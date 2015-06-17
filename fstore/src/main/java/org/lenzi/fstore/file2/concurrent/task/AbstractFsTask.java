@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
  * @param <T>
  */
 @Service
-public abstract class AbstractFsTask<T> implements FsTask<T>, Serializable {
+public abstract class AbstractFsTask<T> implements FsTask<T>, Comparable<FsTask<T>>, Serializable {
 
 	/**
 	 * 
@@ -44,6 +44,54 @@ public abstract class AbstractFsTask<T> implements FsTask<T>, Serializable {
 	private Consumer<String> logInfo = this::printInfo;
 	
 	public AbstractFsTask() {
+		
+	}
+
+	/**
+	 * Compares tasks on the date and time they were queued for execution in the task manager. 
+	 */
+	@Override
+	public int compareTo(FsTask<T> otherTask) {
+		
+		if(otherTask == null){
+			
+			// run this task first
+			return -1;
+			
+		}else{
+			
+			if(queuedTime == null && otherTask.getQueuedTime() == null){
+				
+				// tasks should never be queued at the same time since. the FsQueuedTaskManager.queueTask(FsTask<T> task)
+				// function is synchronized which should prevent this from happening.
+				
+				// TODO - In the future we can allow two tasks to run at the same time if we know which file stores
+				// the tasks are operating on.
+				
+				return 0;
+				
+			}else if(queuedTime != null && otherTask.getQueuedTime() == null){
+				
+				// run this task first
+				return -1;
+				
+			}else if(queuedTime == null && otherTask.getQueuedTime() != null){
+				
+				// run other task first
+				return 1;
+				
+			}else{
+				
+				// run whichever task was queued first
+				
+				// TODO - In the future we can allow two tasks to run at the same time if we know which file stores
+				// the tasks are operating on.
+				
+				return queuedTime.compareTo(otherTask.getQueuedTime());
+				
+			}
+			
+		}
 		
 	}
 

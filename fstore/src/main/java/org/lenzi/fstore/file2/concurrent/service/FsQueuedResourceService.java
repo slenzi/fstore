@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Resource service which queues operations.
- * 
+ * Resource service which queues operations in a blocking queue.
  * 
  * @author slenzi
  */
@@ -48,7 +47,7 @@ public class FsQueuedResourceService {
 		
 		FsAddFileTask addFileTask = new FsAddFileTask(filePath, dirId, replaceExisting);
 		
-		taskManager.queueTask(addFileTask);
+		taskManager.addTask(addFileTask);
 		
 		// block and wait for result
 		resource = addFileTask.get();
