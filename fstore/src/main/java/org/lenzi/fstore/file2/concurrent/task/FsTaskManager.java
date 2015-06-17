@@ -10,7 +10,7 @@ public interface FsTaskManager extends Runnable {
 	 * 
 	 * @param task
 	 */
-	public void addTask(FsTask<?> task);
+	public void addTask(FsQueuedTask<?> task);
 	
 	/**
 	 * Get the number of tasks that are currently managed.
@@ -24,14 +24,14 @@ public interface FsTaskManager extends Runnable {
 	 * 
 	 * @param service
 	 */
-	public void startTaskManager(ExecutorService service);
+	public void startTaskManager(ExecutorService executorService);
 	
 	/**
 	 * Stop the task manager. Will trigger the executor service to shutdown.
 	 * 
 	 * @param service
 	 */
-	public void stopTaskManager(ExecutorService service);
+	public void stopTaskManager();
 	
 	
 }

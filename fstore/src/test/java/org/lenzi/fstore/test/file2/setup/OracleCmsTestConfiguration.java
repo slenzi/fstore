@@ -41,7 +41,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 			"org.lenzi.fstore.example.repository.model.impl",
 			"org.lenzi.fstore.file2.service",
 			"org.lenzi.fstore.file2.repository",
-			"org.lenzi.fstore.file2.repository.model.impl"
+			"org.lenzi.fstore.file2.repository.model.impl",
+			"org.lenzi.fstore.file2.concurrent",
 		}
 )
 // "org.lenzi.fstore.service"

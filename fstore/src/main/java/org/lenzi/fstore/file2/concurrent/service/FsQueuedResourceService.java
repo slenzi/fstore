@@ -1,12 +1,22 @@
 package org.lenzi.fstore.file2.concurrent.service;
 
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.file2.concurrent.task.FsAddDirectoryTask;
 import org.lenzi.fstore.file2.concurrent.task.FsAddFileTask;
+import org.lenzi.fstore.file2.concurrent.task.FsAddStoreTask;
 import org.lenzi.fstore.file2.concurrent.task.FsQueuedTaskManager;
+import org.lenzi.fstore.file2.concurrent.task.FsTaskCreator;
+import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +38,48 @@ public class FsQueuedResourceService {
 	@Autowired
 	private FsQueuedTaskManager taskManager;
 	
+	@Autowired
+	private FsTaskCreator taskCreator;
+	
+	private ExecutorService taskExecutorService = null;
+	
 	public FsQueuedResourceService() {
+		
+	}
+	
+	/**
+	 * Start the task manager
+	 */
+	@PostConstruct
+	private void init(){
+		
+		logger.info("Starting queued task manager...");
+		
+		taskExecutorService = Executors.newSingleThreadExecutor();
+		
+		taskManager.startTaskManager(taskExecutorService);
+		
+		logger.info("Startup complete.");
+		
+	}
+	
+	/**
+	 * Shutdown the task manager
+	 */
+	@PreDestroy
+	private void cleanup(){
+		
+		logger.info("Shutting down queued task manager...");
+		
+		taskManager.stopTaskManager();
+		
+		if(!taskExecutorService.isShutdown()){
+			logger.error("Executor service not shutdow...");
+		}
+		
+		taskExecutorService = null;
+		
+		logger.info("Shutdown complete.");
 		
 	}
 	
@@ -45,12 +96,72 @@ public class FsQueuedResourceService {
 		
 		FsFileMetaResource resource = null;
 		
-		FsAddFileTask addFileTask = new FsAddFileTask(filePath, dirId, replaceExisting);
+		FsAddFileTask task = taskCreator.getAddFileTask();
+		task.setFilePath(filePath);
+		task.setDirId(dirId);
+		task.setReplaceExisting(replaceExisting);
 		
-		taskManager.addTask(addFileTask);
+		taskManager.addTask(task);
 		
 		// block and wait for result
-		resource = addFileTask.get();
+		logger.info("Waiting for new " + FsFileMetaResource.class.getName());
+		resource = task.get();
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Add directory resource
+	 * 
+	 * @param name
+	 * @param parentDirId
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsDirectoryResource addDirectoryResource(String name, Long parentDirId) throws ServiceException {
+		
+		FsDirectoryResource resource = null;
+		
+		FsAddDirectoryTask task = taskCreator.getAddDirectoryTask();
+		task.setName(name);
+		task.setParentDirId(parentDirId);
+		
+		taskManager.addTask(task);
+		
+		// block and wait for result
+		logger.info("Waiting for new " + FsDirectoryResource.class.getName());
+		resource = task.get();
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Add resource store
+	 * 
+	 * @param storePath
+	 * @param name
+	 * @param description
+	 * @param clearIfExist
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsResourceStore addResourceStore(Path storePath, String name, String description, boolean clearIfExists) throws ServiceException {
+		
+		FsResourceStore resource = null;
+		
+		FsAddStoreTask task = taskCreator.getAddStoreTask();
+		task.setStorePath(storePath);
+		task.setName(name);
+		task.setDescription(description);
+		task.setClearIfExists(clearIfExists);
+		
+		taskManager.addTask(task);
+		
+		// block and wait for result
+		logger.info("Waiting for new " + FsResourceStore.class.getName());
+		resource = task.get();
 		
 		return resource;
 		

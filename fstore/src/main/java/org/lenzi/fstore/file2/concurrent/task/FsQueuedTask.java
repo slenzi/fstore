@@ -13,7 +13,7 @@ import org.lenzi.fstore.core.service.exception.ServiceException;
  *
  * @param <T>
  */
-public interface FsTask<T> extends Runnable, Comparable<FsTask<T>>, Serializable {
+public interface FsQueuedTask<T> extends Runnable, Comparable<FsQueuedTask<T>>, Serializable {
 
 	/**
 	 * Date & time task was added to queue for processing.

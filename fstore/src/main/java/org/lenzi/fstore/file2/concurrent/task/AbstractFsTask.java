@@ -4,15 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
-import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.DateUtil;
-import org.lenzi.fstore.file2.service.FsResourceService;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Abstract class which encapsulates general logic for a file store task/operation
@@ -21,19 +16,12 @@ import org.springframework.stereotype.Service;
  *
  * @param <T>
  */
-@Service
-public abstract class AbstractFsTask<T> implements FsTask<T>, Comparable<FsTask<T>>, Serializable {
+public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<FsQueuedTask<T>>, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 494652534569747606L;
-	
-	@InjectLogger
-	private Logger logger;
-	
-	@Autowired
-	private FsResourceService fsResourceService;
 
 	private Date queuedTime = null;
 	private Date runStartTime = null;
@@ -41,7 +29,7 @@ public abstract class AbstractFsTask<T> implements FsTask<T>, Comparable<FsTask<
 	
 	private CompletableFuture<T> completableFuture;
 	
-	private Consumer<String> logInfo = this::printInfo;
+	//private Consumer<String> logInfo = this::printInfo;
 	
 	public AbstractFsTask() {
 		
@@ -51,7 +39,7 @@ public abstract class AbstractFsTask<T> implements FsTask<T>, Comparable<FsTask<
 	 * Compares tasks on the date and time they were queued for execution in the task manager. 
 	 */
 	@Override
-	public int compareTo(FsTask<T> otherTask) {
+	public int compareTo(FsQueuedTask<T> otherTask) {
 		
 		if(otherTask == null){
 			
@@ -164,13 +152,6 @@ public abstract class AbstractFsTask<T> implements FsTask<T>, Comparable<FsTask<
 			throw new ServiceException("ExecutionException thrown while adding new file. " + e.getMessage(), e);
 		}
 	}
-
-	/**
-	 * @return the fsResourceService
-	 */
-	public FsResourceService getFsResourceService() {
-		return fsResourceService;
-	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
@@ -180,7 +161,7 @@ public abstract class AbstractFsTask<T> implements FsTask<T>, Comparable<FsTask<
 		
 		runStartTime = DateUtil.getCurrentTime();
 		
-		logInfo.accept("Task started.");
+		getLogger().info("Task started.");
 		
 		T value = null;
 		
@@ -197,19 +178,15 @@ public abstract class AbstractFsTask<T> implements FsTask<T>, Comparable<FsTask<
 		
 		runEndTime = DateUtil.getCurrentTime();
 		
-		logInfo.accept("Task ended.");
+		getLogger().info("Task ended.");
 		
 		// at this point, any potential client thread that's blocking on CompletableFuture.get() will wake up and receive the value
 		getCompletableFuture().complete(value);
 		
 	}
-	
-	private void printInfo(String s){
-		
-		logger.info(s);
-		
-	}
 
 	public abstract T doWork() throws ServiceException;
+	
+	public abstract Logger getLogger();
 
 }
