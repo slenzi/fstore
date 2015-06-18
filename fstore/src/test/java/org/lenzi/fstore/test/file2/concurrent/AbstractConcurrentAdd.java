@@ -56,7 +56,7 @@ public abstract class AbstractConcurrentAdd extends AbstractTreeTest {
 	 * 
 	 * @author sal
 	 */
-	private class Actor implements Callable<Actor> {
+	private class AddFileActor implements Callable<AddFileActor> {
 		
 		private String actorName = null;
 		private String dirName = null;
@@ -66,7 +66,7 @@ public abstract class AbstractConcurrentAdd extends AbstractTreeTest {
 		private FsDirectoryResource dirResource = null;
 		private List<FsFileMetaResource> fileResourceList = null;
 		
-		public Actor(String actorName, String dirName, List<Path> filePaths, FsResourceStore store){
+		public AddFileActor(String actorName, String dirName, List<Path> filePaths, FsResourceStore store){
 			this.actorName = actorName;
 			this.dirName = dirName;
 			this.filePaths = filePaths;
@@ -90,7 +90,7 @@ public abstract class AbstractConcurrentAdd extends AbstractTreeTest {
 		}
 
 		@Override
-		public Actor call() throws Exception {
+		public AddFileActor call() throws Exception {
 			
 			logger.info("Actor " + actorName + " is running.");
 			
@@ -179,26 +179,26 @@ public abstract class AbstractConcurrentAdd extends AbstractTreeTest {
 		
 		final List<Path> filePathList = filePaths;
 		final FsResourceStore fStore = store;
-		List<Actor> actorList = new ArrayList(){{
-			add(new Actor("Actor 1", "actor1", filePathList, fStore));
-			add(new Actor("Actor 2", "actor2", filePathList, fStore));
-			add(new Actor("Actor 3", "actor3", filePathList, fStore));
-			add(new Actor("Actor 4", "actor4", filePathList, fStore));
-			add(new Actor("Actor 5", "actor5", filePathList, fStore));
+		List<AddFileActor> actorList = new ArrayList(){{
+			add(new AddFileActor("Actor 1", "actor1", filePathList, fStore));
+			add(new AddFileActor("Actor 2", "actor2", filePathList, fStore));
+			add(new AddFileActor("Actor 3", "actor3", filePathList, fStore));
+			add(new AddFileActor("Actor 4", "actor4", filePathList, fStore));
+			add(new AddFileActor("Actor 5", "actor5", filePathList, fStore));
 		}};
 		
 		ExecutorService executorService = Executors.newFixedThreadPool(10);
-		CompletionService<Actor> completionService = new ExecutorCompletionService<Actor>(executorService); 
+		CompletionService<AddFileActor> completionService = new ExecutorCompletionService<AddFileActor>(executorService); 
 		
-		for(final Actor actor : actorList){
+		for(final AddFileActor actor : actorList){
 			completionService.submit(actor);
 		}
 		
 		try {
 			int finishedActorCount = 0;
 			while(finishedActorCount < actorList.size()){
-				Future<Actor> f = completionService.take();
-				Actor a = f.get();
+				Future<AddFileActor> f = completionService.take();
+				AddFileActor a = f.get();
 				logger.info(a.getActorName() + " has completed, " + a.getFileResources().size() + " files added.");
 				finishedActorCount++;
 			}
