@@ -53,7 +53,7 @@ public abstract class AbstractAddFsFileBulk extends AbstractTreeTest {
 		
 		assertNotNull(resourceLoader);
 		
-		// get test file for upload to database
+		// get resource path to sample images for testing
 		Resource sourceDir = resourceLoader.getResource("classpath:image/");
 		
 		Path sourceDirPath = null;

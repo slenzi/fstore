@@ -1,6 +1,7 @@
 package org.lenzi.fstore.file2.concurrent.service;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,6 +11,7 @@ import javax.annotation.PreDestroy;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.task.FsAddDirectoryTask;
+import org.lenzi.fstore.file2.concurrent.task.FsAddFileListTask;
 import org.lenzi.fstore.file2.concurrent.task.FsAddFileTask;
 import org.lenzi.fstore.file2.concurrent.task.FsAddStoreTask;
 import org.lenzi.fstore.file2.concurrent.task.FsQueuedTaskManager;
@@ -108,6 +110,34 @@ public class FsQueuedResourceService {
 		resource = task.get();
 		
 		return resource;
+		
+	}
+	
+	/**
+	 * Add list of files
+	 * 
+	 * @param filePaths
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws ServiceException
+	 */
+	public List<FsFileMetaResource> addFileResource(List<Path> filePaths, Long dirId, boolean replaceExisting) throws ServiceException {
+		
+		List<FsFileMetaResource> resources = null;
+		
+		FsAddFileListTask task = taskCreator.getAddFileListTask();
+		task.setFilePaths(filePaths);
+		task.setDirId(dirId);
+		task.setReplaceExisting(replaceExisting);
+		
+		taskManager.addTask(task);
+		
+		// block and wait for result
+		logger.info("Waiting for new " + FsFileMetaResource.class.getName());
+		resources = task.get();
+		
+		return resources;
 		
 	}
 	

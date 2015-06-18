@@ -68,9 +68,9 @@ public class FsQueuedTaskManager implements FsTaskManager {
 
 		try {
 
-			logger.info("Awaiting termination for 60 seconds...");
+			logger.info("Awaiting termination for 30 seconds...");
 
-			if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+			if (!executorService.awaitTermination(30, TimeUnit.SECONDS)) {
 
 				logger.info("Calling shutdownNow() on executor service...");
 
@@ -83,7 +83,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 				}
 			}
 
-		} catch (InterruptedException ie) {
+		} catch (InterruptedException e) {
 			// (Re-)Cancel if current thread also interrupted
 			executorService.shutdownNow();
 			// Preserve interrupt status
@@ -129,13 +129,11 @@ public class FsQueuedTaskManager implements FsTaskManager {
 			try {
 				
 				// wait 5 seconds for next item in queue
-				logger.info("Here");
 				consume(queue.poll(5000, TimeUnit.MILLISECONDS));
-				logger.info("There");
 				
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				logger.warn("Interrupt exception thrown while taking next element from task queue. " + e.getMessage(), e);
+				logger.warn("Interrupt exception thrown while taking next element from task queue.", e);
 			}
 			
 		}		
