@@ -41,11 +41,11 @@ public abstract class DateUtil {
 		if(time == null){
 			return "";
 		}
-		return formatDate(time, "dd-MMM-yyyy").toLowerCase();
+		return formatDate(time, "yyyy.MM.dd HH:mm:ss.SSS").toLowerCase();
 	}
 	
 	/**
-	 * Formats the date to the default dashboard format dd-MMM-yyyy
+	 * Formats the date to the default format dd-MMM-yyyy
 	 * e.g., 24-mar-2014 - happy birthday to me!
 	 * 
 	 * @param time
@@ -55,7 +55,7 @@ public abstract class DateUtil {
 		if(date == null){
 			return "";
 		}
-		return formatDate(date, "dd-MMM-yyyy").toLowerCase();
+		return formatDate(date, "yyyy.MM.dd HH:mm:ss.SSS").toLowerCase();
 	}
 	
 	   /**

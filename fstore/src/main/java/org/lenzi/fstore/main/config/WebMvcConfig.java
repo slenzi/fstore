@@ -16,14 +16,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * 
  * Component scanning notes:
  * -- org.lenzi.fstore.example.web.controller : controllers for example package, to test tree creation
- * -- org.lenzi.fstore.file.web.controller : controllers for file store, store files and directories in a tree
+ * -- org.lenzi.fstore.file.web.controller : file1 controllers for file store, store files and directories in a tree
+ * -- org.lenzi.fstore.file2.web.controller : file2 controllers for file store, store files and directories in a tree
  * -- org.lenzi.fstore.core.logging : custom LoggerBeanPostProccessor which enables us to inject a logger using @InjectLogger annotation.
  * 
  * @author slenzi
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"org.lenzi.fstore.example.web.controller","org.lenzi.fstore.file.web.controller","org.lenzi.fstore.core.logging"})
+@ComponentScan(
+	basePackages = {
+		"org.lenzi.fstore.example.web.controller",
+		"org.lenzi.fstore.file.web.controller",
+		"org.lenzi.fstore.file2.web.controller",
+		"org.lenzi.fstore.core.logging"
+		}
+)
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	/* (non-Javadoc)

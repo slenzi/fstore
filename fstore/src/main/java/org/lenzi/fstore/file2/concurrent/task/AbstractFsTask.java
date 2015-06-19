@@ -23,6 +23,8 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 	 */
 	private static final long serialVersionUID = 494652534569747606L;
 
+	private long taskId = 0L;
+	
 	private Date queuedTime = null;
 	private Date runStartTime = null;
 	private Date runEndTime = null;
@@ -33,6 +35,20 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 	
 	public AbstractFsTask() {
 		
+	}
+
+	/**
+	 * @return the taskId
+	 */
+	public long getTaskId() {
+		return taskId;
+	}
+
+	/**
+	 * @param taskId the taskId to set
+	 */
+	public void setTaskId(long taskId) {
+		this.taskId = taskId;
 	}
 
 	/**
@@ -50,13 +66,10 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 			
 			if(queuedTime == null && otherTask.getQueuedTime() == null){
 				
-				// tasks should never be queued at the same time since. the FsQueuedTaskManager.queueTask(FsTask<T> task)
-				// function is synchronized which should prevent this from happening.
-				
 				// TODO - In the future we can allow two tasks to run at the same time if we know which file stores
 				// the tasks are operating on.
 				
-				return 0;
+				return Long.valueOf(taskId).compareTo(Long.valueOf(otherTask.getTaskId()));
 				
 			}else if(queuedTime != null && otherTask.getQueuedTime() == null){
 				
@@ -75,7 +88,15 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 				// TODO - In the future we can allow two tasks to run at the same time if we know which file stores
 				// the tasks are operating on.
 				
-				return queuedTime.compareTo(otherTask.getQueuedTime());
+				if(queuedTime.equals(otherTask.getQueuedTime())){
+					
+					return Long.valueOf(taskId).compareTo(Long.valueOf(otherTask.getTaskId()));
+					
+				}else{
+					
+					return queuedTime.compareTo(otherTask.getQueuedTime());
+					
+				}
 				
 			}
 			
@@ -153,6 +174,16 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 		}
 	}
 	
+	/**
+	 * same as calling get, but for tasks with futures that return void
+	 */
+	@Override
+	public void waitComplete() throws ServiceException {
+		
+		get();
+		
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
@@ -161,7 +192,9 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 		
 		runStartTime = DateUtil.getCurrentTime();
 		
-		getLogger().info("Task started.");
+		getLogger().info("Task is running, id => " + getTaskId() + 
+				", name => " + getClass().getName() + 
+				", queued at => " + DateUtil.defaultFormat(this.getQueuedTime()));
 		
 		T value = null;
 		

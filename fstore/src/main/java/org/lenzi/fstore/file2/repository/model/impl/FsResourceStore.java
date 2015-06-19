@@ -16,7 +16,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.core.util.StringUtil;
 
 /**

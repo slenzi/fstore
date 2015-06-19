@@ -1,7 +1,5 @@
 package org.lenzi.fstore.file2.concurrent.task;
 
-import java.nio.file.Path;
-
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -51,6 +49,20 @@ public class FsTaskCreator implements ApplicationContextAware {
 	}
 	
 	/**
+	 * Create new instance of FsGetFileTask bean
+	 * 
+	 * @return
+	 */
+	@Bean
+    public FsGetFileTask getFsGetFileTask() {
+	
+		FsGetFileTask task = new FsGetFileTask();
+		autowire(task);
+		return task;
+		
+    }	
+	
+	/**
 	 * Create new instance of FsAddFileTask bean
 	 * 
 	 * @return
@@ -94,13 +106,83 @@ public class FsTaskCreator implements ApplicationContextAware {
 	
 	/**
 	 * Create new instance of FsAddStoreTask bean
-
+	 *
 	 * @return
 	 */
 	@Bean
     public FsAddStoreTask getAddStoreTask() {
 
 		FsAddStoreTask task = new FsAddStoreTask();
+		autowire(task);
+		return task;
+
+    }
+	
+	/**
+	 * Create new instance of FsRemoveFileTask bean
+	 * 
+	 * @return
+	 */
+	@Bean
+    public FsRemoveFileTask getRemoveFileTask() {
+
+		FsRemoveFileTask task = new FsRemoveFileTask();
+		autowire(task);
+		return task;
+
+    }
+	
+	/**
+	 * Create new instance of FsRemoveFileListTask bean
+	 * 
+	 * @return
+	 */
+	@Bean
+    public FsRemoveFileListTask getRemoveFileListTask() {
+
+		FsRemoveFileListTask task = new FsRemoveFileListTask();
+		autowire(task);
+		return task;
+
+    }
+	
+	/**
+	 * Create new instance of FsRemoveDirectoryTask bean
+	 * 
+	 * @return
+	 */
+	@Bean
+    public FsRemoveDirectoryTask getRemoveDirectoryTask() {
+
+		FsRemoveDirectoryTask task = new FsRemoveDirectoryTask();
+		autowire(task);
+		return task;
+
+    }
+	
+	/**
+	 * Create new instance of FsRemoveStoreTask bean
+	 * 
+	 * @return
+	 */
+	@Bean
+    public FsRemoveStoreTask getRemoveStoreTask() {
+
+		FsRemoveStoreTask task = new FsRemoveStoreTask();
+		autowire(task);
+		return task;
+
+    }
+	
+	/**
+	 * Create new instance of FsGetPathResourceTreeTask bean
+	 * 
+	 * @return
+	 */
+	@Bean
+    public FsGetPathResourceTreeTask getGetPathResourceTreeTask() {
+
+		FsGetPathResourceTreeTask task = new FsGetPathResourceTreeTask();
 		autowire(task);
 		return task;
 

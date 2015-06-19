@@ -15,6 +15,10 @@ import org.lenzi.fstore.core.service.exception.ServiceException;
  */
 public interface FsQueuedTask<T> extends Runnable, Comparable<FsQueuedTask<T>>, Serializable {
 
+	public long getTaskId();
+	
+	public void setTaskId(long taskId);
+	
 	/**
 	 * Date & time task was added to queue for processing.
 	 * 
@@ -58,6 +62,13 @@ public interface FsQueuedTask<T> extends Runnable, Comparable<FsQueuedTask<T>>, 
 	 * @throws ServiceException
 	 */
 	public T get() throws ServiceException;
+	
+	/**
+	 * Same as calling get, but for task that don't return vaues.
+	 * 
+	 * @throws ServiceException
+	 */
+	public void waitComplete() throws ServiceException;
 	
 	/**
 	 * Override to complete work for the task.

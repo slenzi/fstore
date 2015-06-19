@@ -10,14 +10,23 @@ import javax.annotation.PreDestroy;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.file2.concurrent.task.FsAddDirectoryTask;
 import org.lenzi.fstore.file2.concurrent.task.FsAddFileListTask;
 import org.lenzi.fstore.file2.concurrent.task.FsAddFileTask;
 import org.lenzi.fstore.file2.concurrent.task.FsAddStoreTask;
+import org.lenzi.fstore.file2.concurrent.task.FsGetFileTask;
+import org.lenzi.fstore.file2.concurrent.task.FsGetPathResourceTreeTask;
 import org.lenzi.fstore.file2.concurrent.task.FsQueuedTaskManager;
+import org.lenzi.fstore.file2.concurrent.task.FsRemoveDirectoryTask;
+import org.lenzi.fstore.file2.concurrent.task.FsRemoveFileListTask;
+import org.lenzi.fstore.file2.concurrent.task.FsRemoveFileTask;
+import org.lenzi.fstore.file2.concurrent.task.FsRemoveStoreTask;
 import org.lenzi.fstore.file2.concurrent.task.FsTaskCreator;
+import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +95,54 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
+	 * Get path resource tree for directory.
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Tree<FsPathResource> getPathResourceTree(Long dirId) throws ServiceException {
+		
+		Tree<FsPathResource> resource = null;
+		
+		FsGetPathResourceTreeTask task = taskCreator.getGetPathResourceTreeTask();
+		task.setDirId(dirId);
+		
+		taskManager.addTask(task);
+		
+		resource = task.get();
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Get a file resource
+	 * 
+	 * @param fileId
+	 * @param fetch
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource getFileResource(Long fileId, FsFileResourceFetch fetch) throws ServiceException {
+		
+		FsFileMetaResource resource = null;
+		
+		FsGetFileTask task = taskCreator.getFsGetFileTask();
+		task.setFileId(fileId);
+		task.setFetch(fetch);
+		
+		// TODO - read operations can happen immediately. have to re-org task manager to allow that...
+		
+		taskManager.addTask(task);
+		
+		// block and wait for result
+		resource = task.get();
+		
+		return resource;
+	}
+	
+	/**
 	 * Add file resource
 	 * 
 	 * @param filePath - path to file to be added
@@ -106,7 +163,6 @@ public class FsQueuedResourceService {
 		taskManager.addTask(task);
 		
 		// block and wait for result
-		logger.info("Waiting for new " + FsFileMetaResource.class.getName());
 		resource = task.get();
 		
 		return resource;
@@ -134,7 +190,6 @@ public class FsQueuedResourceService {
 		taskManager.addTask(task);
 		
 		// block and wait for result
-		logger.info("Waiting for new " + FsFileMetaResource.class.getName());
 		resources = task.get();
 		
 		return resources;
@@ -160,7 +215,6 @@ public class FsQueuedResourceService {
 		taskManager.addTask(task);
 		
 		// block and wait for result
-		logger.info("Waiting for new " + FsDirectoryResource.class.getName());
 		resource = task.get();
 		
 		return resource;
@@ -190,10 +244,77 @@ public class FsQueuedResourceService {
 		taskManager.addTask(task);
 		
 		// block and wait for result
-		logger.info("Waiting for new " + FsResourceStore.class.getName());
 		resource = task.get();
 		
 		return resource;
+		
+	}
+	
+	/**
+	 * remove file
+	 * 
+	 * @param fileId
+	 * @throws ServiceException
+	 */
+	public void removeFileResource(Long fileId) throws ServiceException {
+		
+		FsRemoveFileTask task = taskCreator.getRemoveFileTask();
+		task.setFileId(fileId);
+		
+		taskManager.addTask(task);
+		
+		task.waitComplete();
+		
+	}
+	
+	/**
+	 * remove list of files
+	 * 
+	 * @param fileIdList
+	 * @throws ServiceException
+	 */
+	public void removeFileResourceList(List<Long> fileIdList) throws ServiceException {
+		
+		FsRemoveFileListTask task = taskCreator.getRemoveFileListTask();
+		task.setFileIdList(fileIdList);
+		
+		taskManager.addTask(task);
+		
+		task.waitComplete();		
+		
+	}
+	
+	/**
+	 * remove directory
+	 * 
+	 * @param dirId
+	 * @throws ServiceException
+	 */
+	public void removeDirectoryResource(Long dirId) throws ServiceException {
+		
+		FsRemoveDirectoryTask task = taskCreator.getRemoveDirectoryTask();
+		task.setDirId(dirId);
+		
+		taskManager.addTask(task);
+		
+		task.waitComplete();		
+		
+	}
+	
+	/**
+	 * Remove resource store 
+	 * 
+	 * @param storeId
+	 * @throws ServiceException
+	 */
+	public void removeResourceStore(Long storeId) throws ServiceException {
+		
+		FsRemoveStoreTask task = taskCreator.getRemoveStoreTask();
+		task.setStoreId(storeId);
+		
+		taskManager.addTask(task);
+		
+		task.waitComplete();		
 		
 	}
 	

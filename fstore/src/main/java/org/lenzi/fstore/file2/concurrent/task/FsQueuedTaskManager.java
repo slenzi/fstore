@@ -31,6 +31,8 @@ public class FsQueuedTaskManager implements FsTaskManager {
 	
 	private ExecutorService executorService = null;
 	
+	private long taskId = 0L;
+	
 	public FsQueuedTaskManager() {
 		
 	}
@@ -120,7 +122,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		
 		while(true){
 			
-			logger.info("Polling queued task manager... size => " + taskCount());
+			logger.debug("Polling queued task manager... size => " + taskCount());
 			
 			if(Thread.currentThread().isInterrupted()){
 				break;
@@ -153,20 +155,25 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		
 		// TODO - check target store for the task, add to blocking queue for that store.
 		
-		logger.info("Adding task " + task.getClass().getCanonicalName());
-		
+		task.setTaskId(getNextTaskId());
 		task.setQueuedTime(DateUtil.getCurrentTime());
 		
 		try {
 		
 			queue.put(task);
 			
-			logger.info("Task " + task.getClass().getCanonicalName() + " was added to queue");
+			logger.info("Task was queued, id => " + task.getTaskId() + 
+					", name => " + task.getClass().getName() + 
+					", queued at " + DateUtil.defaultFormat(task.getQueuedTime()));
 			
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}		
 			
+	}
+	
+	private synchronized long getNextTaskId(){
+		return ++taskId;
 	}
 	
 	/**

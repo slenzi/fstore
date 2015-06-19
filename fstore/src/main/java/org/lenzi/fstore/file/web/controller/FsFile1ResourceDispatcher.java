@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("/file/res")
-public class FsResourceDispatcher extends AbstractSpringController {
+public class FsFile1ResourceDispatcher extends AbstractSpringController {
 
     @InjectLogger
     Logger logger;
@@ -33,7 +33,7 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	/**
 	 * 
 	 */
-	public FsResourceDispatcher() {
+	public FsFile1ResourceDispatcher() {
 		
 	}
 	
