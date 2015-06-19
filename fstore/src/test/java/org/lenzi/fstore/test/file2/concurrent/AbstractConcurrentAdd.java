@@ -179,7 +179,7 @@ public abstract class AbstractConcurrentAdd extends AbstractTreeTest {
 		
 		final List<Path> filePathList = filePaths;
 		final FsResourceStore fStore = store;
-		List<AddFileActor> actorList = new ArrayList(){{
+		List<AddFileActor> actorList = new ArrayList<AddFileActor>(){{
 			add(new AddFileActor("Actor 1", "actor1", filePathList, fStore));
 			add(new AddFileActor("Actor 2", "actor2", filePathList, fStore));
 			add(new AddFileActor("Actor 3", "actor3", filePathList, fStore));

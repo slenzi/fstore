@@ -29,6 +29,7 @@ import org.lenzi.fstore.file2.repository.FsFileResourceRemover;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
+import org.lenzi.fstore.file2.repository.FsResourceStoreRemover;
 import org.lenzi.fstore.file2.repository.FsResourceStoreRepository;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
@@ -65,6 +66,8 @@ public class FsResourceService {
 	private FsResourceStoreRepository fsResourceStoreRepository;
 	@Autowired
 	private FsResourceStoreAdder fsResourceStoreAdder;
+	@Autowired
+	private FsResourceStoreRemover fsResourceStoreRemover;
 	
 	//
 	// file resource operators
@@ -157,6 +160,22 @@ public class FsResourceService {
 			throw new ServiceException("Error creating store. " + e.getMessage(), e);
 		}
 		return store;
+		
+	}
+	
+	/**
+	 * Remove resource store, plus all child directories and files. Deletes everything!
+	 * 
+	 * @param storeId
+	 * @throws ServiceException
+	 */
+	public void removeResourceStore(Long storeId) throws ServiceException {
+	
+		try {
+			fsResourceStoreRemover.removeStore(storeId);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error removing store. " + e.getMessage(), e);
+		}
 		
 	}
 	

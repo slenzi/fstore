@@ -81,6 +81,9 @@ public class FsFileResourceRemover extends AbstractRepository {
 		FsDirectoryResource dir = fsDirectoryResourceRepository.getDirectoryResourceByFileId(fileId);
 		FsResourceStore store = fsResourceStoreRepository.getStoreByDirectoryId(dir.getDirId());
 		
+		// TODO - no need to fetch directory. Create new method in FsResourceStoreRepository to get store
+		// by file id.
+		
 		remove(store, dir, fileEntry);
 		
 	}	

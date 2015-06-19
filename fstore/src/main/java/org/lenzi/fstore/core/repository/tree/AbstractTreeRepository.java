@@ -1209,9 +1209,9 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		logger.debug("remove node " + node.getNodeId());
 		
-		if(node.getParentNodeId() == 0L){
-			throw new DatabaseException("Cannot remove root node of tree. Use removeTree() method.");
-		}		
+		//if(node.getParentNodeId() == 0L){
+		//	throw new DatabaseException("Cannot remove root node of tree. Use removeTree() method.");
+		//}		
 		
 		// remove node data from main node table, and closure table.
 		removeNode(node, true, true);	
