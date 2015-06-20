@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -60,10 +61,10 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		// for pushing (uploading) files from a spring controller back to the clients browser.
 		//
 		converters.add(new ResourceHttpMessageConverter());
-		
-		// ByteArrayHttpMessageConverter
+		converters.add(new ByteArrayHttpMessageConverter());
 		
 		super.configureMessageConverters(converters);
+		
 	}
 	
 }
