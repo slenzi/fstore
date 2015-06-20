@@ -5,7 +5,6 @@ package org.lenzi.fstore.file2.repository.model.impl;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
@@ -30,6 +29,9 @@ public class FsFileMetaResource extends FsPathResource {
 	
 	@Column(name = "FILE_SIZE", nullable = false)
 	private Long fileSize = 0L;
+	
+	@Column(name = "MIME_TYPE", nullable = true)
+	private String mimeType = null;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
@@ -75,6 +77,20 @@ public class FsFileMetaResource extends FsPathResource {
 	 */
 	public void setFileSize(Long fileSize) {
 		this.fileSize = fileSize;
+	}
+
+	/**
+	 * @return the mimeType
+	 */
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	/**
+	 * @param mimeType the mimeType to set
+	 */
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
 	}
 
 	/**

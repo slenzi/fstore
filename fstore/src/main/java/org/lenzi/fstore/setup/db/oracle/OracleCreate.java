@@ -160,7 +160,8 @@ public class OracleCreate {
 	private String SQL_CREATE_TABLE_FS_FILE_META_RESOURCE =
 		"create table FS_FILE_META_RESOURCE ( " +  
 		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
-		"	FILE_SIZE NUMBER(15,0) NOT NULL, " + 
+		"	FILE_SIZE NUMBER(15,0) NOT NULL, " +
+		"   MIME_TYPE VARCHAR2(100), " +
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
 	private String SQL_DROP_TABLE_FS_FILE_RESOURCE =

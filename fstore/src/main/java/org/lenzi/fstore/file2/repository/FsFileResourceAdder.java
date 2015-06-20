@@ -261,14 +261,19 @@ public class FsFileResourceAdder extends AbstractRepository {
 			throw new IOException("Error reading data from file => " + fileToAdd.toString(), e);
 		}
 		
+		//String contentType = Files.probeContentType(fileToAdd);
+		String contentType = FileUtil.detectMimeType(fileToAdd);
+		
 		logger.info("Adding file => " + fileName + ", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
+				", mime type => " + contentType +
 				", Directory Id => " + fsDirectory.getDirId() + ", Directory Name => " + fsDirectory.getName() +
-				", File system path => " + absoluteDirPath.toString());		
+				", File system path => " + absoluteDirPath.toString());
 		
 		// create file entry for meta data
 		FsFileMetaResource metaResource = new FsFileMetaResource();
 		metaResource.setPathType(FsPathType.FILE);
 		metaResource.setName(fileName);
+		metaResource.setMimeType(contentType);
 		metaResource.setFileSize(Files.size(fileToAdd));
 		metaResource.setRelativePath(relativeFilePath);
 		FsFileMetaResource persistedMetaResource = null;
@@ -350,17 +355,21 @@ public class FsFileResourceAdder extends AbstractRepository {
 		//String dirFullPath = fsHelper.getAbsoluteDirectoryString(fsFileStore, fsDirectory);
 		//String existingFilePath = fsHelper.getAbsoluteFileString(fsFileStore, fsDirectory, existingFsFileEntry);
 		
+		//String contentType = Files.probeContentType(newFile);
+		String contentType = FileUtil.detectMimeType(newFile);
+		
 		logger.info("Replacing existing file => " + existingFileName + ", size => " + existingFileSize + " bytes , with new file => " + newFileName +
 				", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
+				", mime type => " + contentType +
 				", Directory Id => " + fsDirectory.getDirId() + ", Directory Name => " + fsDirectory.getName() +
-				", File system path => " + absoluteDirPath.toString());			
-		
+				", File system path => " + absoluteDirPath.toString());
 		
 		// update database
 		FsFileResource updateFileResource = new FsFileResource();
 		updateFileResource.setFileId(existingFileId);
 		updateFileResource.setFileData(fileBytes);
 		existingFsFileEntry.setName(newFileName);
+		existingFsFileEntry.setMimeType(contentType);
 		existingFsFileEntry.setRelativePath(newRelativeFilePath);
 		existingFsFileEntry.setDateUpdated(DateUtil.getCurrentTime());
 		existingFsFileEntry.setFileSize(Files.size(newFile));

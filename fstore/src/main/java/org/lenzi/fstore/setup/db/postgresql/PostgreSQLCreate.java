@@ -162,7 +162,8 @@ public class PostgreSQLCreate {
 	private String SQL_CREATE_TABLE_FS_FILE_META_RESOURCE =
 		"create table " + SCHEMA + "FS_FILE_META_RESOURCE ( " +  
 		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	FILE_SIZE NUMERIC(15,0) NOT NULL, " + 
+		"	FILE_SIZE NUMERIC(15,0) NOT NULL, " +
+		"   MIME_TYPE CHARACTER VARYING(100), " +
 		"	PRIMARY KEY (NODE_ID) " + 
 		")";
 	private String SQL_DROP_TABLE_FS_FILE_RESOURCE =
