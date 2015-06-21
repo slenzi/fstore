@@ -121,7 +121,8 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		
 		FsResourceStore store = null;
 		try {
-			store = fsResourceStoreRepository.getStoreByDirectoryId(parentDir.getDirId());
+			//store = fsResourceStoreRepository.getStoreByDirectoryId(parentDir.getDirId());
+			store = fsResourceStoreRepository.getStoreByPathResourceId(parentDir.getDirId());
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch resource store for dir id => " + parentDir.getDirId(), e);
 		}

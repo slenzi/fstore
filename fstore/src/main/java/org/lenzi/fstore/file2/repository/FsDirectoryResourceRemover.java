@@ -97,7 +97,8 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 		
 		//FsDirectoryResource fsDirectory = fsDirectoryResourceRepository.getDirectoryResourceById(dirId);
 		
-		FsResourceStore fsStore = fsResourceStoreRepository.getStoreByDirectoryId(rootDir.getDirId());
+		//FsResourceStore fsStore = fsResourceStoreRepository.getStoreByDirectoryId(rootDir.getDirId());
+		FsResourceStore fsStore = fsResourceStoreRepository.getStoreByPathResourceId(rootDir.getDirId());
 		
 		//
 		// Walk tree in post-order traversal, deleting resources from the bottom up.

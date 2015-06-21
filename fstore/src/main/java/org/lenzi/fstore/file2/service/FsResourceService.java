@@ -409,6 +409,27 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Fetch the resource store for a specific path resource, e.g. for any directory resource or file
+	 * mete resource.
+	 * 
+	 * @param resourceId - the id of the resource, e.g. id of a FsDirectoryResource, or FsFileMetaResource,
+	 * 	or some other resource in the tree which extends from FsPathResource.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsResourceStore getStoreByPathResourceId(Long resourceId) throws ServiceException {
+		
+		FsResourceStore store = null;
+		try {
+			store = fsResourceStoreRepository.getStoreByPathResourceId(resourceId);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching resource store for by path resource id " + resourceId, e);
+		}
+		return store;
+		
+	}
+	
+	/**
 	 * Creates a sample file store with some file resources from classpath src/main/resources/images directory.
 	 * 
 	 * @param storePath - path where store will be created

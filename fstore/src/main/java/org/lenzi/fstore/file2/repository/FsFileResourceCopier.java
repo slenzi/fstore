@@ -89,7 +89,8 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// get source information
 		//
 		FsDirectoryResource sourceDir = fsDirectoryResourceRepository.getDirectoryResourceByFileId(fileId);
-		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(sourceDir.getDirId());
+		//FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(sourceDir.getDirId());
+		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByPathResourceId(sourceDir.getDirId());
 		FsFileMetaResource sourceEntry = fsFileResourceRepository.getFileEntry(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		
 		//
@@ -97,7 +98,8 @@ public class FsFileResourceCopier extends AbstractRepository {
 		//
 		//FsDirectoryResource targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
 		FsDirectoryResource targetDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(targetDirId, 1);
-		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDir.getDirId());
+		//FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDir.getDirId());
+		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByPathResourceId(targetDir.getDirId());
 		//FsFileMetaResource conflictingTargetEntry = fsFileResourceRepository.haveExistingFile(sourceEntry.getName(), targetDir.getDirId(), false);
 		FsFileMetaResource conflictingTargetEntry = fsFileResourceRepository.haveExistingFile(sourceEntry.getName(), targetDir, false);	
 		

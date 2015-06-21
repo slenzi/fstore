@@ -185,6 +185,39 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
+	 * Fetch the resource store for a specific path resource, e.g. for any directory resource or file
+	 * mete resource.
+	 * 
+	 * @param resourceId - the id of the resource, e.g. id of a FsDirectoryResource, or FsFileMetaResource,
+	 * 	or some other resource in the tree which extends from FsPathResource.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsResourceStore getResourceStoreByPathResource(final Long resourceId) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsResourceStore> {
+
+			@Override
+			public FsResourceStore doWork() throws ServiceException {
+				return fsResourceService.getStoreByPathResourceId(resourceId);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsResourceStore resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
 	 * Add file resource
 	 * 
 	 * @param filePath - path to file to be added

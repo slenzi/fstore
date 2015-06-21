@@ -87,8 +87,10 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 		
 		//logger.info("Copying the following tree:\n" + sourceTree.printTree());
 		
-		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
-		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
+		//FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId); // bug? should have been sourceDirId
+		//FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
+		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByPathResourceId(sourceDirId);
+		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByPathResourceId(targetDirId);
 		
 		// start move at root node (dir) of source tree, and walk tree in pre-order traversal
 		Long dirId = moveDirectoryTraversal(sourceTree.getRootNode(), targetDirId, sourceStore, targetStore, replaceExisting);

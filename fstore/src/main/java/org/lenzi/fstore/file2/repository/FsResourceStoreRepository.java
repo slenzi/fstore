@@ -193,6 +193,8 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	/**
 	 * Get the file store for the directory (does not have to be a root directory)
 	 * 
+	 * @deprecated - use getStoreByPathResourceId(Long resourceId) instead
+	 * 
 	 * @param dirId - id of directory which belongs to the file store. This does not have to be an id
 	 * 	of a root directory. This can be a child directory deep in the tree. This will walk the tree
 	 *  all the way back to the root node to get the file store.
@@ -223,6 +225,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	/**
 	 * Get store by file id
 	 * 
+	 * @deprecated - use getStoreByPathResourceId(Long resourceId) instead
 	 * @param fileId
 	 * @return
 	 * @throws DatabaseException

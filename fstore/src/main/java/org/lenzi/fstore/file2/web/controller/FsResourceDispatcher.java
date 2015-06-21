@@ -53,18 +53,22 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	//@RequestMapping("/**")
 	
 	@RequestMapping(
-			value = "/{storeId}/{fileId}", 
+			value = "/{fileId}", 
 			method = RequestMethod.GET
 			)
-	public HttpEntity<byte[]> dispatchStoreAndFileResource(
-			@PathVariable("storeId") Long storeId, @PathVariable("fileId") Long fileId){
-	
-		//logger.info("Dispatching request for URL => " + request.getRequestURL());
+	public HttpEntity<byte[]> dispatchFileResource(
+			@PathVariable("fileId") Long fileId){
 		
 		// TODO - if file data is on file system, then use it, otherwise go to database.
-		
+
 		FsResourceStore store = null;
+		try {
+			store = fsResourceService.getResourceStoreByPathResource(fileId);
+		} catch (ServiceException e) {
+			logger.error("Failed to fetch resource store by path resource id " + fileId + ". " + e.getMessage(), e);
+		}
 		
+		logger.info("Fetched resource store => " + store.getName());
 		
 		FsFileMetaResource fileResource = null;
 		try {
