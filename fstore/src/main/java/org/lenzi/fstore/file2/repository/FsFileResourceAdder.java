@@ -93,22 +93,6 @@ public class FsFileResourceAdder extends AbstractRepository {
 		FsDirectoryResource parentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(fsDirId, 1);
 		FsFileMetaResource existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, parentDir, false);
 		
-		/*
-		FsFileMetaResource existingFileResource = null;
-		try {
-			existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, fsDirId, false);
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to check if directory => " + fsDirId + " already contains file with name => " + fileName, e);
-		}
-
-		FsDirectoryResource parentDir = null;
-		try {
-			parentDir = fsDirectoryResourceRepository.getDirectoryResourceById(fsDirId);
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + fsDirId, e);
-		}
-		*/
-		
 		FsResourceStore store = null;
 		try {
 			store = fsResourceStoreRepository.getStoreByDirectoryId(fsDirId);
@@ -164,15 +148,6 @@ public class FsFileResourceAdder extends AbstractRepository {
 		
 		FsDirectoryResource parentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(fsDirId, 1);
 		
-		/*
-		FsDirectoryResource parentDir = null;
-		try {
-			parentDir = fsDirectoryResourceRepository.getDirectoryResourceById(fsDirId);
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to fetch parent directory, parent dir id => " + fsDirId, e);
-		}
-		*/
-		
 		FsResourceStore store = null;
 		try {
 			store = fsResourceStoreRepository.getStoreByDirectoryId(fsDirId);
@@ -186,15 +161,6 @@ public class FsFileResourceAdder extends AbstractRepository {
 		for(Path fileToAdd : filesToAdd){
 			
 			String fileName = fileToAdd.getFileName().toString();
-			
-			/*
-			FsFileMetaResource existingFileResource = null;
-			try {
-				existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, fsDirId, false);
-			} catch (DatabaseException e) {
-				throw new DatabaseException("Failed to check if directory => " + fsDirId + " already contains file with name => " + fileName, e);
-			}
-			*/
 			
 			FsFileMetaResource existingFileResource = null;
 			try {
@@ -351,9 +317,6 @@ public class FsFileResourceAdder extends AbstractRepository {
 		} catch (IOException e) {
 			throw new IOException("Error reading data from file => " + newFile.toString(), e);
 		}	
-		
-		//String dirFullPath = fsHelper.getAbsoluteDirectoryString(fsFileStore, fsDirectory);
-		//String existingFilePath = fsHelper.getAbsoluteFileString(fsFileStore, fsDirectory, existingFsFileEntry);
 		
 		//String contentType = Files.probeContentType(newFile);
 		String contentType = FileUtil.detectMimeType(newFile);

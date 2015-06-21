@@ -21,6 +21,7 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CollectionUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource_;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore_;
@@ -205,7 +206,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		try {
 			rootDir = (FsDirectoryResource) treeRepository.getRootNode(new FsDirectoryResource(dirId));
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Error fetching root directory for dir => " + dirId, e);
+			throw new DatabaseException("Error fetching store root directory for dir => " + dirId, e);
 		}
 		
 		FsResourceStore store = null;
@@ -217,7 +218,66 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		
 		return store;
 		
-	}	
+	}
+	
+	/**
+	 * Get store by file id
+	 * 
+	 * @param fileId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FsResourceStore getStoreByFileId(Long fileId) throws DatabaseException {
+		
+		// TODO - test this method
+		
+		FsDirectoryResource rootDir = null;
+		try {
+			rootDir = (FsDirectoryResource) treeRepository.getRootNode(new FsFileMetaResource(fileId));
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error fetching store root directory for file id => " + fileId, e);
+		}
+		
+		FsResourceStore store = null;
+		try {
+			store = getStoreByRootDirectoryId(rootDir.getDirId());
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Erro fetching file store by root dir id => " + rootDir.getDirId(), e);
+		}
+		
+		return store;
+		
+	}
+	
+	/**
+	 * Fetch resource store by any path resource, a FsDirectoryResource, or FsFileMetaResource, or any other future
+	 * resource that extends from FsPathResource.
+	 * 
+	 * @param resourceId - the node id / resource id of the FsPathResource.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FsResourceStore getStoreByPathResourceId(Long resourceId) throws DatabaseException {
+		
+		// TODO - test this method, if it works you don't need get store by dir id or get store by file id
+		
+		FsDirectoryResource rootDir = null;
+		try {
+			rootDir = (FsDirectoryResource) treeRepository.getRootNode(resourceId, FsPathResource.class);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error fetching store root directory for path resource id => " + resourceId, e);
+		}
+		
+		FsResourceStore store = null;
+		try {
+			store = getStoreByRootDirectoryId(rootDir.getDirId());
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Erro fetching file store by root dir id => " + rootDir.getDirId(), e);
+		}
+		
+		return store;
+		
+	}
 	
 	/**
 	 * Criteria query to get FsFileStore by store id

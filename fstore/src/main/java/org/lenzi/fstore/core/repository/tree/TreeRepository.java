@@ -26,6 +26,7 @@ public interface TreeRepository<N extends FSNode<N>> {
 	public N getNode(N node) throws DatabaseException;
 	// include parent closure data, with nodes
 	public N getNodeWithParent(N node) throws DatabaseException;
+	public N getNodeWithParent(Long resourceId, Class<N> clazz) throws DatabaseException;
 	// include child closure data, with nodes
 	public N getNodeWithChild(N node) throws DatabaseException;
 	public N getNodeWithChild(Long nodeId, Class<N> clazz) throws DatabaseException;
@@ -61,6 +62,7 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 * @throws DatabaseException
 	 */
 	public N getRootNode(N node) throws DatabaseException;
+	public N getRootNode(Long resourceId, Class<N> clazz) throws DatabaseException;
 	
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.

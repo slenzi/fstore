@@ -1,6 +1,5 @@
 package org.lenzi.fstore.file2.concurrent.task;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -13,7 +12,7 @@ import org.lenzi.fstore.core.service.exception.ServiceException;
  *
  * @param <T>
  */
-public interface FsQueuedTask<T> extends Runnable, Comparable<FsQueuedTask<T>>, Serializable {
+public interface FsQueuedTask<T> extends Runnable, Comparable<FsQueuedTask<T>> {
 
 	public long getTaskId();
 	

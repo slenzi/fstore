@@ -390,6 +390,25 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Get resource store by store id
+	 * 
+	 * @param storeId
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsResourceStore getStoreById(Long storeId) throws ServiceException {
+		
+		FsResourceStore store = null;
+		try {
+			store = fsResourceStoreRepository.getStoreByStoreId(storeId);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching resource store for store id " + storeId, e);
+		}
+		return store;
+		
+	}
+	
+	/**
 	 * Creates a sample file store with some file resources from classpath src/main/resources/images directory.
 	 * 
 	 * @param storePath - path where store will be created

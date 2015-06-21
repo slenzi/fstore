@@ -1,6 +1,5 @@
 package org.lenzi.fstore.file2.concurrent.task;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -16,12 +15,7 @@ import org.slf4j.Logger;
  *
  * @param <T>
  */
-public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<FsQueuedTask<T>>, Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 494652534569747606L;
+public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<FsQueuedTask<T>> {
 
 	private long taskId = 0L;
 	
@@ -29,7 +23,7 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 	private Date runStartTime = null;
 	private Date runEndTime = null;
 	
-	private CompletableFuture<T> completableFuture;
+	private CompletableFuture<T> completableFuture = new CompletableFuture<T>();
 	
 	//private Consumer<String> logInfo = this::printInfo;
 	

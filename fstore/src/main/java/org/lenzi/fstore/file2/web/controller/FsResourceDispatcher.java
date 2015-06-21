@@ -11,6 +11,7 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,17 +56,17 @@ public class FsResourceDispatcher extends AbstractSpringController {
 			value = "/{storeId}/{fileId}", 
 			method = RequestMethod.GET
 			)
-	public HttpEntity<byte[]> dispatchResource(
+	public HttpEntity<byte[]> dispatchStoreAndFileResource(
 			@PathVariable("storeId") Long storeId, @PathVariable("fileId") Long fileId){
 	
 		//logger.info("Dispatching request for URL => " + request.getRequestURL());
 		
 		// TODO - if file data is on file system, then use it, otherwise go to database.
 		
-		// TODO - function for getting store from file ID...
+		FsResourceStore store = null;
+		
 		
 		FsFileMetaResource fileResource = null;
-		
 		try {
 			fileResource = fsResourceService.getFileResource(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		} catch (ServiceException e) {

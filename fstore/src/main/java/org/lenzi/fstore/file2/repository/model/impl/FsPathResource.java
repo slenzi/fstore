@@ -53,8 +53,21 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 		
 	}
 	
-	public FsPathResource(Long id) {
-		setNodeId(id);
+	/**
+	 * 
+	 * @param resourceId - same as FSNode node id.
+	 */
+	public FsPathResource(Long resourceId) {
+		setNodeId(resourceId);
+	}
+	
+	/**
+	 * Same as FSNode.getNodeId()
+	 * 
+	 * @return
+	 */
+	public Long getResourceId(){
+		return getNodeId();
 	}
 
 	/**

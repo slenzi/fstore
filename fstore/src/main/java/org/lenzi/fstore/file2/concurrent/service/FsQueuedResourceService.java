@@ -2,6 +2,7 @@ package org.lenzi.fstore.file2.concurrent.service;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,23 +12,15 @@ import javax.annotation.PreDestroy;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
-import org.lenzi.fstore.file2.concurrent.task.FsAddDirectoryTask;
-import org.lenzi.fstore.file2.concurrent.task.FsAddFileListTask;
-import org.lenzi.fstore.file2.concurrent.task.FsAddFileTask;
-import org.lenzi.fstore.file2.concurrent.task.FsAddStoreTask;
-import org.lenzi.fstore.file2.concurrent.task.FsGetFileTask;
-import org.lenzi.fstore.file2.concurrent.task.FsGetPathResourceTreeTask;
+import org.lenzi.fstore.file2.concurrent.task.AbstractFsTask;
 import org.lenzi.fstore.file2.concurrent.task.FsQueuedTaskManager;
-import org.lenzi.fstore.file2.concurrent.task.FsRemoveDirectoryTask;
-import org.lenzi.fstore.file2.concurrent.task.FsRemoveFileListTask;
-import org.lenzi.fstore.file2.concurrent.task.FsRemoveFileTask;
-import org.lenzi.fstore.file2.concurrent.task.FsRemoveStoreTask;
-import org.lenzi.fstore.file2.concurrent.task.FsTaskCreator;
+import org.lenzi.fstore.file2.concurrent.task.FsSpringHelper;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.service.FsResourceService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +43,10 @@ public class FsQueuedResourceService {
 	private FsQueuedTaskManager taskManager;
 	
 	@Autowired
-	private FsTaskCreator taskCreator;
+	private FsResourceService fsResourceService;
+	
+	@Autowired
+	private FsSpringHelper taskCreator;
 	
 	private ExecutorService taskExecutorService = null;
 	
@@ -103,14 +99,23 @@ public class FsQueuedResourceService {
 	 */
 	public Tree<FsPathResource> getPathResourceTree(Long dirId) throws ServiceException {
 		
-		Tree<FsPathResource> resource = null;
+		class Task extends AbstractFsTask<Tree<FsPathResource>> {
+
+			@Override
+			public Tree<FsPathResource> doWork() throws ServiceException {
+				return fsResourceService.getTree(dirId);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		FsGetPathResourceTreeTask task = taskCreator.getGetPathResourceTreeTask();
-		task.setDirId(dirId);
-		
-		taskManager.addTask(task);
-		
-		resource = task.get();
+		Tree<FsPathResource> resource = t.get(); // block until complete
 		
 		return resource;
 		
@@ -126,20 +131,57 @@ public class FsQueuedResourceService {
 	 */
 	public FsFileMetaResource getFileResource(Long fileId, FsFileResourceFetch fetch) throws ServiceException {
 		
-		FsFileMetaResource resource = null;
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.getFileResource(fileId, fetch);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		FsGetFileTask task = taskCreator.getFsGetFileTask();
-		task.setFileId(fileId);
-		task.setFetch(fetch);
-		
-		// TODO - read operations can happen immediately. have to re-org task manager to allow that...
-		
-		taskManager.addTask(task);
-		
-		// block and wait for result
-		resource = task.get();
+		FsFileMetaResource resource = t.get(); // block until complete
 		
 		return resource;
+		
+	}
+	
+	/**
+	 * Get resource store by store id
+	 * 
+	 * @param storeId - the ID of the store
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsResourceStore getResourceStoreById(final Long storeId) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsResourceStore> {
+
+			@Override
+			public FsResourceStore doWork() throws ServiceException {
+				return fsResourceService.getStoreById(storeId);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsResourceStore resource = t.get(); // block until complete
+		
+		return resource;
+		
 	}
 	
 	/**
@@ -153,17 +195,23 @@ public class FsQueuedResourceService {
 	 */
 	public FsFileMetaResource addFileResource(Path filePath, Long dirId, boolean replaceExisting) throws ServiceException {
 		
-		FsFileMetaResource resource = null;
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.addFileResource(filePath, dirId, replaceExisting);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		FsAddFileTask task = taskCreator.getAddFileTask();
-		task.setFilePath(filePath);
-		task.setDirId(dirId);
-		task.setReplaceExisting(replaceExisting);
-		
-		taskManager.addTask(task);
-		
-		// block and wait for result
-		resource = task.get();
+		FsFileMetaResource resource = t.get(); // block until complete
 		
 		return resource;
 		
@@ -180,19 +228,25 @@ public class FsQueuedResourceService {
 	 */
 	public List<FsFileMetaResource> addFileResource(List<Path> filePaths, Long dirId, boolean replaceExisting) throws ServiceException {
 		
-		List<FsFileMetaResource> resources = null;
+		class Task extends AbstractFsTask<List<FsFileMetaResource>> {
+
+			@Override
+			public List<FsFileMetaResource> doWork() throws ServiceException {
+				return fsResourceService.addFileResource(filePaths, dirId, replaceExisting);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		FsAddFileListTask task = taskCreator.getAddFileListTask();
-		task.setFilePaths(filePaths);
-		task.setDirId(dirId);
-		task.setReplaceExisting(replaceExisting);
+		List<FsFileMetaResource> resource = t.get(); // block until complete
 		
-		taskManager.addTask(task);
-		
-		// block and wait for result
-		resources = task.get();
-		
-		return resources;
+		return resource;
 		
 	}
 	
@@ -206,16 +260,23 @@ public class FsQueuedResourceService {
 	 */
 	public FsDirectoryResource addDirectoryResource(String name, Long parentDirId) throws ServiceException {
 		
-		FsDirectoryResource resource = null;
+		class Task extends AbstractFsTask<FsDirectoryResource> {
+
+			@Override
+			public FsDirectoryResource doWork() throws ServiceException {
+				return fsResourceService.addDirectoryResource(parentDirId, name);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		FsAddDirectoryTask task = taskCreator.getAddDirectoryTask();
-		task.setName(name);
-		task.setParentDirId(parentDirId);
-		
-		taskManager.addTask(task);
-		
-		// block and wait for result
-		resource = task.get();
+		FsDirectoryResource resource = t.get(); // block until complete
 		
 		return resource;
 		
@@ -233,18 +294,23 @@ public class FsQueuedResourceService {
 	 */
 	public FsResourceStore addResourceStore(Path storePath, String name, String description, boolean clearIfExists) throws ServiceException {
 		
-		FsResourceStore resource = null;
+		class Task extends AbstractFsTask<FsResourceStore> {
+
+			@Override
+			public FsResourceStore doWork() throws ServiceException {
+				return fsResourceService.createResourceStore(storePath, name, description, clearIfExists);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		FsAddStoreTask task = taskCreator.getAddStoreTask();
-		task.setStorePath(storePath);
-		task.setName(name);
-		task.setDescription(description);
-		task.setClearIfExists(clearIfExists);
-		
-		taskManager.addTask(task);
-		
-		// block and wait for result
-		resource = task.get();
+		FsResourceStore resource = t.get(); // block until complete
 		
 		return resource;
 		
@@ -258,12 +324,24 @@ public class FsQueuedResourceService {
 	 */
 	public void removeFileResource(Long fileId) throws ServiceException {
 		
-		FsRemoveFileTask task = taskCreator.getRemoveFileTask();
-		task.setFileId(fileId);
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				fsResourceService.removeFileResource(fileId);
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		taskManager.addTask(task);
-		
-		task.waitComplete();
+		t.waitComplete(); // block until complete
 		
 	}
 	
@@ -275,12 +353,26 @@ public class FsQueuedResourceService {
 	 */
 	public void removeFileResourceList(List<Long> fileIdList) throws ServiceException {
 		
-		FsRemoveFileListTask task = taskCreator.getRemoveFileListTask();
-		task.setFileIdList(fileIdList);
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				for(Long fileId : fileIdList){
+					fsResourceService.removeFileResource(fileId);
+				}
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		taskManager.addTask(task);
-		
-		task.waitComplete();		
+		t.waitComplete(); // block until complete
 		
 	}
 	
@@ -292,12 +384,24 @@ public class FsQueuedResourceService {
 	 */
 	public void removeDirectoryResource(Long dirId) throws ServiceException {
 		
-		FsRemoveDirectoryTask task = taskCreator.getRemoveDirectoryTask();
-		task.setDirId(dirId);
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				fsResourceService.removeDirectoryResource(dirId);
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		taskManager.addTask(task);
-		
-		task.waitComplete();		
+		t.waitComplete(); // block until complete
 		
 	}
 	
@@ -309,12 +413,24 @@ public class FsQueuedResourceService {
 	 */
 	public void removeResourceStore(Long storeId) throws ServiceException {
 		
-		FsRemoveStoreTask task = taskCreator.getRemoveStoreTask();
-		task.setStoreId(storeId);
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				fsResourceService.removeResourceStore(storeId);
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
 		
-		taskManager.addTask(task);
-		
-		task.waitComplete();		
+		t.waitComplete(); // block until complete
 		
 	}
 	

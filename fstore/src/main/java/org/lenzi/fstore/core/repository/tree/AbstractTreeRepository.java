@@ -146,11 +146,32 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 
 	/**
 	 * Fetch a node with it's parent closure data, plus parent and child nodes for all closure entries.
+	 * 
+	 * @param node - The node to fetch
+	 * @return
+	 * @throws DatabaseException
 	 */
 	@Override
 	public N getNodeWithParent(N node) throws DatabaseException {
 		
 		return getNodeWithParentClosureCriteria(node);
+		
+	}
+	
+	/**
+	 * Fetch a node with it's parent closure data, plus parent and child nodes for all closure entries.
+	 * 
+	 * @param nodeId - ID of node to fetch
+	 * @param clazz - The class type of the node, e.g. FsPathResource parent type, or one of the child types
+	 * 	such as FsDirectoryResource or FsFileMetaResource.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public N getNodeWithParent(Long nodeId, Class<N> clazz) throws DatabaseException {
+		
+		//return getNodeWithParentClosureCriteria(nodeId, clazz);
+		
+		return getNodeWithParentClosureHql(nodeId, clazz);
 		
 	}
 
@@ -169,7 +190,11 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	/**
 	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getNodeWithChild(java.lang.Long, java.lang.Class)
+	 * @param nodeId - ID of node to fetch
+	 * @param clazz - The class type of the node, e.g. FsPathResource parent type, or one of the child types
+	 * 	such as FsDirectoryResource or FsFileMetaResource.
+	 * @return
+	 * @throws DatabaseException
 	 */
 	@Override
 	public N getNodeWithChild(Long nodeId, Class<N> clazz) throws DatabaseException {
@@ -179,7 +204,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	}
 
 	/**
-	 * 
 	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries, up to the
 	 * specified max depth
 	 */
@@ -290,7 +314,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	/**
 	 * Retrieve the root node of the tree that this node belongs too.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getRootNode(org.lenzi.fstore.core.repository.model.impl.FSNode)
+	 * @param node - get the root node (parent most node of entire tree) for this node.
 	 */
 	@Override
 	public N getRootNode(N node) throws DatabaseException {
@@ -307,6 +331,50 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		N thisNode = getNodeWithParentClosureCriteria(node);
 		if(thisNode == null){
 			throw new DatabaseException("Failed to fetch node with it's parent closure data");
+		}
+		if(thisNode.isRootNode()){
+			return thisNode;
+		}
+		Set<DBClosure<N>> parentClosure = thisNode.getParentClosure();
+		if(parentClosure == null || parentClosure.size() == 0){
+			throw new DatabaseException("Failed to fetch parent closure data for node => " + thisNode.getNodeId() + ". This is not a root node, it should have parent closure data.");
+		}
+		
+		// loop through closure data and locate the the node where isRootNode() is true.
+		N rootNode = null;
+		for(DBClosure<N> closure : CollectionUtil.emptyIfNull(parentClosure)){
+			if(closure.getParentNode().isRootNode()){
+				rootNode = closure.getParentNode();
+				break;
+			}
+		}
+		
+		if(rootNode == null){
+			throw new DatabaseException("Failed to locate root node from parent closure data...");
+		}
+		
+		return rootNode;
+	}
+	
+	/**
+	 * Retrieve the root node of the tree that this node belongs too.
+	 * 
+	 * @param resourceId - the id of the node / resource
+	 * @param clazz - the type of the node, e.g. FsPathResource parent type, or FsDirectoryResource, or FsFileMetaResource...etc.
+	 * @return the parent most node of the tree, which is the root node.
+	 * @throws DatabaseException
+	 */
+	public N getRootNode(Long resourceId, Class<N> clazz) throws DatabaseException {
+
+		if(resourceId == null){
+			throw new DatabaseException("Node resource id parameter is null");
+		}
+		
+		logger.info("Get parent node for resource node => " + resourceId);
+		
+		N thisNode = this.getNodeWithParentClosureHql(resourceId, clazz);
+		if(thisNode == null){
+			throw new DatabaseException("Failed to fetch node " + resourceId + " with it's parent closure data");
 		}
 		if(thisNode.isRootNode()){
 			return thisNode;
@@ -1799,6 +1867,79 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		return result;
 	}
+	
+	/**
+	 * Criteria version
+	 * 
+	 * Get a node with it's parent closure data, and fetch the parent and child nodes for the closure entries.
+	 * 
+	 * @param nodeId - the id of the node
+	 * @param clazz - the type of the node, e.g. FsPathResource parent type, or FsDirectoryResource, or FsFileMetaResource...etc.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private N getNodeWithParentClosureCriteria(Long nodeId, Class<N> clazz) throws DatabaseException {
+		
+		// TODO - need to test this method
+		
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		
+		CriteriaQuery<N> nodeSelect = criteriaBuilder.createQuery(clazz);
+		Root<N> nodeSelectRoot = nodeSelect.from(clazz);
+		
+		SetJoin<N, FSClosure> parentClosureJoin = nodeSelectRoot.join(FSNode_.parentClosure, JoinType.LEFT);
+		
+		Fetch<N, FSClosure> parentClosureFetch =  nodeSelectRoot.fetch(FSNode_.parentClosure, JoinType.LEFT);
+		
+		parentClosureFetch.fetch(FSClosure_.parentNode, JoinType.LEFT);
+		parentClosureFetch.fetch(FSClosure_.childNode, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( criteriaBuilder.equal(nodeSelectRoot.get(FSNode_.nodeId), nodeId) );
+		andPredicates.add( criteriaBuilder.greaterThanOrEqualTo(parentClosureJoin.get(FSClosure_.depth), 0) );
+		
+		nodeSelect.distinct(true);
+		nodeSelect.select(nodeSelectRoot);
+		nodeSelect.where(
+				criteriaBuilder.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		N result = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
+		
+		return result;
+	}
+	
+	/**
+	 * Hql version
+	 * 
+	 * Get a node with it's parent closure data, and fetch the parent and child nodes for the closure entries.
+	 * 
+	 * @param nodeId - the id of the node
+	 * @param clazz - the type of the node, e.g. FsPathResource parent type, or FsDirectoryResource, or FsFileMetaResource...etc.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private N getNodeWithParentClosureHql(Long nodeId, Class<N> clazz) throws DatabaseException {
+		
+		// TODO - need to test this method
+		
+		logger.info("getNodeWithParentClosureHql(Long, Class)");
+		
+		String selectQuery =
+				"select distinct r from " + clazz.getCanonicalName() + " as r " +
+				"inner join fetch r.parentClosure pc " +
+				"inner join fetch pc.childNode cn " +
+				"inner join fetch pc.parentNode pn " +
+				"where r.nodeId = :nodeid";
+		
+		Query query = getEntityManager().createQuery(selectQuery);
+		query.setParameter("nodeid", nodeId);
+		
+		return ResultFetcher.getSingleResultOrNull(query);	
+
+	}
+	
+	
 	
 	/**
 	 * Get a node without fetching closure data. Just retieve the main node data.
