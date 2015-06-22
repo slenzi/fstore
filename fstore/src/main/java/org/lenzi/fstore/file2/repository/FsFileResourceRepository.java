@@ -6,9 +6,11 @@ package org.lenzi.fstore.file2.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.lenzi.fstore.core.repository.AbstractRepository;
@@ -22,6 +24,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore_;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -111,7 +114,79 @@ public class FsFileResourceRepository extends AbstractRepository {
 	
 	}
 	
-	
+	/**
+	 * Fetch a file by it's full path.
+	 * 
+	 * @param path - Combination of the resource store's root directory name + the file resource relative path value.
+	 * 
+	 * e.g.
+	 * Resource store path = /test/stores/testStore
+	 * File resource path = /test/stores/testStore/sampleDir1/lolcat.jpg
+	 * 
+	 * Using above example,
+	 * Resource store root directory name = testStore
+	 * File resource relative path = /sampleDir1/lolcat.jpg
+	 * 
+	 * So, the path value to pass to this method would be, testStore//sampleDir1/lolcat.jpg
+	 * 
+	 * @throws DatabaseException
+	 */
+	public FsFileMetaResource getFileEntryByPath(String path, FsFileResourceFetch fetch) throws DatabaseException {
+		
+		// for criteria version, generate TypedQuery which returns Tuple
+		
+		final String hqlSelectByPath =
+			"select f " +
+			"from " +
+			"	FsFileMetaResource as f, FsResourceStore s " +
+			"where " +
+			"	f.storeId = s.storeId " +
+			"	and LOWER ( " +
+			"			CONCAT (s.storePath, f.relativePath) " +
+			"		) LIKE LOWER ( " +
+			"			CONCAT ('%', :path) " +
+			"		)";
+		
+		final String hqlSelectByPathWithByte =
+				"select f " +
+				"from " +
+				"	FsFileMetaResource as f, FsResourceStore s " +
+				"left join fetch f.fileResource r " +
+				"where " +
+				"	f.storeId = s.storeId " +
+				"	and LOWER ( " +
+				"			CONCAT (s.storePath, f.relativePath) " +
+				"		) LIKE LOWER ( " +
+				"			CONCAT ('%', :path) " +
+				"		)";
+		
+		String hqlSelectQuery = hqlSelectByPath;
+		
+		switch(fetch){
+		
+			// just FsFileMetaResource
+			case FILE_META:
+				hqlSelectQuery = hqlSelectByPath;
+				break;
+			
+			// also fetch FsFileResource
+			case FILE_META_WITH_DATA:
+				hqlSelectQuery = hqlSelectByPathWithByte;
+				break;
+			
+			// default to just meta data, no join
+			default:
+				hqlSelectQuery = hqlSelectByPath;
+				break;
+
+		}		
+		
+		Query query = getEntityManager().createQuery(hqlSelectQuery);
+		query.setParameter("path", path);
+		
+		return ResultFetcher.getSingleResultOrNull(query);
+		
+	}
 	
 	/**
 	 * check at specified depth

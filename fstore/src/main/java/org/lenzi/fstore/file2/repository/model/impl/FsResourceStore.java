@@ -60,7 +60,10 @@ public class FsResourceStore implements Comparable<FsResourceStore>, Serializabl
 	@OneToOne(optional=false, fetch=FetchType.EAGER, targetEntity = FsDirectoryResource.class)
 	@JoinColumn(name = "NODE_ID", insertable=false, updatable=false)
 	@Fetch(FetchMode.JOIN)
-	private FsDirectoryResource rootDirectoryResource = null;	
+	private FsDirectoryResource rootDirectoryResource = null;
+	
+	//@OneToMany(mappedBy="resourceStore", cascade=CascadeType.ALL)
+	//private Set<FsPathResource> pathResources = new HashSet<FsPathResource>(0);
 	
 	public FsResourceStore() {
 		
