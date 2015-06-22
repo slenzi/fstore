@@ -7,6 +7,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.provider.BinaryDataProvider;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
 import org.lenzi.fstore.example.web.rs.TreeResource;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 /**
- * Configure our Apache CXF services
+ * Configure our Apache CXF services.
  * 
  * @author slenzi
  */
@@ -49,7 +50,9 @@ public class CxfConfig {
 		JAXRSServerFactoryBean factory = delegate.createEndpoint( 
 				getJaxRsExampleApplication(), JAXRSServerFactoryBean.class );
 		
-		// add all our service beans
+		//
+		// Add tree resource bean
+		//
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
 					getTreeResourceBean(), getExceptionMapper()
@@ -57,6 +60,10 @@ public class CxfConfig {
 		);
 		
 		factory.setAddress( factory.getAddress() );
+		
+		//
+		// Add JSON provider
+		//
 		factory.setProviders( Arrays.<Object>asList( getJsonProvider() ) );
 		
 		return factory.create();
@@ -76,7 +83,9 @@ public class CxfConfig {
 		JAXRSServerFactoryBean factory = delegate.createEndpoint( 
 				getJaxRsResourceStoreApplication(), JAXRSServerFactoryBean.class );
 		
-		// add all our service beans
+		//
+		// Add file resource service bean
+		//
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
 					getFileResourceBean(), getExceptionMapper()
@@ -85,8 +94,10 @@ public class CxfConfig {
 		
 		factory.setAddress( factory.getAddress() );
 		
-		// TODO - no need for JSON provider, but might need a provider for binary data?
-		factory.setProviders( Arrays.<Object>asList( getJsonProvider() ) );
+		// 
+		// Add binary data provider
+		//
+		factory.setProviders( Arrays.<Object>asList( getBinaryDataProvider() ) );
 		
 		return factory.create();
 	}
@@ -122,7 +133,7 @@ public class CxfConfig {
 	}
 	
 	/**
-	 * Jax-rs file resource bean
+	 * Jax-rs file 2 resource bean
 	 * 
 	 * @return
 	 */
@@ -132,7 +143,7 @@ public class CxfConfig {
 	}
 	
 	/**
-	 * jax-rs JSON marshalling
+	 * jax-rs JSON marshalling / provider
 	 * 
 	 * @return
 	 */
@@ -140,6 +151,14 @@ public class CxfConfig {
     public JacksonJsonProvider getJsonProvider() {
         return new JacksonJsonProvider();
     }
+	
+	/**
+	 * jax-rs binary data marshalling / provider
+	 */
+	@Bean
+	public BinaryDataProvider<Object> getBinaryDataProvider(){
+		return new BinaryDataProvider<Object>();
+	}
 	
 	/**
 	 * Maps our WebServiceException to http response codes.

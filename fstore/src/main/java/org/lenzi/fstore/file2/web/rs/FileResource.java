@@ -1,16 +1,19 @@
 package org.lenzi.fstore.file2.web.rs;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.cxf.attachment.ContentDisposition;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
@@ -42,7 +45,56 @@ public class FileResource {
 	
 	@GET
 	@Path("/{fileId}")
-	@Produces("application/octet-stream")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	public Response getFile(@PathParam("fileId") Long fileId) throws WebServiceException {
+		
+		logger.info(FileResource.class.getName() + " jax-rs service called, fileId = " + fileId);
+		
+		// TODO - stream file from database rather than loading entire file into memory / byte[]
+		
+		//
+		// pull file from database
+		//
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsResourceService.getFileResource(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
+			throw new WebServiceException(WebServiceException.CODE_DATABSE_ERROR,
+					"Failed to fetch file data from database, " + e.getMessage());
+		}
+		String mimeType = fileResource.getMimeType();
+		byte[] fileData = fileResource.getFileResource().getFileData();
+		
+		
+		//
+		// Write data to output/response
+		//
+		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
+		//ContentDisposition contentDisposition = ContentDisposition.type("attachment")
+		//	    .fileName("filename.csv").creationDate(new Date()).build();
+		ContentDisposition contentDisposition = new ContentDisposition("attachment; filename=image.jpg");
+		
+		return Response.ok(
+			new StreamingOutput() {
+				@Override
+				public void write(OutputStream out) throws IOException, WebApplicationException {
+					byte[] buffer = new byte[4 * 1024];
+					int bytesRead;
+					while ((bytesRead = bis.read(buffer)) != -1) {
+						out.write(buffer, 0, bytesRead);
+					}
+					out.flush();
+					out.close();
+					bis.close();
+				}
+			}
+		).header("Content-Disposition", "attachment; filename=" + fileResource.getName()).build();
+		
+	}
+	
+	/*
 	public Response getFile(@PathParam("fileId") Long fileId, @Context HttpServletResponse response) throws WebServiceException {
 		
 		logger.info(FileResource.class.getName() + " jax-rs service called, fileId = " + fileId);
@@ -77,12 +129,13 @@ public class FileResource {
         
         logger.info("Server size: " + baos.size());
         
-        // TODO - consider using StreamingOutput class to stream binar data back to client. Would make more
+        // TODO - consider using StreamingOutput class to stream binary data back to client. Would make more
         // sense if you could also stream the file data from the database..
         
         return Response.ok(baos)
         		.header("Content-Disposition", "attachment; filename=" + fileResource.getName()).build();
 		
 	}
+	 */
 
 }
