@@ -36,12 +36,23 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	@Column(name = "NAME", nullable = false)
 	private String name;
 	
-	// relative path (relative to store path)
+	//
+	// Id of the resource store that this path resource is under. We can get the store id by
+	// traversing the resouce tree upwards to the root node, but that takes time. Having the store
+	// id mapped here is a nice convenience.
+	//
+	@Column(name = "STORE_ID", nullable = false)
+	private Long storeId;
+	
+	//
+	// Path of resource relative to the store's path.
+	//
 	@Column(name = "RELATIVE_PATH", nullable = false)
-	private String relativePath;	
+	private String relativePath;
 	
-	// file store (if path is a root node)
-	
+	//
+	// Path type, either FsPathType.FILE or FsPathType.DIRECTORY, or maybe some future FsPathType value...
+	//
 	@Column(name = "PATH_TYPE", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private FsPathType pathType;
@@ -85,6 +96,20 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	}
 
 	/**
+	 * @return the storeId
+	 */
+	public Long getStoreId() {
+		return storeId;
+	}
+
+	/**
+	 * @param storeId the storeId to set
+	 */
+	public void setStoreId(Long storeId) {
+		this.storeId = storeId;
+	}
+
+	/**
 	 * @return the relativePath
 	 */
 	public String getRelativePath() {
@@ -117,7 +142,7 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	 */
 	@Override
 	public String toString() {
-		return "FsPathResource [id=" + getNodeId() + ", name=" + name + ", relativePath="
+		return "FsPathResource [id=" + getNodeId() + ", store id=" + storeId + ", name=" + name + ", relativePath="
 				+ relativePath + ", pathType=" + pathType.getType() + "]";
 	}
 

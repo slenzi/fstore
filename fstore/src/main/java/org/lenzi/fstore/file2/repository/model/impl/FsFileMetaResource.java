@@ -13,8 +13,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
+ * Entity for file meta data, not actual byte data. 
+ * 
  * @author sal
- *
  */
 @Entity
 //@DiscriminatorValue("FsFileMetaResource") - not needed when using JOINED inheritance

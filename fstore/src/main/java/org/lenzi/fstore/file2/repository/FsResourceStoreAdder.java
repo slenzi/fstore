@@ -101,38 +101,52 @@ public class FsResourceStoreAdder extends AbstractRepository {
 			throw new DatabaseException(buf.toString());
 		}
  		
-		// create root directory for new file store
+		//
+		// Create root directory for new file store
+		//
 		FsDirectoryResource storeRootDir = null;
 		try {
-			
 			storeRootDir = (FsDirectoryResource) treeRepository.addRootNode(
-					new FsDirectoryResource(storePath.getFileName().toString(), File.separator));
-			
+					new FsDirectoryResource(0L, storePath.getFileName().toString(), File.separator));
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to create root directory tree node for file store, name => " + 
 					name + ", path => " + storePath.toString(), e);
 		}
 		
+		//
 		// create new file store and save to db
+		//
 		FsResourceStore fileStore = new FsResourceStore();
 		fileStore.setName(name);
 		fileStore.setDescription(description);
-		fileStore.setNodeId(storeRootDir.getDirId());
+		fileStore.setNodeId(storeRootDir.getNodeId());
 		fileStore.setStorePath(storePath.toString());
 		fileStore.setDateCreated(DateUtil.getCurrentTime());
 		fileStore.setDateUpdated(DateUtil.getCurrentTime());
-		
 		try {
 			persist(fileStore);
 		}catch(DatabaseException e){
 			throw new DatabaseException("Error saving file store entry to database. ", e);
 		}
-		
 		getEntityManager().flush();
+		
+
+		//
+		// Update root dir store id
+		//
+		try {
+			storeRootDir.setStoreId(fileStore.getStoreId());
+			merge(storeRootDir);
+		}catch(DatabaseException e){
+			throw new DatabaseException("Error updating root dir store id. ", e);
+		}
 		
 		// want to avoid insert operation...
 		fileStore.setRootDirectory(storeRootDir);
 		
+		//
+		// Create directory on file system
+		//
 		try {
 			fsResourceHelper.createDirOnFileSystem(storePath, true);
 		} catch (SecurityException | IOException e) {

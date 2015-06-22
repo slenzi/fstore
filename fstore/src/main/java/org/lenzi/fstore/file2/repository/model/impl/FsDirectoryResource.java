@@ -37,7 +37,7 @@ public class FsDirectoryResource extends FsPathResource {
 		
 		super();
 		
-		init(null, null, null);
+		init(null, null, null, null);
 		
 	}
 	
@@ -45,21 +45,22 @@ public class FsDirectoryResource extends FsPathResource {
 		
 		super();
 		
-		init(dirId, null, null);
+		init(dirId, null, null, null);
 		
 	}
 	
-	public FsDirectoryResource(String name, String relativePath) {
+	public FsDirectoryResource(Long storeId, String name, String relativePath) {
 		
 		super();
 		
-		init(null, name, relativePath);
+		init(null, storeId, name, relativePath);
 		
 	}
 	
-	private void init(Long dirId, String name, String relativePath){
+	private void init(Long dirId, Long storeId, String name, String relativePath){
 		
 		setNodeId(dirId);
+		setStoreId(storeId);
 		setName(name);
 		setRelativePath(relativePath);
 		setPathType(FsPathType.DIRECTORY);

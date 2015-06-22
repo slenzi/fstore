@@ -240,6 +240,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 		// create file entry for meta data
 		FsFileMetaResource metaResource = new FsFileMetaResource();
 		metaResource.setPathType(FsPathType.FILE);
+		metaResource.setStoreId(fsStore.getStoreId());
 		metaResource.setName(fileName);
 		metaResource.setMimeType(contentType);
 		metaResource.setFileSize(Files.size(fileToAdd));
@@ -333,6 +334,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 		FsFileResource updateFileResource = new FsFileResource();
 		updateFileResource.setFileId(existingFileId);
 		updateFileResource.setFileData(fileBytes);
+		existingFsFileEntry.setStoreId(fsStore.getStoreId()); // not really necessary, same store
 		existingFsFileEntry.setName(newFileName);
 		existingFsFileEntry.setMimeType(contentType);
 		existingFsFileEntry.setRelativePath(newRelativeFilePath);

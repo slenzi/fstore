@@ -61,7 +61,6 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		
 	}
 	
-	// TODO - test method. remove.
 	/**
 	 * @deprecated
 	 * Add root directory resource
@@ -70,6 +69,7 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	/*
 	public FsDirectoryResource addRootDirectoryResource(String dirName) throws DatabaseException {
 		
 		if(dirName == null){
@@ -89,6 +89,7 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		return dirResource;
 		
 	}
+	*/
 	
 	/**
 	 * Add directory resource
@@ -161,7 +162,8 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		FsDirectoryResource childDir = null;
 		try {
 			
-			childDir = (FsDirectoryResource) treeRepository.addChildNode(parentDir, new FsDirectoryResource(dirName, relativePath) );
+			childDir = (FsDirectoryResource) treeRepository.addChildNode(parentDir, 
+					new FsDirectoryResource(fsResourceStore.getStoreId(), dirName, relativePath) );
 			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Error adding new directory to parent dir => " + parentDir.getDirId(), e);

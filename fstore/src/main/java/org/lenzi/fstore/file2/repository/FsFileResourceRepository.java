@@ -5,7 +5,6 @@ package org.lenzi.fstore.file2.repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,8 +30,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * For fetching file resource data
+ * 
  * @author sal
- *
  */
 @Repository
 @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
@@ -111,6 +111,8 @@ public class FsFileResourceRepository extends AbstractRepository {
 	
 	}
 	
+	
+	
 	/**
 	 * check at specified depth
 	 * 
@@ -133,14 +135,14 @@ public class FsFileResourceRepository extends AbstractRepository {
 	/**
 	 * check at specified depth
 	 * 
-	 * @param dirName
+	 * @param fileName
 	 * @param dirResource
 	 * @param caseSensitive
 	 * @param maxDepth
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<FsFileMetaResource> haveExistingFile(String dirName, FsDirectoryResource dirResource, boolean caseSensitive, int maxDepth) throws DatabaseException {
+	public List<FsFileMetaResource> haveExistingFile(String fileName, FsDirectoryResource dirResource, boolean caseSensitive, int maxDepth) throws DatabaseException {
 		
 		if(dirResource == null){
 			throw new DatabaseException("Directory resource paramter is null");
@@ -160,11 +162,11 @@ public class FsFileResourceRepository extends AbstractRepository {
 				FsPathResource resource = closure.getChildNode();
 				if(resource.getPathType().equals(FsPathType.FILE)){
 					if(caseSensitive){
-						if(resource.getName().equals(dirName)){
+						if(resource.getName().equals(fileName)){
 							matchingChildFiles.add((FsFileMetaResource) resource);
 						}
 					}else{
-						if(resource.getName().equalsIgnoreCase(dirName)){
+						if(resource.getName().equalsIgnoreCase(fileName)){
 							matchingChildFiles.add((FsFileMetaResource) resource);
 						}
 					}
@@ -179,7 +181,7 @@ public class FsFileResourceRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * check at depth 1
+	 * Check at depth 1
 	 * 
 	 * @param fileName
 	 * @param dirResource

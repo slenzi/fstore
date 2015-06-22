@@ -365,7 +365,6 @@ public class FsResourceService {
 		
 	}
 	
-	// TODO - test method. remove later.
 	/**
 	 * Add directory 
 	 * 
@@ -375,6 +374,7 @@ public class FsResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	public FsDirectoryResource addRootDirectory(String dirName) throws ServiceException {
 		
 		FsDirectoryResource dirResource = null;
@@ -388,6 +388,7 @@ public class FsResourceService {
 		return dirResource;
 		
 	}
+	*/
 	
 	/**
 	 * Get resource store by store id

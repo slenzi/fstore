@@ -154,6 +154,7 @@ public class FsFileResourceMover extends AbstractRepository {
 		logger.info("File move, source => " + absoluteSourceFilePath.toString() + ", target => " + absoluteTargetFilePath.toString());
 		
 		// update meta object
+		sourceEntry.setStoreId(targetStore.getStoreId());
 		sourceEntry.setRelativePath(relativeFilePath);
 		sourceEntry.setDateUpdated(DateUtil.getCurrentTime());
 		merge(sourceEntry);
@@ -228,6 +229,7 @@ public class FsFileResourceMover extends AbstractRepository {
 		treeRepository.removeNode(conflictingTargetEntry);
 		
 		// update meta object
+		sourceEntry.setStoreId(targetStore.getStoreId());
 		sourceEntry.setRelativePath(relativeFilePath);
 		sourceEntry.setDateUpdated(DateUtil.getCurrentTime());
 		merge(sourceEntry);
