@@ -11,7 +11,6 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
-import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

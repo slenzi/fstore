@@ -84,6 +84,8 @@ public class CxfConfig {
 		);
 		
 		factory.setAddress( factory.getAddress() );
+		
+		// TODO - no need for JSON provider, but might need a provider for binary data?
 		factory.setProviders( Arrays.<Object>asList( getJsonProvider() ) );
 		
 		return factory.create();
