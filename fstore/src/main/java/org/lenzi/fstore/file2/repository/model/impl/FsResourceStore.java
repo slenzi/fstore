@@ -2,13 +2,17 @@ package org.lenzi.fstore.file2.repository.model.impl;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -56,14 +60,19 @@ public class FsResourceStore implements Comparable<FsResourceStore>, Serializabl
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;	
 	
+	//
 	// the root directory for the store
+	//
 	@OneToOne(optional=false, fetch=FetchType.EAGER, targetEntity = FsDirectoryResource.class)
 	@JoinColumn(name = "NODE_ID", insertable=false, updatable=false)
 	@Fetch(FetchMode.JOIN)
 	private FsDirectoryResource rootDirectoryResource = null;
 	
-	//@OneToMany(mappedBy="resourceStore", cascade=CascadeType.ALL)
-	//private Set<FsPathResource> pathResources = new HashSet<FsPathResource>(0);
+	//
+	// all the path resource under this resource store
+	//
+	@OneToMany(mappedBy="resourceStore", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	private Set<FsPathResource> pathResources = new HashSet<FsPathResource>(0);
 	
 	public FsResourceStore() {
 		
@@ -195,6 +204,20 @@ public class FsResourceStore implements Comparable<FsResourceStore>, Serializabl
 	 */
 	public void setRootDirectory(FsDirectoryResource rootDirectoryResource){
 		this.rootDirectoryResource = rootDirectoryResource;
+	}
+
+	/**
+	 * @return the pathResources
+	 */
+	public Set<FsPathResource> getPathResources() {
+		return pathResources;
+	}
+
+	/**
+	 * @param pathResources the pathResources to set
+	 */
+	public void setPathResources(Set<FsPathResource> pathResources) {
+		this.pathResources = pathResources;
 	}
 
 	@Override

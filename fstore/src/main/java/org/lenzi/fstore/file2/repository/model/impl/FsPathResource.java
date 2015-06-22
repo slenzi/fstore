@@ -6,11 +6,14 @@ package org.lenzi.fstore.file2.repository.model.impl;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.FetchType;
 import javax.persistence.InheritanceType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -56,6 +59,13 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	@Column(name = "PATH_TYPE", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private FsPathType pathType;
+	
+	//
+	// The resource store that this path resource is under
+	//
+	@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "STORE_ID", nullable = false, insertable=false, updatable=false)
+    private FsResourceStore resourceStore;
 	
 	/**
 	 * 
@@ -135,6 +145,20 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	 */
 	public void setPathType(FsPathType pathType) {
 		this.pathType = pathType;
+	}
+
+	/**
+	 * @return the resourceStore
+	 */
+	public FsResourceStore getResourceStore() {
+		return resourceStore;
+	}
+
+	/**
+	 * @param resourceStore the resourceStore to set
+	 */
+	public void setResourceStore(FsResourceStore resourceStore) {
+		this.resourceStore = resourceStore;
 	}
 
 	/* (non-Javadoc)

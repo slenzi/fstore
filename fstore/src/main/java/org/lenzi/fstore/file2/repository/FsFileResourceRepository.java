@@ -133,7 +133,23 @@ public class FsFileResourceRepository extends AbstractRepository {
 	 */
 	public FsFileMetaResource getFileEntryByPath(String path, FsFileResourceFetch fetch) throws DatabaseException {
 		
-		// for criteria version, generate TypedQuery which returns Tuple
+		
+		// TODO - now that FsPathResource entries are mapped from FsResourceStore, and vice versa, FsResource
+		// store is mapped from FsPathResource, we no longer have to do a multi-select.
+		
+		/*
+		select f
+		from
+			FsFileMetaResource as f
+		left join fetch f.fileResource r
+		where
+			LOWER (
+					CONCAT (f.resourceStore.storePath, f.relativePath)
+				) LIKE LOWER (
+					CONCAT ('%', 'sample_resource_store_add_bulk_file\Sample directory 2\let me eat you kitten.jpg')
+				)
+		*/		
+		
 		
 		final String hqlSelectByPath =
 			"select f " +
