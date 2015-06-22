@@ -25,7 +25,7 @@
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/cxf/api/tree/1">CXF JAX-RS fetch sample tree.</a>
+		<a href="<%=request.getContextPath() %>/cxf/example/tree/1">CXF JAX-RS fetch sample tree.</a>
 	</p>
 	
 	<h2>File 1 Manager Tests</h2>
@@ -48,6 +48,9 @@
 		<a href="<%=request.getContextPath() %>/spring/file2/res">File resource dispatcher test.</a>
 	</p>	
 	
+	<p>
+		<a href="<%=request.getContextPath() %>/cxf/resource/file/101">CXF JAX-RS fetch file resource (fileId=101).</a>
+	</p>
 
 
 </body>

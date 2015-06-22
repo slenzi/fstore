@@ -42,7 +42,7 @@ public class PostgreSQLAddFsFileResourceBulkTest extends AbstractAddFsFileResour
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_add_bulk_file";
+		return "/Users/slenzi/Programming/file_store/sample_resource_store_add_file_bulk";
 		
 	}
 

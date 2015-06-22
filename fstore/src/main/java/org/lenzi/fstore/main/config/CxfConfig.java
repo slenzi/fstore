@@ -8,15 +8,17 @@ import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.lenzi.fstore.example.web.rs.JaxRsApiApplication;
+import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
 import org.lenzi.fstore.example.web.rs.TreeResource;
+import org.lenzi.fstore.file2.web.rs.FileResource;
+import org.lenzi.fstore.file2.web.rs.JaxRsResourceStoreApplication;
 import org.lenzi.fstore.web.rs.exception.WebServiceExceptionMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 /**
- * Configure our Apache CXF "api" service
+ * Configure our Apache CXF services
  * 
  * @author slenzi
  */
@@ -33,10 +35,19 @@ public class CxfConfig {
 		return new SpringBus();
 	}
 	
-	@Bean @DependsOn ( "cxf" )
-	public Server jaxRsServer() {
+	/**
+	 * Load "example" server which runs example service
+	 * 
+	 * @return
+	 */
+	@Bean(name="jaxRsExampleServer")
+	@DependsOn ( "cxf" )
+	public Server getJaxRsExampleServer() {
 		
-		JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint( jaxRsApiApplication(), JAXRSServerFactoryBean.class );
+		RuntimeDelegate delegate = RuntimeDelegate.getInstance();
+		
+		JAXRSServerFactoryBean factory = delegate.createEndpoint( 
+				getJaxRsExampleApplication(), JAXRSServerFactoryBean.class );
 		
 		// add all our service beans
 		factory.setServiceBeans(
@@ -47,17 +58,55 @@ public class CxfConfig {
 		
 		factory.setAddress( factory.getAddress() );
 		factory.setProviders( Arrays.<Object>asList( getJsonProvider() ) );
+		
 		return factory.create();
 	}
 	
 	/**
-	 * Create our "/api" jax-rs application 
+	 * Load "resource" server which runs file resource service
+	 * 
+	 * @return
+	 */
+	@Bean(name="jaxRsResourceServer")
+	@DependsOn ( "cxf" )
+	public Server getJaxRsResourceServer() {
+		
+		RuntimeDelegate delegate = RuntimeDelegate.getInstance();
+		
+		JAXRSServerFactoryBean factory = delegate.createEndpoint( 
+				getJaxRsResourceStoreApplication(), JAXRSServerFactoryBean.class );
+		
+		// add all our service beans
+		factory.setServiceBeans(
+			Arrays.<Object>asList(
+					getFileResourceBean(), getExceptionMapper()
+			)
+		);
+		
+		factory.setAddress( factory.getAddress() );
+		factory.setProviders( Arrays.<Object>asList( getJsonProvider() ) );
+		
+		return factory.create();
+	}
+	
+	/**
+	 * Create our "/example" jax-rs application 
 	 * 
 	 * @return
 	 */
 	@Bean 
-	public JaxRsApiApplication jaxRsApiApplication() {
-		return new JaxRsApiApplication();
+	public JaxRsExampleApplication getJaxRsExampleApplication() {
+		return new JaxRsExampleApplication();
+	}
+	
+	/**
+	 * Create our "/resource" jax-rs application
+	 * 
+	 * @return
+	 */
+	@Bean
+	public JaxRsResourceStoreApplication getJaxRsResourceStoreApplication(){
+		return new JaxRsResourceStoreApplication();
 	}
 	
 	/**
@@ -68,6 +117,16 @@ public class CxfConfig {
 	@Bean
 	public TreeResource getTreeResourceBean(){
 		return new TreeResource();
+	}
+	
+	/**
+	 * Jax-rs file resource bean
+	 * 
+	 * @return
+	 */
+	@Bean
+	public FileResource getFileResourceBean(){
+		return new FileResource();
 	}
 	
 	/**

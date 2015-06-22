@@ -2,7 +2,6 @@ package org.lenzi.fstore.file2.concurrent.service;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -186,7 +185,7 @@ public class FsQueuedResourceService {
 	
 	/**
 	 * Fetch the resource store for a specific path resource, e.g. for any directory resource or file
-	 * mete resource.
+	 * meta resource.
 	 * 
 	 * @param resourceId - the id of the resource, e.g. id of a FsDirectoryResource, or FsFileMetaResource,
 	 * 	or some other resource in the tree which extends from FsPathResource.

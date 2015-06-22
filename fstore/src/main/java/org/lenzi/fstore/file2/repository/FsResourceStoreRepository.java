@@ -1,5 +1,6 @@
 package org.lenzi.fstore.file2.repository;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,6 +74,13 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 */
 	public List<FsResourceStore> getParentStores(Path dirPath) throws DatabaseException {
 		
+		String path = dirPath.toString();
+		if(!path.endsWith(File.separator)){
+			path += File.separator;
+		}
+		
+		logger.info("Checking for existing parent file stores for path, " + path);
+		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
 		Class<FsResourceStore> type = FsResourceStore.class;
@@ -81,14 +89,14 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		
 		query.select(root);
 		query.where(
-				cb.like( cb.concat(root.get(FsResourceStore_.storePath), "%"), dirPath.toString() )
+				cb.like( cb.concat(root.get(FsResourceStore_.storePath), File.separator + "%"), path )
 				);
 		
 		List<FsResourceStore> stores = null;
 		try {
 			stores = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(query));
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Error checking if any parent stores exists for path " + dirPath.toString(), e);
+			throw new DatabaseException("Error checking if any parent stores exists for path " + path, e);
 		}
 		
 		return stores;
@@ -105,6 +113,13 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 */
 	public List<FsResourceStore> getChildStores(Path dirPath) throws DatabaseException {
 		
+		String path = dirPath.toString();
+		if(!path.endsWith(File.separator)){
+			path += File.separator;
+		}
+		
+		logger.info("Checking for existing child file stores for path, " + path);
+		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
 		Class<FsResourceStore> type = FsResourceStore.class;
@@ -113,14 +128,14 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		
 		query.select(root);
 		query.where(
-				cb.like( root.get(FsResourceStore_.storePath), dirPath.toString() + "%" )
+				cb.like( root.get(FsResourceStore_.storePath), path + "%" )
 				);
 		
 		List<FsResourceStore> stores = null;
 		try {
 			stores = ResultFetcher.getResultListOrNull(getEntityManager().createQuery(query));
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Error checking if any child stores exists for path " + dirPath.toString(), e);
+			throw new DatabaseException("Error checking if any child stores exists for path " + path, e);
 		}
 		
 		return stores;
