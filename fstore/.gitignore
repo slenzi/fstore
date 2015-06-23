@@ -3,5 +3,5 @@
 .project
 .settings
 src/generated/
-
+src/main/webapp/bower_components/
 /Users/*
