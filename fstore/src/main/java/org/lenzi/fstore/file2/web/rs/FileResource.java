@@ -43,8 +43,15 @@ public class FileResource {
 		
 	}
 	
+	/**
+	 * Download file resource
+	 * 
+	 * @param fileId - id of file resource to download
+	 * @return
+	 * @throws WebServiceException
+	 */
 	@GET
-	@Path("/{fileId}")
+	@Path("/download/{fileId}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public Response getFile(@PathParam("fileId") Long fileId) throws WebServiceException {
 		

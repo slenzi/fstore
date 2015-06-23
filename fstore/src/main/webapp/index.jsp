@@ -41,15 +41,23 @@
 	<h2>File 2 Manager Tests</h2>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/file2/test/makestore">Create sample file store.</a>
+		<a href="<%=request.getContextPath() %>/spring/file2/test/makestore">Create sample file store.</a><br>
+		Creates a sample file store with some directories and files
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/file2/res">File resource dispatcher test.</a>
-	</p>	
+		<a href="<%=request.getContextPath() %>/spring/file2/res/download/14">Dispatcher download file resource (fileId=14)</a><br>
+		Download file #14 from spring controller, should prompt user with a save dialog window.
+	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/cxf/resource/file/101">CXF JAX-RS fetch file resource (fileId=101).</a>
+		<a href="<%=request.getContextPath() %>/spring/file2/res/load/14">Dispatcher load file resource (fileId=14)</a><br>
+		Load file #14 from spring controller, should load file directly in browser for known types (text, images, etc) and prompt user with save dialog for other types.
+	</p>
+	
+	<p>
+		<a href="<%=request.getContextPath() %>/cxf/resource/file/download/14">CXF JAX-RS download file resource (fileId=14).</a><br>
+		Download file #14 from Apache CXF JAX-RS service, should prompt user with a save dialog window.
 	</p>
 
 

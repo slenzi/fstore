@@ -123,13 +123,13 @@ public class FsFileResourceRepository extends AbstractRepository {
 	 * 
 	 * e.g.
 	 * Resource store path = /test/stores/testStore
-	 * File resource path = /test/stores/testStore/sampleDir1/lolcat.jpg
+	 * File resource full path = /test/stores/testStore/sampleDir1/lolcat.jpg
 	 * 
 	 * Using above example,
 	 * Resource store root directory name = testStore
 	 * File resource relative path = /sampleDir1/lolcat.jpg
 	 * 
-	 * So, the path value to pass to this method would be, testStore//sampleDir1/lolcat.jpg
+	 * So, the path value to pass to this method would be, testStore/sampleDir1/lolcat.jpg
 	 * 
 	 * @throws DatabaseException
 	 */

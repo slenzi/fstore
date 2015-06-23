@@ -3,6 +3,8 @@
  */
 package org.lenzi.fstore.file2.web.controller;
 
+import java.io.ByteArrayInputStream;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,9 +16,11 @@ import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,12 +55,17 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	
 	//@RequestMapping("/**")
 	
+	/**
+	 * Download file resource
+	 * 
+	 * @param fileId - id of file resource to download
+	 * @return
+	 */
 	@RequestMapping(
-			value = "/{fileId}", 
+			value = "/download/{fileId}", 
 			method = RequestMethod.GET
 			)
-	public HttpEntity<byte[]> dispatchFileResource(
-			@PathVariable("fileId") Long fileId){
+	public HttpEntity<byte[]> downloadFileResource(@PathVariable("fileId") Long fileId){
 		
 		// TODO - if file data is on file system, then use it, otherwise go to database.
 
@@ -65,14 +74,11 @@ public class FsResourceDispatcher extends AbstractSpringController {
 			fileResource = fsResourceService.getFileResource(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		} catch (ServiceException e) {
 			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
-			//handleError(logger,"Error fetching file, id = " + fileId, model, e);
 		}
-		
 		String mimeType = fileResource.getMimeType();
-		
 		byte[] fileData = fileResource.getFileResource().getFileData();
 		
-		logger.info("Sending file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
+		logger.info("Download file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
 				", byte size => " + fileData.length);
 	
 		final HttpHeaders headers = new HttpHeaders();
@@ -85,6 +91,41 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	    
 	    //return new ResponseEntity<byte[]>(fileData, headers, HttpStatus.OK);
 	    return new HttpEntity<byte[]>(fileData, headers);
+		
+	}
+	
+	/**
+	 * Load file resource
+	 * 
+	 * @param fileId - id of file resource to load
+	 * @return
+	 */
+	@RequestMapping(
+			value = "/load/{fileId}", 
+			method = RequestMethod.GET
+			)
+	public ResponseEntity<InputStreamResource> loadFileResource(@PathVariable("fileId") Long fileId){
+		
+		// TODO - if file data is on file system, then use it, otherwise go to database.
+
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsResourceService.getFileResource(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
+		} catch (ServiceException e) {
+			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
+		}
+		String mimeType = fileResource.getMimeType();
+		byte[] fileData = fileResource.getFileResource().getFileData();
+		
+		logger.info("Load file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
+				", byte size => " + fileData.length);
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
+		
+		return ResponseEntity.ok()
+	            .contentLength(fileData.length)
+	            .contentType(MediaType.parseMediaType(mimeType))
+	            .body(new InputStreamResource(bis));
 		
 	}
 	
