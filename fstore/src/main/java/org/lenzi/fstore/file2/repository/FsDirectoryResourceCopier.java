@@ -84,8 +84,6 @@ public class FsDirectoryResourceCopier extends AbstractRepository {
 		
 		//logger.info("Copying the following tree:\n" + sourceTree.printTree());
 		
-		//FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId); // bug? should have been sourceDirId
-		//FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
 		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByPathResourceId(sourceDirId);
 		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByPathResourceId(targetDirId);
 		
@@ -166,9 +164,7 @@ public class FsDirectoryResourceCopier extends AbstractRepository {
 		FsDirectoryResource existingDir = null;
 		
 		sourceDir = fsDirectoryResourceRepository.getDirectoryResourceById(sourceDirId);
-		//targetParentDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetParentDirId);
 		targetParentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(targetParentDirId, 1);
-		//existingDir = fsDirectoryResourceRepository.haveExistingChildDirectory(sourceDir.getName(), targetParentDirId, false);
 		existingDir = fsDirectoryResourceRepository.haveExistingChildDirectory(sourceDir.getName(), targetParentDir, false);
 		
 		boolean needMergeDirectory = existingDir != null ? true : false;

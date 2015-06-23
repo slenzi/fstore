@@ -46,7 +46,7 @@
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/file2/res/download/14">Dispatcher download file resource (fileId=14)</a><br>
+		<a href="<%=request.getContextPath() %>/spring/file2/res/download/id/14">Dispatcher download file resource (fileId=14)</a><br>
 		Download file #14 from spring controller, should prompt user with a save dialog window.
 	</p>
 	

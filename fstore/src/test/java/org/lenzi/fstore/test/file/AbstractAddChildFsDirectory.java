@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file.repository.model.impl.FsFileStore;
 import org.lenzi.fstore.file.service.FsService;
@@ -95,7 +96,7 @@ public abstract class AbstractAddChildFsDirectory extends AbstractTreeTest {
 		}
 		assertNotNull(subDirPath1);
 		logger.info("Sub dir full path 1 => " + subDirPath1.toString());
-		String expectedPath1 = getTestFileStorePath() + File.separator + subDirName1;
+		String expectedPath1 = getTestFileStorePath() + FsConstants.FILE_SEPARATOR + subDirName1;
 		assertEquals(subDirPath1.toString(), Paths.get(expectedPath1).toString());		
 		
 		//
@@ -127,7 +128,7 @@ public abstract class AbstractAddChildFsDirectory extends AbstractTreeTest {
 		}
 		assertNotNull(subDirPath2);
 		logger.info("Sub dir full path 2 => " + subDirPath2.toString());
-		String expectedPath2 = getTestFileStorePath() + File.separator + subDirName1 + File.separator + subDirName2;
+		String expectedPath2 = getTestFileStorePath() + FsConstants.FILE_SEPARATOR + subDirName1 + FsConstants.FILE_SEPARATOR + subDirName2;
 		assertEquals(subDirPath2.toString(), Paths.get(expectedPath2).toString());		
 		
 

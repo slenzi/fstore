@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.FileUtil;
@@ -42,8 +43,8 @@ public class FsHelper {
 	public String getAbsoluteDirectoryString(FsFileStore fsStore, FsDirectory fsDirectory){
 		
 		String dirRelativePath = fsDirectory.getRelativeDirPath();
-		if(!dirRelativePath.startsWith(File.separator)){
-			dirRelativePath = File.separator + dirRelativePath;
+		if(!dirRelativePath.startsWith(FsConstants.FILE_SEPARATOR)){
+			dirRelativePath = FsConstants.FILE_SEPARATOR + dirRelativePath;
 		}
 		return fsStore.getStorePath() + dirRelativePath;		
 		
@@ -60,7 +61,7 @@ public class FsHelper {
 	 */
 	public String getAbsoluteFileString(FsFileStore fsStore, FsDirectory fsDirectory, FsFileEntry fsFileEntry){
 		
-		return getAbsoluteDirectoryString(fsStore, fsDirectory) + File.separator + fsFileEntry.getFileName();	
+		return getAbsoluteDirectoryString(fsStore, fsDirectory) + FsConstants.FILE_SEPARATOR + fsFileEntry.getFileName();	
 		
 	}
 	

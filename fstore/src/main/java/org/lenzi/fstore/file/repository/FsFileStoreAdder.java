@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
@@ -118,7 +119,7 @@ public class FsFileStoreAdder extends AbstractRepository {
 		FsDirectory storeRootDir = null;
 		try {
 			
-			storeRootDir = treeRepository.addRootNode(new FsDirectory(storePath.getFileName().toString(), File.separator));
+			storeRootDir = treeRepository.addRootNode(new FsDirectory(storePath.getFileName().toString(), FsConstants.FILE_SEPARATOR));
 			
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to create root directory tree node for file store, name => " + 

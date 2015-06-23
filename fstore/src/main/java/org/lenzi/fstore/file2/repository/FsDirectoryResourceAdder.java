@@ -3,7 +3,6 @@
  */
 package org.lenzi.fstore.file2.repository;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,36 +61,6 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 	}
 	
 	/**
-	 * @deprecated
-	 * Add root directory resource
-	 * 
-	 * @param dirName
-	 * @return
-	 * @throws DatabaseException
-	 */
-	/*
-	public FsDirectoryResource addRootDirectoryResource(String dirName) throws DatabaseException {
-		
-		if(dirName == null){
-			throw new DatabaseException("Directory name param is null.");
-		}
-		
-		FsDirectoryResource dirResource = null;
-		try {
-			
-			dirResource = (FsDirectoryResource) treeRepository.addRootNode(
-					new FsDirectoryResource(dirName, File.separator));
-			
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Failed to create new root directory resource.", e);
-		}
-		
-		return dirResource;
-		
-	}
-	*/
-	
-	/**
 	 * Add directory resource
 	 * 
 	 * @param parentDirId
@@ -122,7 +91,6 @@ public class FsDirectoryResourceAdder extends AbstractRepository {
 		
 		FsResourceStore store = null;
 		try {
-			//store = fsResourceStoreRepository.getStoreByDirectoryId(parentDir.getDirId());
 			store = fsResourceStoreRepository.getStoreByPathResourceId(parentDir.getDirId());
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch resource store for dir id => " + parentDir.getDirId(), e);

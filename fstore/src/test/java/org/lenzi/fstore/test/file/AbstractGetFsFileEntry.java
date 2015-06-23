@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.file.repository.FsFileEntryRepository.FsFileEntryFetch;
 import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file.repository.model.impl.FsFileEntry;
@@ -116,7 +117,7 @@ public abstract class AbstractGetFsFileEntry extends AbstractTreeTest {
 		
 		assertNotNull(dirPath);
 		logger.info("Path of directory => " + dirPath.toString());
-		String fullFilePath = dirPath.toString() + File.separator + fileEntry.getFileName();
+		String fullFilePath = dirPath.toString() + FsConstants.FILE_SEPARATOR + fileEntry.getFileName();
 		Path targetPath = Paths.get(fullFilePath);
 		logger.info("Path of file => " + targetPath.toString());
 		assertTrue(Files.exists(targetPath));

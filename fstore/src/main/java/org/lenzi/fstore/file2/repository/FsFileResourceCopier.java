@@ -89,18 +89,14 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// get source information
 		//
 		FsDirectoryResource sourceDir = fsDirectoryResourceRepository.getDirectoryResourceByFileId(fileId);
-		//FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(sourceDir.getDirId());
 		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByPathResourceId(sourceDir.getDirId());
 		FsFileMetaResource sourceEntry = fsFileResourceRepository.getFileEntry(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		
 		//
 		// get target information
 		//
-		//FsDirectoryResource targetDir = fsDirectoryResourceRepository.getDirectoryResourceById(targetDirId);
 		FsDirectoryResource targetDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(targetDirId, 1);
-		//FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDir.getDirId());
 		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByPathResourceId(targetDir.getDirId());
-		//FsFileMetaResource conflictingTargetEntry = fsFileResourceRepository.haveExistingFile(sourceEntry.getName(), targetDir.getDirId(), false);
 		FsFileMetaResource conflictingTargetEntry = fsFileResourceRepository.haveExistingFile(sourceEntry.getName(), targetDir, false);	
 		
 		// will be true of we need to replace the existing file in the target directory
@@ -109,7 +105,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// replace existing file in target dir with file from source dir
 		if(needReplace && replaceExisting){
 			
-			return copyReplace(sourceStore, targetStore, /*sourceDir,*/ targetDir, sourceEntry, conflictingTargetEntry);
+			return copyReplace(sourceStore, targetStore, targetDir, sourceEntry, conflictingTargetEntry);
 			
 		// user specified not to replace, throw database exception
 		}else if(needReplace && !replaceExisting){
@@ -120,7 +116,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// simply copy file to target dir
 		}else{
 			
-			return copy(sourceStore, targetStore, /*sourceDir,*/ targetDir, sourceEntry);
+			return copy(sourceStore, targetStore, targetDir, sourceEntry);
 			
 		}		
 		
@@ -139,7 +135,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 	 */
 	private FsFileMetaResource copy(
 			FsResourceStore sourceStore, FsResourceStore targetStore,
-			/*FsDirectoryResource sourceDir,*/ FsDirectoryResource targetDir,
+			FsDirectoryResource targetDir,
 			FsFileMetaResource sourceEntry) throws DatabaseException {
 	
 		if(sourceEntry.getFileResource() == null){
@@ -188,13 +184,13 @@ public class FsFileResourceCopier extends AbstractRepository {
 			Files.copy(absoluteSourceFilePath, absoluteTargetFilePath);
 			
 		} catch (FileAlreadyExistsException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		} catch (DirectoryNotEmptyException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		} catch (IOException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		} catch (SecurityException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		}
 		
 		return persistedMetaResource;
@@ -279,13 +275,13 @@ public class FsFileResourceCopier extends AbstractRepository {
 			FileUtil.copyFile(absoluteSourceFilePath, absoluteTargetFilePath);
 			
 		} catch (FileAlreadyExistsException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		} catch (DirectoryNotEmptyException e){
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		} catch (IOException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		} catch (SecurityException e) {
-			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, /*sourceDir,*/ targetDir, e);
+			throw buildDatabaseExceptionCopyError(absoluteSourceFilePath, absoluteTargetFilePath, targetDir, e);
 		}
 		
 		return persistedMetaResource;

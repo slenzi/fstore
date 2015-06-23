@@ -1,11 +1,11 @@
 package org.lenzi.fstore.file2.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.FileUtil;
@@ -48,8 +48,8 @@ public class FsResourceHelper {
 	public String getAbsoluteDirectoryString(FsResourceStore fsStore, FsDirectoryResource fsDirectory){
 		
 		String relPath = fsDirectory.getRelativePath();
-		if(!relPath.startsWith(File.separator)){
-			relPath = File.separator + relPath;
+		if(!relPath.startsWith(FsConstants.FILE_SEPARATOR)){
+			relPath = FsConstants.FILE_SEPARATOR + relPath;
 		}
 		return fsStore.getStorePath() + relPath;		
 		
@@ -66,8 +66,8 @@ public class FsResourceHelper {
 	public String getAbsoluteFileString(FsResourceStore fsStore, FsFileMetaResource fsFileEntry){
 		
 		String relPath = fsFileEntry.getRelativePath();
-		if(!relPath.startsWith(File.separator)){
-			relPath = File.separator + relPath;
+		if(!relPath.startsWith(FsConstants.FILE_SEPARATOR)){
+			relPath = FsConstants.FILE_SEPARATOR + relPath;
 		}
 		return fsStore.getStorePath() + relPath;		
 		
@@ -84,7 +84,7 @@ public class FsResourceHelper {
 	 */
 	public String getAbsoluteFileString(FsResourceStore fsStore, FsDirectoryResource fsDirectory, FsFileMetaResource fsFileEntry){
 		
-		return getAbsoluteDirectoryString(fsStore, fsDirectory) + File.separator + fsFileEntry.getName();
+		return getAbsoluteDirectoryString(fsStore, fsDirectory) + FsConstants.FILE_SEPARATOR + fsFileEntry.getName();
 		
 	}
 	
@@ -160,7 +160,7 @@ public class FsResourceHelper {
 	 */
 	public Path getAbsolutePath(FsResourceStore fsStore, FsDirectoryResource fsDirectory, String pathName) {
 		
-		return Paths.get(fsStore.getStorePath() + fsDirectory.getRelativePath() + File.separator + pathName);
+		return Paths.get(fsStore.getStorePath() + fsDirectory.getRelativePath() + FsConstants.FILE_SEPARATOR + pathName);
 		
 	}
 	
@@ -175,13 +175,17 @@ public class FsResourceHelper {
 	public String getRelativePath(FsResourceStore fsStore, FsDirectoryResource fsDirectory, String pathName){
 		
 		Path storePath = Paths.get(fsStore.getStorePath());
-		Path childPath =  Paths.get(fsStore.getStorePath() + fsDirectory.getRelativePath() + File.separator + pathName);
+		Path childPath =  Paths.get(fsStore.getStorePath() + fsDirectory.getRelativePath() + FsConstants.FILE_SEPARATOR + pathName);
 		
 		Path childRelativePath = storePath.relativize(childPath);
 		
 		String sChildRelativePath = childRelativePath.toString();
-		if(!sChildRelativePath.startsWith(File.separator)){
-			sChildRelativePath = File.separator + sChildRelativePath;
+		
+		// all paths in database use forward slash
+		sChildRelativePath = sChildRelativePath.replace("\\", FsConstants.FILE_SEPARATOR);
+		
+		if(!sChildRelativePath.startsWith(FsConstants.FILE_SEPARATOR)){
+			sChildRelativePath = FsConstants.FILE_SEPARATOR + sChildRelativePath;
 		}
 		
 		return sChildRelativePath;

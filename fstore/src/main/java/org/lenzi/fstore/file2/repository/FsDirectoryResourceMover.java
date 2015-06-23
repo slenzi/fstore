@@ -87,8 +87,6 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 		
 		//logger.info("Copying the following tree:\n" + sourceTree.printTree());
 		
-		//FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId); // bug? should have been sourceDirId
-		//FsResourceStore targetStore = fsResourceStoreRepository.getStoreByDirectoryId(targetDirId);
 		FsResourceStore sourceStore = fsResourceStoreRepository.getStoreByPathResourceId(sourceDirId);
 		FsResourceStore targetStore = fsResourceStoreRepository.getStoreByPathResourceId(targetDirId);
 		
@@ -139,8 +137,6 @@ public class FsDirectoryResourceMover extends AbstractRepository {
 		}else if(resourceToMove.getPathType().equals(FsPathType.FILE)){
 			
 			// move/merge file
-			
-			//fsFileResourceCopier.copyReplaceTraversal(resourceToCopy.getNodeId(), targetParentDirId, sourceStore, targetStore, replaceExisting);
 			
 			fsFileResourceMover.moveReplaceTraversal(resourceToMove.getNodeId(), targetParentDirId, sourceStore, targetStore, replaceExisting);
 			

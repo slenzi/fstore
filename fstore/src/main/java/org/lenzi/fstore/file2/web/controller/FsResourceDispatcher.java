@@ -140,7 +140,7 @@ public class FsResourceDispatcher extends AbstractSpringController {
 		String filePath = extractPathFromPattern(request);
 		
 		logger.info("loading file path before => " + filePath);
-		filePath = filePath.replace("/", File.separator); // convert web path separator to file path separator
+		//filePath = filePath.replace("/", File.separator); // convert web path separator to file path separator
 		logger.info("loading file path after => " + filePath);
 		
 		FsFileMetaResource fileResource = this.getFileByPath(filePath);

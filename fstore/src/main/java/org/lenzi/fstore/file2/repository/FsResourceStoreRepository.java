@@ -1,6 +1,5 @@
 package org.lenzi.fstore.file2.repository;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +13,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
@@ -22,7 +22,6 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CollectionUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource_;
-import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore_;
@@ -75,8 +74,12 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	public List<FsResourceStore> getParentStores(Path dirPath) throws DatabaseException {
 		
 		String path = dirPath.toString();
-		if(!path.endsWith(File.separator)){
-			path += File.separator;
+		
+		// all paths in database use forward slash
+		path = path.replace("\\", FsConstants.FILE_SEPARATOR);
+		
+		if(!path.endsWith(FsConstants.FILE_SEPARATOR)){
+			path += FsConstants.FILE_SEPARATOR;
 		}
 		
 		logger.info("Checking for existing parent file stores for path, " + path);
@@ -89,7 +92,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		
 		query.select(root);
 		query.where(
-				cb.like( cb.concat(root.get(FsResourceStore_.storePath), File.separator + "%"), path )
+				cb.like( cb.concat(root.get(FsResourceStore_.storePath), FsConstants.FILE_SEPARATOR + "%"), path )
 				);
 		
 		List<FsResourceStore> stores = null;
@@ -114,8 +117,11 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	public List<FsResourceStore> getChildStores(Path dirPath) throws DatabaseException {
 		
 		String path = dirPath.toString();
-		if(!path.endsWith(File.separator)){
-			path += File.separator;
+		
+		path = path.replace("\\", FsConstants.FILE_SEPARATOR);
+		
+		if(!path.endsWith(FsConstants.FILE_SEPARATOR)){
+			path += FsConstants.FILE_SEPARATOR;
 		}
 		
 		logger.info("Checking for existing child file stores for path, " + path);
@@ -217,6 +223,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	/*
 	public FsResourceStore getStoreByDirectoryId(Long dirId) throws DatabaseException {
 		
 		FsDirectoryResource rootDir = null;
@@ -236,6 +243,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		return store;
 		
 	}
+	*/
 	
 	/**
 	 * Get store by file id
@@ -245,6 +253,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @return
 	 * @throws DatabaseException
 	 */
+	/*
 	public FsResourceStore getStoreByFileId(Long fileId) throws DatabaseException {
 		
 		// TODO - test this method
@@ -266,6 +275,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		return store;
 		
 	}
+	*/
 	
 	/**
 	 * Fetch resource store by any path resource, a FsDirectoryResource, or FsFileMetaResource, or any other future

@@ -7,8 +7,6 @@ import javax.persistence.criteria.Root;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.file2.repository.model.impl.FsFileResource;
-import org.lenzi.fstore.file2.repository.model.impl.FsFileResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore_;
 import org.slf4j.Logger;

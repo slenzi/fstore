@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
@@ -115,11 +116,11 @@ public class FsDirectoryAdder extends AbstractRepository {
 		
 		// CmsDirectory.getRelativeDirPath() returns a path relative to the store path
 		Path storePath = Paths.get(fsFileStore.getStorePath());
-		Path childPath =  Paths.get(fsFileStore.getStorePath() + parentDir.getRelativeDirPath() + File.separator + dirName);
+		Path childPath =  Paths.get(fsFileStore.getStorePath() + parentDir.getRelativeDirPath() + FsConstants.FILE_SEPARATOR + dirName);
 		Path childRelativePath = storePath.relativize(childPath);
 		String sChildRelativePath = childRelativePath.toString();
-		if(!sChildRelativePath.startsWith(File.separator)){
-			sChildRelativePath = File.separator + sChildRelativePath;
+		if(!sChildRelativePath.startsWith(FsConstants.FILE_SEPARATOR)){
+			sChildRelativePath = FsConstants.FILE_SEPARATOR + sChildRelativePath;
 		}
 		
 		// add new child dir

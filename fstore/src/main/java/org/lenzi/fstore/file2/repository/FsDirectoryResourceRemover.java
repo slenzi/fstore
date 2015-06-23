@@ -95,9 +95,6 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 					" with node id " + rootResource.getNodeId() + " does not appear to be a " + FsDirectoryResource.class.getName());
 		}
 		
-		//FsDirectoryResource fsDirectory = fsDirectoryResourceRepository.getDirectoryResourceById(dirId);
-		
-		//FsResourceStore fsStore = fsResourceStoreRepository.getStoreByDirectoryId(rootDir.getDirId());
 		FsResourceStore fsStore = fsResourceStoreRepository.getStoreByPathResourceId(rootDir.getDirId());
 		
 		//

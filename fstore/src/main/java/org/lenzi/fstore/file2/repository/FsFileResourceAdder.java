@@ -95,7 +95,6 @@ public class FsFileResourceAdder extends AbstractRepository {
 		
 		FsResourceStore store = null;
 		try {
-			//store = fsResourceStoreRepository.getStoreByDirectoryId(fsDirId);
 			store = fsResourceStoreRepository.getStoreByPathResourceId(fsDirId);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch resource store for dir id => " + fsDirId, e);
@@ -151,7 +150,6 @@ public class FsFileResourceAdder extends AbstractRepository {
 		
 		FsResourceStore store = null;
 		try {
-			//store = fsResourceStoreRepository.getStoreByDirectoryId(fsDirId);
 			store = fsResourceStoreRepository.getStoreByPathResourceId(fsDirId);
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to fetch resource store for dir id => " + fsDirId, e);

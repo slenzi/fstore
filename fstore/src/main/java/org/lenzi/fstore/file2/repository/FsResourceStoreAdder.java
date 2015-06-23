@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.lenzi.fstore.core.constants.FsConstants;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
@@ -107,11 +108,15 @@ public class FsResourceStoreAdder extends AbstractRepository {
 		FsDirectoryResource storeRootDir = null;
 		try {
 			storeRootDir = (FsDirectoryResource) treeRepository.addRootNode(
-					new FsDirectoryResource(0L, storePath.getFileName().toString(), File.separator));
+					new FsDirectoryResource(0L, storePath.getFileName().toString(), FsConstants.FILE_SEPARATOR));
 		} catch (DatabaseException e) {
 			throw new DatabaseException("Failed to create root directory tree node for file store, name => " + 
 					name + ", path => " + storePath.toString(), e);
 		}
+		
+		// all paths in database use forward slash
+		String convertedStorePath = storePath.toString();
+		convertedStorePath = convertedStorePath.replace("\\", FsConstants.FILE_SEPARATOR);
 		
 		//
 		// create new file store and save to db
@@ -120,7 +125,7 @@ public class FsResourceStoreAdder extends AbstractRepository {
 		fileStore.setName(name);
 		fileStore.setDescription(description);
 		fileStore.setNodeId(storeRootDir.getNodeId());
-		fileStore.setStorePath(storePath.toString());
+		fileStore.setStorePath(convertedStorePath);
 		fileStore.setDateCreated(DateUtil.getCurrentTime());
 		fileStore.setDateUpdated(DateUtil.getCurrentTime());
 		try {
