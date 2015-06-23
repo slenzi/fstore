@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -24,6 +25,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource_;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore_;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,8 +87,8 @@ public class FsFileResourceRepository extends AbstractRepository {
 		
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		
-		CriteriaQuery<FsFileMetaResource> nodeSelect = criteriaBuilder.createQuery(FsFileMetaResource.class);
-		Root<FsFileMetaResource> nodeSelectRoot = nodeSelect.from(FsFileMetaResource.class);
+		CriteriaQuery<FsFileMetaResource> query = criteriaBuilder.createQuery(FsFileMetaResource.class);
+		Root<FsFileMetaResource> root = query.from(FsFileMetaResource.class);
 		
 		switch(fetch){
 		
@@ -96,7 +98,7 @@ public class FsFileResourceRepository extends AbstractRepository {
 			
 			// also fetch FsFileResource
 			case FILE_META_WITH_DATA:
-				nodeSelectRoot.fetch(FsFileMetaResource_.fileResource, JoinType.LEFT);
+				root.fetch(FsFileMetaResource_.fileResource, JoinType.LEFT);
 				break;
 			
 			// default to just meta data, no join
@@ -105,12 +107,12 @@ public class FsFileResourceRepository extends AbstractRepository {
 	
 		}		
 		
-		nodeSelect.select(nodeSelectRoot);
-		nodeSelect.where(
-				criteriaBuilder.equal(nodeSelectRoot.get(FsFileMetaResource_.nodeId), fileId)
+		query.select(root);
+		query.where(
+				criteriaBuilder.equal(root.get(FsFileMetaResource_.nodeId), fileId)
 				);
 		
-		return ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(nodeSelect));
+		return ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 	
 	}
 	
@@ -132,12 +134,9 @@ public class FsFileResourceRepository extends AbstractRepository {
 	 * @throws DatabaseException
 	 */
 	public FsFileMetaResource getFileEntryByPath(String path, FsFileResourceFetch fetch) throws DatabaseException {
-		
-		
-		// TODO - now that FsPathResource entries are mapped from FsResourceStore, and vice versa, FsResource
-		// store is mapped from FsPathResource, we no longer have to do a multi-select.
-		
-		/*
+
+		/* hql
+		 
 		select f
 		from
 			FsFileMetaResource as f
@@ -148,59 +147,42 @@ public class FsFileResourceRepository extends AbstractRepository {
 				) LIKE LOWER (
 					CONCAT ('%', 'sample_resource_store_add_bulk_file\Sample directory 2\let me eat you kitten.jpg')
 				)
-		*/		
+		*/
 		
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
-		final String hqlSelectByPath =
-			"select f " +
-			"from " +
-			"	FsFileMetaResource as f, FsResourceStore s " +
-			"where " +
-			"	f.storeId = s.storeId " +
-			"	and LOWER ( " +
-			"			CONCAT (s.storePath, f.relativePath) " +
-			"		) LIKE LOWER ( " +
-			"			CONCAT ('%', :path) " +
-			"		)";
-		
-		final String hqlSelectByPathWithByte =
-				"select f " +
-				"from " +
-				"	FsFileMetaResource as f, FsResourceStore s " +
-				"left join fetch f.fileResource r " +
-				"where " +
-				"	f.storeId = s.storeId " +
-				"	and LOWER ( " +
-				"			CONCAT (s.storePath, f.relativePath) " +
-				"		) LIKE LOWER ( " +
-				"			CONCAT ('%', :path) " +
-				"		)";
-		
-		String hqlSelectQuery = hqlSelectByPath;
+		CriteriaQuery<FsFileMetaResource> query = cb.createQuery(FsFileMetaResource.class);
+		Root<FsFileMetaResource> root = query.from(FsFileMetaResource.class);
 		
 		switch(fetch){
 		
 			// just FsFileMetaResource
 			case FILE_META:
-				hqlSelectQuery = hqlSelectByPath;
 				break;
 			
 			// also fetch FsFileResource
 			case FILE_META_WITH_DATA:
-				hqlSelectQuery = hqlSelectByPathWithByte;
+				root.fetch(FsFileMetaResource_.fileResource, JoinType.LEFT);
 				break;
 			
 			// default to just meta data, no join
 			default:
-				hqlSelectQuery = hqlSelectByPath;
 				break;
 
 		}		
 		
-		Query query = getEntityManager().createQuery(hqlSelectQuery);
-		query.setParameter("path", path);
+		Path<String> relativePath = root.<String>get(FsFileMetaResource_.relativePath);
+		Path<FsResourceStore> store = root.<FsResourceStore>get(FsFileMetaResource_.resourceStore);
+		Path<String> storePath = store.<String>get(FsResourceStore_.storePath);
 		
-		return ResultFetcher.getSingleResultOrNull(query);
+		String pathMatch = ("%" + path).toLowerCase();
+		
+		query.select(root);
+		query.where(
+				cb.like( cb.lower( cb.concat(storePath, relativePath) ), pathMatch )
+				);
+		
+		return ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		
 	}
 	
