@@ -124,18 +124,38 @@ public class FsResourceService {
 	/**
 	 * Fetch file resource
 	 * 
-	 * @param fileId
-	 * @param fetch
+	 * @param fileId - id of file to fetch
+	 * @param fetch - specify file data to fetch
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsFileMetaResource getFileResource(Long fileId, FsFileResourceFetch fetch) throws ServiceException {
+	public FsFileMetaResource getFileResourceById(Long fileId, FsFileResourceFetch fetch) throws ServiceException {
 		
 		FsFileMetaResource resource = null;
 		try {
 			resource = fsFileResourceRepository.getFileEntry(fileId, fetch);
 		} catch (DatabaseException e) {
 			throw new ServiceException("Error fetching file resource, id => " + fileId + ". " + e.getMessage(), e);
+		}
+		return resource;
+		
+	}
+	
+	/**
+	 * Fetch file resource
+	 * 
+	 * @param path - resource store root dir name + file relative path
+	 * @param fetch - specify file data to fetch
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource getFileResourceByPath(String path, FsFileResourceFetch fetch) throws ServiceException {
+		
+		FsFileMetaResource resource = null;
+		try {
+			resource = fsFileResourceRepository.getFileEntryByPath(path, fetch);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching file resource, path => " + path + ". " + e.getMessage(), e);
 		}
 		return resource;
 		

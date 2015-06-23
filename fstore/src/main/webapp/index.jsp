@@ -51,12 +51,12 @@
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/spring/file2/res/load/14">Dispatcher load file resource (fileId=14)</a><br>
+		<a href="<%=request.getContextPath() %>/spring/file2/res/load/id/14">Dispatcher load file resource (fileId=14)</a><br>
 		Load file #14 from spring controller, should load file directly in browser for known types (text, images, etc) and prompt user with save dialog for other types.
 	</p>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/cxf/resource/file/download/14">CXF JAX-RS download file resource (fileId=14).</a><br>
+		<a href="<%=request.getContextPath() %>/cxf/resource/file/download/id/14">CXF JAX-RS download file resource (fileId=14).</a><br>
 		Download file #14 from Apache CXF JAX-RS service, should prompt user with a save dialog window.
 	</p>
 

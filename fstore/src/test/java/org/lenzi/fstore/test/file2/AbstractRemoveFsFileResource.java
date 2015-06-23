@@ -156,8 +156,8 @@ public abstract class AbstractRemoveFsFileResource extends AbstractTreeTest {
 		FsFileMetaResource fetch1 = null;
 		FsFileMetaResource fetch2 = null;
 		try {
-			fetch1 = fsResourceService.getFileResource(fileMetaResource1.getFileId(), FsFileResourceFetch.FILE_META);
-			fetch2 = fsResourceService.getFileResource(fileMetaResource2.getFileId(), FsFileResourceFetch.FILE_META);
+			fetch1 = fsResourceService.getFileResourceById(fileMetaResource1.getFileId(), FsFileResourceFetch.FILE_META);
+			fetch2 = fsResourceService.getFileResourceById(fileMetaResource2.getFileId(), FsFileResourceFetch.FILE_META);
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error("Error checking if file sizes are the same, " + e.getMessage(), e);
@@ -176,7 +176,7 @@ public abstract class AbstractRemoveFsFileResource extends AbstractTreeTest {
 		
 		fetch1 = null;
 		try {
-			fetch1 = fsResourceService.getFileResource(fileMetaResource1.getFileId(), FsFileResourceFetch.FILE_META);
+			fetch1 = fsResourceService.getFileResourceById(fileMetaResource1.getFileId(), FsFileResourceFetch.FILE_META);
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error("Error checking if file sizes are the same, " + e.getMessage(), e);

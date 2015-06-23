@@ -4,6 +4,7 @@
 package org.lenzi.fstore.file2.web.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -56,30 +57,25 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	//@RequestMapping("/**")
 	
 	/**
-	 * Download file resource
+	 * Download file resource. User will be prompted with a save/save-as dialog to download/save the file.
 	 * 
 	 * @param fileId - id of file resource to download
 	 * @return
 	 */
 	@RequestMapping(
-			value = "/download/{fileId}", 
+			value = "/download/id/{fileId}", 
 			method = RequestMethod.GET
 			)
-	public HttpEntity<byte[]> downloadFileResource(@PathVariable("fileId") Long fileId){
+	public HttpEntity<byte[]> downloadFileResourceById(@PathVariable("fileId") Long fileId){
 		
 		// TODO - if file data is on file system, then use it, otherwise go to database.
 
-		FsFileMetaResource fileResource = null;
-		try {
-			fileResource = fsResourceService.getFileResource(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
-		} catch (ServiceException e) {
-			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
-		}
+		FsFileMetaResource fileResource = getFileById(fileId);
 		String mimeType = fileResource.getMimeType();
 		byte[] fileData = fileResource.getFileResource().getFileData();
 		
-		logger.info("Download file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
-				", byte size => " + fileData.length);
+		//logger.info("Download file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
+		//		", byte size => " + fileData.length);
 	
 		final HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.parseMediaType(mimeType));
@@ -95,30 +91,26 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	}
 	
 	/**
-	 * Load file resource
+	 * Load file resource. File should be loaded directly in the clients browser for mime types that the browser knows
+	 * how to load. For other types the user should get a save/save-as dialog
 	 * 
 	 * @param fileId - id of file resource to load
 	 * @return
 	 */
 	@RequestMapping(
-			value = "/load/{fileId}", 
+			value = "/load/id/{fileId}", 
 			method = RequestMethod.GET
 			)
-	public ResponseEntity<InputStreamResource> loadFileResource(@PathVariable("fileId") Long fileId){
+	public ResponseEntity<InputStreamResource> loadFileResourceById(@PathVariable("fileId") Long fileId){
 		
 		// TODO - if file data is on file system, then use it, otherwise go to database.
 
-		FsFileMetaResource fileResource = null;
-		try {
-			fileResource = fsResourceService.getFileResource(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
-		} catch (ServiceException e) {
-			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
-		}
+		FsFileMetaResource fileResource = getFileById(fileId);
 		String mimeType = fileResource.getMimeType();
 		byte[] fileData = fileResource.getFileResource().getFileData();
 		
-		logger.info("Load file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
-				", byte size => " + fileData.length);
+		//logger.info("Load file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
+		//		", byte size => " + fileData.length);
 		
 		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
 		
@@ -126,6 +118,82 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	            .contentLength(fileData.length)
 	            .contentType(MediaType.parseMediaType(mimeType))
 	            .body(new InputStreamResource(bis));
+		
+	}
+	
+	/**
+	 * Load file resource. File should be loaded directly in the clients browser for mime types that the browser knows
+	 * how to load. For other types the user should get a save/save-as dialog
+	 * 
+	 * @param path - resource store root dir name + file relative path
+	 * @return
+	 */
+	@RequestMapping(
+			value = "/load/path/**", 
+			method = RequestMethod.GET
+			)
+	public ResponseEntity<InputStreamResource> loadFileResourceByPath(HttpServletRequest request){
+		
+		// TODO - if file data is on file system, then use it, otherwise go to database.
+
+		// extract the remainder of the URL (the ** part)
+		String filePath = extractPathFromPattern(request);
+		
+		logger.info("loading file path before => " + filePath);
+		filePath = filePath.replace("/", File.separator); // convert web path separator to file path separator
+		logger.info("loading file path after => " + filePath);
+		
+		FsFileMetaResource fileResource = this.getFileByPath(filePath);
+		String mimeType = fileResource.getMimeType();
+		byte[] fileData = fileResource.getFileResource().getFileData();
+		
+		//logger.info("Load file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
+		//		", byte size => " + fileData.length);
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
+		
+		return ResponseEntity.ok()
+	            .contentLength(fileData.length)
+	            .contentType(MediaType.parseMediaType(mimeType))
+	            .body(new InputStreamResource(bis));
+		
+	}
+	
+	/**
+	 * Fetch file data from database, including byte data
+	 * 
+	 * @param fileId - id of file resource
+	 * @return
+	 * @throws ServiceException
+	 */
+	private FsFileMetaResource getFileById(Long fileId) {
+		
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsResourceService.getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
+		} catch (ServiceException e) {
+			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
+		}
+		return fileResource;
+		
+	}
+	
+	/**
+	 * Fetch file data from database, including byte data
+	 * 
+	 * @param path - resource store root dir name + file relative path
+	 * @return
+	 * @throws ServiceException
+	 */
+	private FsFileMetaResource getFileByPath(String path) {
+		
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsResourceService.getFileResourceByPath(path, FsFileResourceFetch.FILE_META_WITH_DATA);
+		} catch (ServiceException e) {
+			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
+		}
+		return fileResource;
 		
 	}
 	

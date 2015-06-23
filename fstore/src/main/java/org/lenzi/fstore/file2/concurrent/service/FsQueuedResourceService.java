@@ -121,20 +121,52 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
-	 * Get a file resource
+	 * Get a file resource by id
 	 * 
-	 * @param fileId
-	 * @param fetch
+	 * @param fileId - id of the file resource
+	 * @param fetch - specify file data to fetch
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsFileMetaResource getFileResource(Long fileId, FsFileResourceFetch fetch) throws ServiceException {
+	public FsFileMetaResource getFileResourceById(Long fileId, FsFileResourceFetch fetch) throws ServiceException {
 		
 		class Task extends AbstractFsTask<FsFileMetaResource> {
 
 			@Override
 			public FsFileMetaResource doWork() throws ServiceException {
-				return fsResourceService.getFileResource(fileId, fetch);
+				return fsResourceService.getFileResourceById(fileId, fetch);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsFileMetaResource resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Get a file resource by path
+	 * 
+	 * @param path - resource store root dir name + file relative path
+	 * @param fetch - specify file data to fetch
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource getFileResourceByPath(String path, FsFileResourceFetch fetch) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.getFileResourceByPath(path, fetch);
 			}
 
 			@Override

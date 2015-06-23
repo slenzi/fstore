@@ -64,7 +64,7 @@ public class FileResource {
 		//
 		FsFileMetaResource fileResource = null;
 		try {
-			fileResource = fsResourceService.getFileResource(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
+			fileResource = fsResourceService.getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
