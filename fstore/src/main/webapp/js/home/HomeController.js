@@ -16,12 +16,26 @@
 		self.showContactOptions = showContactOptions;
 		self.leftNavClose = leftNavClose;
 		self.toggleLeftNav = buildToggler('MyLeftNav');
+		self.sampleGrid = sampleGrid;
+		
+		var sampleGridData = [
+			{ "Store Name": "Example Store" }
+		];
+		
+		var sampleGrid = {
+			paginationPageSizes: [25, 50, 75],
+			paginationPageSize: 25,
+			columnDefs: [
+			  { name: 'Store Name' },
+			],
+			data: sampleGridData
+		  };
 
 		// load sample data
 		homeService
 			.doLoadTest()
 			.then( function( sampleData ) {
-					alert("got sample data => " + sampleData);
+					//alert("got sample data => " + sampleData);
 				}
 			);
 
@@ -40,6 +54,10 @@
 
 			// $mdBottomSheet.hide()
 
+		}
+		
+		function sampleGrid(){
+			return sampleGrid;
 		}
 		
 		/**

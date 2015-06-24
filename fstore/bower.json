@@ -7,9 +7,11 @@
  	"private": true,
 	"dependencies": {
     	"angular": "^1.4.x",
+    	"angular-touch": "^1.4.x",
     	"angular-animate": "^1.4.x",
     	"angular-aria": "^1.4.x",
-    	"angular-material": "^0.10.0"
+    	"angular-material": "^0.10.0",
+    	"angular-ui-grid": "3.0.0-rc.22"
   	},
   	"devDependencies": {
     	"angular-material": "~0.10.0"
