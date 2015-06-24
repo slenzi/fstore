@@ -2,10 +2,10 @@
 	
 	'use strict';
 
-	var homeApp;
+	var homeModule;
 	
 	// Prepare the 'home' module for subsequent registration of controllers and delegates
-	homeApp = angular.module('home', [ 'ngMaterial' ]);
+	homeModule = angular.module('home', [ 'ngMaterial' ]);
 
 
 })();

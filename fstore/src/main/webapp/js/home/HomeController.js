@@ -2,22 +2,20 @@
 
 	angular
 		.module('home')
-		.controller('HomeController', [
-			'homeService', '$mdSidenav', '$mdBottomSheet', '$log', '$q',
+		.controller('homeController', [
+			'homeService', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q',
 			HomeController
 		]);
 
-	/**
-	 * Main Controller for the Fstore Angular Material app
-	 * 
-	 * @param $scope
-	 * @param $mdSidenav
-	 * @param avatarsService
-	 * @constructor
-	 */
-	function HomeController( homeService, $mdSidenav, $mdBottomSheet, $log, $q) {
+	function HomeController( homeService, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
     
 		var self = this;
+		
+		// add function to this controller
+		self.doHello = doHello;
+		self.showContactOptions = showContactOptions;
+		self.leftNavClose = leftNavClose;
+		self.toggleLeftNav = buildToggler('MyLeftNav');
 
 		// load sample data
 		homeService
@@ -38,13 +36,34 @@
 
 			alert("hello from home controller");
 
-			// $mdSidenav('left').toggle();
+			// $mdSidenav('MyLeftNav').toggle();
 
 			// $mdBottomSheet.hide()
 
 		}
-
-
+		
+		/**
+		 * Build handler to open/close a SideNav; when animation finishes
+		 * report completion in console
+		 */
+		function buildToggler(navID) {
+			var debounceFn = $mdUtil.debounce(function(){
+				$mdSidenav(navID)
+				.toggle()
+				.then(function () {
+					$log.debug("toggle " + navID + " is done");
+				});
+			},300);
+			return debounceFn;
+		}
+		
+		function leftNavClose() {
+			$mdSidenav('MyLeftNav').close()
+			.then(function () {
+				$log.debug("close MyLeftNav is done");
+			});
+		};		
+		
 		/**
 		 * Show the bottom sheet
 		 */
