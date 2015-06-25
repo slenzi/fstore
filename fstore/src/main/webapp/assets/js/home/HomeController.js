@@ -18,8 +18,18 @@
 		self.toggleLeftNav = buildToggler('MyLeftNav');
 		self.sampleGrid = sampleGrid;
 		
+		self.notImplemented = notImplemented;
+		
 		var sampleGridData = [
-			{ "Store Name": "Example Store" }
+			{ "Store Name": "Example Store 1" },
+			{ "Store Name": "Example Store 2" },
+			{ "Store Name": "Example Store 3" },
+			{ "Store Name": "Example Store 4" },
+			{ "Store Name": "Example Store 5" },
+			{ "Store Name": "Example Store 6" },
+			{ "Store Name": "Example Store 7" },
+			{ "Store Name": "Example Store 8" },
+			{ "Store Name": "Example Store 9" },
 		];
 		
 		var sampleGrid = {
@@ -56,6 +66,9 @@
 
 		}
 		
+		/**
+		 * Fetch sample ui-grid
+		 */
 		function sampleGrid(){
 			return sampleGrid;
 		}
@@ -75,12 +88,22 @@
 			return debounceFn;
 		}
 		
+		/**
+		 * Close left side nav
+		 */
 		function leftNavClose() {
 			$mdSidenav('MyLeftNav').close()
 			.then(function () {
 				$log.debug("close MyLeftNav is done");
 			});
-		};		
+		};
+
+		/**
+		 *
+		 */
+		function notImplemented(){
+			alert("Feature implementation is forthcoming.");
+		}
 		
 		/**
 		 * Show the bottom sheet
