@@ -26,32 +26,25 @@
 	
 	<md-sidenav class="md-sidenav-left md-whiteframe-z1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
-		<md-toolbar class="md-toolbar-tools md-hue-2">
-			<h3>
+		<md-toolbar class="md-tall md-hue-2">
+			<span flex></span>
+			<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
 				Fstore
+				<span flex></span>
+				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
+				</md-button>
 			</h3>
-			<div flex></div>
-			<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
-			</md-button>
 		</md-toolbar>
 
 		<md-content layout-padding layout="column">
-		
-			<!--
-			<md-button ng-click="home.leftNavClose()" class="md-raised md-primary" hide-gt-md>Close Menu</md-button>
-			-->
-			
-			<span layout-padding>Control panel</span>
 
-			<md-button class="md-raised" ng-click="home.notImplemented()">Settings</md-button>
-			
-			<br>
+			<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">System Settings</md-button>
 			
 			<!--
-			<button class="md-button-toggle md-button md-default-theme" ng-click="open = !open">
+			<button class="md-button-toggle md-button md-default-theme leftNavButton" ng-click="open = !open">
 				<div flex layout="row" class="ng-binding ng-scope">
-					Button 2
+					Open/Collapse Test
 					<span flex></span>
 					<span aria-hidden="true" ng-class="{'toggled' : false}">
 						<md-icon md-svg-src="md-toggle-arrow" class="ng-isolate-scope md-default-theme" aria-hidden="true">
@@ -64,17 +57,19 @@
 				</div>
 			</button>
 			
+			<md-content layout-padding layout="column">
 			<div ng-class="{ showMe: open }" class="collapsable">
 				This should collapse
 			</div>
+			</md-content>
 			-->
 			
-			<md-button class="md-raised" ng-click="home.notImplemented()">Create New Store</md-button>
-			
-			<br>
+			<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">Create New Store</md-button>
 			
 			<!-- ui-grid-pagination -->
+			<md-content layout-padding layout="column">
 			<div ui-grid="home.sampleGrid()" class="storeGrid"></div>
+			</md-content>
 
 		</md-content>
 		
@@ -84,35 +79,36 @@
 	
 		<div layout="column" role="main" layout-fill layout-align="top center">
 			
-			<md-toolbar class="md-toolbar-tools">
-				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
-				</md-button>
-				<h3>
-					[Name of resource store]
+			<md-toolbar class="md-tall">
+				<span flex></span>
+				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
+					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
+					</md-button>				
+					<span style="whitespace:nowrap;">[Name of resource store]</span>
+					<div flex></div>
 				</h3>
-				<div flex></div>
-			</md-toolbar>			
+			</md-toolbar>
 			
 			<md-toolbar class="md-toolbar-tools md-hue-1">
 				
-				<!--
-				<md-button ng-click="home.toggleLeftNav()" class="md-raised md-primary" hide-gt-md>
-				Menu
-				</md-button>
-				-->
-				
 				<md-button ng-click="home.notImplemented()" class="md-raised">
-				Create Folder
+				New Folder
 				</md-button>
 				
 				<md-button ng-click="home.notImplemented()" class="md-raised">
 				Add Files
 				</md-button>
 				
+				<div flex></div>
+				
+				<md-button ng-click="home.notImplemented()" class="md-raised md-primary">
+				Store Settings
+				</md-button>
+				
 			</md-toolbar>
 
-			<md-content flex layout-padding id="homeContent">
+			<md-content layout-padding id="homeContent">
 			
 				<p>
 				The left sidenav will 'lock open' on a medium (>=960px wide) device.
@@ -129,16 +125,22 @@
 						<div flex>[icon]</div>
 					</div>			
 				</div>		
+				
+				<!--
+				<div flex></div>
+				-->
 			
 			</md-content>
 			
 		</div>
 		
+		<!--
 		<div flex>
 			<md-content layout-padding>
 			remainder
 			</md-content>
 		</div>
+		-->
 		
 	</md-content>
 

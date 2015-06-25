@@ -1,4 +1,14 @@
 
+/**
+ * Buttons in IE were not taking up the full width of the left sidenav, despite
+ * using a flex column layout. Works fine in Chrome and Firefox, of course. This
+ * min-width attribute is to fix IE.
+ */
+.leftNavButton {
+	min-width:275px;
+}
+
+
 .collapsable {
 	display: inline-block;
 	overflow: hidden;
