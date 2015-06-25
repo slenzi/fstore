@@ -57,13 +57,9 @@
 		 * Say hello
 		 */
 		function doHello(){
-
 			alert("hello from home controller");
-
 			// $mdSidenav('MyLeftNav').toggle();
-
 			// $mdBottomSheet.hide()
-
 		}
 		
 		/**

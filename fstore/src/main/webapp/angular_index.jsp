@@ -37,41 +37,43 @@
 			</h3>
 		</md-toolbar>
 
-		<md-content layout-padding layout="column">
-
+		<md-content layout="column" style="min-height: 110px; ">
+		
 			<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">System Settings</md-button>
-			
-			<!--
-			<button class="md-button-toggle md-button md-default-theme leftNavButton" ng-click="open = !open">
-				<div flex layout="row" class="ng-binding ng-scope">
-					Open/Collapse Test
-					<span flex></span>
-					<span aria-hidden="true" ng-class="{'toggled' : false}">
-						<md-icon md-svg-src="md-toggle-arrow" class="ng-isolate-scope md-default-theme" aria-hidden="true">
-							<svg version="1.1" x="0px" y="0px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" style="pointer-events: none; display: block;">
-								<path d="M24 16l-12 12 2.83 2.83 9.17-9.17 9.17 9.17 2.83-2.83z"></path>
-								<path d="M0 0h48v48h-48z" fill="none"></path>
-							</svg>
-						</md-icon>
-					</span>
-				</div>
-			</button>
-			
-			<md-content layout-padding layout="column">
-			<div ng-class="{ showMe: open }" class="collapsable">
-				This should collapse
-			</div>
-			</md-content>
-			-->
 			
 			<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">Create New Store</md-button>
 			
-			<!-- ui-grid-pagination -->
-			<md-content layout-padding layout="column">
-			<div ui-grid="home.sampleGrid()" class="storeGrid"></div>
-			</md-content>
-
 		</md-content>
+		
+		<md-content layout="column" layout-padding>
+		
+			<md-whiteframe class="md-whiteframe-z2" >
+				<md-content layout-padding layout="column">
+				<span style="font-weight: bold;">Resource Stores</span>
+				</md-content>
+				<md-content layout-padding layout="column">
+					<md-list>
+						<div ng-repeat="n in [1,15] | makeRange">
+							<md-list-item ng-click="home.notImplemented()">
+								Store {{n}}
+							</md-list-item>
+						</div>
+					</md-list>			
+				</md-content>
+			</md-whiteframe>
+			
+			<!--
+			<br>
+			<md-content layout-padding layout="column">
+				<div ui-grid="home.sampleGrid()" class="storeGrid"></div>
+			</md-content>
+			-->
+			
+		</md-content>
+		
+		
+		<div flex="2"></div>
+		
 		
 	</md-sidenav>
 	
