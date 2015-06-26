@@ -8,6 +8,25 @@
 	min-width:270px;
 }
 
+.iconGrid md-grid-list {
+  margin: 8px; }
+.iconGrid .white {
+  background: #ffffff; }
+.iconGrid .gray {
+  background: #f5f5f5; }
+.iconGrid .green {
+  background: #b9f6ca; }
+.iconGrid .yellow {
+  background: #ffff8d; }
+.iconGrid .blue {
+  background: #84ffff; }
+.iconGrid .purple {
+  background: #b388ff; }
+.iconGrid .red {
+  background: #ff8a80; }
+.iconGrid md-grid-tile {
+  transition: all 400ms ease-out 50ms; }
+
 
 .collapsable {
 	display: inline-block;

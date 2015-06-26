@@ -115,7 +115,105 @@
 				<p>
 				The left sidenav will 'lock open' on a medium (>=960px wide) device.
 				</p>
+                
+                <div class="iconGrid">
+                <md-grid-list md-cols-sm="4" md-cols-md="5" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="12px" md-gutter-gt-sm="8px">
+                    
+                    <md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+                        <div layout="column" style="height:100%;">
+                            <div flex="80" layout-padding >
+                                <md-icon style="width:100px; height:100px;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+                            </div>
+                            <div flex="20">
+                                <md-grid-tile-footer>
+                                    <h3>file name</h3>
+                                </md-grid-tile-footer>
+                            </div>
+                        </div>
+                    </md-grid-tile>
+                    
+                    <md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+                        <div layout="column" style="height:100%;">
+                            <div flex="80" layout-padding >
+                                <md-icon style="width:100px; height:100px;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+                            </div>
+                            <div flex="20">
+                                <md-grid-tile-footer>
+                                    <h3>file name</h3>
+                                </md-grid-tile-footer>
+                            </div>
+                        </div>
+                    </md-grid-tile>
+                    
+                    <md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+                        <div layout="column" style="height:100%;">
+                            <div flex="80" layout-padding >
+                                <md-icon style="width:100px; height:100px;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+                            </div>
+                            <div flex="20">
+                                <md-grid-tile-footer>
+                                    <h3>file name</h3>
+                                </md-grid-tile-footer>
+                            </div>
+                        </div>
+                    </md-grid-tile>
+                    
+                    <md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+                        <div layout="column" style="height:100%;">
+                            <div flex="80" layout-padding >
+                                <md-icon style="width:100px; height:100px;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+                            </div>
+                            <div flex="20">
+                                <md-grid-tile-footer>
+                                    <h3>file name</h3>
+                                </md-grid-tile-footer>
+                            </div>
+                        </div>
+                    </md-grid-tile>                   
+                    
+                    <md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+                        <div layout="column" style="height:100%;">
+                            <div flex="80" layout-padding >
+                                <md-icon style="width:100px; height:100px;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+                            </div>
+                            <div flex="20">
+                                <md-grid-tile-footer>
+                                    <h3>file name</h3>
+                                </md-grid-tile-footer>
+                            </div>
+                        </div>
+                    </md-grid-tile>
+                    
+                    <md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+                        <div layout="column" style="height:100%;">
+                            <div flex="80" layout-padding >
+                                <md-icon style="width:100px; height:100px;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+                            </div>
+                            <div flex="20">
+                                <md-grid-tile-footer>
+                                    <h3>file name</h3>
+                                </md-grid-tile-footer>
+                            </div>
+                        </div>
+                    </md-grid-tile>
+                    
+                    <md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
+                        <div layout="column" style="height:100%;">
+                            <div flex="80" layout-padding >
+                                <md-icon style="width:100px; height:100px;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+                            </div>
+                            <div flex="20">
+                                <md-grid-tile-footer>
+                                    <h3>file name</h3>
+                                </md-grid-tile-footer>
+                            </div>
+                        </div>
+                    </md-grid-tile>                    
+                    
+                </md-grid-list>
+                </div>
 				
+                <!--
 				<div ng-repeat="n in [10] | makeRange">
 					<div layout="row">
 						<div flex>[icon]</div>
@@ -127,7 +225,8 @@
 						<div flex>[icon]</div>
 					</div>			
 				</div>		
-				
+                -->
+
 				<!--
 				<div flex></div>
 				-->
