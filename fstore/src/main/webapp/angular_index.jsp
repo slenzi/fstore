@@ -24,56 +24,62 @@
 
 	<body ng-app="fstoreApp" layout="row" ng-controller="homeController as home">
 	
-	<md-sidenav class="md-sidenav-left md-whiteframe-z1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
+	<md-sidenav class="md-sidenav-left md-whiteframe-z1 md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
-		<md-toolbar class="md-tall md-hue-2">
-			<span flex></span>
-			<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
-				Fstore
+		<!-- make sidenav header sticky-->
+		<md-content layout="column" style="display: flex; flex-flow: column; height: 100%;">
+	
+			<md-toolbar class="md-tall md-hue-2">
 				<span flex></span>
-				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
-				</md-button>
-			</h3>
-		</md-toolbar>
+				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
+					Fstore
+					<span flex></span>
+					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
+					</md-button>
+				</h3>
+			</md-toolbar>
 
-		<md-content layout="column" style="min-height: 110px; ">
-		
-			<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">System Settings</md-button>
+			<md-content layout="column" class="md-hue-1" style="min-height: 110px;">
 			
-			<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">Create New Store</md-button>
-			
-		</md-content>
-		
-		<md-content layout="column" layout-padding>
-		
-			<md-whiteframe class="md-whiteframe-z2" >
-				<md-content layout-padding layout="column">
-				<span style="font-weight: bold;">Resource Stores</span>
-				</md-content>
-				<md-content layout-padding layout="column">
-					<md-list>
-						<div ng-repeat="n in [1,15] | makeRange">
-							<md-list-item ng-click="home.notImplemented()">
-								Store {{n}}
-							</md-list-item>
-						</div>
-					</md-list>			
-				</md-content>
-			</md-whiteframe>
-			
-			<!--
-			<br>
-			<md-content layout-padding layout="column">
-				<div ui-grid="home.sampleGrid()" class="storeGrid"></div>
+				<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">System Settings</md-button>
+				
+				<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">Create New Store</md-button>
+				
 			</md-content>
-			-->
 			
+			<md-content layout="column" class="md-hue-1" layout-padding style="height: 350px;">
+			
+				<md-whiteframe class="md-whiteframe-z2" >
+					<md-content layout-padding layout="column">
+					<span style="font-weight: bold;">Resource Stores</span>
+					</md-content>
+					<md-content layout-padding layout="column">
+						<md-list>
+							<div ng-repeat="n in [1,5] | makeRange">
+								<md-list-item ng-click="home.notImplemented()">
+									Store {{n}}
+								</md-list-item>
+							</div>
+						</md-list>			
+					</md-content>
+				</md-whiteframe>
+				
+				<!--
+				<br>
+				<md-content layout-padding layout="column">
+					<div ui-grid="home.sampleGrid()" class="storeGrid"></div>
+				</md-content>
+				-->
+				
+			</md-content>
+			
+			<md-content layout="column" class="md-hue-1" style="min-height: 110px;" flex>
+			&nbsp;
+			</md-content>
+			
+		
 		</md-content>
-		
-		
-		<div flex="2"></div>
-		
 		
 	</md-sidenav>
 	
@@ -92,7 +98,7 @@
 				</h3>
 			</md-toolbar>
 			
-			<md-toolbar class="md-toolbar-tools md-hue-1">
+			<md-toolbar class="md-toolbar-tools md-hue-3">
 				
 				<md-button ng-click="home.notImplemented()" class="md-raised">
 				New Folder
@@ -116,142 +122,102 @@
 					<md-grid-list md-cols-sm="4" md-cols-md="5" md-cols-gt-md="7" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="12px" md-gutter-gt-sm="8px">
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
 						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
-						</md-grid-tile>
-						
-						<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1">
-							<md-icon style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+							<md-icon class="blue" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 							<md-grid-tile-footer><h3>file/folder name [size]</h3></md-grid-tile-footer>
 						</md-grid-tile>
 						
