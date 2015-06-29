@@ -5,16 +5,17 @@
  * min-width attribute is to fix IE.
  */
 .leftNavButton {
-	min-width:270px;
+	min-width:285px;
 }
 
 .iconGrid {
-padding: 0px;
-margin:0px;
+	padding: 0px;
+	margin:0px;
 }
 
 .iconGrid md-grid-list {
-  margin: 8px;
+  margin: 0px;
+  overflow: hidden; /* little fix for Chrome so we don't get a scrollbar*/
 }
 .iconGrid .white {
   color: #ffffff;
@@ -60,7 +61,6 @@ margin:0px;
   width: 100%;
   text-align: center;
 }
-
 
 .collapsable {
 	display: inline-block;
