@@ -5,7 +5,7 @@
  * min-width attribute is to fix IE.
  */
 .leftNavButton {
-	min-width:285px;
+	min-width:288px;
 }
 
 .shadow {
@@ -75,9 +75,20 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 }
 .iconGrid md-grid-tile-footer figcaption h3 {
   margin: 0;
-  font-weight: 100;
   width: 100%;
+  color: #555555;
+  font-weight: 100;
+  font-size: 0.7em;
   text-align: center;
+}
+
+.storeList {
+	background: rgba(255, 255, 255, 0.4);
+	padding: 0px;
+	margin: 0px;
+}
+.storeList md-list-item  {
+	border: 0px solid blue;
 }
 
 .collapsable {

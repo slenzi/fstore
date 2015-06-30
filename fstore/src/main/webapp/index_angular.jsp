@@ -40,30 +40,41 @@
 				</h3>
 			</md-toolbar>
 
-			<md-content layout="column" class="md-hue-1" style="min-height: 110px;">
+			<md-content layout="column" class="md-hue-1" style="padding-top: 5px;">
 			
-				<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">System Settings</md-button>
+				<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
+					System Settings
+				</md-button>
 				
-				<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">Create New Store</md-button>
+				<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
+					Create New Store
+				</md-button>
 				
 			</md-content>
 			
 			<md-content layout="column" class="md-hue-1" layout-padding style="height: 350px;">
 			
+				<!--
 				<md-whiteframe class="md-whiteframe-z2" >
-					<md-content layout-padding layout="column">
-					<span style="font-weight: bold;">Resource Stores</span>
-					</md-content>
-					<md-content layout-padding layout="column">
-						<md-list>
-							<div ng-repeat="n in [1,5] | makeRange">
-								<md-list-item ng-click="home.notImplemented()">
-									Store {{n}}
-								</md-list-item>
-							</div>
-						</md-list>			
-					</md-content>
+				-->
+				<md-content layout-padding layout="column">
+				<span style="font-weight: bold;">Resource Stores</span>
+				</md-content>
+				
+				<md-content layout-padding layout="column" class="storeList">
+					<md-list>
+						<div ng-repeat="n in [1,5] | makeRange">
+							<md-list-item ng-click="home.notImplemented()">
+								Store {{n}}
+							</md-list-item>
+						</div>
+					</md-list>			
+				</md-content>
+				<!--
 				</md-whiteframe>
+				-->
 				
 				<!--
 				<br>
@@ -102,17 +113,20 @@
 			<md-toolbar class="md-toolbar-tools md-hue-3">
 				
 				<md-button ng-click="home.notImplemented()" class="md-raised">
-				New Folder
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
+					New Folder
 				</md-button>
 				
 				<md-button ng-click="home.notImplemented()" class="md-raised">
-				Add Files
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
+					Add Files
 				</md-button>
 				
 				<div flex></div>
 				
 				<md-button ng-click="home.notImplemented()" class="md-raised">
-				Store Settings
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
+					Store Settings
 				</md-button>
 				
 			</md-toolbar>
