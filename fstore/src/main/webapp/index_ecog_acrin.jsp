@@ -18,7 +18,7 @@
 	    
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower_components/angular-material/angular-material.css"/>
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower_components/angular-ui-grid/ui-grid.css"/>
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/app.css"/>
+	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/ecog.css"/>
 	    
 	</head>
 
@@ -29,21 +29,21 @@
 		<!-- make sidenav header sticky-->
 		<md-content layout="column" style="display: flex; flex-flow: column; height: 100%;">
 			
-			<md-toolbar class="md-tall md-hue-2" style="min-height: 140px;">
-				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 90px;">
-					<img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner.png" style="width:90%; margin: 0 auto; margin-top: 10px; margin-bottom: 10px;">
-				</md-content>
-				<span flex></span>
-				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
-					Fstore
+			<md-toolbar class="md-hue-2" style="min-height: 140px;">
+				<h3 class="md-toolbar-tools">
+					File Store
 					<span flex></span>
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>
 				</h3>
+				<span flex></span>				
+				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 90px;">
+					<img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner.png" style="width:90%; margin: 0 auto; margin-top: 10px; margin-bottom: 10px;">
+				</md-content>
 			</md-toolbar>
 
-			<md-content layout="column" class="md-hue-1" style="min-height: 110px;">
+			<md-content layout="column" class="md-hue-1" style="padding-top: 5px;">
 			
 				<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">System Settings</md-button>
 				
@@ -91,9 +91,10 @@
 		<!-- layout-fill layout-align="top center" -->
 		<md-content layout="column" role="main">
 			
-			<md-toolbar class="md-tall" style="min-height: 140px;">
+			<!-- class="md-tall" style="min-height: 140px;" -->
+			<md-toolbar>
 				<span flex></span>
-				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
+				<h3 class="md-toolbar-tools">
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>				

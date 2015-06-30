@@ -14,6 +14,14 @@
 	This application also builds upon the basic tree structure to store files and directories.
 	</p>
 	
+	<p>
+	<a href="index_angular.jsp">Angular test</a>
+	</p>
+	
+	<p>
+	<a href="index_ecog_acrin.jsp">ECOG-ACRIN Angular test</a>
+	</p>	
+	
 	<h2>Sample Tree Tests</h2>
 
 	<p>
