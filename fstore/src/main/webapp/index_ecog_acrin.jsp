@@ -57,20 +57,22 @@
 				
 			</md-content>
 			
-			<md-content layout="column" class="md-hue-1" layout-padding style="height: 350px;">
+			<md-content layout="column" class="md-hue-1" layout-padding>
 			
 				<!--
 				<md-whiteframe class="md-whiteframe-z2" >
 				-->
 				<md-content layout-padding layout="column">
-				<span style="font-weight: bold;">Resource Stores</span>
+				<span style="font-weight: bold;" class="storeListHeader">Resource Stores</span>
 				</md-content>
 				
 				<md-content layout-padding layout="column" class="storeList">
 					<md-list>
 						<div ng-repeat="n in [1,5] | makeRange">
 							<md-list-item ng-click="home.notImplemented()">
+								<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_archive_24px.svg"></md-icon>
 								Store {{n}}
+								<span flex></span>
 							</md-list-item>
 						</div>
 					</md-list>			
@@ -88,7 +90,8 @@
 				
 			</md-content>
 			
-			<md-content layout="column" class="md-hue-1" style="min-height: 110px;" flex>
+			<!-- felx background color to bottom of screen -->
+			<md-content layout="column" class="md-hue-1" style="min-height: 3px;" flex>
 			&nbsp;
 			</md-content>
 			
