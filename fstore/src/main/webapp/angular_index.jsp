@@ -124,7 +124,7 @@
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
 						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
-						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
+						<md-grid-tile-footer><h3>resource name<br>[size]<br>other</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">

@@ -61,7 +61,7 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 .iconGrid md-grid-tile md-grid-tile-footer {
   background: rgba(0, 0, 0, 0.0);
   color: #333333;
-  height: 36px;
+  height: 42px; /* was 36 */
 }
 .iconGrid md-grid-tile-footer figcaption {
   width: 100%;
