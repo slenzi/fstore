@@ -25,38 +25,38 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 */
 
 .iconGrid md-grid-list {
-  margin: 0px;
-  overflow: hidden; /* little fix for Chrome so we don't get a scrollbar*/
+    margin: 0px;
+    overflow: hidden; /* little fix for Chrome so we don't get a scrollbar*/
 }
 .iconGrid .white {
-  color: #ffffff;
+    color: #ffffff;
 }
 .iconGrid .gray {
-  color: #bbbbbb; /* #434343 */
+    color: #bbbbbb; /* #434343 */
 }
 .iconGrid .green {
-  color: #b9f6ca;
+    color: #b9f6ca;
 }
 .iconGrid .yellow {
-  color: #ffff8d;
+    color: #ffff8d;
 }
 .iconGrid .gold {
-  color: #FFCC00;
+    color: #FFCC00;
 }
 .iconGrid .blue {
-  color: #002184; /* #002184 #8AB8E6 */
+    color: #002184; /* #002184 #8AB8E6 */
 }
 .iconGrid .purple {
-  color: #b388ff;
+    color: #b388ff;
 }
 .iconGrid .red {
-  color: #ff8a80;
+    color: #ff8a80;
 }
 .iconGrid md-grid-tile {
-  transition: all 300ms ease-out 50ms;
+    transition: all 300ms ease-out 50ms;
 }
 .iconGrid md-grid-tile md-icon {
-  padding-bottom: 23px; /* was 20 */
+    padding-bottom: 23px; /* was 20 */
 }
 /* IE10+ CSS styles go here */
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {	
@@ -66,27 +66,27 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 	}
 }
 .iconGrid md-grid-tile md-grid-tile-footer {
-  background: rgba(0, 0, 0, 0.0);
-  color: #333333;
-  height: 45px; /* was 36 */
+    background: rgba(0, 0, 0, 0.0);
+    color: #333333;
+    height: 45px; /* was 36 */
 }
 .iconGrid md-grid-tile-footer figcaption {
-  width: 100%;
+    width: 100%;
 }
 .iconGrid md-grid-tile-footer figcaption h3 {
-  margin: 0;
-  width: 100%;
-  color: #555555;
-  font-weight: 100;
-  font-size: 0.7em;
-  text-align: center;
+    margin: 0;
+    width: 100%;
+    color: #555555;
+    font-weight: 100;
+    font-size: 0.7em;
+    text-align: center;
 }
 
 .storeListHeader {
 	min-height: 20px;
 }
 .storeList {
-	background: rgba(255, 255, 255, 0.4);
+	background: rgba(255, 255, 255, 0.0);
 	padding: 0px;
 	margin: 0px;
 }

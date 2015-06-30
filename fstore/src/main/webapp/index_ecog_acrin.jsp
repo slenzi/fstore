@@ -22,14 +22,14 @@
 	    
 	</head>
 
-	<body ng-app="fstoreApp" layout="row" ng-controller="homeController as home">
+	<body ng-app="fstoreApp" layout="row" ng-controller="homeController as home" class="">
 	
-	<md-sidenav class="md-sidenav-left md-whiteframe-z1 md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
+	<md-sidenav class="md-sidenav-left md-hue-1 md-whiteframe-z2" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
 		<!-- make sidenav header sticky-->
-		<md-content layout="column" style="display: flex; flex-flow: column; height: 100%;">
+		<md-content layout="column" class="md-hue-1" style="display: flex; flex-flow: column; height: 100%;">
 			
-			<md-toolbar class="md-hue-2" style="min-height: 140px;">
+			<md-toolbar class="md-hue-3" style="min-height: 140px;">
 				<h3 class="md-toolbar-tools" style="min-height: 64px;">
 					File Store
 					<span flex></span>
@@ -59,11 +59,14 @@
 			
 			<md-content layout="column" class="md-hue-1" layout-padding>
 			
+                <!--
 				<md-content layout-padding layout="column">
 				<span style="font-weight: bold;" class="storeListHeader">Resource Stores</span>
 				</md-content>
+                -->
 				
-				<md-content layout-padding layout="column" class="storeList">
+				<md-content layout="column" class="storeList">
+                    <h3>Resource Stores</h3>
 					<md-list>
 						<div ng-repeat="n in [1,5] | makeRange">
 							<md-list-item ng-click="home.notImplemented()">
@@ -100,7 +103,7 @@
 		<md-content layout="column" role="main">
 			
 			<!-- class="md-tall" style="min-height: 140px;" -->
-			<md-toolbar>
+			<md-toolbar class="md-hue-2">
 				<span flex></span>
 				<h3 class="md-toolbar-tools">
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
@@ -111,21 +114,21 @@
 				</h3>
 			</md-toolbar>
 			
-			<md-toolbar class="md-toolbar-tools md-hue-3">
+			<md-toolbar class="md-toolbar-tools md-hue-1 md-whiteframe-z2">
 				
-				<md-button ng-click="home.notImplemented()" class="md-raised">
+				<md-button ng-click="home.notImplemented()" class="">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
 					New Folder
 				</md-button>
 				
-				<md-button ng-click="home.notImplemented()" class="md-raised">
+				<md-button ng-click="home.notImplemented()" class="">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
 					Add Files
 				</md-button>
 				
 				<div flex></div>
 				
-				<md-button ng-click="home.notImplemented()" class="md-raised">
+				<md-button ng-click="home.notImplemented()" class="">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
 					Store Settings
 				</md-button>
