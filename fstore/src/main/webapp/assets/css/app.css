@@ -9,8 +9,8 @@
 }
 
 .shadow {
-    -webkit-filter: drop-shadow( 2px 2px 5px #ccc );
-            filter: drop-shadow( 2px 2px 5px #ccc ); /* Same syntax as box-shadow */
+    -webkit-filter: drop-shadow( 2px 2px 5px #aaa );
+            filter: drop-shadow( 2px 2px 5px #aaa ); /* Same syntax as box-shadow */
 }
 
 .iconGrid {
@@ -56,12 +56,19 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
   transition: all 300ms ease-out 50ms;
 }
 .iconGrid md-grid-tile md-icon {
-  padding-bottom: 20px;
+  padding-bottom: 23px; /* was 20 */
+}
+/* IE10+ CSS styles go here */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {	
+	/* icons in IE were not centered correctly. This is an IE fix. */
+	.iconGrid md-grid-tile md-icon {
+		margin-right: 20%;
+	}
 }
 .iconGrid md-grid-tile md-grid-tile-footer {
   background: rgba(0, 0, 0, 0.0);
   color: #333333;
-  height: 42px; /* was 36 */
+  height: 45px; /* was 36 */
 }
 .iconGrid md-grid-tile-footer figcaption {
   width: 100%;

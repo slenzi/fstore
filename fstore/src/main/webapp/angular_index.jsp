@@ -28,8 +28,11 @@
 
 		<!-- make sidenav header sticky-->
 		<md-content layout="column" style="display: flex; flex-flow: column; height: 100%;">
-	
-			<md-toolbar class="md-tall md-hue-2">
+			
+			<md-toolbar class="md-tall md-hue-2" style="min-height: 140px;">
+				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 90px;">
+					<img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner.png" style="width:90%; margin: 0 auto; margin-top: 10px; margin-bottom: 10px;">
+				</md-content>
 				<span flex></span>
 				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
 					Fstore
@@ -88,7 +91,7 @@
 		<!-- layout-fill layout-align="top center" -->
 		<md-content layout="column" role="main">
 			
-			<md-toolbar class="md-tall">
+			<md-toolbar class="md-tall" style="min-height: 140px;">
 				<span flex></span>
 				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
