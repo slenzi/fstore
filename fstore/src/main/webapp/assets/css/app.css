@@ -8,10 +8,21 @@
 	min-width:285px;
 }
 
+.shadow {
+    -webkit-filter: drop-shadow( 2px 2px 5px #ccc );
+            filter: drop-shadow( 2px 2px 5px #ccc ); /* Same syntax as box-shadow */
+}
+
 .iconGrid {
 	padding: 0px;
 	margin:0px;
 }
+
+/*
+.iconGrid md-icon svg {
+box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);   
+}
+*/
 
 .iconGrid md-grid-list {
   margin: 0px;
