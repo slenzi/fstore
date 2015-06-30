@@ -30,7 +30,7 @@
 		<md-content layout="column" style="display: flex; flex-flow: column; height: 100%;">
 			
 			<md-toolbar class="md-hue-2" style="min-height: 140px;">
-				<h3 class="md-toolbar-tools">
+				<h3 class="md-toolbar-tools" style="min-height: 64px;">
 					File Store
 					<span flex></span>
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
@@ -38,12 +38,12 @@
 					</md-button>
 				</h3>
 				<span flex></span>				
-				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 90px;">
+				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 100px;">
 					<img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner.png" style="width:90%; margin: 0 auto; margin-top: 10px; margin-bottom: 10px;">
 				</md-content>
 			</md-toolbar>
 
-			<md-content layout="column" class="md-hue-1" style="padding-top: 5px;">
+			<md-content layout="column" class="md-hue-1" style="min-height: 100px; padding-top: 5px;">
 			
 				<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
@@ -55,13 +55,10 @@
 					Create New Store
 				</md-button>
 				
-			</md-content>
+			</md-content>			
 			
 			<md-content layout="column" class="md-hue-1" layout-padding>
 			
-				<!--
-				<md-whiteframe class="md-whiteframe-z2" >
-				-->
 				<md-content layout-padding layout="column">
 				<span style="font-weight: bold;" class="storeListHeader">Resource Stores</span>
 				</md-content>
@@ -77,9 +74,6 @@
 						</div>
 					</md-list>			
 				</md-content>
-				<!--
-				</md-whiteframe>
-				-->
 				
 				<!--
 				<br>
