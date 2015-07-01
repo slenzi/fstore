@@ -24,7 +24,7 @@
 
 	<body ng-app="fstoreApp" layout="row" ng-controller="homeController as home">
 	
-	<md-sidenav class="md-sidenav-left md-whiteframe-z1 md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
+	<md-sidenav class="md-sidenav-left  md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
 		<!-- make sidenav header sticky-->
 		<md-content layout="column" style="display: flex; flex-flow: column; height: 100%;">
@@ -102,32 +102,32 @@
 		<!-- layout-fill layout-align="top center" -->
 		<md-content layout="column" role="main">
 			
-			<md-toolbar class="md-tall">
+			<md-toolbar class="md-tall md-hue-3">
 				<span flex></span>
 				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>				
-					<span style="whitespace:nowrap;">[Name of resource store]</span>
+					<span style="font-style: italic; whitespace:nowrap;">[Name of resource store]</span>
 					<div flex></div>
 				</h3>
 			</md-toolbar>
 			
-			<md-toolbar class="md-toolbar-tools md-hue-3">
+			<md-toolbar class="md-toolbar-tools">
 				
-				<md-button ng-click="home.notImplemented()" class="md-raised">
+				<md-button ng-click="home.notImplemented()" class="">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
 					New Folder
 				</md-button>
 				
-				<md-button ng-click="home.notImplemented()" class="md-raised">
+				<md-button ng-click="home.notImplemented()" class="">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
 					Add Files
 				</md-button>
 				
 				<div flex></div>
 				
-				<md-button ng-click="home.notImplemented()" class="md-raised">
+				<md-button ng-click="home.notImplemented()" class="">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
 					Store Settings
 				</md-button>
@@ -138,284 +138,293 @@
 			<md-content id="homeContent" class="iconGrid">
              
 				<md-grid-list md-cols-sm="3" md-cols-md="5" md-cols-gt-md="6" md-cols-gt-lg="8" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="0px" md-gutter-gt-sm="0px">
+				
+					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-grid-tile-footer>
+							<h3>
+							Sample Folder Name<br>[size]<br>other
+							</h3>
+						</md-grid-tile-footer>
+					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>resource name<br>[size]<br>other</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					
 					<md-grid-tile class="white" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-dblclick="home.notImplemented()">
-						<md-icon class="blue shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+						<md-icon class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 						<md-grid-tile-footer><h3>name</h3></md-grid-tile-footer>
 					</md-grid-tile>
 					

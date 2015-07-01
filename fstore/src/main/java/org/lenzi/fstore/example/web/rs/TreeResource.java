@@ -12,6 +12,7 @@ import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.example.repository.model.impl.FSTestNode;
 import org.lenzi.fstore.example.service.TestTreeService;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
+import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class TreeResource {
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			logger.error("Error parsing tree ID parameter: " + e.getMessage());
-			throw new WebServiceException(WebServiceException.CODE_INVALID_INPUT,
+			throw new WebServiceException(WebExceptionType.CODE_INVALID_INPUT,
 					"Error parsing tree ID parameter: " + e.getMessage());
 		}    	
     	
@@ -69,7 +70,7 @@ public class TreeResource {
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error("Error building tree for tree id " + longTreeId + ". " + e.getMessage());
-			throw new WebServiceException(WebServiceException.CODE_INVALID_INPUT,
+			throw new WebServiceException(WebExceptionType.CODE_INVALID_INPUT,
 					"Error building tree for tree id " + longTreeId + ". " + e.getMessage());
 		}
 		

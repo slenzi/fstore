@@ -13,6 +13,7 @@ import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
 import org.lenzi.fstore.example.web.rs.TreeResource;
 import org.lenzi.fstore.file2.web.rs.FileResource;
 import org.lenzi.fstore.file2.web.rs.JaxRsResourceStoreApplication;
+import org.lenzi.fstore.file2.web.rs.StoreResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceExceptionMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,7 +89,7 @@ public class CxfConfig {
 		//
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
-					getFileResourceBean(), getExceptionMapper()
+					getFileResourceBean(), getStoreResource(), getExceptionMapper()
 			)
 		);
 		
@@ -140,6 +141,16 @@ public class CxfConfig {
 	@Bean
 	public FileResource getFileResourceBean(){
 		return new FileResource();
+	}
+	
+	/**
+	 * Jax-rs store resource bean
+	 * 
+	 * @return
+	 */	
+	@Bean
+	public StoreResource getStoreResource(){
+		return new StoreResource();
 	}
 	
 	/**

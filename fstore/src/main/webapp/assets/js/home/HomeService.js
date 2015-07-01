@@ -2,26 +2,45 @@
 	
 	'use strict';
 	
-	angular.module('home').service('homeService', ['$q', HomeService]);
+	angular
+		.module('home')
+		.service('homeService', [
+		      '$log', '$q',
+		      HomeService
+		]);
 	
-	function HomeService($q){
+	function HomeService($log, $q){
 		
 		var sampleData = [
-	             {
-	               name: 'Fubar',
-	               avatar: 'weee',
-	               content: 'this is a test'
-	             }
-             ];
+			{
+				name: 'Fubar',
+				avatar: 'weee',
+				content: 'this is a test'
+			}
+		];
 		
-		// Promise-based API
+		// *********************************
+		// Internal methods
+		// *********************************
+		
+		function doLoadTestRegular(){
+			return sampleData;
+		};		
+		
+		// promise based API (asynchronous)
+		function doLoadTestWithPromise(){
+			
+			$log.debug('loading test');
+			
+			return $q.when(sampleData);
+		};		
+		
+		// *********************************
+		// External API
+		// *********************************
 	    return {
-	      doLoadTest : function() {
-	    	  
-	        // Simulate async nature of real remote calls
-	        return $q.when(sampleData);
-	        
-	      }
+			load: doLoadTestRegular,
+			loadPromise: doLoadTestWithPromise
 	    };
 		
 	}

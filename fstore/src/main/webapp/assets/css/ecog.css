@@ -9,8 +9,8 @@
 }
 
 .shadow {
-    -webkit-filter: drop-shadow( 2px 2px 5px #aaa );
-            filter: drop-shadow( 2px 2px 5px #aaa ); /* Same syntax as box-shadow */
+    -webkit-filter: drop-shadow( 3px 2px 5px #bbb );
+            filter: drop-shadow( 2px 2px 5px #bbb ); /* Same syntax as box-shadow */
 }
 
 .iconGrid {

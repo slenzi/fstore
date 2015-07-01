@@ -3,6 +3,8 @@ package org.lenzi.fstore.web.rs.exception;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
+
 /**
  * Map service exception to HTTP error code.
  * 
@@ -15,15 +17,15 @@ public class WebServiceExceptionMapper implements ExceptionMapper<WebServiceExce
 		
 		Response.Status status = null;
 		
-		if(exception.getErrorCode() == WebServiceException.CODE_NOT_FOUND){
+		if(exception.getExceptionType() == WebExceptionType.CODE_NOT_FOUND){
 			status = Response.Status.NOT_FOUND;
-		}else if(exception.getErrorCode() == WebServiceException.CODE_MISSING_REQUIRED_INPUT){
+		}else if(exception.getExceptionType() == WebExceptionType.CODE_MISSING_REQUIRED_INPUT){
 			status = Response.Status.BAD_REQUEST;
-		}else if(exception.getErrorCode() == WebServiceException.CODE_INVALID_INPUT){
+		}else if(exception.getExceptionType() == WebExceptionType.CODE_INVALID_INPUT){
 			status = Response.Status.BAD_REQUEST;
-		}else if(exception.getErrorCode() == WebServiceException.CODE_DATABSE_ERROR){
+		}else if(exception.getExceptionType() == WebExceptionType.CODE_DATABSE_ERROR){
 			status = Response.Status.INTERNAL_SERVER_ERROR;
-		}else if(exception.getErrorCode() == WebServiceException.CODE_UNKNOWN){
+		}else if(exception.getExceptionType() == WebExceptionType.CODE_UNKNOWN){
 			status = Response.Status.BAD_REQUEST;
 		}else{
 			status = Response.Status.BAD_REQUEST;

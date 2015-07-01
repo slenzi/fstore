@@ -31,7 +31,7 @@
 			
 			<md-toolbar class="md-hue-3 md-whiteframe-z1" style="min-height: 120px;">
 				<h3 class="md-toolbar-tools" style="min-height: 64px;">
-					File Store
+					File Store Manager
 					<span flex></span>
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
@@ -109,7 +109,7 @@
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>				
-					<span style="whitespace:nowrap;">[Name of resource store]</span>
+					<span style="font-style: italic; whitespace:nowrap;">[Name of resource store]</span>
 					<div flex></div>
 				</h3>
 			</md-toolbar>

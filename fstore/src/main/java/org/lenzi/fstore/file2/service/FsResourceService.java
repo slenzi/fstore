@@ -430,6 +430,23 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Get all resource stores
+	 * 
+	 * @return
+	 * @throws ServiceException
+	 */
+	public List<FsResourceStore> getAllStores() throws ServiceException {
+		
+		List<FsResourceStore> stores = null;
+		try {
+			stores = fsResourceStoreRepository.getAllStores();
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching resource stores", e);
+		}
+		return stores;
+	}
+	
+	/**
 	 * Fetch the resource store for a specific path resource, e.g. for any directory resource or file
 	 * mete resource.
 	 * 

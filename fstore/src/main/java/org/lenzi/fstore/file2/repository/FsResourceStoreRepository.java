@@ -181,8 +181,21 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		
 	}
 	
+	
 	/**
-	 * Get file store by store id
+	 * Get all resource stores
+	 * 
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public List<FsResourceStore> getAllStores() throws DatabaseException {
+		
+		return getAllStoresCriteria();
+		
+	}
+	
+	/**
+	 * Get resuorce store by store id
 	 * 
 	 * @param storeId
 	 * @return
@@ -308,7 +321,29 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Criteria query to get FsFileStore by store id
+	 * Criteria query to get all resource stores
+	 * 
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private List<FsResourceStore> getAllStoresCriteria() throws DatabaseException {
+		
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		
+		Class<FsResourceStore> type = FsResourceStore.class;
+		CriteriaQuery<FsResourceStore> query = cb.createQuery(type);
+		Root<FsResourceStore> root = query.from(type);
+
+		root.fetch(FsResourceStore_.rootDirectoryResource, JoinType.LEFT);
+		
+		query.select(root);
+		
+		return ResultFetcher.getResultListOrNull(getEntityManager().createQuery(query));		
+		
+	}
+	
+	/**
+	 * Criteria query to get resource store by store id
 	 * 
 	 * @param storeId
 	 * @return

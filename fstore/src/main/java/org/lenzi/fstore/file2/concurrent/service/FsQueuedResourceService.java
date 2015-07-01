@@ -216,6 +216,36 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
+	 * Get all resource stores
+	 * 
+	 * @return
+	 * @throws ServiceException
+	 */
+	public List<FsResourceStore> getAllStores() throws ServiceException {
+		
+		class Task extends AbstractFsTask<List<FsResourceStore>> {
+
+			@Override
+			public List<FsResourceStore> doWork() throws ServiceException {
+				return fsResourceService.getAllStores();
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		List<FsResourceStore> resource = t.get(); // block until complete
+		
+		return resource;		
+		
+	}
+	
+	/**
 	 * Fetch the resource store for a specific path resource, e.g. for any directory resource or file
 	 * meta resource.
 	 * 

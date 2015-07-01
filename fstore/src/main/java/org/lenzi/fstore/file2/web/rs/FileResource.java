@@ -20,6 +20,7 @@ import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
+import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,7 @@ public class FileResource {
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
-			throw new WebServiceException(WebServiceException.CODE_DATABSE_ERROR,
+			throw new WebServiceException(WebExceptionType.CODE_DATABSE_ERROR,
 					"Failed to fetch file data from database, " + e.getMessage());
 		}
 		String mimeType = fileResource.getMimeType();

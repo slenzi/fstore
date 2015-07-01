@@ -34,6 +34,8 @@
 					
 					// append .dark() to make the theme dark
 		
-		    });
+		    }).constant('appConstants', {
+				contextPath: '${pageContext.request.contextPath}'
+			});
 			
 })();

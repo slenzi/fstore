@@ -3,11 +3,11 @@
 	angular
 		.module('home')
 		.controller('homeController', [
-			'homeService', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q',
+			'appConstants', 'homeService', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q',
 			HomeController
 		]);
 
-	function HomeController( homeService, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
+	function HomeController( appConstants, homeService, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
     
 		var self = this;
 		
@@ -41,13 +41,20 @@
 			data: sampleGridData
 		  };
 
-		// load sample data
+		// load sample data, promise style (asynchronous)
 		homeService
-			.doLoadTest()
+			.loadPromise()
 			.then( function( sampleData ) {
-					//alert("got sample data => " + sampleData);
+					$log.debug("got sample data => " + JSON.stringify(sampleData));
+					$log.debug("context path = " + appConstants.contextPath);
 				}
 			);
+			
+		// load sample data, regular style
+		/*
+		var sampleData = homeService.load();
+		alert(JSON.stringify(sampleData));
+		*/
 
 		// *********************************
 		// Internal methods
