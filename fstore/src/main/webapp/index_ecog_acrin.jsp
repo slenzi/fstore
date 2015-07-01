@@ -24,12 +24,12 @@
 
 	<body ng-app="fstoreApp" layout="row" ng-controller="homeController as home" class="">
 	
-	<md-sidenav class="md-sidenav-left md-hue-1 md-whiteframe-z2" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
+	<md-sidenav class="md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
 		<!-- make sidenav header sticky-->
-		<md-content layout="column" class="md-hue-1" style="display: flex; flex-flow: column; height: 100%;">
+		<md-content layout="column" class="" style="display: flex; flex-flow: column; height: 100%;">
 			
-			<md-toolbar class="md-hue-3" style="min-height: 140px;">
+			<md-toolbar class="md-hue-3 md-whiteframe-z1" style="min-height: 120px;">
 				<h3 class="md-toolbar-tools" style="min-height: 64px;">
 					File Store
 					<span flex></span>
@@ -38,8 +38,8 @@
 					</md-button>
 				</h3>
 				<span flex></span>				
-				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 100px;">
-					<img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner.png" style="width:90%; margin: 0 auto; margin-top: 10px; margin-bottom: 10px;">
+				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 64px;">
+					<img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner_sm_1.png" style="width: 95%; margin: 0 auto; margin-top: 2px; margin-bottom: 2px; border: 0px solid red; padding-right: 8px; padding-left: 5px; padding-top: 5px;">
 				</md-content>
 			</md-toolbar>
 
@@ -103,7 +103,7 @@
 		<md-content layout="column" role="main">
 			
 			<!-- class="md-tall" style="min-height: 140px;" -->
-			<md-toolbar class="md-hue-2">
+			<md-toolbar class="md-hue-3">
 				<span flex></span>
 				<h3 class="md-toolbar-tools">
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
@@ -114,7 +114,7 @@
 				</h3>
 			</md-toolbar>
 			
-			<md-toolbar class="md-toolbar-tools md-hue-1 md-whiteframe-z2">
+			<md-toolbar class="md-toolbar-tools md-whiteframe-z1">
 				
 				<md-button ng-click="home.notImplemented()" class="">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>

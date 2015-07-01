@@ -31,22 +31,23 @@
         
         <md-content flex layout="column" role="main">
             
-                <md-content layout="row" class="md-whiteframe-z2" style="min-height: 128px; z-index: 100;">
+				<!-- row for logo on left, and top/bottom toolbars on right -->
+                <md-content layout="row" class="md-whiteframe-z1" style="min-height: 128px; z-index: 100;">
             
+					<!-- column for logo -->
                     <md-content layout="column" style="border: 0px solid #bbb;">
-                    
-                        <md-toolbar class="md-hue-3" style="width: 304px;">				
+                        <md-toolbar class="md-hue-3" style="width: 303px;">				
                             <md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 100px;">
-                                <img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner.png" style="margin: 0 auto; margin-top: 30px; margin-bottom: 10px;">
+                                <img src="<%=request.getContextPath()%>/assets/img/ecog/ecog-acrin_logobanner.png" style="width: 95%; margin: 0 auto; margin-top: 30px; margin-bottom: 10px; padding-left: 10px; padding-right: 15px;">
                             </md-content>
-                        </md-toolbar>
-                        
+                        </md-toolbar>        
                     </md-content>
                     
+					<!-- column for top & bottom toolbars -->
                     <md-content flex layout="column">
                     
                         <!-- class="md-tall" style="min-height: 140px;" -->
-                        <md-toolbar class="md-hue-2">
+                        <md-toolbar class="md-hue-3">
                             <span flex></span>
                             <h3 class="md-toolbar-tools">
                                 <md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
@@ -57,7 +58,7 @@
                             </h3>
                         </md-toolbar>
 
-                        <md-toolbar class="md-toolbar-tools md-hue-1">
+                        <md-toolbar class="md-toolbar-tools">
 
                             <md-button ng-click="home.notImplemented()" class="">
                                 <md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
@@ -88,9 +89,9 @@
                     
                     <md-sidenav class="md-sidenav-left md-whiteframe-z1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
-                        <md-content flex layout="column" class="" style="display: flex; flex-flow: column; height: 100%;">
+                        <md-content flex layout="column" style="display: flex; flex-flow: column; height: 100%;">
 
-                            <md-content layout="column" class="" style="min-height: 100px; padding-top: 5px;">
+                            <md-content layout="column" class="md-hue-1" style="min-height: 100px; padding-top: 5px;">
 
                                 <md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
                                     <md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
@@ -104,7 +105,7 @@
 
                             </md-content>			
 
-                            <md-content layout="column" class="" layout-padding>
+                            <md-content layout="column" class="md-hue-1" layout-padding>
 
                                 <md-content layout="column" class="storeList">
                                     <h3>Resource Stores</h3>
@@ -121,7 +122,7 @@
 
                             </md-content>
 
-                            <md-content layout="column" class="" style="min-height: 3px;" flex>
+                            <md-content layout="column" class="md-hue-1" style="min-height: 3px;" flex>
                             &nbsp;
                             </md-content>
 
