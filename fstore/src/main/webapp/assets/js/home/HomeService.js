@@ -5,11 +5,13 @@
 	angular
 		.module('home')
 		.service('homeService', [
-			'$log', '$q', '$location', HomeService
+			'appConstants', '$log', '$q', '$location', '$resource', HomeService
 			]
 		);
 	
-	function HomeService($log, $q, $location){
+	function HomeService(appConstants, $log, $q, $location, $resource){
+		
+		var storeService = $resource(appConstants.contextPath + '/cxf/resource/store', {id:'@storeId'});
 		
 		var sampleData = [
 			{
@@ -33,14 +35,24 @@
 			$log.debug('loading test, path = ' + $location.path());
 			
 			return $q.when(sampleData);
-		};		
+		};
+
+		// RESTful call to fetch all resource stores. return promise of result.
+		function fetchResourceStoreList(){
+			
+			$log.debug('fetching resource store list...');
+			
+			return storeService.query().$promise;
+			
+		};
 		
 		// *********************************
 		// External API
 		// *********************************
 	    return {
 			load: doLoadTestRegular,
-			loadPromise: doLoadTestWithPromise
+			loadPromise: doLoadTestWithPromise,
+			getResourceStores: fetchResourceStoreList
 	    };
 		
 	}

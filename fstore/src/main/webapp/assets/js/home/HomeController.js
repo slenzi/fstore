@@ -43,12 +43,19 @@
 
 		// load sample data, promise style (asynchronous)
 		homeService
-			.loadPromise()
-			.then( function( sampleData ) {
-					$log.debug("got sample data => " + JSON.stringify(sampleData));
-					$log.debug("context path = " + appConstants.contextPath);
+			.getResourceStores()
+			.then( function( storeData ) {
+					if (storeData.error){
+						$log.debug("Error, " + storeData.error);
+					} else if (storeData[0].error){
+						$log.debug("Error, " + storeData[0].error);
+					} else {
+						$log.debug("got store data => " + JSON.stringify(storeData));
+					}
 				}
 			);
+			
+		$log.debug("here");
 			
 		// load sample data, regular style
 		/*

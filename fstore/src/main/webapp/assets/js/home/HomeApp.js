@@ -6,9 +6,15 @@
 	
 	/**
 	 * Initialize home app with 'angular material' and our 'home' module
+	 *
+	 * ngMaterial - material design UI components
+	 * ngResource - provides interaction support with RESTful services via the $resource service
+	 * home - our main home module
+	 * ui.grid - ui data grid component
+	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	homeApp = angular
-		.module('fstoreApp', ['ngMaterial', 'home', 'ui.grid', 'ui.grid.pagination'])
+		.module('fstoreApp', ['ngMaterial', 'ngResource', 'home', 'ui.grid', 'ui.grid.pagination'])
 		.config(appConfig)
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {

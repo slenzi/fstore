@@ -47,13 +47,16 @@ public class StoreResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getStores() throws WebServiceException {
 		
+		logger.info(StoreResource.class.getName() + ": fetch all resource stores");
+		
 		List<FsResourceStore> stores = null;
 		try {
 			stores = fsResourceService.getAllStores();
 		} catch (ServiceException e) {
 			handleError("Failed to resource store list", WebExceptionType.CODE_DATABSE_ERROR, e);
 		}
-		return null;
+		
+		return Response.ok("[{ \"error\" : \"Service method not implemented\" }]", MediaType.APPLICATION_JSON).build();
 		
 	}
 	
