@@ -19,6 +19,9 @@
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower_components/angular-material/angular-material.css"/>
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower_components/angular-ui-grid/ui-grid.css"/>
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/ecog.css"/>
+		
+		<!-- for angular location provider -->
+		<base href="/">
 	    
 	</head>
 

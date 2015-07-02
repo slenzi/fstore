@@ -343,7 +343,7 @@
 					<exclude>**/*.xml</exclude>
 					<exclude>**/*.properties</exclude>
 				</excludes>
-			</resource>
+			</resource>		
 			
 			<!--
 			<resource>
@@ -354,7 +354,8 @@
 					<include>**/*.properties</include>
 				</includes>
 			</resource>
-			-->		
+			-->
+				
 		</resources>
 		
 		<plugins>
@@ -378,14 +379,23 @@
 				<configuration>
 					<warName>${war.name}</warName>
 					<webResources>
-						<webResource>
+						<resource>
 							<filtering>true</filtering>
 							<directory>${basedir}/src/main/webapp/WEB-INF</directory>
 							<includes>
 								<include>**/*.xml</include>
 							</includes>
 							<targetPath>WEB-INF</targetPath>
-						</webResource>
+						</resource>
+						<!-- filter application specific javascript files (not 3rd party javascript libraries) -->
+						<resource>
+							<filtering>true</filtering>
+							<directory>${basedir}/src/main/webapp/assets/js</directory>
+							<includes>
+								<include>**/*.js</include>
+							</includes>
+							<targetPath>assets/js</targetPath>
+						</resource>
 					</webResources>
 				</configuration>
 			</plugin>			

@@ -5,11 +5,11 @@
 	angular
 		.module('home')
 		.service('homeService', [
-		      '$log', '$q',
-		      HomeService
-		]);
+			'$log', '$q', '$location', HomeService
+			]
+		);
 	
-	function HomeService($log, $q){
+	function HomeService($log, $q, $location){
 		
 		var sampleData = [
 			{
@@ -30,7 +30,7 @@
 		// promise based API (asynchronous)
 		function doLoadTestWithPromise(){
 			
-			$log.debug('loading test');
+			$log.debug('loading test, path = ' + $location.path());
 			
 			return $q.when(sampleData);
 		};		

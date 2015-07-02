@@ -2,10 +2,10 @@
 
 	angular
 		.module('home')
-		.controller('homeController', [
-			'appConstants', 'homeService', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q',
-			HomeController
-		]);
+		.controller('homeController',[
+			'appConstants', 'homeService', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
+			]
+		);
 
 	function HomeController( appConstants, homeService, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
     

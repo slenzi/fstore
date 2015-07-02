@@ -20,6 +20,9 @@
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower_components/angular-ui-grid/ui-grid.css"/>
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/ecog.css"/>
 	    
+		<!-- for angular location provider -->
+		<base href="/">	    
+	    
 	</head>
 
 	<body ng-app="fstoreApp" layout="row" ng-controller="homeController as home" class="">
