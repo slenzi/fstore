@@ -67,10 +67,8 @@ public class FileResource {
 		try {
 			fileResource = fsResourceService.getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		} catch (ServiceException e) {
-			e.printStackTrace();
-			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
-			throw new WebServiceException(WebExceptionType.CODE_DATABSE_ERROR,
-					"Failed to fetch file data from database, " + e.getMessage());
+			handleError("Failed to fetch file data from database", WebExceptionType.CODE_DATABSE_ERROR, e);
+			
 		}
 		String mimeType = fileResource.getMimeType();
 		byte[] fileData = fileResource.getFileResource().getFileData();
@@ -101,6 +99,22 @@ public class FileResource {
 		).header("Content-Disposition", "attachment; filename=" + fileResource.getName()).build();
 		
 	}
+	
+	/**
+	 * Handle error
+	 * 
+	 * @param message
+	 * @param type
+	 * @param e
+	 * @throws WebServiceException
+	 */
+	private void handleError(String message, WebExceptionType type, Throwable e) throws WebServiceException {
+		
+		e.printStackTrace();
+		logger.error(message + ", " + e.getMessage(), e);		
+		throw new WebServiceException(type, message + ", " + e.getMessage());
+		
+	}	
 	
 	/*
 	public Response getFile(@PathParam("fileId") Long fileId, @Context HttpServletResponse response) throws WebServiceException {
