@@ -66,12 +66,13 @@
 				<span style="font-weight: bold;" class="storeListHeader">Resource Stores</span>
 				</md-content>
 				
-				<md-content layout-padding layout="column" class="storeList">
+				<md-content layout="column" class="storeList">
+                    <h3>Resource Stores</h3>
 					<md-list>
-						<div ng-repeat="n in [1,5] | makeRange">
-							<md-list-item ng-click="home.notImplemented()">
+						<div ng-repeat="store in home.storeList() track by $index">
+							<md-list-item ng-click="home.handleEventViewStore(store.id)">
 								<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_archive_24px.svg"></md-icon>
-								Store {{n}}
+								{{store.name}}
 								<span flex></span>
 							</md-list-item>
 						</div>

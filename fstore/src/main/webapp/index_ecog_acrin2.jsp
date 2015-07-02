@@ -110,18 +110,18 @@
 
                             <md-content layout="column" class="md-hue-1" layout-padding>
 
-                                <md-content layout="column" class="storeList">
-                                    <h3>Resource Stores</h3>
-                                    <md-list>
-                                        <div ng-repeat="n in [1,5] | makeRange">
-                                            <md-list-item ng-click="home.notImplemented()">
-                                                <md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_archive_24px.svg"></md-icon>
-                                                Store {{n}}
-                                                <span flex></span>
-                                            </md-list-item>
-                                        </div>
-                                    </md-list>			
-                                </md-content>
+								<md-content layout="column" class="storeList">
+									<h3>Resource Stores</h3>
+									<md-list>
+										<div ng-repeat="store in home.storeList() track by $index">
+											<md-list-item ng-click="home.handleEventViewStore(store.id)">
+												<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_archive_24px.svg"></md-icon>
+												{{store.name}}
+												<span flex></span>
+											</md-list-item>
+										</div>
+									</md-list>			
+								</md-content>
 
                             </md-content>
 

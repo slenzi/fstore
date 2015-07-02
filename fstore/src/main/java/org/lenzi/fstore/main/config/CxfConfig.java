@@ -85,7 +85,7 @@ public class CxfConfig {
 				getJaxRsResourceStoreApplication(), JAXRSServerFactoryBean.class );
 		
 		//
-		// Add file resource service bean
+		// Add service beans
 		//
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
@@ -96,9 +96,12 @@ public class CxfConfig {
 		factory.setAddress( factory.getAddress() );
 		
 		// 
-		// Add binary data provider
+		// Add providers for binary data and json marshalling
 		//
-		factory.setProviders( Arrays.<Object>asList( getBinaryDataProvider() ) );
+		factory.setProviders( Arrays.<Object>asList( 
+				getBinaryDataProvider(),
+				getJsonProvider()
+				) );
 		
 		return factory.create();
 	}

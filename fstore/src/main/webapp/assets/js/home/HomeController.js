@@ -17,8 +17,14 @@
 		self.leftNavClose = leftNavClose;
 		self.toggleLeftNav = buildToggler('MyLeftNav');
 		self.sampleGrid = sampleGrid;
-		
 		self.notImplemented = notImplemented;
+		
+		// store methods
+		self.storeList = storeList;
+		self.handleEventViewStore = handleEventViewStore;
+		
+		// internal store list bound to UI
+		var _storeList = [{ "name": "empty"}];
 		
 		var sampleGridData = [
 			{ "Store Name": "Example Store 1" },
@@ -47,15 +53,14 @@
 			.then( function( storeData ) {
 					if (storeData.error){
 						$log.debug("Error, " + storeData.error);
-					} else if (storeData[0].error){
-						$log.debug("Error, " + storeData[0].error);
 					} else {
 						$log.debug("got store data => " + JSON.stringify(storeData));
+						_storeList = storeData;
 					}
 				}
 			);
 			
-		$log.debug("here");
+		//$log.debug("here");
 			
 		// load sample data, regular style
 		/*
@@ -81,6 +86,19 @@
 		 */
 		function sampleGrid(){
 			return sampleGrid;
+		}
+		
+		/**
+		 * Get list of stores
+		 */
+		function storeList(){
+			return _storeList;
+		}
+		/**
+		 *
+		 */
+		function handleEventViewStore(storeId){
+			$log.debug("View store with id = " + storeId + ". Feature coming soon!");
 		}
 		
 		/**
