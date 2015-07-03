@@ -122,6 +122,26 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Get tree, up to the max depth
+	 * 
+	 * @param dirId
+	 * @param maxDepth
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Tree<FsPathResource> getTree(Long dirId, int maxDepth) throws ServiceException {
+		
+		Tree<FsPathResource> resourceTree = null;
+		try {
+			resourceTree = fsDirectoryResourceRepository.getTree(dirId, maxDepth);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching resource tree, dir id => " + dirId + ". " + e.getMessage(), e);
+		}
+		return resourceTree;
+		
+	}
+	
+	/**
 	 * Fetch file resource
 	 * 
 	 * @param fileId - id of file to fetch

@@ -85,6 +85,31 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	}
 	
 	/**
+	 * Get tree for directory. Tree contains both directories and files so resulting tree type is of FsPathResource.
+	 * 
+	 * Only fetched child elements up to the max depth
+	 * 
+	 * @param dirId
+	 * @param maxDepth
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public Tree<FsPathResource> getTree(Long dirId, int maxDepth) throws DatabaseException {
+		
+		logger.info("Fetching tree for resource, id => " + dirId);
+		
+		FsPathResource pathResource = treeRepository.getNodeWithChild(dirId, FsPathResource.class, maxDepth);
+		Tree<FsPathResource> tree = null;
+		try {
+			tree = treeBuilder.buildTree(pathResource);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from FsDirectory node, id => " + dirId, e);
+		}
+		return tree;
+		
+	}
+	
+	/**
 	 * Fetch by id
 	 * 
 	 * @param dirId

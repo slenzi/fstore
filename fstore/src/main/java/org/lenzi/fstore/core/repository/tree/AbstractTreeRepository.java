@@ -202,6 +202,23 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		return getNodeWithChildClosureHql(nodeId, clazz);
 		
 	}
+	
+	/**
+	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries.
+	 * 
+	 * @param nodeId - ID of node to fetch
+	 * @param clazz - The class type of the node, e.g. FsPathResource parent type, or one of the child types
+	 * 	such as FsDirectoryResource or FsFileMetaResource.
+	 * @param maxDepth - max depth of children to fetch
+	 * @return
+	 * @throws DatabaseException
+	 */
+	@Override
+	public N getNodeWithChild(Long nodeId, Class<N> clazz, int maxDepth) throws DatabaseException {
+	
+		return getNodeWithChildClosureHql(nodeId, clazz, maxDepth);
+		
+	}
 
 	/**
 	 * Fetch a node with it's child closure data, plus parent an child nodes for all closure entries, up to the
@@ -1737,6 +1754,26 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		Query query = getEntityManager().createQuery(selectQuery);
 		query.setParameter("nodeid", nodeId);
+		
+		return ResultFetcher.getSingleResultOrNull(query);
+		
+	}
+	
+	private N getNodeWithChildClosureHql(Long nodeId, Class<N> clazz, int maxDepth) throws DatabaseException {
+		
+		logger.info("getNodeWithChildClosureHql(Long, Class)");
+		
+		String selectQuery =
+				"select distinct r from " + clazz.getCanonicalName() + " as r " +
+				"inner join fetch r.childClosure cc " +
+				"inner join fetch cc.childNode cn " +
+				"inner join fetch cc.parentNode pn " +
+				"where r.nodeId = :nodeid " +
+				"and cc.depth <= :depth";
+		
+		Query query = getEntityManager().createQuery(selectQuery);
+		query.setParameter("nodeid", nodeId);
+		query.setParameter("depth", maxDepth);
 		
 		return ResultFetcher.getSingleResultOrNull(query);
 		

@@ -121,6 +121,38 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
+	 * Get path resource tree for directory, up to the max depth
+	 * 
+	 * @param dirId
+	 * @param maxDepth
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Tree<FsPathResource> getPathResourceTree(Long dirId, int maxDepth) throws ServiceException {
+		
+		class Task extends AbstractFsTask<Tree<FsPathResource>> {
+
+			@Override
+			public Tree<FsPathResource> doWork() throws ServiceException {
+				return fsResourceService.getTree(dirId, maxDepth);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		Tree<FsPathResource> resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
 	 * Get a file resource by id
 	 * 
 	 * @param fileId - id of the file resource
