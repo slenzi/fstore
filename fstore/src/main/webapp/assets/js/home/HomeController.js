@@ -19,9 +19,12 @@
 		self.sampleGrid = sampleGrid;
 		self.notImplemented = notImplemented;
 		
-		// store methods
+		// resource store methods
 		self.storeList = storeList;
 		self.handleEventViewStore = handleEventViewStore;
+		
+		// directory methods
+		// coming soon...
 		
 		// internal store list bound to UI
 		var _storeList = [{ "name": "empty"}];
@@ -47,7 +50,7 @@
 			data: sampleGridData
 		  };
 
-		// load sample data, promise style (asynchronous)
+		// load all resource stores (asynchronous)
 		homeService
 			.getResourceStores()
 			.then( function( storeData ) {

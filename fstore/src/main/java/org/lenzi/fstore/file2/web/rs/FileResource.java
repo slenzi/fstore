@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
  */
 @Path( "/file")
 @Service("FileResource")
-public class FileResource {
+public class FileResource extends AbstractResource {
 
     @InjectLogger
     Logger logger;
@@ -99,21 +99,10 @@ public class FileResource {
 		).header("Content-Disposition", "attachment; filename=" + fileResource.getName()).build();
 		
 	}
-	
-	/**
-	 * Handle error
-	 * 
-	 * @param message
-	 * @param type
-	 * @param e
-	 * @throws WebServiceException
-	 */
-	private void handleError(String message, WebExceptionType type, Throwable e) throws WebServiceException {
-		
-		e.printStackTrace();
-		logger.error(message + ", " + e.getMessage(), e);		
-		throw new WebServiceException(type, message + ", " + e.getMessage());
-		
+
+	@Override
+	public Logger getLogger() {
+		return logger;
 	}	
 	
 	/*

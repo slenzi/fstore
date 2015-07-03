@@ -11,7 +11,17 @@
 	
 	function HomeService(appConstants, $log, $q, $location, $resource){
 		
-		var storeService = $resource(appConstants.contextPath + '/cxf/resource/store', {id:'@storeId'});
+		// resource store service
+		var storeService = $resource(
+				appConstants.contextPath + '/cxf/resource/store/:storeId',
+				{ storeId:'@storeId' }
+			);
+		
+		// directory service
+		var directoryService = $resource(
+				appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
+				{ dirId:'@dirId', maxDepth:'@maxDepth' }
+			);
 		
 		var sampleData = [
 			{
@@ -22,7 +32,7 @@
 		];
 		
 		// *********************************
-		// Internal methods
+		// Internal test methods
 		// *********************************
 		
 		function doLoadTestRegular(){
@@ -36,8 +46,12 @@
 			
 			return $q.when(sampleData);
 		};
+		
+		// *********************************
+		// Internal RESTful methods
+		// *********************************
 
-		// RESTful call to fetch all resource stores. return promise of result.
+		// fetch all resource stores
 		function fetchResourceStoreList(){
 			
 			$log.debug('fetching resource store list...');
@@ -46,13 +60,23 @@
 			
 		};
 		
+		// fetch directory listing
+		function fetchDirectoryListing(dirId, maxDepth){
+			
+			$log.debug('fetching directory lsiting for dir id ' + dirId + ', max depth ' + madDepth);
+			
+			return directoryService.query({ dirId: dirId, maxDepth: maxDepth }).$promise;
+			
+		}
+		
 		// *********************************
 		// External API
 		// *********************************
 	    return {
 			load: doLoadTestRegular,
 			loadPromise: doLoadTestWithPromise,
-			getResourceStores: fetchResourceStoreList
+			getResourceStores: fetchResourceStoreList,
+			getDirectoryListing: fetchDirectoryListing
 	    };
 		
 	}

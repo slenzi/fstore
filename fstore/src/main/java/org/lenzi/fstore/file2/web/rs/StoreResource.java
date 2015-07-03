@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  */
 @Path( "/store")
 @Service("StoreResource")
-public class StoreResource {
+public class StoreResource extends AbstractResource {
 
     @InjectLogger
     Logger logger;
@@ -103,20 +103,9 @@ public class StoreResource {
 		
 	}
 	
-	/**
-	 * Handle error
-	 * 
-	 * @param message
-	 * @param type
-	 * @param e
-	 * @throws WebServiceException
-	 */
-	private void handleError(String message, WebExceptionType type, Throwable e) throws WebServiceException {
-		
-		e.printStackTrace();
-		logger.error(message + ", " + e.getMessage(), e);		
-		throw new WebServiceException(type, message + ", " + e.getMessage());
-		
-	}
+	@Override
+	public Logger getLogger() {
+		return logger;
+	}	
 
 }
