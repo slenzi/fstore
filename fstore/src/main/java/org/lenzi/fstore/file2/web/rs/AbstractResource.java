@@ -22,14 +22,32 @@ public abstract class AbstractResource {
 	 * 
 	 * @param message
 	 * @param type
+	 * @throws WebServiceException
+	 */
+	public void handleError(String message, WebExceptionType type) throws WebServiceException {
+		
+		handleError(message, type, null);
+		
+	}
+	
+	/**
+	 * Handle error
+	 * 
+	 * @param message
+	 * @param type
 	 * @param e
 	 * @throws WebServiceException
 	 */
 	public void handleError(String message, WebExceptionType type, Throwable e) throws WebServiceException {
 		
-		e.printStackTrace();
-		getLogger().error(message + ", " + e.getMessage(), e);		
-		throw new WebServiceException(type, message + ", " + e.getMessage());
+		if(e != null){
+			e.printStackTrace();
+			getLogger().error(message + ", " + e.getMessage(), e);		
+			throw new WebServiceException(type, message + ", " + e.getMessage());
+		}else{
+			getLogger().error(message);
+			throw new WebServiceException(type, message);
+		}
 		
 	}
 

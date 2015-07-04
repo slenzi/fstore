@@ -101,7 +101,20 @@
 		 *
 		 */
 		function handleEventViewStore(storeId){
+			
 			$log.debug("View store with id = " + storeId + ". Feature coming soon!");
+			
+			homeService
+				.getResourceStoreById(storeId)
+				.then( function( storeData ) {
+						if (storeData.error){
+							$log.debug("Error, " + storeData.error);
+						} else {
+							$log.debug("got store data => " + JSON.stringify(storeData));
+						}
+					}
+				);
+			
 		}
 		
 		/**

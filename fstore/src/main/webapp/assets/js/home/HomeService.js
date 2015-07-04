@@ -60,6 +60,15 @@
 			
 		};
 		
+		// fetch store by id
+		function fetchStoreById(storeId){
+			
+			$log.debug('fetching resource store for store id ' + storeId + '...');
+			
+			return storeService.query({ storeId: storeId }).$promise;
+			
+		};
+		
 		// fetch directory listing
 		function fetchDirectoryListing(dirId, maxDepth){
 			
@@ -67,7 +76,7 @@
 			
 			return directoryService.query({ dirId: dirId, maxDepth: maxDepth }).$promise;
 			
-		}
+		};
 		
 		// *********************************
 		// External API
@@ -76,6 +85,7 @@
 			load: doLoadTestRegular,
 			loadPromise: doLoadTestWithPromise,
 			getResourceStores: fetchResourceStoreList,
+			getResourceStoreById: fetchStoreById,
 			getDirectoryListing: fetchDirectoryListing
 	    };
 		
