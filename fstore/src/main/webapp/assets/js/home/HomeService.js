@@ -65,16 +65,16 @@
 			
 			$log.debug('fetching resource store for store id ' + storeId + '...');
 			
-			return storeService.query({ storeId: storeId }).$promise;
+			return storeService.get({ storeId: storeId }).$promise;
 			
 		};
 		
 		// fetch directory listing
 		function fetchDirectoryListing(dirId, maxDepth){
 			
-			$log.debug('fetching directory lsiting for dir id ' + dirId + ', max depth ' + madDepth);
+			$log.debug('fetching directory lsiting for dir id ' + dirId + ', max depth ' + maxDepth);
 			
-			return directoryService.query({ dirId: dirId, maxDepth: maxDepth }).$promise;
+			return directoryService.get({ dirId: dirId, maxDepth: maxDepth }).$promise;
 			
 		};
 		

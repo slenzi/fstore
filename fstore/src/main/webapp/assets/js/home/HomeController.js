@@ -50,7 +50,7 @@
 			data: sampleGridData
 		  };
 
-		// load all resource stores (asynchronous)
+		// load all resource stores when page loads (asynchronously)
 		homeService
 			.getResourceStores()
 			.then( function( storeData ) {
@@ -97,8 +97,9 @@
 		function storeList(){
 			return _storeList;
 		}
+        
 		/**
-		 *
+		 * When user clicks on resource store, fetch store data from service.
 		 */
 		function handleEventViewStore(storeId){
 			
@@ -111,11 +112,31 @@
 							$log.debug("Error, " + storeData.error);
 						} else {
 							$log.debug("got store data => " + JSON.stringify(storeData));
+                            _handleLoadDirectory(storeData.rootDirectoryId);
 						}
 					}
 				);
 			
 		}
+        
+        /**
+         * Fetch directory data from server, populate UI
+         */
+        function _handleLoadDirectory(dirId){
+            
+            // fetch directory listing with max depth 1
+			homeService
+				.getDirectoryListing(dirId, 1)
+				.then( function( directoryData ) {
+						if (directoryData.error){
+							$log.debug("Error, " + directoryData.error);
+						} else {
+							$log.debug("got directory data => " + JSON.stringify(directoryData));
+						}
+					}
+				);
+            
+        };
 		
 		/**
 		 * Build handler to open/close a SideNav; when animation finishes

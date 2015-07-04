@@ -11,6 +11,7 @@ import org.apache.cxf.jaxrs.provider.BinaryDataProvider;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
 import org.lenzi.fstore.example.web.rs.TreeResource;
+import org.lenzi.fstore.file2.web.rs.DirectoryResource;
 import org.lenzi.fstore.file2.web.rs.FileResource;
 import org.lenzi.fstore.file2.web.rs.JaxRsResourceStoreApplication;
 import org.lenzi.fstore.file2.web.rs.StoreResource;
@@ -89,7 +90,7 @@ public class CxfConfig {
 		//
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
-					getFileResourceBean(), getStoreResource(), getExceptionMapper()
+					getFileResource(), getDirectoryResource(), getStoreResource(), getExceptionMapper()
 			)
 		);
 		
@@ -142,7 +143,7 @@ public class CxfConfig {
 	 * @return
 	 */
 	@Bean
-	public FileResource getFileResourceBean(){
+	public FileResource getFileResource(){
 		return new FileResource();
 	}
 	
@@ -154,6 +155,16 @@ public class CxfConfig {
 	@Bean
 	public StoreResource getStoreResource(){
 		return new StoreResource();
+	}
+	
+	/**
+	 * jax-rs directory resource bean
+	 * 
+	 * @return
+	 */
+	@Bean
+	public DirectoryResource getDirectoryResource(){
+		return new DirectoryResource();
 	}
 	
 	/**
