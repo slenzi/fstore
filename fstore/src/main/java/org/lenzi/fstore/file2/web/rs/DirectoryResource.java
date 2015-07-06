@@ -14,9 +14,14 @@ import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.core.tree.TreeNodeVisitException;
 import org.lenzi.fstore.core.tree.Trees;
 import org.lenzi.fstore.core.tree.Trees.WalkOption;
+import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
+import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
@@ -66,12 +71,41 @@ public class DirectoryResource extends AbstractResource {
 		}
 		
 		// convert tree to JSON
+		StringBuffer jsonTree = new StringBuffer();
+		jsonTree.append("{");
 		try {
 			
 			Trees.walkTree(tree,
 				(treeNode) -> {
 				
 					logger.info("Convert tree node to JSON => " + treeNode.getData().getPathType().getType());
+					
+					FsPathResource pathResource = treeNode.getData();
+					
+					jsonTree.append(" \"name\" : \"" + pathResource.getName() + "\" ");
+					jsonTree.append(" \"type\" : \"" + pathResource.getPathType().getType() + "\" ");
+					jsonTree.append(" \"dateCreated\" : \"" + DateUtil.defaultFormat(pathResource.getDateCreated()) + "\" ");
+					jsonTree.append(" \"dateUpdated\" : \"" + DateUtil.defaultFormat(pathResource.getDateUpdated()) + "\" ");
+					
+					if(treeNode.getData().getPathType().getType().equals(FsPathType.FILE.getType())){
+						
+						FsFileMetaResource fileResource = (FsFileMetaResource)treeNode.getData();
+						
+						jsonTree.append(" \"size\" : \"" + fileResource.getFileSize() + "\" ");
+						jsonTree.append(" \"mimeType\" : \"" + fileResource.getMimeType() + "\" ");
+						
+					}else if(treeNode.getData().getPathType().getType().equals(FsPathType.DIRECTORY.getType())){
+						
+						FsDirectoryResource directoryResource = (FsDirectoryResource)treeNode.getData();
+						
+						jsonTree.append(" \"children\" : \"\" ");
+						
+					}else{
+						
+						throw new TreeNodeVisitException("Don't know how to convert tree node type " + 
+								treeNode.getData().getPathType().getType() +  " to JSON");
+						
+					}
 				
 			}, WalkOption.PRE_ORDER_TRAVERSAL);
 			
@@ -79,6 +113,7 @@ public class DirectoryResource extends AbstractResource {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		jsonTree.append("}");
 		
 		return Response.ok("{ \"error\" : \"feature not implemented yet\"}", MediaType.APPLICATION_JSON).build();
 		
