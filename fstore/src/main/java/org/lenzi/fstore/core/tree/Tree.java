@@ -61,7 +61,7 @@ public class Tree<N> {
     	
     	return Trees.printTree(rootNode, PrintOption.HTML, toString);
     	
-    }    
+    }  
     
     public List<TreeNode<N>> toList(WalkOption option){
     	

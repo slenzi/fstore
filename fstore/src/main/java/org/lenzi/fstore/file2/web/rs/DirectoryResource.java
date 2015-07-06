@@ -7,19 +7,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
-import org.lenzi.fstore.core.tree.TreeNodeVisitException;
-import org.lenzi.fstore.core.tree.Trees;
-import org.lenzi.fstore.core.tree.Trees.WalkOption;
+import org.lenzi.fstore.core.tree.TreeNode;
 import org.lenzi.fstore.core.util.DateUtil;
-import org.lenzi.fstore.file.repository.model.impl.FsDirectory;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
-import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
-import org.lenzi.fstore.file2.repository.model.impl.FsFileResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
@@ -70,54 +64,87 @@ public class DirectoryResource extends AbstractResource {
 					WebExceptionType.CODE_DATABSE_ERROR, e);
 		}
 		
-		// convert tree to JSON
-		StringBuffer jsonTree = new StringBuffer();
-		jsonTree.append("{");
-		try {
-			
-			Trees.walkTree(tree,
-				(treeNode) -> {
-				
-					logger.info("Convert tree node to JSON => " + treeNode.getData().getPathType().getType());
-					
-					FsPathResource pathResource = treeNode.getData();
-					
-					jsonTree.append(" \"name\" : \"" + pathResource.getName() + "\" ");
-					jsonTree.append(" \"type\" : \"" + pathResource.getPathType().getType() + "\" ");
-					jsonTree.append(" \"dateCreated\" : \"" + DateUtil.defaultFormat(pathResource.getDateCreated()) + "\" ");
-					jsonTree.append(" \"dateUpdated\" : \"" + DateUtil.defaultFormat(pathResource.getDateUpdated()) + "\" ");
-					
-					if(treeNode.getData().getPathType().getType().equals(FsPathType.FILE.getType())){
-						
-						FsFileMetaResource fileResource = (FsFileMetaResource)treeNode.getData();
-						
-						jsonTree.append(" \"size\" : \"" + fileResource.getFileSize() + "\" ");
-						jsonTree.append(" \"mimeType\" : \"" + fileResource.getMimeType() + "\" ");
-						
-					}else if(treeNode.getData().getPathType().getType().equals(FsPathType.DIRECTORY.getType())){
-						
-						FsDirectoryResource directoryResource = (FsDirectoryResource)treeNode.getData();
-						
-						jsonTree.append(" \"children\" : \"\" ");
-						
-					}else{
-						
-						throw new TreeNodeVisitException("Don't know how to convert tree node type " + 
-								treeNode.getData().getPathType().getType() +  " to JSON");
-						
-					}
-				
-			}, WalkOption.PRE_ORDER_TRAVERSAL);
-			
-		} catch (TreeNodeVisitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// error checking
+		TreeNode<FsPathResource> rootNode = tree.getRootNode();
+		FsPathResource rootResource = rootNode.getData();	
+		if(!rootResource.getPathType().equals(FsPathType.DIRECTORY.getType())){
+			handleError("Root resource of fetched tree is not a directory, dirId param = " + dirId + ", maxDepth = " + maxDepth,
+					WebExceptionType.CODE_DATABSE_ERROR);
 		}
-		jsonTree.append("}");
 		
-		return Response.ok("{ \"error\" : \"feature not implemented yet\"}", MediaType.APPLICATION_JSON).build();
+		// convert tree to JSON
+		String jsonTree = toJsonTree(rootNode);
+		
+		logger.debug("JSON Tree = " + jsonTree);
+		
+		return Response.ok(jsonTree, MediaType.APPLICATION_JSON).build();
 		
 	}
+	
+	/**
+	 * Convert tree to JSON
+	 * 
+	 * @param node
+	 * @return
+	 */
+	private String toJsonTree(TreeNode<FsPathResource> node){
+		return toJsonTree(node, new StringBuffer(), "");
+	}
+	
+	/**
+	 * Convert tree to JSON
+	 * 
+	 * @param node
+	 * @param jsonData
+	 * @param delim
+	 * @return
+	 */
+	private String toJsonTree(TreeNode<FsPathResource> node, StringBuffer jsonData, String delim){
+	
+		jsonData.append(delim + "{");
+		
+		FsPathResource resource = node.getData();
+		
+		// convert file
+		if(resource.getPathType().getType().equals(FsPathType.FILE.getType())){
+			
+			jsonData.append(" \"name\" : \"" + resource.getName() + "\" ");
+			jsonData.append(", \"type\" : \"" + resource.getPathType().getType() + "\" ");
+			jsonData.append(", \"dateCreated\" : \"" + DateUtil.defaultFormat(resource.getDateCreated()) + "\" ");
+			jsonData.append(", \"dateUpdated\" : \"" + DateUtil.defaultFormat(resource.getDateUpdated()) + "\" ");
+			jsonData.append(", \"size\" : \"" + ((FsFileMetaResource)resource).getFileSize() + "\" ");
+			jsonData.append(", \"mimeType\" : \"" + ((FsFileMetaResource)resource).getMimeType() + "\" ");			
+		
+		// convert directory, and recursively all children
+		}else if(resource.getPathType().getType().equals(FsPathType.DIRECTORY.getType())){
+			
+			jsonData.append(" \"name\" : \"" + resource.getName() + "\" ");
+			jsonData.append(", \"type\" : \"" + resource.getPathType().getType() + "\" ");
+			jsonData.append(", \"dateCreated\" : \"" + DateUtil.defaultFormat(resource.getDateCreated()) + "\" ");
+			jsonData.append(", \"dateUpdated\" : \"" + DateUtil.defaultFormat(resource.getDateUpdated()) + "\" ");
+			
+			if(node.hasChildren()){
+				
+				String arraydelim = "";
+				jsonData.append(", \"children\" : [");
+				for(TreeNode<FsPathResource> childResource : node.getChildren()){
+					jsonData.append( toJsonTree(childResource, new StringBuffer(), arraydelim) );
+					arraydelim = ",";
+				}
+				jsonData.append("]");
+				
+			}else{
+				
+				jsonData.append(", \"children\" : [] ");
+				
+			}
+			
+		}
+		
+		jsonData.append("}");
+		
+		return jsonData.toString();
+	}	
 	
 	@Override
 	public Logger getLogger() {
