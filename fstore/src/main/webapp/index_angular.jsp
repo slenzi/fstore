@@ -109,7 +109,7 @@
 				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
-				<span style="font-style: italic; whitespace:nowrap;">[Name of resource store]</span>
+				<span style="font-style: italic; whitespace:nowrap;">{{home.store().getName()}}</span>
 				<div flex></div>
 			</h3>
 		</md-toolbar>
@@ -140,7 +140,7 @@
 
 			<md-toolbar>
 				<div class="md-toolbar-tools md-whiteframe-z1 directoryTitle">
-				  <h2 class="md-flex">[Directory Title]</h2>
+				  <h2 class="md-flex">{{home.directory().getName()}}</h2>
 				</div>
 			</md-toolbar>		
 		

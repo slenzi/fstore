@@ -3,11 +3,11 @@
 	angular
 		.module('home')
 		.controller('homeController',[
-			'appConstants', 'homeService', 'DirectoryResource', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
+			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
 			]
 		);
 
-	function HomeController( appConstants, homeService, DirectoryResource, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
+	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
     
 		// *********************************
 		// External API
@@ -21,21 +21,27 @@
 		// resource store methods
 		self.storeList = _storeList;
 		self.handleEventViewStore = _handleEventViewStore;
-		
 		// directory methods
-		// coming soon...
+		self.directory = _currentDirectory;
+		// store methods
+		self.store = _currentStore;
 
 		// *********************************
 		// Internal methods and data 
 		// *********************************
 		
 		// internal models bound to UI
-		var _storeList = [{ "name": "empty"}];
-		var _currentDirectory = new DirectoryResource({
+		var storeList = [{ "name": "empty"}];
+		var currentDirectory = new DirectoryResource({
 				name: 'Loading...',
 				dateCreated: 'Loading...',
 				dateUpdated: 'Loading...'
 		});
+		var currentStore = new ResourceStore({
+				name: 'Loading...',
+				dateCreated: 'Loading...',
+				dateUpdated: 'Loading...'
+		});		
 
 		//
 		// load all resource stores when page loads (asynchronously)
@@ -47,12 +53,17 @@
 						$log.debug("Error, " + storeData.error);
 					} else {
 						$log.debug("got store data => " + JSON.stringify(storeData));
-						_storeList = storeData;
+						storeList = storeData;
+						if(storeData[0]){
+							// auto load first store and update ui
+							currentStore.setName(storeData[0].name);
+							_handleLoadDirectory(storeData[0].rootDirectoryId);
+						}
 					}
 				}
 			);
 		
-		$log.debug('Directory resource name = ' + _currentDirectory.getName());
+		//$log.debug('Directory resource name = ' + currentDirectory.getName());
 			
 		//$log.debug("here");
 			
@@ -104,8 +115,22 @@
 		 * Get list of stores
 		 */
 		function _storeList(){
-			return _storeList;
+			return storeList;
 		}
+		
+		/**
+		 * Get current store being viewed
+		 */		
+		function _currentStore(){
+			return currentStore;
+		}		
+		
+		/**
+		 * Get current directory being viewed
+		 */
+		function _currentDirectory(){
+			return currentDirectory;
+		}	
         
 		/**
 		 * When user clicks on resource store, fetch store data from service.
@@ -120,8 +145,14 @@
 						if (storeData.error){
 							$log.debug("Error, " + storeData.error);
 						} else {
-							$log.debug("got store data => " + JSON.stringify(storeData));
-                            _handleLoadDirectory(storeData.rootDirectoryId);
+							if(storeData && storeData.rootDirectoryId){
+								$log.debug("got store data => " + JSON.stringify(storeData));
+								currentStore.setName(storeData.name);
+								_handleLoadDirectory(storeData.rootDirectoryId);								
+							}else{
+								$log.error('Error, no store data, or no root directory id for store...');
+								alert('Error, no store data, or no root directory id for store...');
+							}
 						}
 					}
 				);
@@ -140,7 +171,12 @@
 						if (directoryData.error){
 							$log.debug("Error, " + directoryData.error);
 						} else {
+							
 							$log.debug("got directory data => " + JSON.stringify(directoryData));
+							
+							// update view
+							currentDirectory.setName(directoryData.name);
+							
 						}
 					}
 				);
