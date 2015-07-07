@@ -146,6 +146,10 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 	public void setPathType(FsPathType pathType) {
 		this.pathType = pathType;
 	}
+	
+	public String getPathTypeValue() {
+		return pathType.getType();
+	}	
 
 	/**
 	 * @return the resourceStore

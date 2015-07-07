@@ -67,7 +67,7 @@ public class DirectoryResource extends AbstractResource {
 		// error checking
 		TreeNode<FsPathResource> rootNode = tree.getRootNode();
 		FsPathResource rootResource = rootNode.getData();	
-		if(!rootResource.getPathType().equals(FsPathType.DIRECTORY.getType())){
+		if(!rootResource.getPathTypeValue().equals(FsPathType.DIRECTORY.getType())){
 			handleError("Root resource of fetched tree is not a directory, dirId param = " + dirId + ", maxDepth = " + maxDepth,
 					WebExceptionType.CODE_DATABSE_ERROR);
 		}
@@ -87,7 +87,7 @@ public class DirectoryResource extends AbstractResource {
 	 * @param node
 	 * @return
 	 */
-	private String toJsonTree(TreeNode<FsPathResource> node){
+	private String toJsonTree(TreeNode<FsPathResource> node) throws WebServiceException {
 		return toJsonTree(node, new StringBuffer(), "");
 	}
 	
@@ -99,14 +99,14 @@ public class DirectoryResource extends AbstractResource {
 	 * @param delim
 	 * @return
 	 */
-	private String toJsonTree(TreeNode<FsPathResource> node, StringBuffer jsonData, String delim){
+	private String toJsonTree(TreeNode<FsPathResource> node, StringBuffer jsonData, String delim) throws WebServiceException {
 	
-		jsonData.append(delim + "{");
-		
 		FsPathResource resource = node.getData();
 		
+		jsonData.append(delim + "{");
+		
 		// convert file
-		if(resource.getPathType().getType().equals(FsPathType.FILE.getType())){
+		if(resource.getPathTypeValue().equals(FsPathType.FILE.getType())){
 			
 			jsonData.append(" \"name\" : \"" + resource.getName() + "\" ");
 			jsonData.append(", \"type\" : \"" + resource.getPathType().getType() + "\" ");
@@ -115,14 +115,15 @@ public class DirectoryResource extends AbstractResource {
 			jsonData.append(", \"size\" : \"" + ((FsFileMetaResource)resource).getFileSize() + "\" ");
 			jsonData.append(", \"mimeType\" : \"" + ((FsFileMetaResource)resource).getMimeType() + "\" ");			
 		
-		// convert directory, and recursively all children
-		}else if(resource.getPathType().getType().equals(FsPathType.DIRECTORY.getType())){
+		// convert directory
+		}else if(resource.getPathTypeValue().equals(FsPathType.DIRECTORY.getType())){
 			
 			jsonData.append(" \"name\" : \"" + resource.getName() + "\" ");
 			jsonData.append(", \"type\" : \"" + resource.getPathType().getType() + "\" ");
 			jsonData.append(", \"dateCreated\" : \"" + DateUtil.defaultFormat(resource.getDateCreated()) + "\" ");
 			jsonData.append(", \"dateUpdated\" : \"" + DateUtil.defaultFormat(resource.getDateUpdated()) + "\" ");
 			
+			// recursively convert all sub directories and files
 			if(node.hasChildren()){
 				
 				String arraydelim = "";
@@ -138,6 +139,12 @@ public class DirectoryResource extends AbstractResource {
 				jsonData.append(", \"children\" : [] ");
 				
 			}
+			
+		}else{
+			
+			handleError("Unknown resource path type '" + resource.getPathTypeValue() + "' for node id " + resource.getNodeId() + 
+					", node name " + resource.getName() + ". Don't know how to convert this node type to JSON.",
+					WebExceptionType.CODE_DATABSE_ERROR);			
 			
 		}
 		
