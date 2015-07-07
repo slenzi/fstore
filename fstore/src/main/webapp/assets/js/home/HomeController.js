@@ -3,54 +3,43 @@
 	angular
 		.module('home')
 		.controller('homeController',[
-			'appConstants', 'homeService', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
+			'appConstants', 'homeService', 'DirectoryResource', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
 			]
 		);
 
-	function HomeController( appConstants, homeService, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
+	function HomeController( appConstants, homeService, DirectoryResource, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
     
+		// *********************************
+		// External API
+		// *********************************
 		var self = this;
-		
-		// add function to this controller
-		self.doHello = doHello;
-		self.showContactOptions = showContactOptions;
-		self.leftNavClose = leftNavClose;
-		self.toggleLeftNav = buildToggler('MyLeftNav');
-		self.sampleGrid = sampleGrid;
-		self.notImplemented = notImplemented;
-		
+		self.doHello = _doHello;
+		self.showContactOptions = _showContactOptions;
+		self.leftNavClose = _leftNavClose;
+		self.toggleLeftNav = _buildToggler('MyLeftNav');
+		self.notImplemented = _notImplemented;
 		// resource store methods
-		self.storeList = storeList;
-		self.handleEventViewStore = handleEventViewStore;
+		self.storeList = _storeList;
+		self.handleEventViewStore = _handleEventViewStore;
 		
 		// directory methods
 		// coming soon...
-		
-		// internal store list bound to UI
-		var _storeList = [{ "name": "empty"}];
-		
-		var sampleGridData = [
-			{ "Store Name": "Example Store 1" },
-			{ "Store Name": "Example Store 2" },
-			{ "Store Name": "Example Store 3" },
-			{ "Store Name": "Example Store 4" },
-			{ "Store Name": "Example Store 5" },
-			{ "Store Name": "Example Store 6" },
-			{ "Store Name": "Example Store 7" },
-			{ "Store Name": "Example Store 8" },
-			{ "Store Name": "Example Store 9" },
-		];
-		
-		var sampleGrid = {
-			paginationPageSizes: [25, 50, 75],
-			paginationPageSize: 25,
-			columnDefs: [
-			  { name: 'Store Name' },
-			],
-			data: sampleGridData
-		  };
 
+		// *********************************
+		// Internal methods and data 
+		// *********************************
+		
+		// internal models bound to UI
+		var _storeList = [{ "name": "empty"}];
+		var _currentDirectory = new DirectoryResource({
+				name: 'Loading...',
+				dateCreated: 'Loading...',
+				dateUpdated: 'Loading...'
+		});
+
+		//
 		// load all resource stores when page loads (asynchronously)
+		//
 		homeService
 			.getResourceStores()
 			.then( function( storeData ) {
@@ -62,6 +51,8 @@
 					}
 				}
 			);
+		
+		$log.debug('Directory resource name = ' + _currentDirectory.getName());
 			
 		//$log.debug("here");
 			
@@ -69,16 +60,12 @@
 		/*
 		var sampleData = homeService.load();
 		alert(JSON.stringify(sampleData));
-		*/
-
-		// *********************************
-		// Internal methods
-		// *********************************
+		*/		
 
 		/**
 		 * Say hello
 		 */
-		function doHello(){
+		function _doHello(){
 			alert("hello from home controller");
 			// $mdSidenav('MyLeftNav').toggle();
 			// $mdBottomSheet.hide()
@@ -87,21 +74,43 @@
 		/**
 		 * Fetch sample ui-grid
 		 */
+		 /*
+		 self.sampleGrid = sampleGrid;
+		var sampleGridData = [
+			{ "Store Name": "Example Store 1" },
+			{ "Store Name": "Example Store 2" },
+			{ "Store Name": "Example Store 3" },
+			{ "Store Name": "Example Store 4" },
+			{ "Store Name": "Example Store 5" },
+			{ "Store Name": "Example Store 6" },
+			{ "Store Name": "Example Store 7" },
+			{ "Store Name": "Example Store 8" },
+			{ "Store Name": "Example Store 9" },
+		];
+		var sampleGrid = {
+			paginationPageSizes: [25, 50, 75],
+			paginationPageSize: 25,
+			columnDefs: [
+			  { name: 'Store Name' },
+			],
+			data: sampleGridData
+		  };		 
 		function sampleGrid(){
 			return sampleGrid;
 		}
+		*/
 		
 		/**
 		 * Get list of stores
 		 */
-		function storeList(){
+		function _storeList(){
 			return _storeList;
 		}
         
 		/**
 		 * When user clicks on resource store, fetch store data from service.
 		 */
-		function handleEventViewStore(storeId){
+		function _handleEventViewStore(storeId){
 			
 			$log.debug("View store with id = " + storeId + ". Feature coming soon!");
 			
@@ -142,7 +151,7 @@
 		 * Build handler to open/close a SideNav; when animation finishes
 		 * report completion in console
 		 */
-		function buildToggler(navID) {
+		function _buildToggler(navID) {
 			var debounceFn = $mdUtil.debounce(function(){
 				$mdSidenav(navID)
 				.toggle()
@@ -156,7 +165,7 @@
 		/**
 		 * Close left side nav
 		 */
-		function leftNavClose() {
+		function _leftNavClose() {
 			$mdSidenav('MyLeftNav').close()
 			.then(function () {
 				$log.debug("close MyLeftNav is done");
@@ -166,14 +175,14 @@
 		/**
 		 *
 		 */
-		function notImplemented(){
+		function _notImplemented(){
 			alert("Feature implementation is forthcoming.");
 		}
 		
 		/**
 		 * Show the bottom sheet
 		 */
-		function showContactOptions($event) {
+		function _showContactOptions($event) {
 
 			/*
 			var user = self.selected;

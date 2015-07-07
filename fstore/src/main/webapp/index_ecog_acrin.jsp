@@ -107,42 +107,48 @@
 	<!-- the 'style' values make sure we have a sticky header (header doesn't scroll out of view)-->
 	<md-content flex style="display: flex; flex-flow: column; height: 100%;">
 	
+		<!-- class="md-tall" style="min-height: 140px;" -->
+		<md-toolbar class="md-hue-3">
+			<span flex></span>
+			<h3 class="md-toolbar-tools">
+				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
+				</md-button>				
+				<span style="font-style: italic; whitespace:nowrap;">[Name of resource store]</span>
+				<div flex></div>
+			</h3>
+		</md-toolbar>
+		
+		<md-toolbar class="md-toolbar-tools md-whiteframe-z1">
+			
+			<md-button ng-click="home.notImplemented()" class="">
+				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
+				New Folder
+			</md-button>
+			
+			<md-button ng-click="home.notImplemented()" class="">
+				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
+				Add Files
+			</md-button>
+			
+			<div flex></div>
+			
+			<md-button ng-click="home.notImplemented()" class="">
+				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
+				Store Settings
+			</md-button>
+			
+		</md-toolbar>		
+	
 		<!-- layout-fill layout-align="top center" -->
 		<md-content layout="column" role="main">
 			
-			<!-- class="md-tall" style="min-height: 140px;" -->
-			<md-toolbar class="md-hue-3">
-				<span flex></span>
-				<h3 class="md-toolbar-tools">
-					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
-					</md-button>				
-					<span style="font-style: italic; whitespace:nowrap;">[Name of resource store]</span>
-					<div flex></div>
-				</h3>
+			<md-toolbar>
+				<div class="md-toolbar-tools md-whiteframe-z1 directoryTitle">
+				  <h2 class="md-flex">[Directory Title]</h2>
+				</div>
 			</md-toolbar>
 			
-			<md-toolbar class="md-toolbar-tools md-whiteframe-z1">
-				
-				<md-button ng-click="home.notImplemented()" class="">
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
-					New Folder
-				</md-button>
-				
-				<md-button ng-click="home.notImplemented()" class="">
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
-					Add Files
-				</md-button>
-				
-				<div flex></div>
-				
-				<md-button ng-click="home.notImplemented()" class="">
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
-					Store Settings
-				</md-button>
-				
-			</md-toolbar>
-
 			<!-- layout-padding -->
 			<md-content id="homeContent" class="iconGrid">
              
@@ -487,6 +493,7 @@
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-ui-grid/ui-grid.js"></script>
 
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeModule.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeModels.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeController.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeService.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeFilter.js"></script>

@@ -103,6 +103,10 @@ color: #ff8a80;
 	margin: 0px;
 }
 
+.directoryTitle {
+	font-size: 0.8em;
+}
+
 .collapsable {
 	display: inline-block;
 	overflow: hidden;

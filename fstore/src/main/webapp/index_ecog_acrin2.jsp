@@ -227,6 +227,7 @@
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-ui-grid/ui-grid.js"></script>
 
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeModule.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeModels.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeController.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeService.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeFilter.js"></script>
