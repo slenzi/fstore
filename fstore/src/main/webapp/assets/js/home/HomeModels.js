@@ -25,7 +25,8 @@
 				name: 'name not set',
 				description: 'description not set',
 				dateCreated: 'date created not set',
-				dateUpdated: 'date updated not set'
+				dateUpdated: 'date updated not set',
+				children: []
 			});
 			
 			// update defaults with user provided data if we have some
@@ -63,7 +64,13 @@
 			},
 			setDateUpdated: function(dateUpdated){
 				this.dateUpdated = dateUpdated;
-			}
+			},
+			getChildren: function(){
+				return this.children;
+			},
+			setChildren: function(children){
+				this.children = children;
+			}			
 		};	
 		
 		// return this

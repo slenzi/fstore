@@ -148,7 +148,8 @@
 							if(storeData && storeData.rootDirectoryId){
 								$log.debug("got store data => " + JSON.stringify(storeData));
 								currentStore.setName(storeData.name);
-								_handleLoadDirectory(storeData.rootDirectoryId);								
+								_handleLoadDirectory(storeData.rootDirectoryId);
+								_leftNavClose();
 							}else{
 								$log.error('Error, no store data, or no root directory id for store...');
 								alert('Error, no store data, or no root directory id for store...');
@@ -176,6 +177,7 @@
 							
 							// update view
 							currentDirectory.setName(directoryData.name);
+							currentDirectory.setChildren(directoryData.children);
 							
 						}
 					}

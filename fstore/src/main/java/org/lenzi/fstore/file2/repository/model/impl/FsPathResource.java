@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.util.StringUtil;
 
 /**
  * Abstract path which can represent a file or directory
@@ -28,7 +29,7 @@ import org.lenzi.fstore.core.repository.model.impl.FSNode;
 @Table(name = "FS_PATH_RESOURCE")
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="PATH_TYPE", discriminatorType=DiscriminatorType.STRING)
-public abstract class FsPathResource extends FSNode<FsPathResource> implements FsResource {
+public abstract class FsPathResource extends FSNode<FsPathResource> implements FsResource, Comparable<FsPathResource> {
 
 	/**
 	 * 
@@ -173,5 +174,63 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 		return "FsPathResource [id=" + getNodeId() + ", store id=" + storeId + ", name=" + name + ", relativePath="
 				+ relativePath + ", pathType=" + pathType.getType() + "]";
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(FsPathResource other) {
+		
+		if(other == null){
+			return -1;
+		}
+		
+		if(other.getPathType() != null && getPathType() != null){
+
+			if(getPathTypeValue().equals(FsPathType.DIRECTORY.getType()) && other.getPathTypeValue().equals(FsPathType.DIRECTORY.getType())){
+		
+				// both directories, compare names
+				return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+				
+			}else if(getPathTypeValue().equals(FsPathType.FILE.getType()) && other.getPathTypeValue().equals(FsPathType.DIRECTORY.getType())){
+				
+				// dir comes first
+				return 1;
+				
+			}else if(getPathTypeValue().equals(FsPathType.DIRECTORY.getType()) && other.getPathTypeValue().equals(FsPathType.FILE.getType())){
+				
+				// dir comes first
+				return -1;
+				
+			}else if(getPathTypeValue().equals(FsPathType.FILE.getType()) && other.getPathTypeValue().equals(FsPathType.FILE.getType())){
+				
+				// both files, compare names
+				return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+				
+			}else{
+				
+				// not sure of types...
+				return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+				
+			}
+			
+		}else if(other.getPathType() == null && getPathType() != null){
+			
+			return -1;
+			
+		}else if(other.getPathType() != null && getPathType() == null){
+			
+			return 1;
+			
+		}else{
+			
+			// compare names
+			return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+			
+		}
+		
+	}
+	
+	
 
 }

@@ -37,6 +37,9 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 .iconGrid .green {
     color: #b9f6ca;
 }
+.iconGrid .light-green {
+    color: #85FFAD;
+}
 .iconGrid .yellow {
     color: #ffff8d;
 }
@@ -46,8 +49,14 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 .iconGrid .blue {
     color: #002184; /* #002184 #8AB8E6 */
 }
+.iconGrid .light-blue {
+	color: #6699FF;
+}
 .iconGrid .purple {
     color: #b388ff;
+}
+.iconGrid .light-purple {
+	color: #D3A4EA;
 }
 .iconGrid .red {
     color: #ff8a80;

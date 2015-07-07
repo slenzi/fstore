@@ -1,5 +1,8 @@
 package org.lenzi.fstore.file2.web.rs;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -72,6 +75,13 @@ public class DirectoryResource extends AbstractResource {
 					WebExceptionType.CODE_DATABSE_ERROR);
 		}
 		
+		// TODO - sort children
+		
+		// sort root node children
+		//if(rootNode.hasChildren()){
+		//	Collections.sort(rootNode.getChildren());
+		//}
+		
 		// convert tree to JSON
 		String jsonTree = toJsonTree(rootNode);
 		
@@ -108,7 +118,9 @@ public class DirectoryResource extends AbstractResource {
 		// convert file
 		if(resource.getPathTypeValue().equals(FsPathType.FILE.getType())){
 			
-			jsonData.append(" \"name\" : \"" + resource.getName() + "\" ");
+			// file id == node id
+			jsonData.append(" \"fileId\" : \"" + resource.getNodeId() + "\" ");
+			jsonData.append(", \"name\" : \"" + resource.getName() + "\" ");
 			jsonData.append(", \"type\" : \"" + resource.getPathType().getType() + "\" ");
 			jsonData.append(", \"dateCreated\" : \"" + DateUtil.defaultFormat(resource.getDateCreated()) + "\" ");
 			jsonData.append(", \"dateUpdated\" : \"" + DateUtil.defaultFormat(resource.getDateUpdated()) + "\" ");
@@ -118,7 +130,9 @@ public class DirectoryResource extends AbstractResource {
 		// convert directory
 		}else if(resource.getPathTypeValue().equals(FsPathType.DIRECTORY.getType())){
 			
-			jsonData.append(" \"name\" : \"" + resource.getName() + "\" ");
+			// dir id == node id
+			jsonData.append(" \"dirId\" : \"" + resource.getNodeId() + "\" ");
+			jsonData.append(", \"name\" : \"" + resource.getName() + "\" ");
 			jsonData.append(", \"type\" : \"" + resource.getPathType().getType() + "\" ");
 			jsonData.append(", \"dateCreated\" : \"" + DateUtil.defaultFormat(resource.getDateCreated()) + "\" ");
 			jsonData.append(", \"dateUpdated\" : \"" + DateUtil.defaultFormat(resource.getDateUpdated()) + "\" ");
