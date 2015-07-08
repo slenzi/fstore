@@ -88,9 +88,9 @@ public class TreeNode<N> {
 	 * @param comparator - comparator which defines how to store the children
 	 */
 	public void sortChildren(Comparator<TreeNode<N>> comparator){
-		
-		Collections.sort(childList, comparator);
-		
+		if(childList != null && childList.size() > 0){
+			Collections.sort(childList, comparator);
+		}
 	}
 	
 	/**

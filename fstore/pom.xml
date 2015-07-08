@@ -31,8 +31,8 @@
 		<version.apache.commons.io>2.4</version.apache.commons.io>
 		<version.apache.commons.fileupload>1.3.1</version.apache.commons.fileupload>
 		<version.apache.commons.lang3>3.4</version.apache.commons.lang3> <!-- was 3.3.2 5/28/2015 -->
-		<version.apache.cxf>3.0.4</version.apache.cxf>
-		<version.apache.tika>1.8</version.apache.tika>
+		<version.apache.cxf>3.1.1</version.apache.cxf> <!-- was 3.0.4 7/8/2015 -->
+		<version.apache.tika>1.9</version.apache.tika> <!-- was 1.8 7/8/2015 -->
 		
 		<version.jackson.jaxrs>1.9.13</version.jackson.jaxrs>
 		
@@ -40,9 +40,9 @@
 		<version.javax.servlet>3.1.0</version.javax.servlet>
 		<version.javax.jsr311.version>1.1.1</version.javax.jsr311.version>
 		
-		<version.spring>4.1.6.RELEASE</version.spring> <!-- was 4.1.4.RELEASE 5/28/2015 -->
+		<version.spring>4.1.7.RELEASE</version.spring> <!-- was 4.1.6.RELEASE 7/8/2015 -->
 		
-		<version.hibernate>4.3.8.Final</version.hibernate>
+		<version.hibernate>4.3.10.Final</version.hibernate> <!-- was 4.3.8.Final 7/8/2015 -->
 		<!-- not sure if hibernate jpa is needed -->
 		<version.hibernate.jpa>1.0.0.Final</version.hibernate.jpa>
 		

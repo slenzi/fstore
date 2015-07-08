@@ -138,9 +138,10 @@
 		<!-- layout-fill layout-align="top center" -->
 		<md-content layout="column" role="main">
 
-			<md-toolbar>
-				<div class="md-toolbar-tools md-whiteframe-z1 directoryTitle">
-				  <h2 class="md-flex">{{home.directory().getName()}}</h2>
+			<md-toolbar class="directoryTitle-Toolbar">
+				<div class="md-toolbar-tools directoryTitle">
+					<!--ng-model="home.directory.getName"-->
+					<h2 class="md-flex">{{home.directory().getName()}}</h2>
 				</div>
 			</md-toolbar>		
 		
@@ -211,6 +212,7 @@
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-touch/angular-touch.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-material/angular-material.js"></script>
     
