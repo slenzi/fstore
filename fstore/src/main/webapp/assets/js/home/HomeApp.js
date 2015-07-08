@@ -16,35 +16,44 @@
 	 */
 	homeApp = angular
 		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'ui.grid', 'ui.grid.pagination'])
-		.config(appConfig)
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
-			contextPath: '@application.context@'
-		});
+			contextPath: '/fstore'
+		})
+		// inject our own constants into our config
+		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);
 		
-		//
-		// main app config
-		//
-		function appConfig($locationProvider, $mdThemingProvider){
+		/**
+		 * Main app config
+		 *
+		 * appConstants - our own application constants
+		 * $locationProvider - default angular location provider
+		 * $mdThemingProvider - Angular material theme setup
+		 * $stateProvider - angular ui.router state provider
+		 * $urlRouterProvider - angualr ui.router url provider
+		 */
+		function appConfig(appConstants, $locationProvider, $mdThemingProvider, $stateProvider, $urlRouterProvider){
 			
 			locationConfig($locationProvider);
+			
+			uiRouteConfig(appConstants, $stateProvider, $urlRouterProvider);
 			
 			materialConfig($mdThemingProvider);
 			
 		};
 		
-		//
-		// configure location provider
-		//
+		/**
+		 * Configure location provider
+		 */
 		function locationConfig($locationProvider){
 			
-			$locationProvider.html5Mode(true);
+			//$locationProvider.html5Mode(true);
 			
 		};
 		
-		//
-		// angular material UI config
-		//
+		/**
+		 * Angular material UI config
+		 */
 		function materialConfig($mdThemingProvider){
 			
 			// Extend the gray theme with a few different shades
@@ -69,6 +78,48 @@
 				.accentPalette('red');
 				
 				// append .dark() to make the theme dark			
+			
+		};
+		
+		/**
+		 * Angular ui.router config - configure states and partials.
+		 */
+		function uiRouteConfig(appConstants, $stateProvider, $urlRouterProvider){
+			
+			// For any unmatched url, redirect to /state1
+			$urlRouterProvider.otherwise("/directory");
+
+			// Now set up the states
+			$stateProvider
+				.state('directory', {
+					url: '/directory',
+					templateUrl: appConstants.contextPath + '/assets/partials/directoryPartial.jsp'
+				})
+				.state('settings', {
+					url: '/settings',
+					templateUrl: appConstants.contextPath + '/assets/partials/settingsPartial.jsp'
+				});
+				
+				/*
+				.state('state1.list', {
+					url: "/list",
+					templateUrl: "partials/state1.list.html",
+					controller: function($scope) {
+						$scope.items = ["A", "List", "Of", "Items"];
+					}
+				})
+				.state('state2', {
+					url: "/state2",
+					templateUrl: "partials/state2.html"
+				})
+				.state('state2.list', {
+					url: "/list",
+					templateUrl: "partials/state2.list.html",
+					controller: function($scope) {
+						$scope.things = ["A", "Set", "Of", "Things"];
+					}
+				});
+				*/
 			
 		};
 			
