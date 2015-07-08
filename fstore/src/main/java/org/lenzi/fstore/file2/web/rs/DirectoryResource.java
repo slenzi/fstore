@@ -75,12 +75,11 @@ public class DirectoryResource extends AbstractResource {
 					WebExceptionType.CODE_DATABSE_ERROR);
 		}
 		
-		// TODO - sort children
-		
-		// sort root node children
-		//if(rootNode.hasChildren()){
-		//	Collections.sort(rootNode.getChildren());
-		//}
+		// sort first level child nodes. uses the default FsPathResource compareTo method
+		rootNode.sortChildren(
+				(node1, node2) -> {
+					return node1.getData().compareTo(node2.getData());
+				});
 		
 		// convert tree to JSON
 		String jsonTree = toJsonTree(rootNode);

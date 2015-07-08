@@ -4,6 +4,7 @@
 package org.lenzi.fstore.core.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -82,6 +83,17 @@ public class TreeNode<N> {
 	}
 	
 	/**
+	 * Sort the children
+	 * 
+	 * @param comparator - comparator which defines how to store the children
+	 */
+	public void sortChildren(Comparator<TreeNode<N>> comparator){
+		
+		Collections.sort(childList, comparator);
+		
+	}
+	
+	/**
 	 * Iterates through the list of child nodes for this node, and compares each child to 'compareNode'. If the
 	 * nodes are equal, defined by the comparator, the first match is returned.
 	 * 
@@ -89,6 +101,7 @@ public class TreeNode<N> {
 	 * @param comparator
 	 * @return
 	 */
+	/*
 	public TreeNode<N> getFirstChildMatch(TreeNode<N> compareNode, Comparator<TreeNode<N>> comparator){
 		
 		if(!hasChildren()){
@@ -102,15 +115,17 @@ public class TreeNode<N> {
 		
 		return null;
 	}
+	*/
 	
 	/**
 	 * Iterates through the list of child nodes for this node, and compares each child to 'compareNode'. All
-	 * nodes that match, defined by the caparator, are returned.
+	 * nodes that match, defined by the comparator, are returned.
 	 * 
 	 * @param node
 	 * @param comparator
 	 * @return
 	 */
+	/*
 	public List<TreeNode<N>> getChildMatch(TreeNode<N> compareNode, Comparator<TreeNode<N>> comparator){
 		
 		if(!hasChildren()){
@@ -124,7 +139,8 @@ public class TreeNode<N> {
 		}
 		
 		return matches.size() > 0 ? matches : null;
-	}	
+	}
+	*/	
 
 	public List<TreeNode<N>> getChildren() {
 		return childList;

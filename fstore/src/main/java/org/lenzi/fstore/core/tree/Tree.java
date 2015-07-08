@@ -93,6 +93,7 @@ public class Tree<N> {
 	 * @param comparator
 	 * @return
 	 */
+    /*
 	public TreeNode<N> getFirstChildMatch(TreeNode<N> compareNode, Comparator<TreeNode<N>> comparator){
 		
 		if(rootNode == null){
@@ -101,21 +102,24 @@ public class Tree<N> {
 		return rootNode.getFirstChildMatch(compareNode, comparator);
 		
 	}
+	*/
 	
 	/**
 	 * Iterates through the list of child nodes for this node, and compares each child to 'compareNode'. All
-	 * nodes that match, defined by the caparator, are returned.
+	 * nodes that match, defined by the comparator, are returned.
 	 * 
 	 * @param node
 	 * @param comparator
 	 * @return
 	 */
+    /*
 	public List<TreeNode<N>> getChildMatch(TreeNode<N> compareNode, Comparator<TreeNode<N>> comparator){
 		
 		if(rootNode == null){
 			return null;
 		}
 		return rootNode.getChildMatch(compareNode, comparator);
-	}    
+	}
+	*/  
     
 }
