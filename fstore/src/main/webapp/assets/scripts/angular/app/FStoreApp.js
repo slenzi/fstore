@@ -93,11 +93,11 @@
 			$stateProvider
 				.state('home_directory', {
 					url: '/directory',
-					templateUrl: appConstants.contextPath + '/assets/angular/modules/home/partials/directoryPartial.jsp'
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryPartial.jsp'
 				})
 				.state('home_storeSettings', {
 					url: '/storeSettings',
-					templateUrl: appConstants.contextPath + '/assets/angular/modules/home/partials/storeSettingsPartial.jsp'
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/storeSettingsPartial.jsp'
 				});
 				
 				/*
