@@ -8,35 +8,7 @@
 		);
 
 	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, $state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
-    
-		var self = this;
-	
-		// *********************************
-		// External API
-		// *********************************
-		self.doHello = _doHello;
-		self.showContactOptions = _showContactOptions;
-		self.leftNavClose = _leftNavClose;
-		self.toggleLeftNav = _buildToggler('MyLeftNav');
-		self.notImplemented = _notImplemented;
-		// resource store methods
-		self.store = _currentStore;
-		self.storeList = _storeList;
-		self.handleEventViewStore = _handleEventViewStore;
-		self.handleEventViewStoreSettings = _handleEventViewStoreSettings;		
-		// directory resource methods
-		self.directory = _currentDirectory;
-		//self.handleEventDblClickDirectory = _handleEventDblClickDirectory;
-		// file resource methods
-		//self.handleEventDblClickFile = _handleEventDblClickFile;
-		// generic path resource method
-		self.handleEventDblClickPathResource = _handleEventDblClickPathResource;
-
-
-		// *********************************
-		// Internal methods and data 
-		// *********************************
-		
+   
 		// internal models bound to UI
 		var storeList = [{ "name": "empty"}];
 		var currentDirectory = new DirectoryResource({
@@ -50,9 +22,7 @@
 				dateUpdated: 'Loading...'
 		});		
 
-		//
 		// load all resource stores when page loads (asynchronously)
-		//
 		homeService
 			.getResourceStores()
 			.then( function( storeData ) {
@@ -279,6 +249,25 @@
 			});
 			*/
 
+		}
+	
+		var self = this;
+		
+		/*
+		 * External API
+		 */
+		return {
+			doHello : _doHello,
+			showContactOptions : _showContactOptions,
+			leftNavClose : _leftNavClose,
+			toggleLeftNav : _buildToggler('MyLeftNav'),
+			notImplemented : _notImplemented,
+			store : _currentStore,
+			storeList : _storeList,
+			handleEventViewStore : _handleEventViewStore,
+			handleEventViewStoreSettings : _handleEventViewStoreSettings,
+			directory : _currentDirectory,
+			handleEventDblClickPathResource : _handleEventDblClickPathResource
 		}
 
 	}
