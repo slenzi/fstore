@@ -18,7 +18,7 @@
 		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'ui.grid', 'ui.grid.pagination'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
-			contextPath: '/fstore'
+			contextPath: '@application.context@'
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);
@@ -91,13 +91,13 @@
 
 			// Now set up the states
 			$stateProvider
-				.state('directory', {
+				.state('home_directory', {
 					url: '/directory',
-					templateUrl: appConstants.contextPath + '/assets/partials/directoryPartial.jsp'
+					templateUrl: appConstants.contextPath + '/assets/angular/modules/home/partials/directoryPartial.jsp'
 				})
-				.state('settings', {
-					url: '/settings',
-					templateUrl: appConstants.contextPath + '/assets/partials/settingsPartial.jsp'
+				.state('home_storeSettings', {
+					url: '/storeSettings',
+					templateUrl: appConstants.contextPath + '/assets/angular/modules/home/partials/storeSettingsPartial.jsp'
 				});
 				
 				/*

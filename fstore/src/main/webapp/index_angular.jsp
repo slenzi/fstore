@@ -14,10 +14,12 @@
 	    <meta name="description" content="">
 	    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
+		<!-- third party resources -->
 	    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/angular-material/angular-material.css"/>
+	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/angular-ui-grid/ui-grid.css"/>
 	    
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower_components/angular-material/angular-material.css"/>
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower_components/angular-ui-grid/ui-grid.css"/>
+	    <!-- app resources -->
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/app.css"/>
 	    
 		<!-- for angular location provider -->
@@ -45,8 +47,8 @@
 
 			<md-content layout="column" class="md-hue-1" style="padding-top: 5px;">
 			
-				<!-- ng-click="home.notImplemented()" -->
-				<md-button class="md-raised md-warn leftNavButton" ui-sref="settings">
+				<!-- ui-sref="settings" -->
+				<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
 					System Settings
 				</md-button>
@@ -70,7 +72,7 @@
 				<md-content layout="column" class="storeList">
                     <h3>Resource Stores</h3>
 					<md-list>
-						<div ng-repeat="store in home.storeList() track by $index" ui-sref="directory">
+						<div ng-repeat="store in home.storeList() track by $index" ui-sref="home_directory">
 							<md-list-item ng-click="home.handleEventViewStore(store.id)">
 								<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_archive_24px.svg"></md-icon>
 								{{store.name}}
@@ -129,7 +131,7 @@
 			
 			<div flex></div>
 			
-			<md-button ng-click="home.notImplemented()" class="">
+			<md-button ng-click="home.handleEventViewStoreSettings()" class="">
 				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
 				Store Settings
 			</md-button>
@@ -167,23 +169,23 @@
 		
 	</md-content>
 
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular/angular.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-resource/angular-resource.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-touch/angular-touch.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-aria/angular-aria.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-material/angular-material.js"></script>
-    
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower_components/angular-ui-grid/ui-grid.js"></script>
+	<!-- third party scripts -->
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular/angular.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-resource/angular-resource.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-touch/angular-touch.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-ui-router/release/angular-ui-router.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-material/angular-material.js"></script>  
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-ui-grid/ui-grid.js"></script>
 
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeModule.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeModels.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeController.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeService.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeFilter.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/home/HomeApp.js"></script>
+	<!-- app scripts -->
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModule.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModels.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeController.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeService.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeFilter.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/app/FStoreApp.js"></script>
 
   </body>
 </html>

@@ -3,11 +3,11 @@
 	angular
 		.module('home')
 		.controller('homeController',[
-			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
+			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', '$state', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
 			]
 		);
 
-	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
+	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, $state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
     
 		// *********************************
 		// External API
@@ -25,6 +25,7 @@
 		self.directory = _currentDirectory;
 		// store methods
 		self.store = _currentStore;
+		self.handleEventViewStoreSettings = _handleEventViewStoreSettings
 
 		// *********************************
 		// Internal methods and data 
@@ -56,7 +57,8 @@
 						storeList = storeData;
 						if(storeData[0]){
 							// auto load first store and update ui
-							currentStore.setName(storeData[0].name);
+							//currentStore.setName(storeData[0].name);
+							currentStore.setData(storeData[0]);
 							_handleLoadDirectory(storeData[0].rootDirectoryId);
 						}
 					}
@@ -130,7 +132,15 @@
 		 */
 		function _currentDirectory(){
 			return currentDirectory;
-		}	
+		}
+		
+		/**
+		 * View settings for current store
+		 */
+		function _handleEventViewStoreSettings(){
+			//alert('View store settings for store ' + currentStore.getId());
+			$state.go('home_storeSettings');
+		}
         
 		/**
 		 * When user clicks on resource store, fetch store data from service.
@@ -147,6 +157,7 @@
 						} else {
 							if(storeData && storeData.rootDirectoryId){
 								$log.debug("got store data => " + JSON.stringify(storeData));
+								
 								currentStore.setName(storeData.name);
 								_handleLoadDirectory(storeData.rootDirectoryId);
 								_leftNavClose();

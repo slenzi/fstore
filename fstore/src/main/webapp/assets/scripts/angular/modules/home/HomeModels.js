@@ -22,6 +22,7 @@
 			
 			// set defaults
 			angular.extend(this, {
+				id: 'directory id not set',
 				name: 'name not set',
 				description: 'description not set',
 				dateCreated: 'date created not set',
@@ -41,6 +42,12 @@
 			setData: function(directoryData){
 				angular.extend(this, directoryData);
 			},
+			getId: function(){
+				return this.id;
+			},
+			setId: function(id){
+				this.id = id;
+			},			
 			getName: function(){
 				return this.name;
 			},
@@ -84,8 +91,11 @@
 			
 			// set defaults
 			angular.extend(this, {
+				id: 'store id not set',
 				name: 'name not set',
 				description: 'description not set',
+				storePath: 'store path not set',
+				rootDirectoryId: 'root directory id not set',
 				dateCreated: 'date created not set',
 				dateUpdated: 'date updated not set'
 			});
@@ -102,6 +112,12 @@
 			setData: function(storeData){
 				angular.extend(this, storeData);
 			},
+			getId: function(){
+				return this.id;
+			},
+			setId: function(id){
+				this.id = id;
+			},			
 			getName: function(){
 				return this.name;
 			},
@@ -113,6 +129,18 @@
 			},
 			setDescription: function(name){
 				this.name = description;
+			},
+			getStorePath: function(){
+				return this.storePath;
+			},
+			setStorePath: function(storePath){
+				this.storePath = storePath;
+			},
+			getRootDirectoryId: function(){
+				return this.rootDirectoryId;
+			},
+			setRootDirectoryId: function(rootDirectoryId){
+				this.rootDirectoryId = rootDirectoryId;
 			},			
 			getDateCreated: function(){
 				return this.dateCreated;

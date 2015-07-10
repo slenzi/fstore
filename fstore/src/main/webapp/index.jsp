@@ -22,10 +22,6 @@
 	<a href="index_ecog_acrin.jsp">ECOG-ACRIN Angular test</a>
 	</p>
 	
-	<p>
-	<a href="index_ecog_acrin2.jsp">ECOG-ACRIN Angular test 2</a>
-	</p>	
-	
 	<h2>Sample Tree Tests</h2>
 
 	<p>

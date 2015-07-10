@@ -390,11 +390,11 @@
 						<!-- filter application specific javascript files (not 3rd party javascript libraries) -->
 						<resource>
 							<filtering>true</filtering>
-							<directory>${basedir}/src/main/webapp/assets/js</directory>
+							<directory>${basedir}/src/main/webapp/assets/scripts</directory>
 							<includes>
 								<include>**/*.js</include>
 							</includes>
-							<targetPath>assets/js</targetPath>
+							<targetPath>assets/scripts</targetPath>
 						</resource>
 					</webResources>
 				</configuration>
