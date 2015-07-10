@@ -9,23 +9,29 @@
 
 	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, $state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
     
+		var self = this;
+	
 		// *********************************
 		// External API
 		// *********************************
-		var self = this;
 		self.doHello = _doHello;
 		self.showContactOptions = _showContactOptions;
 		self.leftNavClose = _leftNavClose;
 		self.toggleLeftNav = _buildToggler('MyLeftNav');
 		self.notImplemented = _notImplemented;
 		// resource store methods
+		self.store = _currentStore;
 		self.storeList = _storeList;
 		self.handleEventViewStore = _handleEventViewStore;
-		// directory methods
+		self.handleEventViewStoreSettings = _handleEventViewStoreSettings;		
+		// directory resource methods
 		self.directory = _currentDirectory;
-		// store methods
-		self.store = _currentStore;
-		self.handleEventViewStoreSettings = _handleEventViewStoreSettings
+		//self.handleEventDblClickDirectory = _handleEventDblClickDirectory;
+		// file resource methods
+		//self.handleEventDblClickFile = _handleEventDblClickFile;
+		// generic path resource method
+		self.handleEventDblClickPathResource = _handleEventDblClickPathResource;
+
 
 		// *********************************
 		// Internal methods and data 
@@ -140,6 +146,31 @@
 		function _handleEventViewStoreSettings(){
 			//alert('View store settings for store ' + currentStore.getId());
 			$state.go('home_storeSettings');
+		}
+		
+		/**
+		 * pathResource - the path resource the user double clicked on (file, directory, etc)
+		 */
+		function _handleEventDblClickPathResource(pathResource){
+			if(pathResource.type == 'FILE'){
+				_handleEventDblClickFile(pathResource);
+			}else if(pathResource.type == 'DIRECTORY'){
+				_handleEventDblClickDirectory(pathResource);
+			}
+		}
+		
+		/**
+		 * Event handler for double-click of file resource
+		 */
+		function _handleEventDblClickFile(fileResource){
+			alert('You double clicked on a file, id = ' + fileResource.fileId);
+		}
+		
+		/**
+		 * Event handler for double-click of directory resource
+		 */
+		function _handleEventDblClickDirectory(directoryResource){
+			alert('You double clicked on a directory, id = ' + directoryResource.dirId);
 		}
         
 		/**
