@@ -4,8 +4,12 @@
 
 	var homeModule;
 	
-	// Prepare the 'home' module for subsequent registration of controllers and delegates
-	homeModule = angular.module('home', [ 'ngMaterial' ]);
-
+	/**
+	 * Create home module with following dependencies:
+	 * 
+	 * fsUpload - for multi-part HTTP upload
+	 * ngMaterial - angular material UI
+	 */
+	homeModule = angular.module('home', [ 'fsUpload', 'ngMaterial' ]);
 
 })();

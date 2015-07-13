@@ -130,7 +130,7 @@
 				New Folder
 			</md-button>
 			
-			<md-button class="" ng-click="home.notImplemented()">
+			<md-button class="" ng-click="home.handleEventViewUploadForm()">
 				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
 				Add Files
 			</md-button>
@@ -186,6 +186,7 @@
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-ui-grid/ui-grid.js"></script>
 
 	<!-- app scripts -->
+	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/upload/FsUploadModule.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModule.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModels.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeController.js"></script>

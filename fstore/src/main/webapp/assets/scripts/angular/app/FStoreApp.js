@@ -11,14 +11,16 @@
 	 * ngMaterial - Material design UI components
 	 * ngResource - Provides interaction support with RESTful services via the $resource service
 	 * home - Our main home module
+	 * fsUpload - multi-part HTTP uploader
 	 * ui.grid - ui data grid component
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	homeApp = angular
-		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'ui.grid', 'ui.grid.pagination'])
+		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'fsUpload', 'ui.grid', 'ui.grid.pagination'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
-			contextPath: '@application.context@'
+			contextPath: '@application.context@',
+			httpUploadHandler: '@http.upload.handler@'
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);
@@ -98,7 +100,11 @@
 				.state('home_storeSettings', {
 					url: '/storeSettings',
 					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/storeSettingsPartial.jsp'
-				});
+				})
+				.state('home_upload', {
+					url: '/upload',
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/uploadPartial.jsp'
+				});			
 				
 				/*
 				.state('state1.list', {

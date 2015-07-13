@@ -119,19 +119,19 @@
 		
 		<md-toolbar class="md-toolbar-tools">
 			
-			<md-button ng-click="home.notImplemented()" class="">
+			<md-button class="" ng-click="home.notImplemented()">
 				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
 				New Folder
 			</md-button>
 			
-			<md-button ng-click="home.notImplemented()" class="">
+			<md-button class="" ng-click="home.handleEventViewUploadForm()">
 				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
 				Add Files
 			</md-button>
 			
 			<div flex></div>
 			
-			<md-button ng-click="home.handleEventViewStoreSettings()" class="">
+			<md-button class="" ng-click="home.handleEventViewStoreSettings()">
 				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
 				Store Settings
 			</md-button>
@@ -180,6 +180,7 @@
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-ui-grid/ui-grid.js"></script>
 
 	<!-- app scripts -->
+	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/upload/FsUploadModule.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModule.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModels.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeController.js"></script>

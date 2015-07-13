@@ -3,11 +3,13 @@
 	angular
 		.module('home')
 		.controller('homeController',[
-			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', '$state', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
+			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader',
+			'$state', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
 			]
 		);
 
-	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, $state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
+	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, 
+			$state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
    
 		// internal models bound to UI
 		var storeList = [{ "name": "empty"}];
@@ -20,7 +22,10 @@
 				name: 'Loading...',
 				dateCreated: 'Loading...',
 				dateUpdated: 'Loading...'
-		});		
+		});
+		var myFsUploader = new FsFileUploader({
+            	url: appConstants.httpUploadHandler
+        });		
 
 		// load all resource stores when page loads (asynchronously)
 		homeService
@@ -111,6 +116,13 @@
 		}
 		
 		/**
+		 * Get reference to fsUploader
+		 */
+		function _uploader(){
+			return myFsUploader;
+		}
+		
+		/**
 		 * View settings for current store
 		 */
 		function _handleEventViewStoreSettings(){
@@ -148,7 +160,7 @@
 		 */
 		function _handleEventViewStore(storeId){
 			
-			$log.debug("View store with id = " + storeId + ". Feature coming soon!");
+			$log.debug("View store with id = " + storeId + ".");
 			
 			homeService
 				.getResourceStoreById(storeId)
@@ -196,6 +208,14 @@
 				);
             
         };
+        
+        /**
+         * Show the upload form.
+         */
+        function _handleEventViewUploadForm(){
+        	$log.debug('view upload form');
+        	$state.go('home_upload');
+        }
 		
 		/**
 		 * Build handler to open/close a SideNav; when animation finishes
@@ -264,10 +284,12 @@
 			notImplemented : _notImplemented,
 			store : _currentStore,
 			storeList : _storeList,
+			directory : _currentDirectory,
+			uploader : _uploader,
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
-			directory : _currentDirectory,
-			handleEventDblClickPathResource : _handleEventDblClickPathResource
+			handleEventDblClickPathResource : _handleEventDblClickPathResource,
+			handleEventViewUploadForm : _handleEventViewUploadForm
 		}
 
 	}
