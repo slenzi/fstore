@@ -80,7 +80,7 @@ Angular HTTP upload module
 			function FsFileUploader(options){
 				var defaultOptions = angular.copy(fsUploadOptions);
 				// extend this object with default options and user provided options
-				angular.extend(this, defaultOptions, options);
+				angular.extend(this, defaultOptions, options);				
 			}
 
 			/**
@@ -135,11 +135,46 @@ Angular HTTP upload module
 			 * Uploads all files in the queue.
 			 */
 			FsFileUploader.prototype.doUpload = function(){
-				if(Object.keys(this.files).length == 0){
+				
+				var fileNames = Object.keys(this.files);
+				
+				if(fileNames.length == 0){
 					alert('There are no files in the upload queue. Try adding some files...');
 				}else{
-					alert('Uploading ' + Object.keys(this.files).length + ' files!');
+					alert('Uploading ' + fileNames.length + ' files!');
 				}
+				
+				var xhr = new XMLHttpRequest();
+				
+				xhr.upload.onprogress = function(event) {
+					var progress = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
+					$log.debug('XMLHttpRequest upload progres: ' + progress);
+				};
+				xhr.onload = function() {
+					$log.debug('XMLHttpRequest on load');
+				};
+				xhr.onerror = function() {
+					$log.error('XMLHttpRequest on error');
+				};
+				xhr.onabort = function() {
+					$log.warn('XMLHttpRequest on abort');
+				};
+				
+				$log.debug('files = ' + JSON.stringify(this.files));
+				
+				var form = new FormData();
+				
+				angular.forEach(fileNames, function(fileName, fileIndex) {
+					var fsFileItem = this.files.fileName;
+					$log.debug('item = ' + JSON.stringify(fsFileItem));
+					form.append("file_" + fileIndex, fsFileItem.file);
+				}, this);
+			
+				$log.debug('Submitting http POST to ' + this.url);
+				
+				//xhr.open("POST", this.url);
+				//xhr.send(form);
+				
 			}			
 
 			// return object prototype
