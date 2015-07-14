@@ -125,6 +125,20 @@
 		/**
 		 * View settings for current store
 		 */
+		function _handleEventClearUploadQueue(){
+			myFsUploader.clearQueue();
+		}
+
+		/**
+		 * View settings for current store
+		 */
+		function _handleEventDoUpload(){
+			myFsUploader.doUpload();
+		}		
+		
+		/**
+		 * View settings for current store
+		 */
 		function _handleEventViewStoreSettings(){
 			//alert('View store settings for store ' + currentStore.getId());
 			$state.go('home_storeSettings');
@@ -289,7 +303,9 @@
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventDblClickPathResource : _handleEventDblClickPathResource,
-			handleEventViewUploadForm : _handleEventViewUploadForm
+			handleEventViewUploadForm : _handleEventViewUploadForm,
+			handleEventClearUploadQueue : _handleEventClearUploadQueue,
+			handleEventDoUpload : _handleEventDoUpload
 		}
 
 	}

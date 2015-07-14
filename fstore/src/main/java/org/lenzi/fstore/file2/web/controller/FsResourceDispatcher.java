@@ -47,9 +47,6 @@ public class FsResourceDispatcher extends AbstractSpringController {
     @Autowired
     ServletContext context;
     
-	/**
-	 * 
-	 */
 	public FsResourceDispatcher() {
 		
 	}

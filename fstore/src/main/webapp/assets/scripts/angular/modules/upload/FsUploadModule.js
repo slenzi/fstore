@@ -123,6 +123,24 @@ Angular HTTP upload module
 				$log.debug('fsUploader: ' + JSON.stringify(this));
 				
 			}
+			
+			/**
+			 * Removes all files from the upload queue.
+			 */
+			FsFileUploader.prototype.clearQueue = function(){
+				this.files = {};
+			}
+			
+			/**
+			 * Uploads all files in the queue.
+			 */
+			FsFileUploader.prototype.doUpload = function(){
+				if(Object.keys(this.files).length == 0){
+					alert('There are no files in the upload queue. Try adding some files...');
+				}else{
+					alert('Uploading ' + Object.keys(this.files).length + ' files!');
+				}
+			}			
 
 			// return object prototype
 			return FsFileUploader;
@@ -131,7 +149,6 @@ Angular HTTP upload module
 	])
 	.directive('fsUploadDebug', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
 		return {
-
 			/*
 			'A' - Attribute - <span ng-sparkline></span>
 			'E' - Element   - <ng-sparkline></ng-sparkline>
@@ -172,7 +189,6 @@ Angular HTTP upload module
 	}])
 	.directive('fsUploadFileSelect', ['$log','$parse','FsFileUploader', function($log, $parse, FsFileUploader) {
 		return {
-
 			/*
 			'A' - Attribute - <span ng-sparkline></span>
 			'E' - Element   - <ng-sparkline></ng-sparkline>
@@ -211,14 +227,80 @@ Angular HTTP upload module
 					var files = event.target.files;
 					for(var i=0; i<files.length; i++){
 						uploader.addFile(files[i]);
-						
-						// update parent scope (will update the uploader binded to the fsUploadDebug directive)
-						$scope.$parent.$apply();
 					}
+					// update parent scope (will update the uploader binded to the fsUploadDebug directive)
+					$scope.$parent.$apply();
 				});
 			}
 		};
-	}]);
+	}])
+	.directive('fsUploadDrop', ['$log','$parse','FsFileUploader', function($log, $parse, FsFileUploader) {
+		return {
+			/*
+			'A' - Attribute - <span ng-sparkline></span>
+			'E' - Element   - <ng-sparkline></ng-sparkline>
+			'C' - Class     - <span class="ng-sparkline"></span>
+			'M' - Comments  - <!-- directive: ng-sparkline -->
+			 */
+			restrict: 'AE',
+			link: function ($scope, element, attributes){
+				
+				var processDragOver, processDragEnter, processDragOverEnter, uploader;
+				
+				// get reference to FsFileUploader object (from attribute field)
+				uploader = $scope.$eval(attributes.uploader);
+				
+				// make sure the object in the 'uploader' attribute is actually an instance of our FsFileUploader
+				if (!(uploader instanceof FsFileUploader)) {
+					throw new TypeError('Uploader must be an instance of FsFileUploader');
+				}				
+				
+				processDragOver = function(event){
+					processDragOverEnter(event);
+				};
+				
+				processDragEnter = function(event){
+					processDragOverEnter(event);
+				};
+				
+				processDragOverEnter = function(event){
+					if (event != null) {
+						event.preventDefault();
+					}
+					//event.dataTransfer.effectAllowed = 'copy';
+					return false;					
+				}
+
+				element.bind('dragover', processDragOver);
+				element.bind('dragenter', processDragEnter);				
+				
+				return element.bind('drop', function(event) {
+					
+					var files, name, reader, size, type;
+					
+					$log.debug('Drop event');
+					
+					if (event != null) {
+						//event.stopPropagation();
+						event.preventDefault();
+					}
+					
+					files = event.dataTransfer.files;
+					
+					for(var i=0; i<files.length; i++){
+						uploader.addFile(files[i]);
+					}
+				
+					// update parent scope (will update the uploader binded to the fsUploadDebug directive)
+					$scope.$parent.$apply();					
+					
+					return false;
+					
+				});				
+				
+			}
+		};		
+	}])
 
 	return fsUploadModule;
 
