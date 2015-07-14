@@ -21,12 +21,55 @@ Angular HTTP upload module
 		files: {},
 		headers: {}
 	})
-	.factory('FsFileUploader', ['fsUploadOptions', '$http', '$window', '$log',
+	// object for storing file data
+	.factory('FsFileItem', ['$log', '$q',
+	                               
+	    function fsFileItemFactory($log, $q){
+		
+			function FsFileItem(fileData){
+				
+				// set defaults
+				angular.extend(this, {
+					name: 'name not set',
+					file: {}
+				});
+				
+				if(fileData){
+					this.setData(fileData);
+				}
+			};
+			
+			// extend functionality
+			FsFileItem.prototype = {
+				setData: function(fileData){
+					angular.extend(this, fileData);
+				},		
+				getName: function(){
+					return this.name;
+				},
+				setName: function(name){
+					this.name = name;
+				},
+				getFile: function(){
+					return this.file;
+				},
+				setFile: function(file){
+					this.file = file;
+				}			
+			};	
+			
+			// return this
+			return FsFileItem;
+		
+		}
+	                               
+	])
+	.factory('FsFileUploader', ['fsUploadOptions', 'FsFileItem', '$http', '$window', '$log',
 
 	    /**
 	     * Factory method which returns FsFileUploader object prototype.
 	     */
-	    function fsUploaderFactory(fsUploadOptions, $http, $window, $log){
+	    function fsUploaderFactory(fsUploadOptions, FsFileItem, $http, $window, $log){
 
 			/**
 			 * Create instance of FsFileUploader from object prototype.
@@ -62,9 +105,15 @@ Angular HTTP upload module
 				
 				$log.debug('Adding file [name=' + file.name + ', lastModifiedDate=' + file.lastModifiedDate + ']');
 				
-				// update current list of files in queue and add new one
+				// create new file item
+				var fileItem = new FsFileItem({
+					name: file.name,
+					file: file
+				});
+	
+				// update current list of files in queue and add the new one
 				var currentFiles = this.files;
-				currentFiles[file.name] = file;
+				currentFiles[file.name] = fileItem;
 				angular.extend(this, {
 					files: currentFiles 
 				});
