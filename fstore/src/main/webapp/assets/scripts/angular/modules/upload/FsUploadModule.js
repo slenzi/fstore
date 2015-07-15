@@ -31,7 +31,7 @@ Angular HTTP upload module
 				// set defaults
 				angular.extend(this, {
 					name: 'name not set',
-					file: {}
+					file: []
 				});
 				
 				if(fileData){
@@ -43,7 +43,7 @@ Angular HTTP upload module
 			FsFileItem.prototype = {
 				setData: function(fileData){
 					angular.extend(this, fileData);
-				},		
+				},
 				getName: function(){
 					return this.name;
 				},
@@ -97,30 +97,35 @@ Angular HTTP upload module
 			/**
 			 * Add a file to the upload queue.
 			 */
-			FsFileUploader.prototype.addFile = function(file){
+			FsFileUploader.prototype.addFile = function(fileToAdd){
 				
-				if(file == null || file.length == 0){
+				if(fileToAdd == null || fileToAdd.length == 0){
 					return;
 				}
 				
-				$log.debug('Adding file [name=' + file.name + ', lastModifiedDate=' + file.lastModifiedDate + ']');
+				//$log.debug('Adding file [name=' + fileToAdd.name + ', lastModifiedDate=' + fileToAdd.lastModifiedDate + ']');
 				
 				// create new file item
 				var fileItem = new FsFileItem({
-					name: file.name,
-					file: file
+					name: fileToAdd.name,
+					file: fileToAdd
 				});
+                
+                //$log.debug('fileToAdd = ' + fileToAdd);
+                //$log.debug('FsFileItem.file = ' + fileItem.file);
+                //$log.debug('Adding FsFileItem = ' + JSON.stringify(fileItem));
 	
 				// update current list of files in queue and add the new one
-				var currentFiles = this.files;
-				currentFiles[file.name] = fileItem;
-				angular.extend(this, {
-					files: currentFiles 
-				});
+				//var currentFiles = this.files;
+				//currentFiles[fileToAdd.name] = fileItem;
+				//angular.extend(this, {
+				//	files: currentFiles 
+				//});
+                this.files[fileToAdd.name] = fileItem;
 				
 				//$log.debug('url=' + this.url);
 				
-				$log.debug('fsUploader: ' + JSON.stringify(this));
+				//$log.debug('fsUploader: ' + JSON.stringify(this));
 				
 			}
 			
@@ -140,8 +145,7 @@ Angular HTTP upload module
 				
 				if(fileNames.length == 0){
 					alert('There are no files in the upload queue. Try adding some files...');
-				}else{
-					alert('Uploading ' + fileNames.length + ' files!');
+                    return;
 				}
 				
 				var xhr = new XMLHttpRequest();
@@ -164,16 +168,22 @@ Angular HTTP upload module
 				
 				var form = new FormData();
 				
+                /*
+                fileNames.forEach(function(fileName){
+                    var fsFileItem = this.files[fileName];
+                    $log.debug('Upload file = ' + JSON.stringify(fsFileItem));
+                }, this);
+                */
+                
 				angular.forEach(fileNames, function(fileName, fileIndex) {
-					var fsFileItem = this.files.fileName;
-					$log.debug('item = ' + JSON.stringify(fsFileItem));
+					var fsFileItem = this.files[fileName];
 					form.append("file_" + fileIndex, fsFileItem.file);
 				}, this);
 			
 				$log.debug('Submitting http POST to ' + this.url);
 				
-				//xhr.open("POST", this.url);
-				//xhr.send(form);
+				xhr.open("POST", this.url);
+				xhr.send(form);
 				
 			}			
 
@@ -261,6 +271,7 @@ Angular HTTP upload module
 					//$log.debug(element.val()));
 					var files = event.target.files;
 					for(var i=0; i<files.length; i++){
+                        $log.debug('Add file to uploader queue = ' + files[i]);
 						uploader.addFile(files[i]);
 					}
 					// update parent scope (will update the uploader binded to the fsUploadDebug directive)

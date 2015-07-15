@@ -58,7 +58,7 @@ public class FsUploadController extends AbstractSpringController {
 					RequestMethod.POST
 			})
 	@Transactional	
-	private Response processUpload(MultipartHttpServletRequest request, HttpServletResponse resp, ModelMap model){
+	private String processUpload(MultipartHttpServletRequest request, HttpServletResponse resp, ModelMap model){
 		
 		logger.debug("Processing incoming HTTP upload");
 		
@@ -76,7 +76,7 @@ public class FsUploadController extends AbstractSpringController {
 		
 		logger.debug("Upload processing complete");
 		
-		return Response.ok("{ \"ok\": \"upload complete\" }", MediaType.APPLICATION_JSON).build();
+		return "ok";
 		
 	}
 
