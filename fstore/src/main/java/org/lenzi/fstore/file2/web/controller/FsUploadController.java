@@ -60,21 +60,23 @@ public class FsUploadController extends AbstractSpringController {
 	@Transactional	
 	private String processUpload(MultipartHttpServletRequest request, HttpServletResponse resp, ModelMap model){
 		
-		logger.debug("Processing incoming HTTP upload");
+		logger.info("Processing incoming HTTP upload");
 		
 		Map<String, MultipartFile> fileMap = request.getFileMap();
 		if(fileMap == null){
 			handleError(logger, "No multipart file data found in request.", model);
 		}
 		
+		logger.info("File map contains " + fileMap.values().size() + " entries.");
+		
 		fileMap.values().stream().forEach(
 			(filePart) -> {
 				
-				logger.info("Received file: " + filePart.getOriginalFilename() + ", " + filePart.getSize() + " bytes");
+				logger.info("Received file: " + filePart.getOriginalFilename() + ", " + filePart.getSize() + " bytes.");
 				
 			});
 		
-		logger.debug("Upload processing complete");
+		logger.info("Upload processing complete");
 		
 		return "ok";
 		

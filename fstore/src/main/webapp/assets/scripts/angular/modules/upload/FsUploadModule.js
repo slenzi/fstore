@@ -37,6 +37,7 @@ Angular HTTP upload module
 				if(fileData){
 					this.setData(fileData);
 				}
+				
 			};
 			
 			// extend functionality
@@ -78,10 +79,13 @@ Angular HTTP upload module
 			 * @constructor
 			 */
 			function FsFileUploader(options){
+				
 				var defaultOptions = angular.copy(fsUploadOptions);
+				
 				// extend this object with default options and user provided options
-				angular.extend(this, defaultOptions, options);				
-			}
+				angular.extend(this, defaultOptions, options);
+				
+			};		
 
 			/**
 			 * Produces a simple hello message.
@@ -115,31 +119,77 @@ Angular HTTP upload module
                 //$log.debug('FsFileItem.file = ' + fileItem.file);
                 //$log.debug('Adding FsFileItem = ' + JSON.stringify(fileItem));
 	
-				// update current list of files in queue and add the new one
-				//var currentFiles = this.files;
-				//currentFiles[fileToAdd.name] = fileItem;
-				//angular.extend(this, {
-				//	files: currentFiles 
-				//});
                 this.files[fileToAdd.name] = fileItem;
-				
-				//$log.debug('url=' + this.url);
+				//this.progress += 1;
 				
 				//$log.debug('fsUploader: ' + JSON.stringify(this));
 				
-			}
+			};
 			
 			/**
 			 * Removes all files from the upload queue.
 			 */
 			FsFileUploader.prototype.clearQueue = function(){
 				this.files = {};
-			}
+			};
+			
+			/**
+			 * XML Http Request onprogress event handler
+			 *
+			 * uploader - the FsFileUploader that's performing the upload
+			 * uploadProgressCallback - optional callback for upload progress event
+			 * event - the progress event
+			 */
+			FsFileUploader.prototype.xhrOnProgress = function(uploader, uploadProgressCallback, event){
+				
+				var progressValue = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
+				
+				uploader.progress = progressValue;
+				
+				// call users progress callback if they provided one
+				if(uploadProgressCallback && typeof uploadProgressCallback === 'function'){
+					uploadProgressCallback(event);
+				}
+				
+			};			
+			
+			/**
+			 * XML Http Request onload event handler
+			 *
+			 * uploadCompleteCallback - optional callback for upload complete event
+			 */
+			FsFileUploader.prototype.xhrOnLoad = function(uploader, uploadCompleteCallback, event){
+				
+				uploader.clearQueue();
+				
+				// call users upload complete callback if they provided one
+				if(uploadCompleteCallback && typeof uploadCompleteCallback === 'function'){
+					uploadCompleteCallback(event);
+				}				
+				
+			};
+
+			/**
+			 * XML Http Request onerror event handler
+			 */
+			FsFileUploader.prototype.xhrOnError = function(event){
+				$log.debug('An error occured while uploading the file data to the server.');
+			};
+
+			/**
+			 * XML Http Request onabort event handler
+			 */
+			FsFileUploader.prototype.xhrOnAbort = function(event){
+				$log.debug('Upload has been canceled by the user.');
+			};			
 			
 			/**
 			 * Uploads all files in the queue.
+			 *
+			 * uploadProgressCallback - optional callback for upload progress event
+			 * uploadCompleteCallback - optional callback for upload complete event
 			 */
-			FsFileUploader.prototype.doUpload = function(){
+			FsFileUploader.prototype.doUpload = function(uploadProgressCallback, uploadCompleteCallback){
 				
 				var fileNames = Object.keys(this.files);
 				
@@ -148,50 +198,46 @@ Angular HTTP upload module
                     return;
 				}
 				
+				var form = new FormData();
 				var xhr = new XMLHttpRequest();
 				
-				xhr.upload.onprogress = function(event) {
-					var progress = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
-					$log.debug('XMLHttpRequest upload progres: ' + progress);
-				};
-				xhr.onload = function() {
-					$log.debug('XMLHttpRequest on load');
-				};
-				xhr.onerror = function() {
-					$log.error('XMLHttpRequest on error');
-				};
-				xhr.onabort = function() {
-					$log.warn('XMLHttpRequest on abort');
-				};
+				// call this.xhrOnProgress for each progress update event. pass this (FsFileUploader)
+				// plus uploadProgressCallback method (will be called if user provided one.)
+				xhr.upload.addEventListener(
+					"progress",
+					angular.bind(null, this.xhrOnProgress, this, uploadProgressCallback),
+					false
+				);
+				//xhr.upload.onprogress = this.xhrOnProgress;
+				xhr.addEventListener(
+					"load",
+					angular.bind(null, this.xhrOnLoad, this, uploadCompleteCallback),
+					false
+				);
+				//xhr.onload = this.xhrOnLoad;
+				xhr.onerror = this.xhrOnError;
+				xhr.onabort = this.xhrOnAbort;
 				
-				$log.debug('files = ' + JSON.stringify(this.files));
-				
-				var form = new FormData();
-				
-                /*
-                fileNames.forEach(function(fileName){
-                    var fsFileItem = this.files[fileName];
-                    $log.debug('Upload file = ' + JSON.stringify(fsFileItem));
-                }, this);
-                */
-                
+				//$log.debug('files = ' + JSON.stringify(this.files));
+
 				angular.forEach(fileNames, function(fileName, fileIndex) {
 					var fsFileItem = this.files[fileName];
 					form.append("file_" + fileIndex, fsFileItem.file);
 				}, this);
 			
-				$log.debug('Submitting http POST to ' + this.url);
+				$log.debug('Submitting http ' + this.method + ' to ' + this.url);
 				
-				xhr.open("POST", this.url);
+				xhr.open(this.method, this.url);
 				xhr.send(form);
 				
-			}			
+			};			
 
 			// return object prototype
 			return FsFileUploader;
 
 		}
 	])
+	// directive which displays various debug information
 	.directive('fsUploadDebug', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
 		return {
 			/*
@@ -203,35 +249,67 @@ Angular HTTP upload module
 			restrict: 'AE',
 			replace: true,
 			scope: {
-				//uploaderLocal: '=uploader'
-				uploader: '='
+				fsUploader: '=uploader'
 			},
-			//template: '<span> {{ uploader }} </span>',
 			// display all attributes of the uploader object in a bulleted list
-			template: '<ul ng-repeat="(key, value) in uploader"><li><b>{{key}}</b> = {{value}}</li></ul>',
+			template: '<ul ng-repeat="(key, value) in fsUploader"><li><b>{{key}}</b> = {{value}}</li></ul>',
 			link: function ($scope, element, attributes){
-				
-				// get reference to FsFileUploader object (from attribute field)
-				//var uploader = $scope.$eval(attributes.uploader);
-				
-				//$log.debug('uploader = ' + uploader);
-
-				// make sure the object in the 'uploader' attribute is actually an instance of our FsFileUploader
-				//if (!(uploader instanceof FsFileUploader)) {
-				//	throw new TypeError('Uploader must be an instance of FsFileUploader');
-				//}				
-				
-				//$log.debug('here = ' + scope.uploaderObj)
-				
-				//scope.uploaderObj = uploader;
-				
-				//scope.uploaderObj = uploader;
-				
-				//scope.$apply();
-				
+				$scope.$watch('fsUploader.progress', function(updatedUploader) {
+					//$log.debug('fsUploader changed = ' + JSON.stringify(updatedUploader))
+				});
 			}
 		};
 	}])
+	// directive which displays an angular material linear progress bar (requires Angular Material)
+	.directive('fsUploadProgress', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
+		return {
+			/*
+			'A' - Attribute - <span ng-sparkline></span>
+			'E' - Element   - <ng-sparkline></ng-sparkline>
+			'C' - Class     - <span class="ng-sparkline"></span>
+			'M' - Comments  - <!-- directive: ng-sparkline -->
+			 */
+			restrict: 'AE',
+			replace: true,
+			scope: {
+				fsUploader: '=uploader'
+			},
+			// must wrap md-progress-linear directive in a div
+			// http://stackoverflow.com/questions/16148086/multiple-directives-directive1-directive2-asking-for-isolated-scope-on
+			template:
+				'<div>' +
+					'<md-progress-linear class="md-accent" md-mode="determinate" value="{{fsUploader.progress}}">' +
+					'</md-progress-linear>' +
+				'</div>',
+			link: function ($scope, element, attributes){
+
+			}
+		};
+	}])
+	// directive which displays all files added to the uploa queue
+	.directive('fsUploadQueue', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
+		return {
+			/*
+			'A' - Attribute - <span ng-sparkline></span>
+			'E' - Element   - <ng-sparkline></ng-sparkline>
+			'C' - Class     - <span class="ng-sparkline"></span>
+			'M' - Comments  - <!-- directive: ng-sparkline -->
+			 */
+			restrict: 'AE',
+			replace: true,
+			scope: {
+				fsUploader: '=uploader'
+			},
+			template:
+				'<ul ng-repeat="fsFileItem in fsUploader.files">' +
+					'<li>{{fsFileItem.name}} ({{fsFileItem.file.size}})</li>' +
+				'</ul>',
+			link: function ($scope, element, attributes){
+
+			}
+		};
+	}])	
+	// directive for input type file (opens file select dialog)
 	.directive('fsUploadFileSelect', ['$log','$parse','FsFileUploader', function($log, $parse, FsFileUploader) {
 		return {
 			/*
@@ -241,7 +319,6 @@ Angular HTTP upload module
 			'M' - Comments  - <!-- directive: ng-sparkline -->
 			*/
 			restrict: 'A',
-
 			/*
 			element - jQlite object
 			*/
@@ -257,21 +334,18 @@ Angular HTTP upload module
 					throw new TypeError('Uploader must be an instance of FsFileUploader');
 				}
 				
-				$log.debug('typeof(element) = ' + typeof(element));
-				$log.debug('element.html() = ' + element.html());
-				$log.debug('elm.nodeName = ' + elm.nodeName);
-				$log.debug('attributes.uploader = ' + attributes.uploader);
-				$log.debug('Uploader is HTML 5 = ' + uploader.isHTML5);
+				//$log.debug('typeof(element) = ' + typeof(element));
+				//$log.debug('element.html() = ' + element.html());
+				//$log.debug('elm.nodeName = ' + elm.nodeName);
+				//$log.debug('attributes.uploader = ' + attributes.uploader);
+				//$log.debug('Uploader is HTML 5 = ' + uploader.isHTML5);
 				
 				// angular has no built in support for binding to a file input.
 				// https://github.com/angular/angular.js/issues/1375
 				// http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields
 				element.bind('change', function(event){
-					$log.debug('files changed!');
-					//$log.debug(element.val()));
 					var files = event.target.files;
 					for(var i=0; i<files.length; i++){
-                        $log.debug('Add file to uploader queue = ' + files[i]);
 						uploader.addFile(files[i]);
 					}
 					// update parent scope (will update the uploader binded to the fsUploadDebug directive)

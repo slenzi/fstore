@@ -6,7 +6,11 @@
 	<p>
 	Drop Zone:<br>
 	<div fs-upload-drop uploader="home.uploader()" style="border: 1px solid #777; border-style: dashed; height: 200px;"></div>
-	</p>	
+	</p>
+
+	<p>
+	<div fs-upload-progress uploader="home.uploader()"></div>
+	</p>
 	
 	<p>
 	<!-- button for file input -->
@@ -22,12 +26,15 @@
 	</p>
 	
 	<p>
-	Debug:<br>
+	<div fs-upload-queue uploader="home.uploader()"></div>
+	</p>	
+	
 	<!--
-	<fs-upload-debug uploader="home.uploader()"/>
-	-->
+	<p>
+	Debug:<br>
 	<div fs-upload-debug uploader="home.uploader()"></div>
 	</p>
+	-->
 	
 	<!-- hide input field. users use 'Select Files' button above -->
 	<input id="file-input" style="display: none;" type="file" fs-upload-file-select uploader="home.uploader()" multiple />

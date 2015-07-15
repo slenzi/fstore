@@ -4,12 +4,12 @@
 		.module('home')
 		.controller('homeController',[
 			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader',
-			'$state', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', HomeController
+			'$state', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
 			]
 		);
 
 	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, 
-			$state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q) {
+			$state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
 		var storeList = [{ "name": "empty"}];
@@ -123,18 +123,28 @@
 		}
 		
 		/**
-		 * View settings for current store
+		 * Clear upload queue for FsFileUploader
 		 */
 		function _handleEventClearUploadQueue(){
 			myFsUploader.clearQueue();
 		}
 
 		/**
-		 * View settings for current store
+		 * Trigger FsFileUploader to start uploading
 		 */
 		function _handleEventDoUpload(){
-			myFsUploader.doUpload();
-		}		
+			// pass in optional callback for progress
+			myFsUploader.doUpload(_uploadProgressHandler, _uploadCompleteHandler);
+		}
+		function _uploadProgressHandler(event){
+			var progressValue = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
+			//$log.debug('Home progress = ' + progressValue);
+			$scope.$apply();
+		}
+		function _uploadCompleteHandler(event){
+			$log.debug('Upload completed.');
+			$scope.$apply();
+		}
 		
 		/**
 		 * View settings for current store
