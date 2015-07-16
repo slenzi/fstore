@@ -15,6 +15,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -28,6 +30,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
  * Configuration setup for our PostgreSQL unit test cases.
  */
 @Configuration
+@PropertySource("classpath:my.application.test.postgresql.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
 		basePackages={
@@ -37,6 +40,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 				"org.lenzi.fstore.core.repository.model.impl",
 				"org.lenzi.fstore.core.service",
 				"org.lenzi.fstore.core.logging",
+				"org.lenzi.fstore.main.properties",
 				"org.lenzi.fstore.example.repository",
 				"org.lenzi.fstore.example.repository.model.impl",
 				"org.lenzi.fstore.file2.service",
@@ -101,5 +105,15 @@ public class PostgresqlCmsTestConfiguration implements TransactionManagementConf
     	emf.setPersistenceUnitName(persistenceUnitName);
     	return emf; 
     }
+    
+    /**
+     * For spring managed properties
+     * 
+     * @return
+     */
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}    
     
 }

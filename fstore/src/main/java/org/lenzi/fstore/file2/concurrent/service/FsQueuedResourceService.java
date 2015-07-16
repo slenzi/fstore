@@ -153,6 +153,37 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
+	 * Get tree for node parent data
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Tree<FsPathResource> getParentPathResourceTree(Long dirId) throws ServiceException {
+		
+		class Task extends AbstractFsTask<Tree<FsPathResource>> {
+
+			@Override
+			public Tree<FsPathResource> doWork() throws ServiceException {
+				return fsResourceService.getParentTree(dirId);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		Tree<FsPathResource> resource = t.get(); // block until complete
+		
+		return resource;		
+		
+	}
+	
+	/**
 	 * Get a file resource by id
 	 * 
 	 * @param fileId - id of the file resource

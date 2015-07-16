@@ -97,7 +97,18 @@ public class DirectoryResource extends AbstractResource {
 		
 		return Response.ok(jsonTree, MediaType.APPLICATION_JSON).build();
 		
-	}	
+	}
+	
+	@GET
+	@Path("/breadcrumb/{dirId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDirectory(@PathParam("dirId") Long dirId) throws WebServiceException {
+		
+		// TODO - finish
+		
+		return null;
+		
+	}
 	
 	@Override
 	public Logger getLogger() {

@@ -142,6 +142,25 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Get parent tree (parent data of node)
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Tree<FsPathResource> getParentTree(Long dirId) throws ServiceException {
+		
+		Tree<FsPathResource> resourceTree = null;
+		try {
+			resourceTree = fsDirectoryResourceRepository.getParentTree(dirId);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching parent resource tree, dir id => " + dirId + ". " + e.getMessage(), e);
+		}
+		return resourceTree;
+		
+	}	
+	
+	/**
 	 * Fetch file resource
 	 * 
 	 * @param fileId - id of file to fetch

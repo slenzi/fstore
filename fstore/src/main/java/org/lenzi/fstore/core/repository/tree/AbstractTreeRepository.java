@@ -1968,6 +1968,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 				"inner join fetch pc.childNode cn " +
 				"inner join fetch pc.parentNode pn " +
 				"where r.nodeId = :nodeid";
+				//"order by pc.depth desc"; cannot sort with distinct
 		
 		Query query = getEntityManager().createQuery(selectQuery);
 		query.setParameter("nodeid", nodeId);

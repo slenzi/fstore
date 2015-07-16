@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.lenzi.fstore.core.logging.ClosureLogger;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
@@ -50,6 +51,9 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 	@Autowired
 	@Qualifier("FsPathResourceTree")
 	private TreeRepository<FsPathResource> treeRepository;
+	
+	@Autowired
+	private ClosureLogger<FsPathResource> closureLogger;
 	
 	@Autowired
 	private TreeBuilder<FsPathResource> treeBuilder;
@@ -105,6 +109,38 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 		} catch (ServiceException e) {
 			throw new DatabaseException("Failed to build tree from FsDirectory node, id => " + dirId, e);
 		}
+		return tree;
+		
+	}
+	
+	/**
+	 * Fetches the directory node, plus all parents, all the way to the tree root node. Returns a tree of all the data.
+	 * 
+	 * e.d.  [tree root node] -> [parent of parent of parent...] -> [parent of parent] -> [parent of dir] - [dir (dirId)]
+	 * 
+	 * @param dirId
+	 * @param clazz - e.g. FsPathResource, or FsDirectoryResource.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public Tree<FsPathResource> getParentTree(Long dirId) throws DatabaseException {
+		
+		logger.info("Fetching parent tree for resource, id => " + dirId);
+		
+		FsPathResource pathResource = treeRepository.getNodeWithParent(dirId, FsPathResource.class);
+		
+		Tree<FsPathResource> tree = null;
+		
+		closureLogger.logClosure(pathResource.getParentClosure());
+		
+		// sort by closure depth in descending order
+		
+		// root node is the parent node of the closure entry with the largest depth (first in the sorted collection)
+		
+		// add root node to tree, then locate the next lowest depth closure entry and take the parent node and add it as a child node to the tree
+		
+		// repeat until tree is built.
+		
 		return tree;
 		
 	}
