@@ -195,7 +195,7 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Get resuorce store by store id
+	 * Get resource store by store id
 	 * 
 	 * @param storeId
 	 * @return
@@ -203,11 +203,23 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 */
 	public FsResourceStore getStoreByStoreId(Long storeId) throws DatabaseException {
 		
-		//logger.info("Get file store by store id " + storeId);
-		
 		return getStoreByStoreIdCriteria(storeId);
 		
 	}
+	
+	/**
+	 * Get resource store by store name. Store names should be unique, so only
+	 * one store object is returned (if a store with the provided name exists.)
+	 * 
+	 * @param storeName
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FsResourceStore getStoreByStoreName(String storeName) throws DatabaseException {
+		
+		return getStoreByStoreNameCriteria(storeName);
+		
+	}	
 	
 	/**
 	 * Get the file store for the *root* directory.
@@ -217,8 +229,6 @@ public class FsResourceStoreRepository extends AbstractRepository {
 	 * @throws DatabaseException
 	 */
 	public FsResourceStore getStoreByRootDirectoryId(Long dirId) throws DatabaseException {
-		
-		//logger.info("Get file store by root dir id " + dirId);
 		
 		return getStoreByRootDirectoryIdCriteria(dirId);
 		
@@ -366,6 +376,36 @@ public class FsResourceStoreRepository extends AbstractRepository {
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( cb.equal(root.get(FsResourceStore_.storeId), storeId) );
 		//andPredicates.add( cb.equal(root.get(CmsFileStore_.nodeId), rootDir.get(CmsDirectory_.nodeId)) );
+		
+		query.select(root);
+		query.where(
+				cb.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
+				);
+		
+		return ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
+		
+	}
+	
+	/**
+	 * Criteria query to get resource store by store name. Store names should be unique, so only
+	 * one store object is returned (if a store with the provided name exists.)
+	 * 
+	 * @param storeName
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private FsResourceStore getStoreByStoreNameCriteria(String storeName) throws DatabaseException {
+
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		
+		Class<FsResourceStore> type = FsResourceStore.class;
+		CriteriaQuery<FsResourceStore> query = cb.createQuery(type);
+		Root<FsResourceStore> root = query.from(type);
+		
+		Fetch<FsResourceStore,FsDirectoryResource> rootDirFetch =  root.fetch(FsResourceStore_.rootDirectoryResource, JoinType.LEFT);
+		
+		List<Predicate> andPredicates = new ArrayList<Predicate>();
+		andPredicates.add( cb.equal(root.get(FsResourceStore_.name), storeName) );
 		
 		query.select(root);
 		query.where(

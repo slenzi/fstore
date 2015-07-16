@@ -248,6 +248,38 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
+	 * Get resource store by store name. Store names should be unique, so only
+	 * one store object is returned (if a store with the provided name exists.)
+	 * 
+	 * @param storeName
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsResourceStore getResourceStoreByName(final String storeName) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsResourceStore> {
+
+			@Override
+			public FsResourceStore doWork() throws ServiceException {
+				return fsResourceService.getStoreByName(storeName);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsResourceStore resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}	
+	
+	/**
 	 * Get all resource stores
 	 * 
 	 * @return
@@ -342,6 +374,40 @@ public class FsQueuedResourceService {
 		return resource;
 		
 	}
+	
+	/**
+	 * Add file resource
+	 * 
+	 * @param fileName - name of new file
+	 * @param fileBytes - file data bytes
+	 * @param dirId - id of directory where file will be added
+	 * @param replaceExisting - true to replace existing file, false not to.
+	 * @return reference to the newly added file
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long dirId, boolean replaceExisting) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.addFileResource(fileName, fileBytes, dirId, replaceExisting);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsFileMetaResource resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}	
 	
 	/**
 	 * Add list of files

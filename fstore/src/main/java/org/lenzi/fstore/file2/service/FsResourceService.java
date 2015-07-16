@@ -264,6 +264,31 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Add or replace file
+	 * 
+	 * @param fileName
+	 * @param fileBytes
+	 * @param parentDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long parentDirId, boolean replaceExisting) throws ServiceException {
+		
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsFileResourceAdder.addFileResource(fileName, fileBytes, parentDirId, replaceExisting);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Database error adding file resource => " + fileName + ", to directory, id => " + parentDirId, e);
+		} catch (IOException e) {
+			throw new ServiceException("IO error adding file resource => " + fileName + ", to directory, id => " + parentDirId, e);
+		}
+		
+		return fileResource;
+		
+	}	
+	
+	/**
 	 * Add or replace list of files
 	 * 
 	 * @param filesToAdd
@@ -450,6 +475,26 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Get resource store by store name. Store names should be unique, so only
+	 * one store object is returned (if a store with the provided name exists.)
+	 * 
+	 * @param storeName
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsResourceStore getStoreByName(String storeName) throws ServiceException {
+		
+		FsResourceStore store = null;
+		try {
+			store = fsResourceStoreRepository.getStoreByStoreName(storeName);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching resource store for store name '" + storeName + "'.", e);
+		}
+		return store;
+		
+	}	
+	
+	/**
 	 * Get all resource stores
 	 * 
 	 * @return
@@ -468,7 +513,7 @@ public class FsResourceService {
 	
 	/**
 	 * Fetch the resource store for a specific path resource, e.g. for any directory resource or file
-	 * mete resource.
+	 * meta resource.
 	 * 
 	 * @param resourceId - the id of the resource, e.g. id of a FsDirectoryResource, or FsFileMetaResource,
 	 * 	or some other resource in the tree which extends from FsPathResource.

@@ -55,6 +55,35 @@ public abstract class FileUtil {
 	}
 	
 	/**
+	 * Get file mime type
+	 * 
+	 * @param fileBytes
+	 * @return
+	 * @throws IOException
+	 */
+	public static String detectMimeType(final byte[] fileBytes) throws IOException {
+	    TikaInputStream tikaIS = null;
+	    try {
+	        tikaIS = TikaInputStream.get(fileBytes);
+	        /*
+	         * You might not want to provide the file's name. If you provide an Excel
+	         * document with a .xls extension, it will get it correct right away; but
+	         * if you provide an Excel document with .doc extension, it will guess it
+	         * to be a Word document
+	         */
+	        final Metadata metadata = new Metadata();
+	        // metadata.set(Metadata.RESOURCE_NAME_KEY, file.getName());
+
+	        return DETECTOR.detect(tikaIS, metadata).toString();
+	        
+	    } finally {
+	        if (tikaIS != null) {
+	            tikaIS.close();
+	        }
+	    }
+	}	
+	
+	/**
 	 * Copy a file
 	 * 
 	 * @param source
