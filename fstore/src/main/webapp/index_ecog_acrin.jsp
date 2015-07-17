@@ -36,7 +36,7 @@
 			
 			<md-toolbar class="md-hue-3 md-whiteframe-z1" style="min-height: 120px;">
 				<h3 class="md-toolbar-tools" style="min-height: 64px;">
-					File Store Manager
+					<a href="<%=request.getContextPath()%>">File Store Manager</a>
 					<span flex></span>
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
@@ -56,10 +56,9 @@
 					System Settings
 				</md-button>
 				
-				<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
-					Create New Store
-				</md-button>
+				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewStoreList()">
+					Store List
+				</md-button>				
 				
 			</md-content>			
 			
@@ -71,6 +70,7 @@
 				</md-content>
                 -->
 				
+				<!--
 				<md-content layout="column" class="storeList">
                     <h3>Resource Stores</h3>
 					<md-list>
@@ -83,6 +83,7 @@
 						</div>
 					</md-list>			
 				</md-content>
+				-->
 				
 				<!--
 				<div ng-repeat="n in [1,5] | makeRange">
@@ -117,7 +118,7 @@
 				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
-				<span style="font-style: italic; whitespace:nowrap;">{{home.store().getName()}}</span>
+				<span style="font-style: italic; whitespace:nowrap;">{{home.sectionTitle()}}</span>
 				<div flex></div>
 			</h3>
 		</md-toolbar>

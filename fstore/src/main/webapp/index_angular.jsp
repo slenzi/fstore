@@ -37,7 +37,7 @@
 			<md-toolbar class="md-tall md-hue-2">
 				<span flex></span>
 				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
-					Fstore
+					<a href="<%=request.getContextPath()%>">Fstore</a>
 					<span flex></span>
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
@@ -53,10 +53,9 @@
 					System Settings
 				</md-button>
 				
-				<md-button class="md-raised leftNavButton" ng-click="home.notImplemented()">
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
-					Create New Store
-				</md-button>
+				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewStoreList()">
+					Store List
+				</md-button>				
 				
 			</md-content>
 			
@@ -65,13 +64,16 @@
 				<!--
 				<md-whiteframe class="md-whiteframe-z2" >
 				-->
+				<!--
 				<md-content layout-padding layout="column">
 				<span style="font-weight: bold;" class="storeListHeader">Resource Stores</span>
 				</md-content>
-				
+				-->
+			
+				<!--
 				<md-content layout="column" class="storeList">
-                    <h3>Resource Stores</h3>
 					<md-list>
+						<h3>Resource Stores</h3>
 						<div ng-repeat="store in home.storeList() track by $index" ui-sref="home_directory">
 							<md-list-item ng-click="home.handleEventViewStore(store.id)">
 								<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_archive_24px.svg"></md-icon>
@@ -81,6 +83,8 @@
 						</div>
 					</md-list>			
 				</md-content>
+				-->
+				
 				<!--
 				</md-whiteframe>
 				-->
@@ -112,7 +116,7 @@
 				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
-				<span style="font-style: italic; whitespace:nowrap;">{{home.store().getName()}}</span>
+				<span style="font-style: italic; whitespace:nowrap;">{{home.sectionTitle()}}</span>
 				<div flex></div>
 			</h3>
 		</md-toolbar>

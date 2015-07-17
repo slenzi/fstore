@@ -19,8 +19,8 @@
 		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'fsUpload', 'ui.grid', 'ui.grid.pagination'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
-			contextPath: '@application.context@',
-			httpUploadHandler: '@http.upload.handler@'
+			contextPath: '/fstore',
+			httpUploadHandler: '/fstore/spring/file2/upload'
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);
@@ -97,6 +97,10 @@
 					url: '/directory',
 					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryPartial.jsp'
 				})
+				.state('home_storeList', {
+					url: '/stores',
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/storeListPartial.jsp'
+				})				
 				.state('home_storeSettings', {
 					url: '/storeSettings',
 					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/storeSettingsPartial.jsp'

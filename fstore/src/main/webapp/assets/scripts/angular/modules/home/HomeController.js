@@ -12,6 +12,7 @@
 			$state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
+		var sectionTitle = "Not set";
 		var storeList = [{ "name": "empty"}];
 		var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 		var currentDirectory = new DirectoryResource({
@@ -29,6 +30,9 @@
         });		
 
 		// load all resource stores when page loads (asynchronously)
+		_handleEventViewStoreList();
+		
+		/*
 		homeService
 			.getResourceStores()
 			.then( function( storeData ) {
@@ -46,6 +50,7 @@
 					}
 				}
 			);
+		*/
 		
 		//$log.debug('Directory resource name = ' + currentDirectory.getName());
 			
@@ -94,6 +99,13 @@
 			return sampleGrid;
 		}
 		*/
+		
+		/**
+		 * Get current section title
+		 */
+		function _sectionTitle(){
+			return sectionTitle;
+		}
 		
 		/**
 		 * Get list of stores
@@ -156,6 +168,40 @@
 		}
 		
 		/**
+		 * View list of all stores
+		 */
+		function _handleEventViewStoreList(){
+
+			$state.go('home_storeList');
+			
+			sectionTitle = "Store List";
+	
+			homeService
+				.getResourceStores()
+				.then( function( storeData ) {
+						if (storeData.error){
+							$log.debug("Error, " + storeData.error);
+						} else {
+							$log.debug("got store data => " + JSON.stringify(storeData));
+							storeList = storeData;
+							if(storeData[0]){
+								
+								// auto load first store and update ui
+								//currentStore.setName(storeData[0].name);
+								currentStore.setData(storeData[0]);
+								
+								_handleLoadDirectory(storeData[0].rootDirectoryId, false);
+								
+								//sectionTitle = currentStore.name;
+								
+							}
+						}
+					}
+				);		
+		
+		}		
+		
+		/**
 		 * View settings for current store
 		 */
 		function _handleEventViewStoreSettings(){
@@ -186,14 +232,14 @@
 		 */
 		function _handleEventDblClickDirectory(directoryResource){
 			//alert('You double clicked on a directory, id = ' + directoryResource.dirId);
-			_handleLoadDirectory(directoryResource.dirId)
+			_handleLoadDirectory(directoryResource.dirId, true);
 		}
 		
 		/**
 		 * Event handler for click of directory breadcrumb
 		 */
 		function _handleEventClickBreadcrumb(crumb){
-			_handleLoadDirectory(crumb.dirId)
+			_handleLoadDirectory(crumb.dirId, true);
 		}
         
 		/**
@@ -213,8 +259,11 @@
 								$log.debug("got store data => " + JSON.stringify(storeData));
 								
 								currentStore.setName(storeData.name);
-								_handleLoadDirectory(storeData.rootDirectoryId);
+								_handleLoadDirectory(storeData.rootDirectoryId, true);
 								_leftNavClose();
+								
+								sectionTitle = currentStore.name;
+								
 							}else{
 								$log.error('Error, no store data, or no root directory id for store...');
 								alert('Error, no store data, or no root directory id for store...');
@@ -228,9 +277,11 @@
         /**
          * Fetch directory data from server, populate UI
          */
-        function _handleLoadDirectory(dirId){
+        function _handleLoadDirectory(dirId, showDirectoryPartial){
             
-			$state.go('home_directory');
+			if(showDirectoryPartial){
+				$state.go('home_directory');
+			}
 			
             // fetch directory listing with max depth 1
 			homeService
@@ -248,6 +299,8 @@
 							currentDirectory.setChildren(directoryData.children);
 							
 							_handleLoadBreadcrumb(directoryData.dirId);
+							
+							//sectionTitle = currentStore.name;
 							
 						}
 					}
@@ -372,6 +425,7 @@
 			leftNavClose : _leftNavClose,
 			toggleLeftNav : _buildToggler('MyLeftNav'),
 			notImplemented : _notImplemented,
+			sectionTitle : _sectionTitle,
 			store : _currentStore,
 			storeList : _storeList,
 			directory : _currentDirectory,
@@ -379,6 +433,7 @@
 			breadcrumb : _breadcrumb,
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
+			handleEventViewStoreList : _handleEventViewStoreList,
 			handleEventDblClickPathResource : _handleEventDblClickPathResource,
 			handleEventClickBreadcrumb : _handleEventClickBreadcrumb,
 			handleEventViewUploadForm : _handleEventViewUploadForm,
