@@ -18,10 +18,30 @@
 			);
 		
 		// directory service
+		/*
 		var directoryService = $resource(
 				appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
 				{ dirId:'@dirId', maxDepth:'@maxDepth' }
 			);
+		*/
+		
+		var directoryService = $resource(
+				appConstants.contextPath + '/cxf/resource/directory', {},{
+					depthGet: {
+						url: appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
+						method: 'GET',
+						params: {
+							dirId: '@dirId', maxDepth: '@maxDepth'
+						}
+					},
+					breadcrumbGet: {
+						url: appConstants.contextPath + '/cxf/resource/directory/breadcrumb/:dirId',
+						method: 'GET',
+						params: {
+							dirId: '@dirId'
+						}
+					}
+				});		
 		
 		var sampleData = [
 			{
@@ -35,12 +55,12 @@
 		// Internal test methods
 		// *********************************
 		
-		function doLoadTestRegular(){
+		function _doLoadTestRegular(){
 			return sampleData;
 		};		
 		
 		// promise based API (asynchronous)
-		function doLoadTestWithPromise(){
+		function _doLoadTestWithPromise(){
 			
 			$log.debug('loading test, path = ' + $location.path());
 			
@@ -52,41 +72,51 @@
 		// *********************************
 
 		// fetch all resource stores
-		function fetchResourceStoreList(){
+		function _fetchResourceStoreList(){
 			
-			$log.debug('fetching resource store list...');
+			//$log.debug('fetching resource store list...');
 			
 			return storeService.query().$promise;
 			
 		};
 		
 		// fetch store by id
-		function fetchStoreById(storeId){
+		function _fetchStoreById(storeId){
 			
-			$log.debug('fetching resource store for store id ' + storeId + '...');
+			//$log.debug('fetching resource store for store id ' + storeId + '...');
 			
 			return storeService.get({ storeId: storeId }).$promise;
 			
 		};
 		
 		// fetch directory listing
-		function fetchDirectoryListing(dirId, maxDepth){
+		function _fetchDirectoryListing(dirId, maxDepth){
 			
-			$log.debug('fetching directory lsiting for dir id ' + dirId + ', max depth ' + maxDepth);
+			//$log.debug('fetching directory lsiting for dir id ' + dirId + ', max depth ' + maxDepth);
 			
-			return directoryService.get({ dirId: dirId, maxDepth: maxDepth }).$promise;
+			//return directoryService.get({ dirId: dirId, maxDepth: maxDepth }).$promise;
+			
+			return directoryService.depthGet({ dirId: dirId, maxDepth: maxDepth }).$promise;
 			
 		};
+		
+		// fetch parent tree / breadcrumb listing for some child directory
+		function _fetchBreadcrumb(dirId){
+			
+			return directoryService.breadcrumbGet({ dirId: dirId }).$promise;
+			
+		}
 		
 		// *********************************
 		// External API
 		// *********************************
 	    return {
-			load: doLoadTestRegular,
-			loadPromise: doLoadTestWithPromise,
-			getResourceStores: fetchResourceStoreList,
-			getResourceStoreById: fetchStoreById,
-			getDirectoryListing: fetchDirectoryListing
+			load: _doLoadTestRegular,
+			loadPromise: _doLoadTestWithPromise,
+			getResourceStores: _fetchResourceStoreList,
+			getResourceStoreById: _fetchStoreById,
+			getDirectoryListing: _fetchDirectoryListing,
+			getBreadcrumb: _fetchBreadcrumb
 	    };
 		
 	}

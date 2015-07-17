@@ -4,7 +4,9 @@
 package org.lenzi.fstore.file2.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -128,19 +130,12 @@ public class FsDirectoryResourceRepository extends AbstractRepository {
 		logger.info("Fetching parent tree for resource, id => " + dirId);
 		
 		FsPathResource pathResource = treeRepository.getNodeWithParent(dirId, FsPathResource.class);
-		
 		Tree<FsPathResource> tree = null;
-		
-		closureLogger.logClosure(pathResource.getParentClosure());
-		
-		// sort by closure depth in descending order
-		
-		// root node is the parent node of the closure entry with the largest depth (first in the sorted collection)
-		
-		// add root node to tree, then locate the next lowest depth closure entry and take the parent node and add it as a child node to the tree
-		
-		// repeat until tree is built.
-		
+		try {
+			tree = treeBuilder.buildParentTree(pathResource);
+		} catch (ServiceException e) {
+			throw new DatabaseException("Failed to build tree from FsDirectory node, id => " + dirId, e);
+		}
 		return tree;
 		
 	}

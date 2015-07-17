@@ -169,8 +169,6 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 */
 	public N getNodeWithParent(Long nodeId, Class<N> clazz) throws DatabaseException {
 		
-		//return getNodeWithParentClosureCriteria(nodeId, clazz);
-		
 		return getNodeWithParentClosureHql(nodeId, clazz);
 		
 	}

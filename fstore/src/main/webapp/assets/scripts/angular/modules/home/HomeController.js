@@ -227,11 +227,33 @@
 							currentDirectory.setName(directoryData.name);
 							currentDirectory.setChildren(directoryData.children);
 							
+							_handleLoadBreadcrumb(directoryData.dirId);
+							
 						}
 					}
 				);
             
         };
+		
+        /**
+         * Fetch breadcrumb / parent tree data for some child directory
+         */		
+		function _handleLoadBreadcrumb(dirId){
+			
+			homeService
+				.getBreadcrumb(dirId)
+				.then( function( directoryData ) {
+						if (directoryData.error){
+							$log.debug("Error, " + directoryData.error);
+						} else {
+							
+							$log.debug("got breadcrumb data => " + JSON.stringify(directoryData));
+						
+						}
+					}
+				);			
+			
+		}
         
         /**
          * Show the upload form.

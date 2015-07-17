@@ -99,14 +99,39 @@ public class DirectoryResource extends AbstractResource {
 		
 	}
 	
+	/**
+	 * Fetch parent tree / breadcrumb for some child directory
+	 * 
+	 * @param dirId
+	 * @return
+	 * @throws WebServiceException
+	 */
 	@GET
 	@Path("/breadcrumb/{dirId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDirectory(@PathParam("dirId") Long dirId) throws WebServiceException {
+	public Response getDirectoryBreadcrumb(@PathParam("dirId") Long dirId) throws WebServiceException {
 		
-		// TODO - finish
+		logger.info("Fetching directory breadcrumb for dir id " + dirId);
 		
-		return null;
+		Tree<FsPathResource> tree = null;
+		try {
+			tree = fsResourceService.getParentPathResourceTree(dirId);
+		} catch (ServiceException e) {
+			handleError("Failed to fetch parent tree for dir id " + dirId,
+					WebExceptionType.CODE_DATABSE_ERROR, e);
+		}		
+		
+		// convert tree to JSON
+		String jsonTree = null;
+		try {
+			jsonTree = fsJsonHelper.toJsonTree(tree.getRootNode());
+		} catch (ServiceException e) {
+			handleError(e.getMessage(),WebExceptionType.CODE_DATABSE_ERROR, e);
+		}
+		
+		logger.debug("JSON Tree = " + jsonTree);
+		
+		return Response.ok(jsonTree, MediaType.APPLICATION_JSON).build();
 		
 	}
 	
