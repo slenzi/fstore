@@ -6,7 +6,7 @@ Directory partial. Loads with #/directory
 -->
 
 <!-- layout-padding -->
-<md-content id="homeContent" class="iconGrid">
+<md-content layout-padding id="homeContent" class="iconGrid" style="padding: 10px;">
  
 	<md-grid-list md-cols-sm="3" md-cols-md="5" md-cols-gt-md="6" md-cols-gt-lg="8" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="0px" md-gutter-gt-sm="0px">
 		

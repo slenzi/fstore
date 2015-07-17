@@ -150,7 +150,9 @@
 			<md-toolbar class="directoryTitle-Toolbar">
 				<div class="md-toolbar-tools directoryTitle">
 					<!--ng-model="home.directory.getName"-->
-					<h2 class="md-flex">{{home.directory().getName()}}</h2>
+					<h2 class="md-flex" ng-repeat="crumb in home.breadcrumb() track by $index">
+						> <md-button ng-click="home.handleEventClickBreadcrumb(crumb)">{{crumb.name}}</md-button>
+					</h2>
 				</div>
 			</md-toolbar>
 			

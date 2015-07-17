@@ -13,6 +13,7 @@
    
 		// internal models bound to UI
 		var storeList = [{ "name": "empty"}];
+		var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 		var currentDirectory = new DirectoryResource({
 				name: 'Loading...',
 				dateCreated: 'Loading...',
@@ -123,6 +124,13 @@
 		}
 		
 		/**
+		 * Get current breadcrumb navigation
+		 */
+		function _breadcrumb(){
+			return breadcrumbNav;
+		}
+		
+		/**
 		 * Clear upload queue for FsFileUploader
 		 */
 		function _handleEventClearUploadQueue(){
@@ -144,6 +152,7 @@
 		function _uploadCompleteHandler(event){
 			$log.debug('Upload completed.');
 			$scope.$apply();
+			alert('Upload complete. Thank you.');
 		}
 		
 		/**
@@ -176,7 +185,15 @@
 		 * Event handler for double-click of directory resource
 		 */
 		function _handleEventDblClickDirectory(directoryResource){
-			alert('You double clicked on a directory, id = ' + directoryResource.dirId);
+			//alert('You double clicked on a directory, id = ' + directoryResource.dirId);
+			_handleLoadDirectory(directoryResource.dirId)
+		}
+		
+		/**
+		 * Event handler for click of directory breadcrumb
+		 */
+		function _handleEventClickBreadcrumb(crumb){
+			_handleLoadDirectory(crumb.dirId)
 		}
         
 		/**
@@ -213,10 +230,13 @@
          */
         function _handleLoadDirectory(dirId){
             
+			$state.go('home_directory');
+			
             // fetch directory listing with max depth 1
 			homeService
 				.getDirectoryListing(dirId, 1)
 				.then( function( directoryData ) {
+					
 						if (directoryData.error){
 							$log.debug("Error, " + directoryData.error);
 						} else {
@@ -248,6 +268,30 @@
 						} else {
 							
 							$log.debug("got breadcrumb data => " + JSON.stringify(directoryData));
+							
+							// var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
+							
+							breadcrumbNav = [];
+							var crumb = {};
+							var currentDir = directoryData;
+							if(currentDir.hasOwnProperty('dirId') && currentDir.hasOwnProperty('name')){
+								crumb.dirId = currentDir.dirId;
+								crumb.name = currentDir.name;
+								breadcrumbNav.push(crumb);								
+							}
+							$log.debug('added crumb: ' + JSON.stringify(directoryData));
+							while(currentDir.hasOwnProperty('children') && currentDir.children.length > 0){
+								
+								currentDir = currentDir.children[0];
+								
+								crumb = {};
+								crumb.dirId = currentDir.dirId;
+								crumb.name = currentDir.name;
+								breadcrumbNav.push(crumb);
+								
+								$log.debug('added crumb: ' + JSON.stringify(directoryData));
+								
+							}
 						
 						}
 					}
@@ -332,9 +376,11 @@
 			storeList : _storeList,
 			directory : _currentDirectory,
 			uploader : _uploader,
+			breadcrumb : _breadcrumb,
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventDblClickPathResource : _handleEventDblClickPathResource,
+			handleEventClickBreadcrumb : _handleEventClickBreadcrumb,
 			handleEventViewUploadForm : _handleEventViewUploadForm,
 			handleEventClearUploadQueue : _handleEventClearUploadQueue,
 			handleEventDoUpload : _handleEventDoUpload
