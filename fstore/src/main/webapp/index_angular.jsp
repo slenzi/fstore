@@ -59,45 +59,6 @@
 				
 			</md-content>
 			
-			<md-content layout="column" class="md-hue-1" layout-padding>
-			
-				<!--
-				<md-whiteframe class="md-whiteframe-z2" >
-				-->
-				<!--
-				<md-content layout-padding layout="column">
-				<span style="font-weight: bold;" class="storeListHeader">Resource Stores</span>
-				</md-content>
-				-->
-			
-				<!--
-				<md-content layout="column" class="storeList">
-					<md-list>
-						<h3>Resource Stores</h3>
-						<div ng-repeat="store in home.storeList() track by $index" ui-sref="home_directory">
-							<md-list-item ng-click="home.handleEventViewStore(store.id)">
-								<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_archive_24px.svg"></md-icon>
-								{{store.name}}
-								<span flex></span>
-							</md-list-item>
-						</div>
-					</md-list>			
-				</md-content>
-				-->
-				
-				<!--
-				</md-whiteframe>
-				-->
-				
-				<!--
-				<br>
-				<md-content layout-padding layout="column">
-					<div ui-grid="home.sampleGrid()" class="storeGrid"></div>
-				</md-content>
-				-->
-				
-			</md-content>
-			
 			<!-- felx background color to bottom of screen -->
 			<md-content layout="column" class="md-hue-1" style="min-height: 3px;" flex>
 			&nbsp;
@@ -121,47 +82,14 @@
 			</h3>
 		</md-toolbar>
 		
-		<md-toolbar class="md-toolbar-tools">
-			
-			<md-button class="" ng-click="home.notImplemented()">
-				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
-				New Folder
-			</md-button>
-			
-			<md-button class="" ng-click="home.handleEventViewUploadForm()">
-				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
-				Add Files
-			</md-button>
-			
-			<div flex></div>
-			
-			<md-button class="" ng-click="home.handleEventViewStoreSettings()">
-				<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
-				Store Settings
-			</md-button>
-			
-		</md-toolbar>	
+		<!-- ui.route view -->
+		<div ui-view="toolbarContent"></div>	
 	
 		<!-- layout-fill layout-align="top center" -->
-		<md-content layout="column" role="main">
-
-			<md-toolbar class="directoryTitle-Toolbar">
-				<div class="md-toolbar-tools directoryTitle">
-					<!--ng-model="home.directory.getName"-->
-					<h2 class="md-flex" ng-repeat="crumb in home.breadcrumb() track by $index">
-						> <md-button ng-click="home.handleEventClickBreadcrumb(crumb)">{{crumb.name}}</md-button>
-					</h2>
-				</div>
-			</md-toolbar>		
+		<md-content layout="column" role="main">		
 		
 			<!-- ui.route view -->
-			<div ui-view></div>
-			
-			<!--
-			<md-content layout="column" style="min-height: 110px;" flex>
-			hey
-			</md-content>
-			-->
+			<div ui-view="mainContent"></div>
 			
 		</md-content>
 		

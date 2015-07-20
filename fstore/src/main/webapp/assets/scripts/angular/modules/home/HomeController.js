@@ -4,12 +4,12 @@
 		.module('home')
 		.controller('homeController',[
 			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader',
-			'$state', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
+			'$state', '$stateParams', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
 			]
 		);
 
 	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, 
-			$state, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+			$state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
 		var sectionTitle = "Not set";
@@ -29,38 +29,19 @@
             	url: appConstants.httpUploadHandler
         });		
 
+		//
 		// load all resource stores when page loads (asynchronously)
-		_handleEventViewStoreList();
-		
-		/*
-		homeService
-			.getResourceStores()
-			.then( function( storeData ) {
-					if (storeData.error){
-						$log.debug("Error, " + storeData.error);
-					} else {
-						$log.debug("got store data => " + JSON.stringify(storeData));
-						storeList = storeData;
-						if(storeData[0]){
-							// auto load first store and update ui
-							//currentStore.setName(storeData[0].name);
-							currentStore.setData(storeData[0]);
-							_handleLoadDirectory(storeData[0].rootDirectoryId);
-						}
-					}
-				}
-			);
-		*/
-		
-		//$log.debug('Directory resource name = ' + currentDirectory.getName());
+		//
+		_handleOnPageLoad();
+
+		/**
+		 * Fetch all resource stores from server and pre-load first one (if one exists)
+		 */
+		function _handleOnPageLoad(){
 			
-		//$log.debug("here");
+			_handleEventViewStoreList();
 			
-		// load sample data, regular style
-		/*
-		var sampleData = homeService.load();
-		alert(JSON.stringify(sampleData));
-		*/		
+		}		
 
 		/**
 		 * Say hello
@@ -142,6 +123,20 @@
 			return breadcrumbNav;
 		}
 		
+        /**
+         * Show the upload form.
+         */
+        function _handleEventViewUploadForm(){
+        	$state.go('home_upload');
+        }
+		
+		/**
+		 * Handle cancle upload button click
+		 */
+        function _handleEventClickCancelUpload(){
+        	$state.go('home_directory');
+        }		
+		
 		/**
 		 * Clear upload queue for FsFileUploader
 		 */
@@ -165,49 +160,57 @@
 			$log.debug('Upload completed.');
 			$scope.$apply();
 			alert('Upload complete. Thank you.');
-		}
+			$state.go('home_directory');
+		}		
 		
 		/**
 		 * View list of all stores
 		 */
 		function _handleEventViewStoreList(){
 
+			sectionTitle = "Resource Store List";
 			$state.go('home_storeList');
-			
-			sectionTitle = "Store List";
 	
 			homeService
 				.getResourceStores()
-				.then( function( storeData ) {
-						if (storeData.error){
-							$log.debug("Error, " + storeData.error);
-						} else {
-							$log.debug("got store data => " + JSON.stringify(storeData));
-							storeList = storeData;
-							if(storeData[0]){
-								
-								// auto load first store and update ui
-								//currentStore.setName(storeData[0].name);
-								currentStore.setData(storeData[0]);
-								
-								_handleLoadDirectory(storeData[0].rootDirectoryId, false);
-								
-								//sectionTitle = currentStore.name;
-								
-							}
-						}
-					}
-				);		
+				.then(_handleStoreDataCallback);
+				
+		}
 		
-		}		
+		/**
+		 * Helper function for _handleEventViewStoreList. Called when store data is
+		 * returned from REST service.
+		 *
+		 * storeData - data returned from home service getResourceStores() function.
+		 */
+		function _handleStoreDataCallback(storeData){
+			
+			if(storeData.error){
+				$log.debug("Error, " + storeData.error);
+			}else{
+				$log.debug("got store data => " + JSON.stringify(storeData));
+				storeList = storeData;
+				if(storeList != null && storeList[0]){
+					currentStore.setData(storeList[0]);
+					_handleLoadDirectory(storeList[0].rootDirectoryId, false);
+				}				
+			}			
+			
+		}
 		
 		/**
 		 * View settings for current store
 		 */
 		function _handleEventViewStoreSettings(){
-			//alert('View store settings for store ' + currentStore.getId());
 			$state.go('home_storeSettings');
 		}
+		
+		/**
+		 * Handle cancle upload button click
+		 */
+        function _handleEventClickCancelStoreSettings(){
+        	$state.go('home_directory');
+        }		
 		
 		/**
 		 * pathResource - the path resource the user double clicked on (file, directory, etc)
@@ -231,7 +234,6 @@
 		 * Event handler for double-click of directory resource
 		 */
 		function _handleEventDblClickDirectory(directoryResource){
-			//alert('You double clicked on a directory, id = ' + directoryResource.dirId);
 			_handleLoadDirectory(directoryResource.dirId, true);
 		}
 		
@@ -246,9 +248,7 @@
 		 * When user clicks on resource store, fetch store data from service.
 		 */
 		function _handleEventViewStore(storeId){
-			
-			$log.debug("View store with id = " + storeId + ".");
-			
+
 			homeService
 				.getResourceStoreById(storeId)
 				.then( function( storeData ) {
@@ -259,6 +259,9 @@
 								$log.debug("got store data => " + JSON.stringify(storeData));
 								
 								currentStore.setName(storeData.name);
+								
+								//currentStore.setData(storeData);
+								
 								_handleLoadDirectory(storeData.rootDirectoryId, true);
 								_leftNavClose();
 								
@@ -280,6 +283,7 @@
         function _handleLoadDirectory(dirId, showDirectoryPartial){
             
 			if(showDirectoryPartial){
+				$log.info('show directory partial');
 				$state.go('home_directory');
 			}
 			
@@ -351,14 +355,6 @@
 				);			
 			
 		}
-        
-        /**
-         * Show the upload form.
-         */
-        function _handleEventViewUploadForm(){
-        	$log.debug('view upload form');
-        	$state.go('home_upload');
-        }
 		
 		/**
 		 * Build handler to open/close a SideNav; when animation finishes
@@ -438,7 +434,9 @@
 			handleEventClickBreadcrumb : _handleEventClickBreadcrumb,
 			handleEventViewUploadForm : _handleEventViewUploadForm,
 			handleEventClearUploadQueue : _handleEventClearUploadQueue,
-			handleEventDoUpload : _handleEventDoUpload
+			handleEventDoUpload : _handleEventDoUpload,
+			handleEventClickCancelUpload : _handleEventClickCancelUpload,
+			handleEventClickCancelStoreSettings : _handleEventClickCancelStoreSettings
 		}
 
 	}

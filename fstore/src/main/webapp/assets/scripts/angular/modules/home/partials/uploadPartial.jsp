@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 
+<!--
+Uploa form partial that's loaded for the "home_upload" state
+-->
+	
 <md-content layout-padding id="storeSettingsContent">
 	
 	<p>

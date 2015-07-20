@@ -19,8 +19,8 @@
 		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'fsUpload', 'ui.grid', 'ui.grid.pagination'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
-			contextPath: '/fstore',
-			httpUploadHandler: '/fstore/spring/file2/upload'
+			contextPath: '@application.context@',
+			httpUploadHandler: '@http.upload.handler@'
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);
@@ -89,10 +89,56 @@
 		function uiRouteConfig(appConstants, $stateProvider, $urlRouterProvider){
 			
 			// For any unmatched url, redirect to /state1
-			$urlRouterProvider.otherwise("/directory");
+			$urlRouterProvider.otherwise("/stores");
 
 			// Now set up the states
 			$stateProvider
+				.state('home_directory', {
+					url: '/directory/:dirId',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryPartial.jsp'							
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/toolbarDirectoryPartial.jsp'							
+						}
+					}
+				})
+				.state('home_storeList', {
+					url: '/stores',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/storeListPartial.jsp'
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/toolbarStoreListPartial.jsp'							
+						}
+					}
+				})
+				.state('home_storeSettings', {
+					url: '/storeSettings',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/storeSettingsPartial.jsp'
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/toolbarStoreSettingsPartial.jsp'							
+						}
+					}
+				})
+				.state('home_upload', {
+					url: '/upload',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/uploadPartial.jsp'
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/toolbarUploadPartial.jsp'							
+						}
+					}
+				});
+			
+				/*
 				.state('home_directory', {
 					url: '/directory',
 					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryPartial.jsp'
@@ -108,26 +154,6 @@
 				.state('home_upload', {
 					url: '/upload',
 					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/uploadPartial.jsp'
-				});			
-				
-				/*
-				.state('state1.list', {
-					url: "/list",
-					templateUrl: "partials/state1.list.html",
-					controller: function($scope) {
-						$scope.items = ["A", "List", "Of", "Items"];
-					}
-				})
-				.state('state2', {
-					url: "/state2",
-					templateUrl: "partials/state2.html"
-				})
-				.state('state2.list', {
-					url: "/list",
-					templateUrl: "partials/state2.list.html",
-					controller: function($scope) {
-						$scope.things = ["A", "Set", "Of", "Things"];
-					}
 				});
 				*/
 			

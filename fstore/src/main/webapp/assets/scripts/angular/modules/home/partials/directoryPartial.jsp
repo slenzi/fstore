@@ -2,8 +2,17 @@
 	pageEncoding="ISO-8859-1"%>
 
 <!--
-Directory partial. Loads with #/directory
+Directory partial that's loaded for the "home_directory" state
 -->
+
+<md-toolbar class="directoryTitle-Toolbar">
+	<div class="md-toolbar-tools directoryTitle">
+		<!--ng-model="home.directory.getName"-->
+		<h2 class="md-flex" ng-repeat="crumb in home.breadcrumb() track by $index">
+			> <md-button ng-click="home.handleEventClickBreadcrumb(crumb)">{{crumb.name}}</md-button>
+		</h2>
+	</div>
+</md-toolbar>
 
 <!-- layout-padding -->
 <md-content layout-padding id="homeContent" class="iconGrid" style="padding: 10px;">
