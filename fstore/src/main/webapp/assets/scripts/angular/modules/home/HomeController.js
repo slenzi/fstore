@@ -157,10 +157,16 @@
 			$scope.$apply();
 		}
 		function _uploadCompleteHandler(event){
+			
 			$log.debug('Upload completed.');
+			
 			$scope.$apply();
+			
 			alert('Upload complete. Thank you.');
-			$state.go('home_directory');
+			
+			_handleLoadDirectory(currentDirectory.dirId, true);
+			
+			//$state.go('home_directory');
 		}		
 		
 		/**
@@ -258,9 +264,9 @@
 							if(storeData && storeData.rootDirectoryId){
 								$log.debug("got store data => " + JSON.stringify(storeData));
 								
-								currentStore.setName(storeData.name);
+								//currentStore.setName(storeData.name);
 								
-								//currentStore.setData(storeData);
+								currentStore.setData(storeData);
 								
 								_handleLoadDirectory(storeData.rootDirectoryId, true);
 								_leftNavClose();
@@ -299,8 +305,9 @@
 							$log.debug("got directory data => " + JSON.stringify(directoryData));
 							
 							// update view
-							currentDirectory.setName(directoryData.name);
-							currentDirectory.setChildren(directoryData.children);
+							currentDirectory.setData(directoryData);
+							//currentDirectory.setName(directoryData.name);
+							//currentDirectory.setChildren(directoryData.children);
 							
 							_handleLoadBreadcrumb(directoryData.dirId);
 							
