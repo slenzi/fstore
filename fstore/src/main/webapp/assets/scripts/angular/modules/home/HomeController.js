@@ -4,12 +4,12 @@
 		.module('home')
 		.controller('homeController',[
 			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader',
-			'$state', '$stateParams', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
+			'$state', '$stateParams', '$mdSidenav', '$websocket', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
 			]
 		);
 
 	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, 
-			$state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+			$state, $stateParams, $mdSidenav, $websocket, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
 		var sectionTitle = "Not set";
@@ -41,7 +41,42 @@
 			
 			_handleEventViewStoreList();
 			
-		}		
+			_doWebSocketTest();
+			
+		}
+
+		function _doWebSocketTest(){
+			
+			// 'ws://localhost:8080/fstore/spring/hello'
+			// 'ws://localhost:8080/fstore/spring/simplebroker/replies'
+			
+			var socketUrl = 'ws://localhost:8080/fstore/spring/hello';
+			
+			var socketConfig = {
+				url: socketUrl,
+				lazy: false,
+				reconnect: true,
+				reconnectInterval: 2000,
+				enqueue: false,
+				mock: false,
+				protocols: ['binary', 'base64']
+			};
+			
+			var ws = $websocket.$new(socketConfig);
+			
+			ws.$on('$open', function () {
+				
+				$log.debug('Web socket is open!');
+				
+				ws.$emit('ping', 'hi listening websocket server');
+				
+			});
+			
+			ws.$on('$close', function () {
+				$log.debug('Noooooooooou, I want to have more fun with ngWebsocket, damn it!');
+			});			
+			
+		}
 
 		/**
 		 * Say hello

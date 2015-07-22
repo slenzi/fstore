@@ -37,7 +37,7 @@ import org.springframework.stereotype.Controller;
 )
 @Import({
 	PropertyConfig.class, DataSourceConfig.class, PersistenceConfig.class, 
-	UploadConfig.class, CxfConfig.class, RepositoryConfig.class
+	UploadConfig.class, CxfConfig.class, RepositoryConfig.class, WebSocketConfig.class
 })
 public class AppConfig {
 
@@ -52,5 +52,7 @@ public class AppConfig {
 	// UploadConfig - Initialize Spring's Multipart Resolver bean for processing file uploads.
 	
 	// RepositoryConfig - Setup repositories depending on which spring profiles are active
+	
+	// WebSocketConfig - Setup websocket support
 	
 }

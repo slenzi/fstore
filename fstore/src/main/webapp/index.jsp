@@ -19,7 +19,7 @@
 	</p>
 	
 	<p>
-	<a href="index_ecog_acrin.jsp">ECOG-ACRIN Angular test</a>
+	<a href="index_angular_ecog_acrin.jsp">ECOG-ACRIN Angular test</a>
 	</p>
 	
 	<h2>Sample Tree Tests</h2>

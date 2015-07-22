@@ -130,8 +130,11 @@ public class FsUploadPipeline {
 				(filePart) -> {
 					
 					try {
+						
 						fsResourceService.addFileResource(filePart.getOriginalFilename(), filePart.getBytes(), finalDir.getDirId(), true);
+						
 						logger.info("Saved file '" + filePart.getName() + "' to holding store directory '" + dirName + "'.");
+						
 					} catch (ServiceException e) {
 						throw new RuntimeException("Error saving file '" + filePart.getName() + "' to directory '" + dirName + "' in the holding resource store.", e);
 					} catch (IOException e){

@@ -201,6 +201,19 @@
 			<artifactId>spring-test</artifactId>
 			<version>${version.spring}</version>
 		</dependency>
+		<!-- web socket support -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<!-- check if this is needed -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>${version.spring}</version>
+		</dependency>		
+				
 		
 		<!-- used in unit tests -->
 		<!--

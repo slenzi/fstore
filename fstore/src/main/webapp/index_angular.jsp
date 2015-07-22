@@ -14,10 +14,7 @@
 	    <meta name="description" content="">
 	    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-		<!-- third party resources -->
-	    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/angular-material/angular-material.css"/>
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/angular-ui-grid/ui-grid.css"/>
+		<jsp:include page="common_includes_header.jsp" />
 	    
 	    <!-- app resources -->
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/app.css"/>
@@ -103,24 +100,7 @@
 		
 	</md-content>
 
-	<!-- third party scripts -->
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular/angular.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-resource/angular-resource.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-touch/angular-touch.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-aria/angular-aria.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-ui-router/release/angular-ui-router.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-material/angular-material.js"></script>  
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-ui-grid/ui-grid.js"></script>
-
-	<!-- app scripts -->
-	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/upload/FsUploadModule.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModule.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModels.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeController.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeService.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeFilter.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/app/FStoreApp.js"></script>
+	<jsp:include page="common_includes_footer.jsp" />
 
   </body>
 </html>
