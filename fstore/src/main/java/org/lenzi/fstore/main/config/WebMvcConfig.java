@@ -30,6 +30,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 		"org.lenzi.fstore.example.web.controller",
 		"org.lenzi.fstore.file.web.controller",
 		"org.lenzi.fstore.file2.web.controller",
+		"org.lenzi.fstore.file2.web.messaging.controller",
 		"org.lenzi.fstore.core.logging"
 		}
 )

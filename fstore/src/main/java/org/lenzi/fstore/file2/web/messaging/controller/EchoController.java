@@ -1,10 +1,13 @@
 package org.lenzi.fstore.file2.web.messaging.controller;
 
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.file2.web.messaging.model.HelloMessage;
+import org.lenzi.fstore.file2.web.messaging.model.ReplyMessage;
 import org.slf4j.Logger;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Messaging controller which echos all incoming messages. 
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Controller;
  * @author sal
  */
 @Controller
+@RequestMapping("/")
 public class EchoController {
 
     @InjectLogger
@@ -30,12 +34,12 @@ public class EchoController {
 	 */
     @MessageMapping("/hello")
 	@SendTo("/simplebroker/replies")
-	public String processMessage(String message) {
+	public ReplyMessage processMessage(HelloMessage message) throws Exception {
 		
     	logger.debug(EchoController.class.getName() + ".processMessage(...) called.");
     	logger.debug("message = " + message);
     	
-		return "Hello from server. Your message = " + message;
+    	return new ReplyMessage("Reply From Server. Original message = " + message.getMessage());
 		
 	}
 

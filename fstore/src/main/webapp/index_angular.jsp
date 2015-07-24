@@ -52,6 +52,10 @@
 				
 				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewStoreList()">
 					Store List
+				</md-button>
+
+				<md-button class="md-raised leftNavButton" ng-click="home.handleEventSendSampleStomp()">
+					Sample STOMP
 				</md-button>				
 				
 			</md-content>

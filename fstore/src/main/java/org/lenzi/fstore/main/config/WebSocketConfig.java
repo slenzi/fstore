@@ -3,8 +3,8 @@
  */
 package org.lenzi.fstore.main.config;
 
+import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
@@ -20,8 +20,9 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
-	private Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
-
+	@InjectLogger
+	private Logger logger;	
+	
 	/**
 	 * Enable a simple broker with destination prefix /simplebroker
 	 */
@@ -34,7 +35,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		
 		registry.setApplicationDestinationPrefixes("/app");
 		
-		logger.info(registry.toString());
+		logger.info("Message broker registery = " + registry.toString());
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		
 		registry.addEndpoint("/hello").withSockJS();
 		
-		logger.info(registry.toString());
+		logger.info("Stomp endpoint registery = " + registry.toString());
 	}
 
 

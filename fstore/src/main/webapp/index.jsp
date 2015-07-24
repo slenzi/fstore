@@ -22,6 +22,12 @@
 	<a href="index_angular_ecog_acrin.jsp">ECOG-ACRIN Angular test</a>
 	</p>
 	
+	<h2>WebSocket Setup Check</h2>
+	
+	<p>
+	<a href="<%=request.getContextPath() %>/spring/hello/info">/spring/hello/info</a>
+	</p>
+	
 	<h2>Sample Tree Tests</h2>
 
 	<p>

@@ -4,12 +4,12 @@
 		.module('home')
 		.controller('homeController',[
 			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader',
-			'$state', '$stateParams', '$mdSidenav', '$websocket', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
+			'$state', '$stateParams', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
 			]
 		);
 
 	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, 
-			$state, $stateParams, $mdSidenav, $websocket, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+			$state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
 		var sectionTitle = "Not set";
@@ -27,7 +27,11 @@
 		});
 		var myFsUploader = new FsFileUploader({
             	url: appConstants.httpUploadHandler
-        });		
+        });	
+		var socket = {
+			client: null,
+			stomp: null
+		};			
 
 		//
 		// load all resource stores when page loads (asynchronously)
@@ -43,8 +47,79 @@
 			
 			_doWebSocketTest();
 			
+		}	
+		
+		function _doWebSocketTest(){
+			
+			$log.debug('peforming websocket test');
+			
+			_initSocket();
+			
+		}
+		function _initSocket(){
+			
+			$log.debug('initializing websocket');
+			
+			var headers = {
+				//login: '',
+				//passcode: ''			
+			};
+			//var opt = {debug: false};
+			//var protocols = { protocols_whitelist: ["websocket", "xhr-streaming", "xdr-streaming", "xhr-polling", "xdr-polling", "iframe-htmlfile", "iframe-eventsource", "iframe-xhr-polling"]};
+			
+			socket.client = new SockJS('/fstore/spring/hello'); // , protocols, opt
+			socket.stomp = Stomp.over(socket.client);
+			socket.stomp.connect(
+				headers, _onStompConnect, _onStompConnectError
+			);
+			socket.stomp.debug = _stompDebug;
+			//socket.client.onclose = _onSocketClose;
+			
+		}
+		function _stompDebug(str){
+			$log.debug('stomp debug = ' + str);
+			//socket.stomp.send("/app/hello", {}, JSON.stringify({ 'message': 'this is a test' }));	
+		}
+		function _onStompConnect(frame){
+			
+			$log.debug('inside stomp connect function');
+			
+			$log.debug('frame = ' + JSON.stringify(frame));
+			//socket.stomp.subscribe('http://localhost:8080/fstore/spring/simplebroker/replies', _onSocketReceiveMessage);
+			socket.stomp.subscribe('/simplebroker/replies', _onSocketReceiveMessage);
+			
+		}
+		function _onStompConnectError(error){
+			$log.debug('_onStompConnectError...');
+			//$log.debug(error.headers.message);
+			$log.debug('error = ' + JSON.stringify(error));
+		}
+		function _onSocketClose(){
+			_onSocketReconnect();
+		}
+		function _onSocketReconnect(){
+			$log.debug('_onSocketReconnect...');
+			setTimeout(_initSocket, 10000);
+		}
+		function _onSocketReceiveMessage(socketMessage){
+			$log.debug('received socket message!');
+			$log.debug('message = ' + JSON.stringify(socketMessage));
+			/*
+			var bodyObj = JSON.parse(socketMessage.body);
+			$log.debug('Message = ' + bodyObj.message);			
+			*/
+		}
+		function _handleEventSendSampleStomp(){
+			
+			$log.debug('sending sample stomp message...');
+			
+			socket.stomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
+			
+			//socket.stomp.send('http://localhost:8080/fstore/spring/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
+			
 		}
 
+		/* old ng-websocket example code
 		function _doWebSocketTest(){
 			
 			// 'ws://localhost:8080/fstore/spring/hello'
@@ -77,6 +152,7 @@
 			});			
 			
 		}
+		*/
 
 		/**
 		 * Say hello
@@ -229,7 +305,7 @@
 			if(storeData.error){
 				$log.debug("Error, " + storeData.error);
 			}else{
-				$log.debug("got store data => " + JSON.stringify(storeData));
+				//$log.debug("got store data => " + JSON.stringify(storeData));
 				storeList = storeData;
 				if(storeList != null && storeList[0]){
 					currentStore.setData(storeList[0]);
@@ -297,7 +373,7 @@
 							$log.debug("Error, " + storeData.error);
 						} else {
 							if(storeData && storeData.rootDirectoryId){
-								$log.debug("got store data => " + JSON.stringify(storeData));
+								//$log.debug("got store data => " + JSON.stringify(storeData));
 								
 								//currentStore.setName(storeData.name);
 								
@@ -337,7 +413,7 @@
 							$log.debug("Error, " + directoryData.error);
 						} else {
 							
-							$log.debug("got directory data => " + JSON.stringify(directoryData));
+							//$log.debug("got directory data => " + JSON.stringify(directoryData));
 							
 							// update view
 							currentDirectory.setData(directoryData);
@@ -366,7 +442,7 @@
 							$log.debug("Error, " + directoryData.error);
 						} else {
 							
-							$log.debug("got breadcrumb data => " + JSON.stringify(directoryData));
+							//$log.debug("got breadcrumb data => " + JSON.stringify(directoryData));
 							
 							// var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 							
@@ -378,7 +454,7 @@
 								crumb.name = currentDir.name;
 								breadcrumbNav.push(crumb);								
 							}
-							$log.debug('added crumb: ' + JSON.stringify(directoryData));
+							//$log.debug('added crumb: ' + JSON.stringify(directoryData));
 							while(currentDir.hasOwnProperty('children') && currentDir.children.length > 0){
 								
 								currentDir = currentDir.children[0];
@@ -388,7 +464,7 @@
 								crumb.name = currentDir.name;
 								breadcrumbNav.push(crumb);
 								
-								$log.debug('added crumb: ' + JSON.stringify(directoryData));
+								//$log.debug('added crumb: ' + JSON.stringify(directoryData));
 								
 							}
 						
@@ -478,7 +554,8 @@
 			handleEventClearUploadQueue : _handleEventClearUploadQueue,
 			handleEventDoUpload : _handleEventDoUpload,
 			handleEventClickCancelUpload : _handleEventClickCancelUpload,
-			handleEventClickCancelStoreSettings : _handleEventClickCancelStoreSettings
+			handleEventClickCancelStoreSettings : _handleEventClickCancelStoreSettings,
+			handleEventSendSampleStomp : _handleEventSendSampleStomp
 		}
 
 	}
