@@ -22,22 +22,27 @@ import org.springframework.stereotype.Controller;
  */
 @Configuration
 @ComponentScan(
-		basePackages = {
-			"org.lenzi.fstore.main",
-			"org.lenzi.fstore.core",
-			"org.lenzi.fstore.example",
-			"org.lenzi.fstore.file",
-			"org.lenzi.fstore.file2"
-		},
-		excludeFilters = {
-			@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class),
-			@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
-			@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.lenzi.fstore.setup.")
-		}
+	basePackages = {
+		"org.lenzi.fstore.main",
+		"org.lenzi.fstore.core",
+		"org.lenzi.fstore.example",
+		"org.lenzi.fstore.file",
+		"org.lenzi.fstore.file2"
+	},
+	excludeFilters = {
+		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class),
+		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
+		@ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.lenzi.fstore.setup.")
+	}
 )
 @Import({
-	PropertyConfig.class, DataSourceConfig.class, PersistenceConfig.class, 
-	UploadConfig.class, CxfConfig.class, RepositoryConfig.class, WebSocketConfig.class
+	PropertyConfig.class,
+	DataSourceConfig.class,
+	PersistenceConfig.class, 
+	UploadConfig.class,
+	CxfConfig.class,
+	RepositoryConfig.class,
+	WebSocketConfig.class
 })
 public class AppConfig {
 

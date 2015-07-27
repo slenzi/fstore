@@ -16,17 +16,17 @@
 		var storeList = [{ "name": "empty"}];
 		var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 		var currentDirectory = new DirectoryResource({
-				name: 'Loading...',
-				dateCreated: 'Loading...',
-				dateUpdated: 'Loading...'
+			name: 'Loading...',
+			dateCreated: 'Loading...',
+			dateUpdated: 'Loading...'
 		});
 		var currentStore = new ResourceStore({
-				name: 'Loading...',
-				dateCreated: 'Loading...',
-				dateUpdated: 'Loading...'
+			name: 'Loading...',
+			dateCreated: 'Loading...',
+			dateUpdated: 'Loading...'
 		});
 		var myFsUploader = new FsFileUploader({
-            	url: appConstants.httpUploadHandler
+			url: appConstants.httpUploadHandler
         });	
 		var socket = {
 			client: null,
@@ -113,9 +113,10 @@
 			
 			$log.debug('sending sample stomp message...');
 			
-			socket.stomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
+			// socket.stomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
 			
-			//socket.stomp.send('http://localhost:8080/fstore/spring/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
+			socket.stomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
+			socket.stomp.send("/app/hello", {}, JSON.stringify({ 'message': 'this is a test' }));
 			
 		}
 

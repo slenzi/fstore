@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class EchoController {
 
     @InjectLogger
-    private Logger logger;	
+    private Logger logger;
 	
-	public EchoController() {
-	
+	public EchoController() {		
+		
 	}
 	
 	/**
@@ -36,8 +36,8 @@ public class EchoController {
 	@SendTo("/simplebroker/replies")
 	public ReplyMessage processMessage(HelloMessage message) throws Exception {
 		
-    	logger.debug(EchoController.class.getName() + ".processMessage(...) called.");
-    	logger.debug("message = " + message);
+    	logger.info(EchoController.class.getName() + ".processMessage(...) called.");
+    	logger.info("message = " + message);
     	
     	return new ReplyMessage("Reply From Server. Original message = " + message.getMessage());
 		

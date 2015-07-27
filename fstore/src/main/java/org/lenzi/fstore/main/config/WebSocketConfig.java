@@ -43,9 +43,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	 * is mapped to receive messages at /hello. We do not need to prefix the endpoint with the Spring MVC dispatcher
 	 * mapping.
 	 */
-	/* (non-Javadoc)
-	 * @see org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer#registerStompEndpoints(org.springframework.web.socket.config.annotation.StompEndpointRegistry)
-	 */
+	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		
 		logger.info("registerStompEndpoints called");
