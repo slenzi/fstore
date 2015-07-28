@@ -38,7 +38,7 @@ public class TestMessageService {
 			
 			while(true){
 				
-				logger.info("Sending message...");
+				//logger.info("Sending message...");
 				
 				LocalDate nowDate = LocalDate.now();
 				LocalTime nowTime = LocalTime.now();
@@ -46,9 +46,9 @@ public class TestMessageService {
 				template.convertAndSend("/topic/tests", 
 						new ReplyMessage("This is a message! " + nowDate + " " +nowTime));
 				
-				logger.info("Message sent. Sleeping....");
+				//logger.info("Message sent. Sleeping....");
 				
-				TimeUnit.SECONDS.sleep(5);
+				TimeUnit.SECONDS.sleep(10);
 				
 			}
 			
