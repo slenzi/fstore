@@ -29,8 +29,8 @@
 			url: appConstants.httpUploadHandler
         });	
 		var socket = {
-			client: null,
-			stomp: null
+			client: null, // SockJS object
+			stomp: null // Stomp object
 		};			
 
 		//
@@ -50,11 +50,8 @@
 		}	
 		
 		function _doWebSocketTest(){
-			
 			$log.debug('peforming websocket test');
-			
-			_initSocket();
-			
+			_initSocket();	
 		}
 		function _initSocket(){
 			
@@ -67,6 +64,8 @@
 			//var opt = {debug: false};
 			//var protocols = { protocols_whitelist: ["websocket", "xhr-streaming", "xdr-streaming", "xhr-polling", "xdr-polling", "iframe-htmlfile", "iframe-eventsource", "iframe-xhr-polling"]};
 			
+			// '/fstore/spring/hello'
+			
 			socket.client = new SockJS('/fstore/spring/hello'); // , protocols, opt
 			socket.stomp = Stomp.over(socket.client);
 			socket.stomp.connect(
@@ -77,17 +76,13 @@
 			
 		}
 		function _stompDebug(str){
-			$log.debug('stomp debug = ' + str);
-			//socket.stomp.send("/app/hello", {}, JSON.stringify({ 'message': 'this is a test' }));	
+			//$log.debug('stomp debug = ' + str);	
 		}
 		function _onStompConnect(frame){
-			
-			$log.debug('inside stomp connect function');
-			
-			$log.debug('frame = ' + JSON.stringify(frame));
-			//socket.stomp.subscribe('http://localhost:8080/fstore/spring/simplebroker/replies', _onSocketReceiveMessage);
-			socket.stomp.subscribe('/simplebroker/replies', _onSocketReceiveMessage);
-			
+			//$log.debug('inside stomp connect function');
+			//$log.debug('frame = ' + JSON.stringify(frame));
+			socket.stomp.subscribe('/topic/tests', _onSocketReceiveTestMessages);
+			socket.stomp.subscribe('/topic/echos', _onSocketReceiveEchoMessages);
 		}
 		function _onStompConnectError(error){
 			$log.debug('_onStompConnectError...');
@@ -101,59 +96,18 @@
 			$log.debug('_onSocketReconnect...');
 			setTimeout(_initSocket, 10000);
 		}
-		function _onSocketReceiveMessage(socketMessage){
-			$log.debug('received socket message!');
+		function _onSocketReceiveTestMessages(socketMessage){
+			$log.debug('received socket test message!');
 			$log.debug('message = ' + JSON.stringify(socketMessage));
-			/*
-			var bodyObj = JSON.parse(socketMessage.body);
-			$log.debug('Message = ' + bodyObj.message);			
-			*/
 		}
+		function _onSocketReceiveEchoMessages(socketMessage){
+			$log.debug('received socket echo message!');
+			$log.debug('message = ' + JSON.stringify(socketMessage));
+		}		
 		function _handleEventSendSampleStomp(){
-			
 			$log.debug('sending sample stomp message...');
-			
-			// socket.stomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
-			
 			socket.stomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
-			socket.stomp.send("/app/hello", {}, JSON.stringify({ 'message': 'this is a test' }));
-			
 		}
-
-		/* old ng-websocket example code
-		function _doWebSocketTest(){
-			
-			// 'ws://localhost:8080/fstore/spring/hello'
-			// 'ws://localhost:8080/fstore/spring/simplebroker/replies'
-			
-			var socketUrl = 'ws://localhost:8080/fstore/spring/hello';
-			
-			var socketConfig = {
-				url: socketUrl,
-				lazy: false,
-				reconnect: true,
-				reconnectInterval: 2000,
-				enqueue: false,
-				mock: false,
-				protocols: ['binary', 'base64']
-			};
-			
-			var ws = $websocket.$new(socketConfig);
-			
-			ws.$on('$open', function () {
-				
-				$log.debug('Web socket is open!');
-				
-				ws.$emit('ping', 'hi listening websocket server');
-				
-			});
-			
-			ws.$on('$close', function () {
-				$log.debug('Noooooooooou, I want to have more fun with ngWebsocket, damn it!');
-			});			
-			
-		}
-		*/
 
 		/**
 		 * Say hello

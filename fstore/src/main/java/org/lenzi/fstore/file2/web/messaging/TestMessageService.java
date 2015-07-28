@@ -43,7 +43,7 @@ public class TestMessageService {
 				LocalDate nowDate = LocalDate.now();
 				LocalTime nowTime = LocalTime.now();
 				
-				template.convertAndSend("/simplebroker/replies", 
+				template.convertAndSend("/topic/tests", 
 						new ReplyMessage("This is a message! " + nowDate + " " +nowTime));
 				
 				logger.info("Message sent. Sleeping....");
