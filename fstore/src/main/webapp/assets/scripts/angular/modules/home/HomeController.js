@@ -3,13 +3,13 @@
 	angular
 		.module('home')
 		.controller('homeController',[
-			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader',
+			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader', 'FsStomp',
 			'$state', '$stateParams', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
 			]
 		);
 
-	function HomeController( appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, 
-			$state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+	function HomeController(
+		appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
 		var sectionTitle = "Not set";
@@ -27,11 +27,15 @@
 		});
 		var myFsUploader = new FsFileUploader({
 			url: appConstants.httpUploadHandler
-        });	
+        });
+		var myStomp;
+
+		/*
 		var socket = {
 			client: null, // SockJS object
 			stomp: null // Stomp object
-		};			
+		};
+		*/
 
 		//
 		// load all resource stores when page loads (asynchronously)
@@ -57,58 +61,35 @@
 			
 			$log.debug('initializing websocket');
 			
-			var headers = {
-				//login: '',
-				//passcode: ''			
-			};
-			//var opt = {debug: false};
-			//var protocols = { protocols_whitelist: ["websocket", "xhr-streaming", "xdr-streaming", "xhr-polling", "xdr-polling", "iframe-htmlfile", "iframe-eventsource", "iframe-xhr-polling"]};
-			
-			// '/fstore/spring/hello'
-			
-			socket.client = new SockJS('/fstore/spring/hello'); // , protocols, opt
-			socket.stomp = Stomp.over(socket.client);
-			socket.stomp.connect(
-				headers, _onStompConnect, _onStompConnectError
-			);
-			socket.stomp.debug = _stompDebug;
-			//socket.client.onclose = _onSocketClose;
+			myStomp = new FsStomp({
+				sockJsUrl: '/fstore/spring/hello'
+			});
+			myStomp.setDebug(_myStompDebug);
+			myStomp.connect(_myStompConnect, _myStompConnectError);
 			
 		}
-		function _stompDebug(str){
-			//$log.debug('stomp debug = ' + str);	
+		function _handleEventSendSampleStomp(){
+			myStomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
 		}
-		function _onStompConnect(frame){
-			//$log.debug('inside stomp connect function');
-			//$log.debug('frame = ' + JSON.stringify(frame));
-			socket.stomp.subscribe('/topic/tests', _onSocketReceiveTestMessages);
-			socket.stomp.subscribe('/topic/echos', _onSocketReceiveEchoMessages);
+		function _myStompDebug(str){
+			$log.debug('my stomp debug = ' + str);	
+		}		
+		function _myStompConnect(frame){
+			var testSubscription = myStomp.subscribe('/topic/tests', _myStompReceiveTestMessages);
+			var echoSubscription = myStomp.subscribe('/topic/echos', _myStompReceiveEchoMessages);
 		}
-		function _onStompConnectError(error){
+		function _myStompConnectError(error){
 			$log.debug('_onStompConnectError...');
 			//$log.debug(error.headers.message);
 			$log.debug('error = ' + JSON.stringify(error));
 		}
-		function _onSocketClose(){
-			_onSocketReconnect();
+		function _myStompReceiveTestMessages(socketMessage){
+			$log.info('message = ' + JSON.stringify(socketMessage));
 		}
-		function _onSocketReconnect(){
-			$log.debug('_onSocketReconnect...');
-			setTimeout(_initSocket, 10000);
-		}
-		function _onSocketReceiveTestMessages(socketMessage){
-			$log.debug('received socket test message!');
-			$log.debug('message = ' + JSON.stringify(socketMessage));
-		}
-		function _onSocketReceiveEchoMessages(socketMessage){
-			$log.debug('received socket echo message!');
-			$log.debug('message = ' + JSON.stringify(socketMessage));
+		function _myStompReceiveEchoMessages(socketMessage){
+			$log.info('message = ' + JSON.stringify(socketMessage));
 		}		
-		function _handleEventSendSampleStomp(){
-			$log.debug('sending sample stomp message...');
-			socket.stomp.send('/app/hello', {}, JSON.stringify({ 'message': 'this is a test' }));
-		}
-
+		
 		/**
 		 * Say hello
 		 */

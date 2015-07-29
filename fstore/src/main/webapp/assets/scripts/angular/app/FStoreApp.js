@@ -12,11 +12,12 @@
 	 * ngResource - Provides interaction support with RESTful services via the $resource service
 	 * home - Our main home module
 	 * fsUpload - multi-part HTTP uploader
+	 * fsStomp - Stomp websocket module
 	 * ui.grid - ui data grid component
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	homeApp = angular
-		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'fsUpload', 'ui.grid', 'ui.grid.pagination'])
+		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'fsUpload', 'fsStomp', 'ui.grid', 'ui.grid.pagination'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
