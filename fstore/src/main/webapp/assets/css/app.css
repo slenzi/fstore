@@ -64,6 +64,10 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 .iconGrid md-grid-tile {
 	transition: all 300ms ease-out 50ms;
 }
+.iconGrid .selected {
+    background-color: #eee;
+    border: 1px dashed #555;  
+}
 .iconGrid md-grid-tile md-icon {
 	padding-bottom: 23px; /* was 20 */
 }
