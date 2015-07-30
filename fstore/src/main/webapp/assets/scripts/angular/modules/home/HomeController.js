@@ -3,19 +3,19 @@
 	angular
 		.module('home')
 		.controller('homeController',[
-			'appConstants', 'homeService', 'ResourceStore', 'DirectoryResource', 'FsFileUploader', 'FsStomp',
+			'appConstants', 'homeService', 'ResourceStore', 'PathResource', 'FsFileUploader', 'FsStomp',
 			'$state', '$stateParams', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
 			]
 		);
 
 	function HomeController(
-		appConstants, homeService, ResourceStore, DirectoryResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, homeService, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
 		var sectionTitle = "Not set";
 		var storeList = [{ "name": "empty"}];
 		var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
-		var currentDirectory = new DirectoryResource({
+		var currentDirectory = new PathResource({
 			name: 'Loading...',
 			dateCreated: 'Loading...',
 			dateUpdated: 'Loading...'
@@ -214,7 +214,49 @@
 			_handleLoadDirectory(currentDirectory.dirId, true);
 			
 			//$state.go('home_directory');
-		}		
+		}
+
+		/**
+		 * Check if any path resources are selected
+		 */
+		function _haveSelectedPathResources(){
+			
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		/**
+		 * Handle delete of selected path resources
+		 */
+		function _handleEventClickDeletePathResources(){
+			
+			// get types and ids of all selected path resources
+			
+			alert('Delete feature coming soon!');
+			
+		}
+		
+		/**
+		 * Clear selected resource. Loops through all path resources and sets isSelected to false
+		 * if the resource is currently selected.
+		 */
+		function _handleEventClickClearSelectedPathResources(){
+			
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						currentDirectory.children[i].isSelected = false;
+					}
+				}
+			}			
+			
+		}
 		
 		/**
 		 * View list of all stores
@@ -263,7 +305,38 @@
 		 */
         function _handleEventClickCancelStoreSettings(){
         	$state.go('home_directory');
-        }		
+        }
+		
+		/**
+		 * pathResource - the path resource the user clicked on (file, directory, etc)
+		 */
+		function _handleEventClickPathResource(pathResource){
+			
+			// toggle isSelected attribute
+			pathResource.isSelected = !pathResource.isSelected;
+			
+			/*
+			if(pathResource.type == 'FILE'){
+				_handleEventClickFile(pathResource);
+			}else if(pathResource.type == 'DIRECTORY'){
+				_handleEventClickDirectory(pathResource);
+			}
+			*/
+		}
+
+		/**
+		 * Event handler for click of file resource
+		 */
+		function _handleEventClickFile(fileResource){
+			alert('You clicked on a file, id = ' + fileResource.fileId);
+		}
+		
+		/**
+		 * Event handler for click of directory resource
+		 */
+		function _handleEventClickDirectory(directoryResource){
+			alert('You clicked on a directory, id = ' + directoryResource.dirId);
+		}		
 		
 		/**
 		 * pathResource - the path resource the user double clicked on (file, directory, etc)
@@ -349,12 +422,26 @@
 							$log.debug("Error, " + directoryData.error);
 						} else {
 							
-							//$log.debug("got directory data => " + JSON.stringify(directoryData));
+							$log.debug("got directory data => " + JSON.stringify(directoryData));
 							
-							// update view
-							currentDirectory.setData(directoryData);
-							//currentDirectory.setName(directoryData.name);
-							//currentDirectory.setChildren(directoryData.children);
+							// create path resource for directory
+							var directory = new PathResource({
+								name: 'Loading...'
+							});
+							directory.setData(directoryData);
+							
+							// build path resource for each child
+							var childResource;
+							var childPathResources = [];
+							for(childIndex = 0; childIndex < directory.children.length; childIndex++){
+								childResource = new PathResource();
+								childResource.setData(directory.children[childIndex]);
+								childPathResources.push(childResource);
+							}
+							directory.children = childPathResources;
+							
+							// update current directory model
+							currentDirectory = directory;
 							
 							_handleLoadBreadcrumb(directoryData.dirId);
 							
@@ -484,6 +571,7 @@
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventViewStoreList : _handleEventViewStoreList,
+			handleEventClickPathResource : _handleEventClickPathResource,
 			handleEventDblClickPathResource : _handleEventDblClickPathResource,
 			handleEventClickBreadcrumb : _handleEventClickBreadcrumb,
 			handleEventViewUploadForm : _handleEventViewUploadForm,
@@ -491,7 +579,10 @@
 			handleEventDoUpload : _handleEventDoUpload,
 			handleEventClickCancelUpload : _handleEventClickCancelUpload,
 			handleEventClickCancelStoreSettings : _handleEventClickCancelStoreSettings,
-			handleEventSendSampleStomp : _handleEventSendSampleStomp
+			handleEventSendSampleStomp : _handleEventSendSampleStomp,
+			haveSelectedPathResources : _haveSelectedPathResources,
+			handleEventClickDeletePathResources : _handleEventClickDeletePathResources,
+			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources
 		}
 
 	}

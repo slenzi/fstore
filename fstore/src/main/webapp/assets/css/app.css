@@ -65,8 +65,8 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 	transition: all 300ms ease-out 50ms;
 }
 .iconGrid .selected {
-    background-color: #eee;
-    border: 1px dashed #555;  
+    background-color: #FFEDED;
+    border: 1px dashed red;  
 }
 .iconGrid md-grid-tile md-icon {
 	padding-bottom: 23px; /* was 20 */
@@ -78,6 +78,24 @@ box-shadow: 10px 10px 30px rgba(250, 250, 250, 1);
 		margin-right: 20%;
 	}
 }
+
+.iconGrid md-grid-tile md-grid-tile-header {
+	background: rgba(0, 0, 0, 0.0);
+	color: #333333;
+	height: 45px; /* was 36 */
+}
+.iconGrid md-grid-tile-header figcaption {
+	width: 100%;
+}
+.iconGrid md-grid-tile-header figcaption h3 {
+	margin: 0;
+	width: 100%;
+	color: red;
+	font-weight: 100;
+	font-size: 0.7em;
+	text-align: center;
+}
+
 .iconGrid md-grid-tile md-grid-tile-footer {
 	background: rgba(0, 0, 0, 0.0);
 	color: #333333;

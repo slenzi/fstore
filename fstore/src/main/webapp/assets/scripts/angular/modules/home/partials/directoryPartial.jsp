@@ -19,8 +19,13 @@ Directory partial that's loaded for the "home_directory" state
  
 	<md-grid-list md-cols-sm="3" md-cols-md="5" md-cols-gt-md="6" md-cols-gt-lg="8" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="0px" md-gutter-gt-sm="0px">
 		
-		<!-- loop through all child path resources -->
-		<md-grid-tile class="selected" md-rowspan="1" md-colspan="1" md-colspan-sm="1" ng-repeat="pathResource in home.directory().getChildren()" ng-dblclick="home.handleEventDblClickPathResource(pathResource)">
+		<%--
+		Loop through all child path resources.
+		If pathResource.isSelected attribute is true then apply 'selected' css style.
+		single click toggles isSelected attribute
+		double-click handle opening/loading path resource
+		--%>
+		<md-grid-tile ng-repeat="pathResource in home.directory().getChildren()" ng-class="{'selected' : pathResource.isSelected}" md-rowspan="1" md-colspan="1" md-colspan-sm="1" sglclick="home.handleEventClickPathResource(pathResource)" ng-dblclick="home.handleEventDblClickPathResource(pathResource)">
 		
 			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 			

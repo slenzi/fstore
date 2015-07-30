@@ -19,6 +19,14 @@ Toolbar partial that's loaded for the "home_directory" state
 	
 	<div flex></div>
 	
+	<md-button class="" ng-if="home.haveSelectedPathResources()" ng-click="home.handleEventClickDeletePathResources()">
+		[Delete]
+	</md-button>
+
+	<md-button class="" ng-if="home.haveSelectedPathResources()" ng-click="home.handleEventClickClearSelectedPathResources()">
+		[Clear Selected]
+	</md-button>	
+	
 	<md-button class="" ng-click="home.handleEventViewStoreSettings()">
 		<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
 		Store Settings

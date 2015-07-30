@@ -5,8 +5,8 @@
 	var homeApp = angular.module('home');
 
 	// Create directory resource model
-	homeApp.factory('DirectoryResource', [
-			'appConstants', '$log', '$q', DirectoryResourceFactory
+	homeApp.factory('PathResource', [
+			'appConstants', '$log', '$q', PathResourceFactory
 			]
 		);
 		
@@ -14,33 +14,34 @@
 	homeApp.factory('ResourceStore', [
 			'appConstants', '$log', '$q', ResourceStoreFactory
 			]
-		);		
-	
-	function DirectoryResourceFactory(appConstants, $log, $q){
+		);
+
+	function PathResourceFactory(appConstants, $log, $q){
 		
-		function DirectoryResource(directoryData){
+		function PathResource(data){
 			
 			// set defaults
 			angular.extend(this, {
-				id: 'directory id not set',
+				id: 'id not set',
 				name: 'name not set',
 				description: 'description not set',
 				dateCreated: 'date created not set',
 				dateUpdated: 'date updated not set',
+				isSelected: false,
 				children: []
 			});
 			
 			// update defaults with user provided data if we have some
-			if(directoryData){
-				this.setData(directoryData);
+			if(data){
+				this.setData(data);
 			}
 			
 		};
 
 		// extend functionality
-		DirectoryResource.prototype = {
-			setData: function(directoryData){
-				angular.extend(this, directoryData);
+		PathResource.prototype = {
+			setData: function(data){
+				angular.extend(this, data);
 			},
 			getId: function(){
 				return this.id;
@@ -77,11 +78,17 @@
 			},
 			setChildren: function(children){
 				this.children = children;
-			}			
+			},
+			isSelected: function(){
+				return isSelected;
+			},
+			setSelected: function(isSelected){
+				this.isSelected = isSelected;
+			}
 		};	
 		
 		// return this
-		return DirectoryResource;
+		return PathResource;
 		
 	}
 	

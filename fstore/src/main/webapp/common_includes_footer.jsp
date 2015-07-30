@@ -25,4 +25,5 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeController.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeService.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeFilter.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeDirective.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/app/FStoreApp.js"></script>
