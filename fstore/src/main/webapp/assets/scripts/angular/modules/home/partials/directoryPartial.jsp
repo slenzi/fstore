@@ -27,6 +27,10 @@ Directory partial that's loaded for the "home_directory" state
 		--%>
 		<md-grid-tile ng-repeat="pathResource in home.directory().getChildren()" ng-class="{'selected' : pathResource.isSelected}" md-rowspan="1" md-colspan="1" md-colspan-sm="1" sglclick="home.handleEventClickPathResource(pathResource)" ng-dblclick="home.handleEventDblClickPathResource(pathResource)">
 		
+            <md-grid-tile-header ng-if="pathResource.isSelected">
+                <md-checkbox ng-model="pathResource.isSelected" ng-init="pathResource.isSelected" aria-label=""/>
+            </md-grid-tile-header>
+            
 			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 			
 			<md-icon ng-if="pathResource.type == 'FILE'" class="red shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_insert_drive_file_24px.svg"></md-icon>
