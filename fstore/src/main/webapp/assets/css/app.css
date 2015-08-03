@@ -13,6 +13,13 @@
             filter: drop-shadow( 2px 2px 5px #aaa ); /* Same syntax as box-shadow */
 }
 
+/**
+ * override button style on dialogs
+ */
+.md-dialog-container .md-button {
+	color: #000;
+}
+
 .iconGrid {
 	padding: 0px;
 	margin:0px;

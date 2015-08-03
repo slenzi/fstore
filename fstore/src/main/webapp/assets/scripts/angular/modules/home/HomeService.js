@@ -107,6 +107,17 @@
 			
 		}
 		
+		// download a file resource
+		function _downloadFile(fileId){
+			
+			//alert('download file coming soon. file id = ' + fileId);
+			
+			var downloadUrl = appConstants.contextPath + '/cxf/resource/file/download/id/' + fileId;
+			
+			window.location.href = downloadUrl;
+			
+		}
+		
 		// *********************************
 		// External API
 		// *********************************
@@ -116,7 +127,8 @@
 			getResourceStores: _fetchResourceStoreList,
 			getResourceStoreById: _fetchStoreById,
 			getDirectoryListing: _fetchDirectoryListing,
-			getBreadcrumb: _fetchBreadcrumb
+			getBreadcrumb: _fetchBreadcrumb,
+			downloadFile: _downloadFile
 	    };
 		
 	}

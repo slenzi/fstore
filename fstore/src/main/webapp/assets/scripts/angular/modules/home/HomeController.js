@@ -4,12 +4,12 @@
 		.module('home')
 		.controller('homeController',[
 			'appConstants', 'homeService', 'ResourceStore', 'PathResource', 'FsFileUploader', 'FsStomp',
-			'$state', '$stateParams', '$mdSidenav', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
+			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
 			]
 		);
 
 	function HomeController(
-		appConstants, homeService, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, homeService, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
 		// internal models bound to UI
 		var sectionTitle = "Not set";
@@ -234,12 +234,55 @@
 		/**
 		 * Handle delete of selected path resources
 		 */
-		function _handleEventClickDeletePathResources(){
+		function _handleEventClickDeletePathResources(event){
 			
 			// get types and ids of all selected path resources
 			
-			alert('Delete feature coming soon!');
+			var filesToDelete = [];
+			var directoriesToDelete = [];
+			var pathResource;
 			
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						pathResource = currentDirectory.children[i];
+						if(pathResource.type == 'FILE'){
+							filesToDelete.push(pathResource);
+						}else if(pathResource.type == 'DIRECTORY'){
+							directoriesToDelete.push(pathResource);
+						}else{
+							$log.error('Unknown path resource type \'' + pathResource.type + '\'. Don\'t know how to delete.');
+						}
+					}
+				}
+			}
+			var haveFilesToDelete = (filesToDelete.length > 0) || (directoriesToDelete.length > 0);
+			if(haveFilesToDelete){
+				var confirmMessage = 'Are you sure you want to delete the resources? The following items will be permanently removed: ';	
+				if(filesToDelete.length > 1){
+					confirmMessage += '\n' + filesToDelete.length + ' files.';
+				}else if(filesToDelete.length == 1){
+					confirmMessage += '\n' + filesToDelete.length + ' file.';
+				}
+				if(directoriesToDelete.length > 1){
+					confirmMessage += '\n' + directoriesToDelete.length + ' directories.';
+				}else if(directoriesToDelete.length == 1){
+					confirmMessage += '\n' + directoriesToDelete.length + ' directory.';
+				}
+				var confirm = $mdDialog.confirm()
+					.parent(angular.element(document.body))
+					.title('Delete Confirmation')
+					.content(confirmMessage)
+					.ariaLabel('Lucky day')
+					.ok('Continue with Delete')
+					.cancel('Cancel')
+					.targetEvent(event);
+				$mdDialog.show(confirm).then(function() {
+						$log.debug('Proceed with delete!');
+					}, function() {
+						$log.debug('Delete operation canceled.');
+					});					
+			}			
 		}
 		
 		/**
@@ -288,6 +331,8 @@
 				if(storeList != null && storeList[0]){
 					currentStore.setData(storeList[0]);
 					_handleLoadDirectory(storeList[0].rootDirectoryId, false);
+					
+					_leftNavClose();
 				}				
 			}			
 			
@@ -353,7 +398,8 @@
 		 * Event handler for double-click of file resource
 		 */
 		function _handleEventDblClickFile(fileResource){
-			alert('You double clicked on a file, id = ' + fileResource.fileId);
+			//alert('You double clicked on a file, id = ' + fileResource.fileId);
+			homeService.downloadFile(fileResource.fileId)
 		}
 		
 		/**
