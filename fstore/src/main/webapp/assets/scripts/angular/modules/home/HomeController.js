@@ -29,6 +29,13 @@
 			url: appConstants.httpUploadHandler
         });
 		var myStomp;
+		
+		// tracks path resources that have been selected for "copy".
+		// they will be copied to a new location when the user performs a "paste"
+		var pathResourceToCopy = [];
+		// tracks path resources that have been selected for "cut".
+		// they will be moved to a new location when the user performs a "paste"
+		var pathResourceToMove = [];
 
 		/*
 		var socket = {
@@ -214,91 +221,6 @@
 			_handleLoadDirectory(currentDirectory.dirId, true);
 			
 			//$state.go('home_directory');
-		}
-
-		/**
-		 * Check if any path resources are selected
-		 */
-		function _haveSelectedPathResources(){
-			
-			if(currentDirectory && currentDirectory.children){
-				for(i=0; i<currentDirectory.children.length; i++){
-					if(currentDirectory.children[i].isSelected){
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		
-		/**
-		 * Handle delete of selected path resources
-		 */
-		function _handleEventClickDeletePathResources(event){
-			
-			// get types and ids of all selected path resources
-			
-			var filesToDelete = [];
-			var directoriesToDelete = [];
-			var pathResource;
-			
-			if(currentDirectory && currentDirectory.children){
-				for(i=0; i<currentDirectory.children.length; i++){
-					if(currentDirectory.children[i].isSelected){
-						pathResource = currentDirectory.children[i];
-						if(pathResource.type == 'FILE'){
-							filesToDelete.push(pathResource);
-						}else if(pathResource.type == 'DIRECTORY'){
-							directoriesToDelete.push(pathResource);
-						}else{
-							$log.error('Unknown path resource type \'' + pathResource.type + '\'. Don\'t know how to delete.');
-						}
-					}
-				}
-			}
-			var haveFilesToDelete = (filesToDelete.length > 0) || (directoriesToDelete.length > 0);
-			if(haveFilesToDelete){
-				var confirmMessage = 'Are you sure you want to delete the resources? The following items will be permanently removed: ';	
-				if(filesToDelete.length > 1){
-					confirmMessage += '\n' + filesToDelete.length + ' files.';
-				}else if(filesToDelete.length == 1){
-					confirmMessage += '\n' + filesToDelete.length + ' file.';
-				}
-				if(directoriesToDelete.length > 1){
-					confirmMessage += '\n' + directoriesToDelete.length + ' directories.';
-				}else if(directoriesToDelete.length == 1){
-					confirmMessage += '\n' + directoriesToDelete.length + ' directory.';
-				}
-				var confirm = $mdDialog.confirm()
-					.parent(angular.element(document.body))
-					.title('Delete Confirmation')
-					.content(confirmMessage)
-					.ariaLabel('Lucky day')
-					.ok('Continue with Delete')
-					.cancel('Cancel')
-					.targetEvent(event);
-				$mdDialog.show(confirm).then(function() {
-						$log.debug('Proceed with delete!');
-					}, function() {
-						$log.debug('Delete operation canceled.');
-					});					
-			}			
-		}
-		
-		/**
-		 * Clear selected resource. Loops through all path resources and sets isSelected to false
-		 * if the resource is currently selected.
-		 */
-		function _handleEventClickClearSelectedPathResources(){
-			
-			if(currentDirectory && currentDirectory.children){
-				for(i=0; i<currentDirectory.children.length; i++){
-					if(currentDirectory.children[i].isSelected){
-						currentDirectory.children[i].isSelected = false;
-					}
-				}
-			}			
-			
 		}
 		
 		/**
@@ -595,6 +517,126 @@
 			});
 			*/
 
+		}
+		
+		/**
+		 * Check if any path resources are selected
+		 */
+		function _haveSelectedPathResources(){
+			
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		/**
+		 * Handle delete of selected path resources
+		 */
+		function _handleEventClickDeletePathResources(event){
+			
+			// get types and ids of all selected path resources
+			
+			var filesToDelete = [];
+			var directoriesToDelete = [];
+			var pathResource;
+			
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						pathResource = currentDirectory.children[i];
+						if(pathResource.type == 'FILE'){
+							filesToDelete.push(pathResource);
+						}else if(pathResource.type == 'DIRECTORY'){
+							directoriesToDelete.push(pathResource);
+						}else{
+							$log.error('Unknown path resource type \'' + pathResource.type + '\'. Don\'t know how to delete.');
+						}
+					}
+				}
+			}
+			var haveFilesToDelete = (filesToDelete.length > 0) || (directoriesToDelete.length > 0);
+			if(haveFilesToDelete){
+				var confirmMessage = 'Are you sure you want to delete the resources? The following items will be permanently removed: ';	
+				if(filesToDelete.length > 1){
+					confirmMessage += '\n' + filesToDelete.length + ' files.';
+				}else if(filesToDelete.length == 1){
+					confirmMessage += '\n' + filesToDelete.length + ' file.';
+				}
+				if(directoriesToDelete.length > 1){
+					confirmMessage += '\n' + directoriesToDelete.length + ' directories.';
+				}else if(directoriesToDelete.length == 1){
+					confirmMessage += '\n' + directoriesToDelete.length + ' directory.';
+				}
+				var confirm = $mdDialog.confirm()
+					.parent(angular.element(document.body))
+					.title('Delete Confirmation')
+					.content(confirmMessage)
+					.ariaLabel('Lucky day')
+					.ok('Continue with Delete')
+					.cancel('Cancel')
+					.targetEvent(event);
+				$mdDialog.show(confirm).then(function() {
+						$log.debug('Proceed with delete!');
+					}, function() {
+						$log.debug('Delete operation canceled.');
+					});					
+			}			
+		}
+		
+		/**
+		 * Clear selected resource. Loops through all path resources and sets isSelected to false
+		 * if the resource is currently selected.
+		 */
+		function _handleEventClickClearSelectedPathResources(){
+			
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						currentDirectory.children[i].isSelected = false;
+					}
+				}
+			}			
+			
+		}		
+		
+		/**
+		 * Handle copy of selected path resources
+		 */		
+		function _handleEventClickCopyPathResources(event){
+			
+			if(_haveSelectedPathResources()){
+				
+			}else{
+				$log.error('No selected resources to copy.');
+			}
+			
+		}
+		
+		/**
+		 * Handle cut of selected path resources
+		 */		
+		function _handleEventClickCutPathResources(event){
+			
+			if(_haveSelectedPathResources()){
+				
+			}else{
+				$log.error('No selected resources to cut.');
+			}			
+			
+		}		
+		
+		/**
+		 * Handle paste of path resources that we last copied/cut
+		 */		
+		function _handleEventClickPastePathResources(event){
+			
+			
+			
 		}
 	
 		var self = this;

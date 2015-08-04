@@ -20,6 +20,14 @@
 	color: #000;
 }
 
+/**
+ * temp fix for md-menu showing a scrollbar
+ * https://github.com/angular/material/issues/3266
+ */
+body {
+    overflow-y: auto!important;
+}
+
 .iconGrid {
 	padding: 0px;
 	margin:0px;
