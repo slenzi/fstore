@@ -30,6 +30,9 @@
         });
 		var myStomp;
 		
+		// will be true when directory data, or some other path resource data is being fetched from the server. 
+		var isLoadingPathResource = false;
+		
 		// tracks path resources that have been selected for "copy".
 		// they will be copied to a new location when the user performs a "paste"
 		var pathResourceToCopy = [];
@@ -177,6 +180,10 @@
 			return breadcrumbNav;
 		}
 		
+		function _isLoadingPathResource(){
+			return isLoadingPathResource;
+		}
+		
         /**
          * Show the upload form.
          */
@@ -295,14 +302,14 @@
 		 * Event handler for click of file resource
 		 */
 		function _handleEventClickFile(fileResource){
-			alert('You clicked on a file, id = ' + fileResource.fileId);
+			//alert('You clicked on a file, id = ' + fileResource.fileId);
 		}
 		
 		/**
 		 * Event handler for click of directory resource
 		 */
 		function _handleEventClickDirectory(directoryResource){
-			alert('You clicked on a directory, id = ' + directoryResource.dirId);
+			//alert('You clicked on a directory, id = ' + directoryResource.dirId);
 		}		
 		
 		/**
@@ -376,6 +383,8 @@
          */
         function _handleLoadDirectory(dirId, showDirectoryPartial){
             
+			isLoadingPathResource = true;
+			
 			if(showDirectoryPartial){
 				$log.info('show directory partial');
 				$state.go('home_directory');
@@ -414,6 +423,8 @@
 							_handleLoadBreadcrumb(directoryData.dirId);
 							
 							//sectionTitle = currentStore.name;
+							
+							isLoadingPathResource = false;
 							
 						}
 					}
@@ -520,6 +531,18 @@
 		}
 		
 		/**
+		 * Checks if the current directory has any child path resources
+		 */
+		function _haveChildPathResources(){
+			
+			if(currentDirectory && currentDirectory.children && currentDirectory.children.length > 0){
+				return true;
+			}
+			return false;
+			
+		}
+		
+		/**
 		 * Check if any path resources are selected
 		 */
 		function _haveSelectedPathResources(){
@@ -586,6 +609,21 @@
 						$log.debug('Delete operation canceled.');
 					});					
 			}			
+		}
+		
+		/**
+		 * Select all child path resources in the current directory.
+		 */
+		function _handleEventClickSelectAllPathResources(){
+			
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(!currentDirectory.children[i].isSelected){
+						currentDirectory.children[i].isSelected = true;
+					}
+				}
+			}
+			
 		}
 		
 		/**
@@ -656,6 +694,8 @@
 			directory : _currentDirectory,
 			uploader : _uploader,
 			breadcrumb : _breadcrumb,
+			haveChildPathResources : _haveChildPathResources,
+			isLoadingPathResource : _isLoadingPathResource,
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventViewStoreList : _handleEventViewStoreList,
@@ -670,6 +710,7 @@
 			handleEventSendSampleStomp : _handleEventSendSampleStomp,
 			haveSelectedPathResources : _haveSelectedPathResources,
 			handleEventClickDeletePathResources : _handleEventClickDeletePathResources,
+			handleEventClickSelectAllPathResources : _handleEventClickSelectAllPathResources,
 			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources
 		}
 

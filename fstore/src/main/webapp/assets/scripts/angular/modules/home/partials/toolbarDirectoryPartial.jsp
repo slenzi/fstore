@@ -14,10 +14,13 @@ Toolbar partial that's loaded for the "home_directory" state
 	</md-button>
 	-->
 	
+	<md-progress-circular class="md-hue-2" md-mode="indeterminate" md-diameter="24" ng-if="home.isLoadingPathResource()"></md-progress-circular>
+	<span ng-if="home.isLoadingPathResource()" style="font-style: italic; font-size: .75em;">Loading...</span>
+	
 	<div flex></div>
 	
 	<md-button class="" ng-if="home.haveSelectedPathResources()" ng-click="home.handleEventClickClearSelectedPathResources()">
-		[Clear Selected]
+		[Unselect]
 	</md-button>
 	
 	<md-menu md-position-mode="target-right target">
@@ -31,6 +34,12 @@ Toolbar partial that's loaded for the "home_directory" state
 					New Folder
 				</md-button>
 			</md-menu-item>
+			<md-menu-item ng-if="home.haveChildPathResources()">
+				<md-button ng-click="home.handleEventClickSelectAllPathResources()">
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_select_all_24px.svg"></md-icon>
+					Select All
+				</md-button>
+			</md-menu-item>			
 
 			<md-menu-divider ng-if="home.haveSelectedPathResources()"></md-menu-divider>
 				
@@ -49,7 +58,7 @@ Toolbar partial that's loaded for the "home_directory" state
 			<md-menu-item ng-if="home.haveSelectedPathResources()">
 				<md-button ng-click="home.notImplemented()">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_content_cut_24px.svg"></md-icon>
-					Cut
+					Cut / Move
 				</md-button>
 			</md-menu-item>
 			<md-menu-item ng-if="true""> <%-- if have something copied or cut... --%>
