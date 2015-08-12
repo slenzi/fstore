@@ -582,8 +582,8 @@
 					}
 				}
 			}
-			var haveFilesToDelete = (filesToDelete.length > 0) || (directoriesToDelete.length > 0);
-			if(haveFilesToDelete){
+			var haveResourcesToDelete = (filesToDelete.length > 0) || (directoriesToDelete.length > 0);
+			if(haveResourcesToDelete){
 				var confirmMessage = 'Are you sure you want to delete the resources? The following items will be permanently removed: ';	
 				if(filesToDelete.length > 1){
 					confirmMessage += '\n' + filesToDelete.length + ' files.';
@@ -604,11 +604,39 @@
 					.cancel('Cancel')
 					.targetEvent(event);
 				$mdDialog.show(confirm).then(function() {
-						$log.debug('Proceed with delete!');
+					
+						_doDeleteFilesHelper(filesToDelete);
+						
 					}, function() {
 						$log.debug('Delete operation canceled.');
 					});					
 			}			
+		}
+		
+		function _doDeleteFilesHelper(filesToDelete){
+			
+			if(filesToDelete && filesToDelete.length > 0){
+				
+				for(i=0; i<filesToDelete.length; i++){
+					
+					homeService
+						.deleteFile(filesToDelete[i].fileId)
+						.then( function( reply ) {
+							
+							$log.debug('delete reply: ' + JSON.stringify(reply));
+							
+						});
+					
+					
+					
+				}
+				
+			}else{
+				
+				$log.error('no files to delete');
+				
+			}
+			
 		}
 		
 		/**

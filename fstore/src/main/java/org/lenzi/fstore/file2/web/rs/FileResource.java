@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -45,6 +46,30 @@ public class FileResource extends AbstractResource {
 	}
 	
 	/**
+	 * Delete file resource
+	 * 
+	 * @param fileId - id of file to delete
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@DELETE
+	@Path("{fileId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteFile(@PathParam("fileId") Long fileId) throws WebServiceException {
+		
+		logger.info(FileResource.class.getName() + " jax-rs service called, delete file, fileId = " + fileId);
+		
+		try {
+			fsResourceService.removeFileResource(fileId);
+		} catch (ServiceException e) {
+			handleError("Failed to delete file data from server", WebExceptionType.CODE_DATABSE_ERROR, e);
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
+		
+	}
+	
+	/**
 	 * Download file resource
 	 * 
 	 * @param fileId - id of file resource to download
@@ -56,7 +81,7 @@ public class FileResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public Response getFile(@PathParam("fileId") Long fileId) throws WebServiceException {
 		
-		logger.info(FileResource.class.getName() + " jax-rs service called, fileId = " + fileId);
+		logger.info(FileResource.class.getName() + " jax-rs service called, download file, fileId = " + fileId);
 		
 		// TODO - stream file from database rather than loading entire file into memory / byte[]
 		

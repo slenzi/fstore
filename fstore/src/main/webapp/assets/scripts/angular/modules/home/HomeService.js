@@ -16,6 +16,13 @@
 				appConstants.contextPath + '/cxf/resource/store/:storeId',
 				{ storeId:'@storeId' }
 			);
+			
+		// return $resource('jersey/person/:id', {id:'@personId'});
+			
+		var fileService = $resource(
+				appConstants.contextPath + '/cxf/resource/file/:fileId',
+				{ storeId:'@fileId' }
+			); 
 		
 		// directory service
 		/*
@@ -118,6 +125,13 @@
 			
 		}
 		
+		// delete a single file resource
+		function _deleteFile(fileId){
+			
+			return fileService.delete({ fileId: fileId }).$promise;
+			
+		}
+		
 		// *********************************
 		// External API
 		// *********************************
@@ -128,7 +142,8 @@
 			getResourceStoreById: _fetchStoreById,
 			getDirectoryListing: _fetchDirectoryListing,
 			getBreadcrumb: _fetchBreadcrumb,
-			downloadFile: _downloadFile
+			downloadFile: _downloadFile,
+			deleteFile: _deleteFile
 	    };
 		
 	}
