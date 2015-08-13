@@ -4,9 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -134,6 +136,44 @@ public class DirectoryResource extends AbstractResource {
 		return Response.ok(jsonTree, MediaType.APPLICATION_JSON).build();
 		
 	}
+	
+	/**
+	 * Delete a series of directories
+	 * 
+	 * @param dirIdList - list of file ids. All files will be deleted.
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@POST
+	@Path("/delete")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteDirectories(@QueryParam("dirId") List<Long> dirIdList) throws WebServiceException {
+		
+		logger.info(DirectoryResource.class.getName() + " jax-rs service called, delete directories");
+		
+		if(dirIdList == null || dirIdList.size() == 0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,
+					"List of dir IDs for delete operation is null or empty. Need 1 or more 'dirId' query parameters in request.");
+		}
+		
+		String delim = "";
+		StringBuffer dirIdLog = new StringBuffer();
+		for(Long dirId : dirIdList){
+			dirIdLog.append(delim + dirId); delim = ",";
+		}
+		
+		logger.info("Number of directories to delete: " + dirIdList.size() + ". [" + dirIdLog.toString() + "]");
+		
+		try {
+			fsResourceService.removeDirectoryResourceList(dirIdList);
+		} catch (ServiceException e) {
+			handleError("Failed to delete directory data from server. Dir Id list = [" + dirIdLog.toString() + "]",
+					WebExceptionType.CODE_DATABSE_ERROR, e);
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
+		
+	}	
 	
 	@Override
 	public Logger getLogger() {

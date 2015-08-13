@@ -629,6 +629,37 @@ public class FsQueuedResourceService {
 	}
 	
 	/**
+	 * Remove list of directories
+	 * 
+	 * @param dirIdList
+	 * @throws ServiceException
+	 */
+	public void removeDirectoryResourceList(List<Long> dirIdList) throws ServiceException {
+		
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				for(Long dirId : dirIdList){
+					fsResourceService.removeDirectoryResource(dirId);
+				}
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		t.waitComplete(); // block until complete
+		
+	}	
+	
+	/**
 	 * Remove resource store 
 	 * 
 	 * @param storeId

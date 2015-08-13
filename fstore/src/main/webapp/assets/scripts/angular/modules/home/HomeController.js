@@ -610,26 +610,39 @@
 					.ok('Continue with Delete')
 					.cancel('Cancel')
 					.targetEvent(event);
+				
 				$mdDialog.show(confirm).then(function() {
 					
-						_doDeleteFilesHelper(event, filesToDelete);
+					_doDeleteResourcesHelper(event, filesToDelete, directoriesToDelete);
 						
-					}, function() {
-						$log.debug('Delete operation canceled.');
-					});					
+				}, function() {
+					
+					$log.debug('Delete operation canceled.');
+					
+				});					
 			}			
 		}
-		function _doDeleteFilesHelper(event, filesToDelete){
+		function _doDeleteResourcesHelper(event, filesToDelete, directoriesToDelete){
+			
+			var fileIdList = [];
+			var dirIdList = [];
+			var pleaseWaitDialog;
 			
 			if(filesToDelete && filesToDelete.length > 0){
-				
-				var fileIdList = [];
 				for(i=0; i<filesToDelete.length; i++){
 					fileIdList.push(filesToDelete[i].fileId);
 				}
-				
+			}
+			if(directoriesToDelete && directoriesToDelete.length > 0){
+				for(i=0; i<directoriesToDelete.length; i++){
+					dirIdList.push(directoriesToDelete[i].dirId);
+				}
+			}
+			
+			if(fileIdList.length > 0 || dirIdList.length > 0){
+			
 				// show please wait
-				var deleteAlert = $mdDialog.show(
+				pleaseWaitDialog = $mdDialog.show(
 					$mdDialog.alert()
 						.parent(angular.element(document.body))
 						.clickOutsideToClose(false)
@@ -637,26 +650,67 @@
 						.content('Please wait while resources are deleted...')
 						.ariaLabel('Please wait while resources are deleted.')
 						.targetEvent(event)
-				);				
+				);
+				
+			}
+			
+			if(fileIdList.length > 0 && dirIdList.length > 0){
+				
+				homeService
+				.deleteFiles(fileIdList)
+				.then( function( reply ) {
+					
+					$log.debug('delete files reply: ' + JSON.stringify(reply));
+					
+					return homeService
+						.deleteDirectories(dirIdList)
+						.then( function( reply ) {
+							
+							$log.debug('delete directories reply: ' + JSON.stringify(reply));
+							
+						});
+					
+				}).then( function( result ) {
+					
+					_reloadCurrentDirectory();
+					
+					$mdDialog.hide(pleaseWaitDialog, "finished");
+					
+				});
+							
+				
+				
+			} else if (fileIdList.length > 0){
 				
 				// delete via rest service (pass array of file ids)
 				homeService
 					.deleteFiles(fileIdList)
 					.then( function( reply ) {
 						
-						$log.debug('delete reply: ' + JSON.stringify(reply));
+						$log.debug('delete files reply: ' + JSON.stringify(reply));
 						
 						_reloadCurrentDirectory();
 						
-						$mdDialog.hide(deleteAlert, "finished");
+						$mdDialog.hide(pleaseWaitDialog, "finished");
 						
-					});
+					});					
 				
-			}else{
+			} else if (dirIdList.length > 0){
 				
-				$log.error('no files to delete');
+				// delete via rest service (pass array of dir ids)
+				homeService
+					.deleteDirectories(dirIdList)
+					.then( function( reply ) {
+						
+						$log.debug('delete directories reply: ' + JSON.stringify(reply));
+						
+						_reloadCurrentDirectory();
+						
+						$mdDialog.hide(pleaseWaitDialog, "finished");
+						
+					});					
 				
-			}
+			}			
 			
 		}
 		

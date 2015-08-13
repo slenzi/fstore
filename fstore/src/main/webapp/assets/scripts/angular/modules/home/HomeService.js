@@ -28,7 +28,7 @@
 		
 		// directory resource service
 		var directoryService = $resource(
-			appConstants.contextPath + '/cxf/resource/directory', {}, {
+			appConstants.contextPath + '/cxf/resource/directory', { dirId: '@dirId' }, {
 				depthGet: {
 					url: appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
 					method: 'GET',
@@ -42,7 +42,11 @@
 					params: {
 						dirId: '@dirId'
 					}
-				}
+				},
+				deleteDirectories: {
+					url: appConstants.contextPath + '/cxf/resource/directory/delete',
+					method: 'POST'
+				}				
 			});		
 		
 		var sampleData = [
@@ -134,6 +138,13 @@
 			
 		}
 		
+		// delete a list of directories
+		function _deleteDirectories(dirIdList){
+			
+			return directoryService.deleteDirectories({ 'dirId' : dirIdList }).$promise;
+			
+		}		
+		
 		// *********************************
 		// External API
 		// *********************************
@@ -146,7 +157,8 @@
 			getBreadcrumb: _fetchBreadcrumb,
 			downloadFile: _downloadFile,
 			deleteFile: _deleteFile,
-			deleteFiles: _deleteFiles
+			deleteFiles: _deleteFiles,
+			deleteDirectories: _deleteDirectories
 	    };
 		
 	}
