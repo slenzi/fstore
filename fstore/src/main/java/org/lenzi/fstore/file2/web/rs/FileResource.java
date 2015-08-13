@@ -3,12 +3,15 @@ package org.lenzi.fstore.file2.web.rs;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -46,7 +49,7 @@ public class FileResource extends AbstractResource {
 	}
 	
 	/**
-	 * Delete file resource
+	 * Delete single file resource
 	 * 
 	 * @param fileId - id of file to delete
 	 * @return
@@ -63,6 +66,44 @@ public class FileResource extends AbstractResource {
 			fsResourceService.removeFileResource(fileId);
 		} catch (ServiceException e) {
 			handleError("Failed to delete file data from server", WebExceptionType.CODE_DATABSE_ERROR, e);
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
+		
+	}
+	
+	/**
+	 * Delete a series of files
+	 * 
+	 * @param fileIdList - list of file ids. All files will be deleted.
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@POST
+	@Path("/delete")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteFiles(@QueryParam("fileId") List<Long> fileIdList) throws WebServiceException {
+		
+		logger.info(FileResource.class.getName() + " jax-rs service called, delete files");
+		
+		if(fileIdList == null || fileIdList.size() == 0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,
+					"List of file IDs for delete operation is null or empty. Need 1 or more 'fileId' query parameters in request.");
+		}
+		
+		String delim = "";
+		StringBuffer fileIdLog = new StringBuffer();
+		for(Long fileId : fileIdList){
+			fileIdLog.append(delim + fileId); delim = ",";
+		}
+		
+		logger.info("Number of files to delete: " + fileIdList.size() + ". [" + fileIdLog.toString() + "]");
+		
+		try {
+			fsResourceService.removeFileResourceList(fileIdList);
+		} catch (ServiceException e) {
+			handleError("Failed to delete file data from server. File Id list = [" + fileIdLog.toString() + "]",
+					WebExceptionType.CODE_DATABSE_ERROR, e);
 		}
 		
 		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();

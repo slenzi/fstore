@@ -14,41 +14,36 @@
 		// resource store service
 		var storeService = $resource(
 				appConstants.contextPath + '/cxf/resource/store/:storeId',
-				{ storeId:'@storeId' }
+				{ storeId: '@storeId' }
 			);
 			
-		// return $resource('jersey/person/:id', {id:'@personId'});
-			
+		// file resource service
 		var fileService = $resource(
-				appConstants.contextPath + '/cxf/resource/file/:fileId',
-				{ storeId:'@fileId' }
-			); 
+			appConstants.contextPath + '/cxf/resource/file/:fileId', { fileId: '@fileId' }, {
+				deleteFiles: {
+					url: appConstants.contextPath + '/cxf/resource/file/delete',
+					method: 'POST'
+				}
+			}); 
 		
-		// directory service
-		/*
+		// directory resource service
 		var directoryService = $resource(
-				appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
-				{ dirId:'@dirId', maxDepth:'@maxDepth' }
-			);
-		*/
-		
-		var directoryService = $resource(
-				appConstants.contextPath + '/cxf/resource/directory', {},{
-					depthGet: {
-						url: appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
-						method: 'GET',
-						params: {
-							dirId: '@dirId', maxDepth: '@maxDepth'
-						}
-					},
-					breadcrumbGet: {
-						url: appConstants.contextPath + '/cxf/resource/directory/breadcrumb/:dirId',
-						method: 'GET',
-						params: {
-							dirId: '@dirId'
-						}
+			appConstants.contextPath + '/cxf/resource/directory', {}, {
+				depthGet: {
+					url: appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
+					method: 'GET',
+					params: {
+						dirId: '@dirId', maxDepth: '@maxDepth'
 					}
-				});		
+				},
+				breadcrumbGet: {
+					url: appConstants.contextPath + '/cxf/resource/directory/breadcrumb/:dirId',
+					method: 'GET',
+					params: {
+						dirId: '@dirId'
+					}
+				}
+			});		
 		
 		var sampleData = [
 			{
@@ -132,6 +127,13 @@
 			
 		}
 		
+		// delete a list of files
+		function _deleteFiles(fileIdList){
+			
+			return fileService.deleteFiles({ 'fileId' : fileIdList }).$promise;
+			
+		}
+		
 		// *********************************
 		// External API
 		// *********************************
@@ -143,7 +145,8 @@
 			getDirectoryListing: _fetchDirectoryListing,
 			getBreadcrumb: _fetchBreadcrumb,
 			downloadFile: _downloadFile,
-			deleteFile: _deleteFile
+			deleteFile: _deleteFile,
+			deleteFiles: _deleteFiles
 	    };
 		
 	}

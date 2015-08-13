@@ -344,6 +344,13 @@
 		function _handleEventClickBreadcrumb(crumb){
 			_handleLoadDirectory(crumb.dirId, true);
 		}
+		
+		/**
+		 * Reload the current directory.
+		 */
+		function _reloadCurrentDirectory(){
+			_handleLoadDirectory(currentDirectory.dirId, true);
+		}
         
 		/**
 		 * When user clicks on resource store, fetch store data from service.
@@ -605,31 +612,45 @@
 					.targetEvent(event);
 				$mdDialog.show(confirm).then(function() {
 					
-						_doDeleteFilesHelper(filesToDelete);
+						_doDeleteFilesHelper(event, filesToDelete);
 						
 					}, function() {
 						$log.debug('Delete operation canceled.');
 					});					
 			}			
 		}
-		
-		function _doDeleteFilesHelper(filesToDelete){
+		function _doDeleteFilesHelper(event, filesToDelete){
 			
 			if(filesToDelete && filesToDelete.length > 0){
 				
+				var fileIdList = [];
 				for(i=0; i<filesToDelete.length; i++){
-					
-					homeService
-						.deleteFile(filesToDelete[i].fileId)
-						.then( function( reply ) {
-							
-							$log.debug('delete reply: ' + JSON.stringify(reply));
-							
-						});
-					
-					
-					
+					fileIdList.push(filesToDelete[i].fileId);
 				}
+				
+				// show please wait
+				var deleteAlert = $mdDialog.show(
+					$mdDialog.alert()
+						.parent(angular.element(document.body))
+						.clickOutsideToClose(false)
+						.title('Delete in progress')
+						.content('Please wait while resources are deleted...')
+						.ariaLabel('Please wait while resources are deleted.')
+						.targetEvent(event)
+				);				
+				
+				// delete via rest service (pass array of file ids)
+				homeService
+					.deleteFiles(fileIdList)
+					.then( function( reply ) {
+						
+						$log.debug('delete reply: ' + JSON.stringify(reply));
+						
+						_reloadCurrentDirectory();
+						
+						$mdDialog.hide(deleteAlert, "finished");
+						
+					});
 				
 			}else{
 				
