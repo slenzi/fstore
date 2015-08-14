@@ -15,17 +15,23 @@ Directory partial that's loaded for the "home_directory" state
 </md-toolbar>
 
 <!-- layout-padding -->
-<md-content layout-padding id="homeContent" class="iconGrid" style="padding: 10px;">
+<md-content layout-padding id="homeContent" class="iconGrid noselect" style="padding: 20px;">
  
-	<md-grid-list md-cols-sm="3" md-cols-md="4" md-cols-gt-md="5" md-cols-gt-lg="7" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="0px" md-gutter-gt-sm="0px">
+	<md-grid-list md-cols-sm="3" md-cols-md="4" md-cols-gt-md="5" md-cols-gt-lg="7" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="1em" md-gutter-gt-sm="1em">
 		
 		<%--
 		Loop through all child path resources.
-		If pathResource.isSelected attribute is true then apply 'selected' css style.
+		If pathResource.isSelected attribute is true then apply 'selectedTile' css style.
 		single click toggles isSelected attribute
 		double-click handle opening/loading path resource
 		--%>
-		<md-grid-tile ng-repeat="pathResource in home.directory().getChildren()" ng-class="{'selected' : pathResource.isSelected}" md-rowspan="1" md-colspan="1" md-colspan-sm="1" sglclick="home.handleEventClickPathResource(pathResource)" ng-dblclick="home.handleEventDblClickPathResource(pathResource)">
+		<md-grid-tile
+			md-rowspan="1" md-colspan="1" md-colspan-sm="1"
+			ng-repeat="pathResource in home.directory().getChildren()"
+			ng-class="{'selectedTile' : pathResource.isSelected}"
+			sglclick="home.handleEventClickPathResource(pathResource)"
+			ng-dblclick="home.handleEventDblClickPathResource(pathResource)"
+			ng-mouseover="home.handlePathResourceMouseOver(pathResource)">
 		
             <md-grid-tile-header ng-if="pathResource.isSelected">
                 <md-checkbox ng-model="pathResource.isSelected" ng-init="pathResource.isSelected" aria-label=""/>
@@ -35,11 +41,11 @@ Directory partial that's loaded for the "home_directory" state
 			
 			<md-icon ng-if="pathResource.type == 'FILE'" class="red shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_insert_drive_file_24px.svg"></md-icon>
 			
-			<md-grid-tile-footer>
-				<h3 ng-if="pathResource.type == 'DIRECTORY'">
+			<md-grid-tile-footer ng-class="{'selectedFooter' : pathResource.isSelected}">
+				<h3 ng-if="pathResource.type == 'DIRECTORY'" ng-class="{'selectedFooterText' : pathResource.isSelected}">
 				{{pathResource.name}}<br>{{pathResource.dateUpdated}}
 				</h3>
-				<h3 ng-if="pathResource.type == 'FILE'">
+				<h3 ng-if="pathResource.type == 'FILE'" ng-class="{'selectedFooterText' : pathResource.isSelected}">
 				{{pathResource.name}}<br>{{pathResource.dateUpdated}}<br>{{pathResource.mimeType}} [{{pathResource.size}}]
 				</h3>							
 			</md-grid-tile-footer>			

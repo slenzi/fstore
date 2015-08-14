@@ -287,6 +287,15 @@
         }
 		
 		/**
+		 * pathResource - the path resource the user moused-over
+		 */		
+		function _handlePathResourceMouseOver(pathResource){
+			
+			//$log.debug('user moused-over path resource ' + JSON.stringify(pathResource));
+			
+		}		
+		
+		/**
 		 * pathResource - the path resource the user clicked on (file, directory, etc)
 		 */
 		function _handleEventClickPathResource(pathResource){
@@ -874,6 +883,7 @@
 			haveSelectedPathResources : _haveSelectedPathResources,
 			handleEventClickDeletePathResources : _handleEventClickDeletePathResources,
 			handleEventClickSelectAllPathResources : _handleEventClickSelectAllPathResources,
+			handlePathResourceMouseOver: _handlePathResourceMouseOver,
 			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources
 		}
 
