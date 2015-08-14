@@ -209,8 +209,13 @@
 		 * Trigger FsFileUploader to start uploading
 		 */
 		function _handleEventDoUpload(){
+			
+			// set parent dir id so we know where to create the new directory on the server
+			myFsUploader.addFormValue('dirId', currentDirectory.dirId);
+			
 			// pass in optional callback for progress
 			myFsUploader.doUpload(_uploadProgressHandler, _uploadCompleteHandler);
+			
 		}
 		function _uploadProgressHandler(event){
 			var progressValue = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
@@ -779,6 +784,60 @@
 			
 			
 		}
+		
+		/**
+		 * Display dialog where users can enter name of new folder. Submit to REST service and reload current directory.
+		 */
+		function _handleEventClickNewFolder(event){
+			
+			$mdDialog.show({
+				parent: angular.element(document.body),
+				targetEvent: event,
+				template:
+					'<md-dialog aria-label="List dialog">' +
+					'  <md-dialog-content>'+
+					'		<h2>Create New Folder</h2>'+
+					'		Name: <input ng-model=\"newFolderDialog.newFolderName\" required >'+
+					'  </md-dialog-content>' +
+					'  <div class="md-actions">' +
+					'    <md-button ng-click="closeDialog()" class="md-primary">' +
+					'      Cancel' +
+					'    </md-button>' +
+					'    <md-button ng-click="createFolder()" class="md-primary">' +
+					'      Create' +
+					'    </md-button>' +					
+					'  </div>' +
+					'</md-dialog>',
+				controller: _createFolderDialogController
+			});
+		
+			function _createFolderDialogController($scope, $mdDialog) {
+				$scope.closeDialog = function() {
+					$mdDialog.hide();
+				}
+				$scope.createFolder = function() {
+					
+					var parentDirId = currentDirectory.dirId;
+					var newFolderName = $scope.newFolderDialog.newFolderName;
+					
+					homeService
+						.addDirectory(parentDirId, newFolderName)
+						.then( function( reply ) {
+							
+							$log.debug('add directory reply: ' + JSON.stringify(reply));
+							
+							_reloadCurrentDirectory();
+							
+							$mdDialog.hide();
+							
+						});					
+					
+
+					
+				}				
+			}
+			
+		}
 	
 		var self = this;
 		
@@ -806,6 +865,7 @@
 			handleEventDblClickPathResource : _handleEventDblClickPathResource,
 			handleEventClickBreadcrumb : _handleEventClickBreadcrumb,
 			handleEventViewUploadForm : _handleEventViewUploadForm,
+			handleEventClickNewFolder : _handleEventClickNewFolder,
 			handleEventClearUploadQueue : _handleEventClearUploadQueue,
 			handleEventDoUpload : _handleEventDoUpload,
 			handleEventClickCancelUpload : _handleEventClickCancelUpload,

@@ -21,7 +21,10 @@
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
-			httpUploadHandler: '@http.upload.handler@'
+			httpUploadHandler: '@http.upload.handler@',
+			restServiceStore: '@services.rest.store@',
+			restServiceFile: '@services.rest.file@',
+			restServiceDirectory: '@services.rest.directory@'
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);

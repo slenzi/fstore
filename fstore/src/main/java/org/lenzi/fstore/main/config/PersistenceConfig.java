@@ -54,7 +54,6 @@ public class PersistenceConfig {
 				
 				"org.lenzi.fstore.core.repository.model.impl",
 				"org.lenzi.fstore.example.repository.model.impl",
-				"org.lenzi.fstore.file.repository.model.impl",
 				"org.lenzi.fstore.file2.repository.model.impl"
 				
 				});

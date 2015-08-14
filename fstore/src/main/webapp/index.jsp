@@ -42,16 +42,6 @@
 		<a href="<%=request.getContextPath() %>/cxf/example/tree/1">CXF JAX-RS fetch sample tree.</a>
 	</p>
 	
-	<h2>File 1 Manager Tests</h2>
-	
-	<p>
-		<a href="<%=request.getContextPath() %>/spring/file/test/makestore">Create sample file store.</a>
-	</p>
-	
-	<p>
-		<a href="<%=request.getContextPath() %>/spring/file/res">File resource dispatcher test.</a>
-	</p>
-	
 	<h2>File 2 Manager Tests</h2>
 	
 	<p>

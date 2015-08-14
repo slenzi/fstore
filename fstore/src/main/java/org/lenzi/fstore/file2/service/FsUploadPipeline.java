@@ -146,5 +146,34 @@ public class FsUploadPipeline {
 		return uploadDir;
 		
 	}
+	
+	/**
+	 * Processes files to existing directory
+	 * 
+	 * @param fileMap
+	 * @param parentDirId
+	 * @param replaceExisting
+	 * @throws ServiceException
+	 */
+	public void processToDirectory(Map<String, MultipartFile> fileMap, Long parentDirId, boolean replaceExisting) throws ServiceException {
+		
+		fileMap.values().stream().forEach(
+				(filePart) -> {
+					
+					try {
+						
+						fsResourceService.addFileResource(filePart.getOriginalFilename(), filePart.getBytes(), parentDirId, replaceExisting);
+						
+						logger.info("Saved file '" + filePart.getName() + "' to directory with id '" + parentDirId + "'.");
+						
+					} catch (ServiceException e) {
+						throw new RuntimeException("Error saving file '" + filePart.getName() + "' to directory with id '" + parentDirId + "'.", e);
+					} catch (IOException e){
+						throw new RuntimeException("IOException thrown when attempting to read file byte data from MultipartFile map. " + e.getMessage(), e);
+					}
+					
+				});
+		
+	}
 
 }

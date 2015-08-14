@@ -28,11 +28,13 @@ drop table FS_TREE;
 
 drop table FS_TEST_NODE;
 
+/* old
 drop table FS_FILE;
 drop table FS_FILE_ENTRY;
 drop table FS_DIR_FILE_LINK;
 drop table FS_DIRECTORY;
 drop table FS_FILE_STORE;
+*/
 
 drop table FS_FILE_RESOURCE;
 drop table FS_FILE_META_RESOURCE;
@@ -86,6 +88,7 @@ create table FS_TEST_NODE (
 /**
  * File 1 tables
  */
+/* old
 create table FS_DIRECTORY ( 
 	NODE_ID NUMBER(15,0) NOT NULL, 
 	DIR_NAME VARCHAR2(250) NOT NULL,
@@ -118,6 +121,7 @@ create table FS_FILE_STORE (
 	UPDATED_DATE date NOT NULL, 	
 	PRIMARY KEY (STORE_ID) 
 );
+*/
 
 /**
  * File 2 tables

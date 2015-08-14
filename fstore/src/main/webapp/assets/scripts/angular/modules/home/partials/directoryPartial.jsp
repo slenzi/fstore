@@ -17,7 +17,7 @@ Directory partial that's loaded for the "home_directory" state
 <!-- layout-padding -->
 <md-content layout-padding id="homeContent" class="iconGrid" style="padding: 10px;">
  
-	<md-grid-list md-cols-sm="3" md-cols-md="5" md-cols-gt-md="6" md-cols-gt-lg="8" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="0px" md-gutter-gt-sm="0px">
+	<md-grid-list md-cols-sm="3" md-cols-md="4" md-cols-gt-md="5" md-cols-gt-lg="7" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="0px" md-gutter-gt-sm="0px">
 		
 		<%--
 		Loop through all child path resources.

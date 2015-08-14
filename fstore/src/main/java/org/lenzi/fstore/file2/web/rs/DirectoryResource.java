@@ -173,7 +173,38 @@ public class DirectoryResource extends AbstractResource {
 		
 		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
 		
-	}	
+	}
+	
+	/**
+	 * Add new directory
+	 * 
+	 * @param dirId - id of parent directory
+	 * @param dirName - name of new directory
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@POST
+	@Path("/add")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addDirectory(@QueryParam("dirId") Long dirId, @QueryParam("dirName") String dirName) throws WebServiceException {
+		
+		logger.info(DirectoryResource.class.getName() + " jax-rs service called, add directory");
+	
+		if(dirId == null || dirName == null || dirId == 0 || dirName.trim().equals("")){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,
+					"Missing required input in request. Need name of new directory and ID of parent directory.");
+		}
+		
+		try {
+			fsResourceService.addDirectoryResource(dirName, dirId);
+		} catch (ServiceException e) {
+			handleError("Failed to create new directory. [ parent dir id = " + dirId + ", new dir name = " + dirName + "]",
+					WebExceptionType.CODE_DATABSE_ERROR, e);
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
+		
+	}
 	
 	@Override
 	public Logger getLogger() {

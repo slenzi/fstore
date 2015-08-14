@@ -46,11 +46,6 @@
         <mapping class="org.lenzi.fstore.core.repository.model.impl.FSTree"/>
         
         <mapping class="org.lenzi.fstore.example.repository.model.impl.FSTestNode"/>
-        
-      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsDirectory"/>
-      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsFileEntry"/>
-      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsFile"/>
-      	<mapping class="org.lenzi.fstore.file.repository.model.impl.FsFileStore"/>
       	
       	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource"/>
       	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource"/>

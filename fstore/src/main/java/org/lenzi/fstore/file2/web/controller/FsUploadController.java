@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.util.StringUtil;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsUploadPipeline;
@@ -69,6 +70,19 @@ public class FsUploadController extends AbstractSpringController {
 		
 		logger.info("Processing incoming HTTP upload");
 		
+		String dirId = StringUtil.changeNull(request.getParameter("dirId")).trim();
+		if(dirId.equals("")){
+			handleError(logger, "Failed to process upload. Parent directory ID is missing in request.", model);
+			return "Failed to process upload. Parent directory ID is missing in request.";			
+		}
+		Long parentDirId = 0L;
+		try {
+			parentDirId = Long.valueOf(dirId);
+		} catch (NumberFormatException e) {
+			handleError(logger, "Failed to parse parent ID to long. " + e.getMessage(), model);
+			return "Failed to parse parent ID to long. " + e.getMessage();
+		}
+		
 		Map<String, MultipartFile> fileMap = request.getFileMap();
 		if(fileMap == null){
 			handleError(logger, "No multipart file data found in request.", model);
@@ -82,11 +96,20 @@ public class FsUploadController extends AbstractSpringController {
 			});
 		
 		// save all files to holding store
+		/*
 		try {
 			uploadPipeline.processToHolding(fileMap);
 		} catch (ServiceException e) {
-			handleError(logger, "Failed to process upload to holding store", model);
-			return "error, Failed to process upload to holding store";
+			handleError(logger, "Failed to process upload to holding store. " + e.getMessage(), model);
+			return "Failed to process upload to holding store";
+		}
+		*/
+		
+		try {
+			uploadPipeline.processToDirectory(fileMap, parentDirId, true);
+		} catch (ServiceException e) {
+			handleError(logger, "Failed to process uploaded files to directory " + parentDirId + ". " + e.getMessage(), model);
+			return "Failed to process uploaded files to directory " + parentDirId + ". " + e.getMessage();
 		}
 		
 		logger.info("Upload processing complete");

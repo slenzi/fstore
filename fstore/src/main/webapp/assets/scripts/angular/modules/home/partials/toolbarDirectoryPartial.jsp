@@ -29,7 +29,7 @@ Toolbar partial that's loaded for the "home_directory" state
 		</md-button>
 		<md-menu-content width="4">
 			<md-menu-item>
-				<md-button ng-click="home.notImplemented()">
+				<md-button ng-click="home.handleEventClickNewFolder()">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
 					New Folder
 				</md-button>

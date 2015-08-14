@@ -25,11 +25,13 @@ drop table TEST.FS_TREE;
 
 drop table TEST.FS_TEST_NODE;
 
+/* old
 drop table TEST.FS_FILE;
 drop table TEST.FS_FILE_ENTRY;
 drop table TEST.FS_DIR_FILE_LINK;
 drop table TEST.FS_DIRECTORY;
 drop table TEST.FS_FILE_STORE;
+*/
 
 drop table TEST.FS_FILE_RESOURCE;
 drop table TEST.FS_FILE_META_RESOURCE;
@@ -83,6 +85,7 @@ create table TEST.FS_TEST_NODE (
 /**
  * File 1 tables
  */
+/* old
 create table TEST.FS_DIRECTORY ( 
 	NODE_ID NUMERIC(15,0) NOT NULL, 
 	DIR_NAME CHARACTER VARYING(250),
@@ -115,6 +118,7 @@ create table TEST.FS_FILE_STORE (
 	UPDATED_DATE TIMESTAMP NOT NULL, 	
 	PRIMARY KEY (STORE_ID) 
 );
+*/
 
 /**
  * File 2 tables

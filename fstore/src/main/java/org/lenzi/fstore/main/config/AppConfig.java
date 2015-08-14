@@ -26,7 +26,6 @@ import org.springframework.stereotype.Controller;
 		"org.lenzi.fstore.main",
 		"org.lenzi.fstore.core",
 		"org.lenzi.fstore.example",
-		"org.lenzi.fstore.file",
 		"org.lenzi.fstore.file2"
 	},
 	excludeFilters = {

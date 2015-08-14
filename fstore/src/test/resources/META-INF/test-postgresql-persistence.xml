@@ -22,12 +22,6 @@
       	<!-- test models -->
       	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>
       	
-      	<!-- file models -->
-      	<class>org.lenzi.fstore.file.repository.model.impl.FsDirectory</class>
-      	<class>org.lenzi.fstore.file.repository.model.impl.FsFileEntry</class>
-      	<class>org.lenzi.fstore.file.repository.model.impl.FsFile</class>
-      	<class>org.lenzi.fstore.file.repository.model.impl.FsFileStore</class>
-      	
       	<!-- file 2 test models -->
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsPathResource</class>
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource</class>

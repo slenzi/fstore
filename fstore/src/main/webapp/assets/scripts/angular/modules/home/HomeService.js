@@ -13,40 +13,47 @@
 		
 		// resource store service
 		var storeService = $resource(
-				appConstants.contextPath + '/cxf/resource/store/:storeId',
+			appConstants.restServiceStore + '/:storeId',
 				{ storeId: '@storeId' }
 			);
 			
 		// file resource service
 		var fileService = $resource(
-			appConstants.contextPath + '/cxf/resource/file/:fileId', { fileId: '@fileId' }, {
+			appConstants.restServiceFile + '/:fileId', { fileId: '@fileId' }, {
 				deleteFiles: {
-					url: appConstants.contextPath + '/cxf/resource/file/delete',
+					url: appConstants.restServiceFile + '/delete',
 					method: 'POST'
 				}
 			}); 
 		
 		// directory resource service
 		var directoryService = $resource(
-			appConstants.contextPath + '/cxf/resource/directory', { dirId: '@dirId' }, {
+			appConstants.restServiceDirectory, { dirId: '@dirId' }, {
 				depthGet: {
-					url: appConstants.contextPath + '/cxf/resource/directory/:dirId/depth/:maxDepth',
+					url: appConstants.restServiceDirectory + '/:dirId/depth/:maxDepth',
 					method: 'GET',
 					params: {
 						dirId: '@dirId', maxDepth: '@maxDepth'
 					}
 				},
 				breadcrumbGet: {
-					url: appConstants.contextPath + '/cxf/resource/directory/breadcrumb/:dirId',
+					url: appConstants.restServiceDirectory + '/breadcrumb/:dirId',
 					method: 'GET',
 					params: {
 						dirId: '@dirId'
 					}
 				},
 				deleteDirectories: {
-					url: appConstants.contextPath + '/cxf/resource/directory/delete',
+					url: appConstants.restServiceDirectory + '/delete',
 					method: 'POST'
-				}				
+				},
+				addDirectory: {
+					url: appConstants.restServiceDirectory + '/add',
+					method: 'POST',
+					params: {
+						dirId: '@dirId', dirName: '@newDirName'
+					}					
+				}
 			});		
 		
 		var sampleData = [
@@ -98,7 +105,7 @@
 		// fetch directory listing
 		function _fetchDirectoryListing(dirId, maxDepth){
 			
-			//$log.debug('fetching directory lsiting for dir id ' + dirId + ', max depth ' + maxDepth);
+			//$log.debug('fetching directory listing for dir id ' + dirId + ', max depth ' + maxDepth);
 			
 			//return directoryService.get({ dirId: dirId, maxDepth: maxDepth }).$promise;
 			
@@ -143,7 +150,14 @@
 			
 			return directoryService.deleteDirectories({ 'dirId' : dirIdList }).$promise;
 			
-		}		
+		}
+
+		// add new directory
+		function _addDirectory(parentDirId, newDirName){
+			
+			return directoryService.addDirectory({ 'dirId' : parentDirId, 'newDirName': newDirName }).$promise;
+			
+		}
 		
 		// *********************************
 		// External API
@@ -158,7 +172,8 @@
 			downloadFile: _downloadFile,
 			deleteFile: _deleteFile,
 			deleteFiles: _deleteFiles,
-			deleteDirectories: _deleteDirectories
+			deleteDirectories: _deleteDirectories,
+			addDirectory: _addDirectory
 	    };
 		
 	}

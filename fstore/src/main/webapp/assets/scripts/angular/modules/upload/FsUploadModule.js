@@ -17,7 +17,7 @@ Angular HTTP upload module
 		url: '/',
 		progress: 0,
 		method: 'POST',
-		formData: [],
+		formData: {},
 		files: {},
 		headers: {}
 	})
@@ -97,6 +97,20 @@ Angular HTTP upload module
 			};
 
 			FsFileUploader.prototype.isHTML5 = !!($window.File && $window.FormData);
+			
+			/**
+			 * Add form value to be submitted along with the file data
+			 *
+			 * @param key - the name of the form field
+			 * @param value - the value of the form field
+			 */
+			FsFileUploader.prototype.addFormValue = function(key, value){
+				
+				$log.debug('adding form value, key = ' + key + ', value = ' + value);
+				
+				this.formData[key] = value;
+				
+			}
 			
 			/**
 			 * Add a file to the upload queue.
@@ -220,10 +234,19 @@ Angular HTTP upload module
 				
 				//$log.debug('files = ' + JSON.stringify(this.files));
 
+				// append file data
 				angular.forEach(fileNames, function(fileName, fileIndex) {
 					var fsFileItem = this.files[fileName];
 					form.append("file_" + fileIndex, fsFileItem.file);
 				}, this);
+			
+				// append user form key-values
+				var keyNames = Object.keys(this.formData);
+				angular.forEach(keyNames, function(keyName, keyIndex) {
+					var keyValue = this.formData[keyName];
+					$log.debug('Adding to upload form data: key = ' + keyName + ", value = " + keyValue);
+					form.append(keyName, keyValue);
+				}, this);				
 			
 				$log.debug('Submitting http ' + this.method + ' to ' + this.url);
 				

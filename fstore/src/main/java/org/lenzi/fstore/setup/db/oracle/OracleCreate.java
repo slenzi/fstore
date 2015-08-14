@@ -92,6 +92,7 @@ public class OracleCreate {
 	 * File 1 tables
 	 * 
 	 */
+	/* old
 	private String SQL_DROP_TABLE_FS_DIRECTORY =
 		"drop table FS_DIRECTORY";	
 	private String SQL_CREATE_TABLE_FS_DIRECTORY =
@@ -139,6 +140,7 @@ public class OracleCreate {
 		"	UPDATED_DATE date NOT NULL,  " + 
 		"	PRIMARY KEY (STORE_ID)  " + 
 		")";
+	*/
 	
 	/***********************************************************************************
 	 * 
@@ -342,11 +344,13 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
 		
 		// file tables
+		/*
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_STORE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_ENTRY).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIR_FILE_LINK).executeUpdate();
+		*/
 		
 		// test
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
@@ -394,11 +398,13 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
 		
 		// file tables
+		/*
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_STORE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_ENTRY).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIR_FILE_LINK).executeUpdate();
+		*/
 		
 		// test
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
