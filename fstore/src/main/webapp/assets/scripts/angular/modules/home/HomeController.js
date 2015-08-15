@@ -213,8 +213,11 @@
 			// set parent dir id so we know where to create the new directory on the server
 			myFsUploader.addFormValue('dirId', currentDirectory.dirId);
 			
-			// pass in optional callback for progress
-			myFsUploader.doUpload(_uploadProgressHandler, _uploadCompleteHandler);
+			// upload all files in queue as one single upload
+			//myFsUploader.doUpload(_uploadProgressHandler, _uploadAllCompleteHandler);
+            
+            // upload all files in queue as seperate, individual uploads.
+            myFsUploader.doUploadSingular(_uploadProgressHandler, _uploadSingleCompleteHandler, _uploadAllCompleteHandler);
 			
 		}
 		function _uploadProgressHandler(event){
@@ -222,7 +225,12 @@
 			//$log.debug('Home progress = ' + progressValue);
 			$scope.$apply();
 		}
-		function _uploadCompleteHandler(event){
+        function _uploadSingleCompleteHandler(){
+           
+            $log.debug('Upload of single file complete.');
+            
+        }
+		function _uploadAllCompleteHandler(){
 			
 			$log.debug('Upload completed.');
 			

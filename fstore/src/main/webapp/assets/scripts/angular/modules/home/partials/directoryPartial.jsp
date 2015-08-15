@@ -34,7 +34,7 @@ Directory partial that's loaded for the "home_directory" state
 			ng-mouseover="home.handlePathResourceMouseOver(pathResource)">
 		
             <md-grid-tile-header ng-if="pathResource.isSelected">
-                <md-checkbox ng-model="pathResource.isSelected" ng-init="pathResource.isSelected" aria-label=""/>
+                <md-checkbox ng-model="pathResource.isSelected" ng-init="pathResource.isSelected" aria-label="Check"/>
             </md-grid-tile-header>
             
 			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>

@@ -94,6 +94,7 @@ public class PostgreSQLCreate {
 	 * File 1 tables
 	 * 
 	 */
+	/* old
 	private String SQL_DROP_TABLE_FS_DIRECTORY =
 		"drop table " + SCHEMA + "FS_DIRECTORY";	
 	private String SQL_CREATE_TABLE_FS_DIRECTORY =
@@ -141,6 +142,7 @@ public class PostgreSQLCreate {
 		"	UPDATED_DATE TIMESTAMP NOT NULL,  " + 
 		"	PRIMARY KEY (STORE_ID)  " + 
 		")";
+	*/
 	
 	/***********************************************************************************
 	 * 
@@ -326,11 +328,13 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
 		
 		// file tables
+		/*
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_STORE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_ENTRY).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY).executeUpdate();		
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIR_FILE_LINK).executeUpdate();
+		*/
 		
 		// test
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
@@ -378,11 +382,13 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
 		
 		// file tables
+		/*
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_STORE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_ENTRY).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIR_FILE_LINK).executeUpdate();
+		*/
 		
 		// test
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();

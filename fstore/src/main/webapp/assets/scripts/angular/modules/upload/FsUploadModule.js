@@ -12,14 +12,13 @@ Angular HTTP upload module
 	// create module
 	fsUploadModule = angular.module('fsUpload', []);
 
-	// set default options
 	fsUploadModule.value('fsUploadOptions', {
-		url: '/',
-		progress: 0,
-		method: 'POST',
-		formData: {},
-		files: {},
-		headers: {}
+		url: '/',                     // URL file data will be submitted to
+		progress: 0,                  // tracks progress for the upload 0 = 0% and 100 = 100%
+		method: 'POST',               // http method used to submit the upload
+		formData: {},                 // optional form data (key-value pairs) to be submitted along with the file data.
+		files: {},                    // tracks file to be uploaded. All files added to upload queue will be added to this object.
+		headers: {}                   // optional http headers (currently not used.)
 	})
 	// object for storing file data
 	.factory('FsFileItem', ['$log', '$q',
@@ -198,14 +197,44 @@ Angular HTTP upload module
 			};			
 			
 			/**
-			 * Uploads all files in the queue.
+			 * Uploads all files in the queue, all in one single upload.
 			 *
 			 * uploadProgressCallback - optional callback for upload progress event
 			 * uploadCompleteCallback - optional callback for upload complete event
 			 */
 			FsFileUploader.prototype.doUpload = function(uploadProgressCallback, uploadCompleteCallback){
 				
-				var fileNames = Object.keys(this.files);
+				_doUploadAsGroup(this, uploadProgressCallback, uploadCompleteCallback);
+                
+			};
+            
+			/**
+			 * Uploads all files in the queue, as seperate individual uploads.
+			 *
+			 * uploadProgressCallback - optional callback for upload progress event
+			 * individualUploadCompleteCallback - optional callback for upload complete event (for each file)
+             * allUploadCompleteCallback - optional callback for once all fioles in the queue have be uploaded.
+			 */
+			FsFileUploader.prototype.doUploadSingular = function(uploadProgressCallback, individualUploadCompleteCallback, allUploadCompleteCallback){
+				
+				_doUploadSingular(this, uploadProgressCallback, individualUploadCompleteCallback, allUploadCompleteCallback);
+                
+			};
+            
+            /**
+             * Uploads all files in the queue as one single upload to the server.
+             *
+             * fsUploader - reference to the fsUploader object
+			 * uploadProgressCallback - optional callback for upload progress event
+			 * uploadCompleteCallback - optional callback for upload complete event             
+             */
+            function _doUploadAsGroup(fsUploader, uploadProgressCallback, uploadCompleteCallback){
+                
+                $log.debug('Uploading all files in queue as one single upload.');
+                
+                fsUploader.progress = 0;
+                
+				var fileNames = Object.keys(fsUploader.files);
 				
 				if(fileNames.length == 0){
 					alert('There are no files in the upload queue. Try adding some files...');
@@ -219,41 +248,127 @@ Angular HTTP upload module
 				// plus uploadProgressCallback method (will be called if user provided one.)
 				xhr.upload.addEventListener(
 					"progress",
-					angular.bind(null, this.xhrOnProgress, this, uploadProgressCallback),
+					angular.bind(null, fsUploader.xhrOnProgress, fsUploader, uploadProgressCallback),
 					false
 				);
-				//xhr.upload.onprogress = this.xhrOnProgress;
+				//xhr.upload.onprogress = fsUploader.xhrOnProgress;
 				xhr.addEventListener(
 					"load",
-					angular.bind(null, this.xhrOnLoad, this, uploadCompleteCallback),
+					angular.bind(null, fsUploader.xhrOnLoad, fsUploader, uploadCompleteCallback),
 					false
 				);
-				//xhr.onload = this.xhrOnLoad;
-				xhr.onerror = this.xhrOnError;
-				xhr.onabort = this.xhrOnAbort;
-				
-				//$log.debug('files = ' + JSON.stringify(this.files));
+				//xhr.onload = fsUploader.xhrOnLoad;
+				xhr.onerror = fsUploader.xhrOnError;
+				xhr.onabort = fsUploader.xhrOnAbort;
 
 				// append file data
 				angular.forEach(fileNames, function(fileName, fileIndex) {
-					var fsFileItem = this.files[fileName];
+					var fsFileItem = fsUploader.files[fileName];
 					form.append("file_" + fileIndex, fsFileItem.file);
-				}, this);
+				}, fsUploader);
 			
 				// append user form key-values
-				var keyNames = Object.keys(this.formData);
+				var keyNames = Object.keys(fsUploader.formData);
 				angular.forEach(keyNames, function(keyName, keyIndex) {
-					var keyValue = this.formData[keyName];
-					$log.debug('Adding to upload form data: key = ' + keyName + ", value = " + keyValue);
+					var keyValue = fsUploader.formData[keyName];
 					form.append(keyName, keyValue);
-				}, this);				
+				}, fsUploader);				
 			
-				$log.debug('Submitting http ' + this.method + ' to ' + this.url);
+				$log.debug('Submitting http ' + fsUploader.method + ' to ' + fsUploader.url);
 				
-				xhr.open(this.method, this.url);
-				xhr.send(form);
+				xhr.open(fsUploader.method, fsUploader.url);
+				xhr.send(form);                
+                
+            }
+            
+            /**
+             * Uploads all files in the queue, but each file is treated as a single/seperate upload. (e.g., 5 files equals 5 uploads to the server.)
+             *
+             * fsUploader - reference to the fsUploader object
+			 * uploadProgressCallback - optional callback for upload progress event
+			 * individualUploadCompleteCallback - optional callback for upload complete event (for each file)
+             * allUploadCompleteCallback - optional callback for once all fioles in the queue have be uploaded.            
+             */
+            function _doUploadSingular(fsUploader, uploadProgressCallback, individualUploadCompleteCallback, allUploadCompleteCallback){
+                
+                $log.debug('Uploading all files in queue as seperate, singular uploads.');
+                
+                fsUploader.progress = 0;
+                
+				var fileNames = Object.keys(fsUploader.files);
 				
-			};			
+				if(fileNames.length == 0){
+					alert('There are no files in the upload queue. Try adding some files...');
+                    return;
+				}
+                
+                var completeCallback = individualUploadCompleteCallback;
+                
+				angular.forEach(fileNames, function(fileName, fileIndex) {
+                    
+                    var fsFileItem = fsUploader.files[fileName];
+                    
+                    // use upload complete callback if last file
+                    if(fileIndex == (fileNames.length - 1)){
+                        completeCallback = allUploadCompleteCallback;
+                    }
+                    
+                    _doUploadFileItem(fsUploader, fsFileItem, uploadProgressCallback, completeCallback);
+	
+				}, fsUploader);
+                
+                //allUploadCompleteCallback();
+                
+            }
+            
+            /**
+             * Uploads the single fsFileItem to the server.
+             *
+             * fsUploader - reference to the fsUploader object
+             * fsFileItem - file item model which contains reference the file data object
+			 * uploadProgressCallback - optional callback for upload progress event
+			 * uploadCompleteCallback - optional callback for upload complete event            
+             */
+            function _doUploadFileItem(fsUploader, fsFileItem, uploadProgressCallback, uploadCompleteCallback){
+                
+                fsUploader.progress = 0;
+                
+				var form = new FormData();
+				var xhr = new XMLHttpRequest();
+				
+				// call this.xhrOnProgress for each progress update event. pass this (FsFileUploader)
+				// plus uploadProgressCallback method (will be called if user provided one.)
+				xhr.upload.addEventListener(
+					"progress",
+					angular.bind(null, fsUploader.xhrOnProgress, fsUploader, uploadProgressCallback),
+					false
+				);
+				//xhr.upload.onprogress = fsUploader.xhrOnProgress;
+				xhr.addEventListener(
+					"load",
+					angular.bind(null, fsUploader.xhrOnLoad, fsUploader, uploadCompleteCallback),
+					false
+				);
+				//xhr.onload = fsUploader.xhrOnLoad;
+				xhr.onerror = fsUploader.xhrOnError;
+				xhr.onabort = fsUploader.xhrOnAbort;
+                
+                // add file to form data
+                form.append("file_0", fsFileItem.file);
+                
+				// append user form key-values
+				var keyNames = Object.keys(fsUploader.formData);
+				angular.forEach(keyNames, function(keyName, keyIndex) {
+					var keyValue = fsUploader.formData[keyName];
+					form.append(keyName, keyValue);
+				}, fsUploader);
+                
+				$log.debug('Submitting http ' + fsUploader.method + ' to ' + fsUploader.url);
+				
+				xhr.open(fsUploader.method, fsUploader.url);
+				xhr.send(form);                 
+                
+            }
 
 			// return object prototype
 			return FsFileUploader;
