@@ -13,12 +13,12 @@ Angular HTTP upload module
 	fsUploadModule = angular.module('fsUpload', []);
 
 	fsUploadModule.value('fsUploadOptions', {
-		url: '/',                     // URL file data will be submitted to
-		progress: 0,                  // tracks progress for the upload 0 = 0% and 100 = 100%
-		method: 'POST',               // http method used to submit the upload
-		formData: {},                 // optional form data (key-value pairs) to be submitted along with the file data.
-		files: {},                    // tracks file to be uploaded. All files added to upload queue will be added to this object.
-		headers: {}                   // optional http headers (currently not used.)
+		url: '/',                         // URL file data will be submitted to
+		progress: 0,                      // tracks progress for the upload. 0 = 0% and 100 = 100%
+		method: 'POST',                   // http method used to submit the upload
+		formData: {},                     // optional form data (key-value pairs) to be submitted along with the file data.
+		files: {},                        // tracks file to be uploaded. All files added to upload queue will be added to this object.
+		headers: {}                       // optional http headers (currently not used.)
 	})
 	// object for storing file data
 	.factory('FsFileItem', ['$log', '$q',
@@ -29,8 +29,9 @@ Angular HTTP upload module
 				
 				// set defaults
 				angular.extend(this, {
-					name: 'name not set',
-					file: []
+					name: 'name not set',  // name of file being uploaded
+                    progress: 0,           // tracks progress for the upload. 0 = 0% and 100 = 100%
+					file: []               // file being uploaded
 				});
 				
 				if(fileData){
@@ -467,12 +468,19 @@ Angular HTTP upload module
                 '    <tr>' +
                 '        <th>Name</th>' +
                 '        <th>Size</th>' +
+                '        <th>Progress</th>' +
                 '    </tr>' +
                 '    </thead>' +
                 '    <tbody>' +
                 '    <tr ng-repeat="fsFileItem in fsUploader.files">' +
                 '        <td>{{fsFileItem.name}}</td>' +
                 '        <td>{{fsFileItem.file.size}}</td>' +
+                '        <td>' +
+				'           <div>' +
+                '               <md-progress-linear class="md-accent" md-mode="determinate" value="{{fsFileItem.progress}}">' +
+				'               </md-progress-linear>' +
+				'           </div>' +            
+                '        </td>' +
                 '    </tr>' +
                 '    </tbody>' +
                 '</table>',
