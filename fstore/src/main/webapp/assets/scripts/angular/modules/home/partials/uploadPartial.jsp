@@ -29,9 +29,15 @@ Uploa form partial that's loaded for the "home_upload" state
     </label>	
 	</p>
 	
+    <%--
 	<p>
-	<div fs-upload-queue uploader="home.uploader()"></div>
-	</p>	
+	<div fs-upload-queue-simple uploader="home.uploader()"></div>
+	</p>
+    --%>
+
+	<p>
+	<div fs-upload-queue-table uploader="home.uploader()"></div>
+	</p>
 	
 	<!--
 	<p>

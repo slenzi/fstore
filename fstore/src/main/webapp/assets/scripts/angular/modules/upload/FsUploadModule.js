@@ -416,16 +416,16 @@ Angular HTTP upload module
 			// http://stackoverflow.com/questions/16148086/multiple-directives-directive1-directive2-asking-for-isolated-scope-on
 			template:
 				'<div>' +
-					'<md-progress-linear class="md-accent" md-mode="determinate" value="{{fsUploader.progress}}">' +
-					'</md-progress-linear>' +
+                '   <md-progress-linear class="md-accent" md-mode="determinate" value="{{fsUploader.progress}}">' +
+				'   </md-progress-linear>' +
 				'</div>',
 			link: function ($scope, element, attributes){
 
 			}
 		};
 	}])
-	// directive which displays all files added to the uploa queue
-	.directive('fsUploadQueue', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
+	// directive which displays all files added to the upload queue in a simple <ul><li></li></ul> list.
+	.directive('fsUploadQueueSimple', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
 		return {
 			/*
 			'A' - Attribute - <span ng-sparkline></span>
@@ -440,13 +440,47 @@ Angular HTTP upload module
 			},
 			template:
 				'<ul ng-repeat="fsFileItem in fsUploader.files">' +
-					'<li>{{fsFileItem.name}} ({{fsFileItem.file.size}})</li>' +
+				'   <li>{{fsFileItem.name}} ({{fsFileItem.file.size}})</li>' +
 				'</ul>',
 			link: function ($scope, element, attributes){
 
 			}
 		};
-	}])	
+	}])
+	// directive which displays all files added to the uploa queue in a table (angular "smart-table" module)
+	.directive('fsUploadQueueTable', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
+		return {
+			/*
+			'A' - Attribute - <span ng-sparkline></span>
+			'E' - Element   - <ng-sparkline></ng-sparkline>
+			'C' - Class     - <span class="ng-sparkline"></span>
+			'M' - Comments  - <!-- directive: ng-sparkline -->
+			 */
+			restrict: 'AE',
+			replace: true,
+			scope: {
+				fsUploader: '=uploader'
+			},
+			template:
+                '<table st-table="fsUploader.files" class="table table-striped">' +
+                '    <thead>' +
+                '    <tr>' +
+                '        <th>Name</th>' +
+                '        <th>Size</th>' +
+                '    </tr>' +
+                '    </thead>' +
+                '    <tbody>' +
+                '    <tr ng-repeat="fsFileItem in fsUploader.files">' +
+                '        <td>{{fsFileItem.name}}</td>' +
+                '        <td>{{fsFileItem.file.size}}</td>' +
+                '    </tr>' +
+                '    </tbody>' +
+                '</table>',
+			link: function ($scope, element, attributes){
+
+			}
+		};
+	}])
 	// directive for input type file (opens file select dialog)
 	.directive('fsUploadFileSelect', ['$log','$parse','FsFileUploader', function($log, $parse, FsFileUploader) {
 		return {

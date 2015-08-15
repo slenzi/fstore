@@ -14,6 +14,7 @@
     	"angular-aria": "^1.4.x",
     	"angular-ui-router": "^0.2.x",
     	"angular-material": "latest",
+    	"angular-smart-table" : "2.1.2",
     	"angular-ui-grid": "3.0.0-rc.22",
 		"sockjs-client" : "latest",
 		"stomp-websocket" : "latest"
