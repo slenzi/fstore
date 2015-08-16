@@ -165,7 +165,30 @@ Angular HTTP upload module
 					uploadProgressCallback(event);
 				}
 				
-			};			
+			};
+            
+			/**
+			 * XML Http Request onprogress event handler, per file item
+			 *
+			 * uploader - the FsFileUploader that's performing the upload
+             * fsFileItem - the file item that's currently being uploaded
+			 * uploadProgressCallback - optional callback for upload progress event
+			 * event - the progress event
+			 */
+			FsFileUploader.prototype.xhrOnProgressFileItem = function(uploader, fsFileItem, uploadProgressCallback, event){
+				
+				var progressValue = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
+				
+				uploader.progress = progressValue;
+                
+                fsFileItem.progress = progressValue;
+				
+				// call users progress callback if they provided one
+				if(uploadProgressCallback && typeof uploadProgressCallback === 'function'){
+					uploadProgressCallback(event);
+				}
+				
+			};
 			
 			/**
 			 * XML Http Request onload event handler
@@ -174,7 +197,7 @@ Angular HTTP upload module
 			 */
 			FsFileUploader.prototype.xhrOnLoad = function(uploader, uploadCompleteCallback, event){
 				
-				uploader.clearQueue();
+				//uploader.clearQueue();
 				
 				// call users upload complete callback if they provided one
 				if(uploadCompleteCallback && typeof uploadCompleteCallback === 'function'){
@@ -338,10 +361,10 @@ Angular HTTP upload module
 				var xhr = new XMLHttpRequest();
 				
 				// call this.xhrOnProgress for each progress update event. pass this (FsFileUploader)
-				// plus uploadProgressCallback method (will be called if user provided one.)
+				// plus the current fsFileItem being uploaded, and the uploadProgressCallback method (will be called if user provided one.)
 				xhr.upload.addEventListener(
 					"progress",
-					angular.bind(null, fsUploader.xhrOnProgress, fsUploader, uploadProgressCallback),
+					angular.bind(null, fsUploader.xhrOnProgressFileItem, fsUploader, fsFileItem, uploadProgressCallback),
 					false
 				);
 				//xhr.upload.onprogress = fsUploader.xhrOnProgress;
@@ -448,7 +471,7 @@ Angular HTTP upload module
 			}
 		};
 	}])
-	// directive which displays all files added to the uploa queue in a table (angular "smart-table" module)
+	// directive which displays all files added to the upload queue in a table (angular "smart-table" module)
 	.directive('fsUploadQueueTable', ['$log', 'FsFileUploader', function($log, FsFileUploader) {
 		return {
 			/*
@@ -468,7 +491,8 @@ Angular HTTP upload module
                 '    <tr>' +
                 '        <th>Name</th>' +
                 '        <th>Size</th>' +
-                '        <th>Progress</th>' +
+                '        <th>Progress Value</th>' +
+                '        <th>Progress Bar</th>' +
                 '    </tr>' +
                 '    </thead>' +
                 '    <tbody>' +
@@ -476,10 +500,13 @@ Angular HTTP upload module
                 '        <td>{{fsFileItem.name}}</td>' +
                 '        <td>{{fsFileItem.file.size}}</td>' +
                 '        <td>' +
+                '           {{fsFileItem.progress}}% ' +
+                '        </td>' +
+                '        <td>' +
 				'           <div>' +
                 '               <md-progress-linear class="md-accent" md-mode="determinate" value="{{fsFileItem.progress}}">' +
 				'               </md-progress-linear>' +
-				'           </div>' +            
+				'           </div>' +
                 '        </td>' +
                 '    </tr>' +
                 '    </tbody>' +

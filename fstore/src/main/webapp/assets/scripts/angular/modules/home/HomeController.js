@@ -233,6 +233,8 @@
 		function _uploadAllCompleteHandler(){
 			
 			$log.debug('Upload completed.');
+            
+            myFsUploader.clearQueue();
 			
 			$scope.$apply();
 			
