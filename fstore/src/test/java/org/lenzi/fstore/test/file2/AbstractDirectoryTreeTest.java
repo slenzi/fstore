@@ -81,7 +81,7 @@ public abstract class AbstractDirectoryTreeTest extends AbstractTreeTest {
 		
 		Tree<FsPathResource> parentTree = null;
 		try {
-			parentTree = fsResourceService.getParentTree(dirResource2_1.getDirId());
+			parentTree = fsResourceService.getParentPathResourceTree(dirResource2_1.getDirId());
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);

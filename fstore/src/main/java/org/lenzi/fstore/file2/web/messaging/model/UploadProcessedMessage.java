@@ -13,7 +13,7 @@ public class UploadProcessedMessage extends AbstractMessage implements Serializa
 	private String fileName = null;
 	
 	public UploadProcessedMessage() {
-	
+		setMessage("Upload has been processed on the server.");
 	}
 	
 	/**

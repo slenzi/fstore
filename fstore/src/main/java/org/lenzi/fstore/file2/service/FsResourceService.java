@@ -129,7 +129,7 @@ public class FsResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public Tree<FsPathResource> getTree(Long dirId, int maxDepth) throws ServiceException {
+	public Tree<FsPathResource> getPathResourceTree(Long dirId, int maxDepth) throws ServiceException {
 		
 		Tree<FsPathResource> resourceTree = null;
 		try {
@@ -148,7 +148,7 @@ public class FsResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public Tree<FsPathResource> getParentTree(Long dirId) throws ServiceException {
+	public Tree<FsPathResource> getParentPathResourceTree(Long dirId) throws ServiceException {
 		
 		Tree<FsPathResource> resourceTree = null;
 		try {

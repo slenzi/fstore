@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
@@ -12,7 +14,9 @@ import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.web.messaging.UploadMessageService;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +43,12 @@ public class FsUploadPipeline {
     @Autowired
     private FsQueuedResourceService fsResourceService;
     
+    @Autowired
+    private UploadMessageService uploadMessageService;
+    
     private String holdingSetupErrorMsg = "";
+    
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 	
 	public FsUploadPipeline() {
 		
@@ -127,21 +136,28 @@ public class FsUploadPipeline {
 		
 		final FsDirectoryResource finalDir = uploadDir;
 		fileMap.values().stream().forEach(
-				(filePart) -> {
+			(filePart) -> {
+				
+				executor.submit(() -> {
 					
 					try {
 						
-						fsResourceService.addFileResource(filePart.getOriginalFilename(), filePart.getBytes(), finalDir.getDirId(), true);
+						FsFileMetaResource resource = fsResourceService.addFileResource(
+								filePart.getOriginalFilename(), filePart.getBytes(), finalDir.getDirId(), true);
 						
 						logger.info("Saved file '" + filePart.getName() + "' to holding store directory '" + dirName + "'.");
+						
+						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), resource.getName());
 						
 					} catch (ServiceException e) {
 						throw new RuntimeException("Error saving file '" + filePart.getName() + "' to directory '" + dirName + "' in the holding resource store.", e);
 					} catch (IOException e){
 						throw new RuntimeException("IOException thrown when attempting to read file byte data from MultipartFile map. " + e.getMessage(), e);
-					}
+					}						
 					
 				});
+				
+			});
 		
 		return uploadDir;
 		
@@ -158,21 +174,29 @@ public class FsUploadPipeline {
 	public void processToDirectory(Map<String, MultipartFile> fileMap, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
 		fileMap.values().stream().forEach(
-				(filePart) -> {
-					
+			(filePart) -> {
+				
+				executor.execute(() -> {
+				
 					try {
 						
-						fsResourceService.addFileResource(filePart.getOriginalFilename(), filePart.getBytes(), parentDirId, replaceExisting);
+						FsFileMetaResource resource = fsResourceService.addFileResource(
+								filePart.getOriginalFilename(), filePart.getBytes(), parentDirId, replaceExisting);
 						
 						logger.info("Saved file '" + filePart.getName() + "' to directory with id '" + parentDirId + "'.");
+						
+						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), resource.getName());
 						
 					} catch (ServiceException e) {
 						throw new RuntimeException("Error saving file '" + filePart.getName() + "' to directory with id '" + parentDirId + "'.", e);
 					} catch (IOException e){
 						throw new RuntimeException("IOException thrown when attempting to read file byte data from MultipartFile map. " + e.getMessage(), e);
-					}
+					}						
 					
 				});
+				
+				
+			});
 		
 	}
 

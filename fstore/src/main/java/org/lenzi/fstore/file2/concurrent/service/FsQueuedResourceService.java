@@ -134,7 +134,7 @@ public class FsQueuedResourceService {
 
 			@Override
 			public Tree<FsPathResource> doWork() throws ServiceException {
-				return fsResourceService.getTree(dirId, maxDepth);
+				return fsResourceService.getPathResourceTree(dirId, maxDepth);
 			}
 
 			@Override
@@ -165,7 +165,7 @@ public class FsQueuedResourceService {
 
 			@Override
 			public Tree<FsPathResource> doWork() throws ServiceException {
-				return fsResourceService.getParentTree(dirId);
+				return fsResourceService.getParentPathResourceTree(dirId);
 			}
 
 			@Override

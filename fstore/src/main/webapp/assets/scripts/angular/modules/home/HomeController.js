@@ -451,7 +451,7 @@
 							$log.debug("Error, " + directoryData.error);
 						} else {
 							
-							$log.debug("got directory data => " + JSON.stringify(directoryData));
+							//$log.debug("got directory data => " + JSON.stringify(directoryData));
 							
 							// create path resource for directory
 							var directory = new PathResource({

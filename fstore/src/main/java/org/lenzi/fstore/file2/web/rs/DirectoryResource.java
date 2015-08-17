@@ -22,6 +22,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.file2.service.FsJsonHelper;
+import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
@@ -41,7 +42,10 @@ public class DirectoryResource extends AbstractResource {
     Logger logger;
     
     @Autowired
-    private FsQueuedResourceService fsResourceService;
+    private FsQueuedResourceService fsQueuedResourceService;
+    
+    @Autowired
+    private FsResourceService fsResourceService;    
     
     @Autowired
     private FsJsonHelper fsJsonHelper;
@@ -165,7 +169,7 @@ public class DirectoryResource extends AbstractResource {
 		logger.info("Number of directories to delete: " + dirIdList.size() + ". [" + dirIdLog.toString() + "]");
 		
 		try {
-			fsResourceService.removeDirectoryResourceList(dirIdList);
+			fsQueuedResourceService.removeDirectoryResourceList(dirIdList);
 		} catch (ServiceException e) {
 			handleError("Failed to delete directory data from server. Dir Id list = [" + dirIdLog.toString() + "]",
 					WebExceptionType.CODE_DATABSE_ERROR, e);
@@ -196,7 +200,7 @@ public class DirectoryResource extends AbstractResource {
 		}
 		
 		try {
-			fsResourceService.addDirectoryResource(dirName, dirId);
+			fsQueuedResourceService.addDirectoryResource(dirName, dirId);
 		} catch (ServiceException e) {
 			handleError("Failed to create new directory. [ parent dir id = " + dirId + ", new dir name = " + dirName + "]",
 					WebExceptionType.CODE_DATABSE_ERROR, e);
