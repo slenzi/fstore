@@ -8,6 +8,9 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 /**
  * Entity for storing binary data.
  * 
@@ -24,6 +27,7 @@ public class FsFileResource extends FsAbstractBinaryResource implements Serializ
 	// @Type(type="org.hibernate.type.PrimitiveByteArrayBlobType")
 	// http://stackoverflow.com/questions/2605477/spring-hibernate-blob-lazy-loading
 	@Lob
+	@Fetch(FetchMode.SELECT)
 	@Column(name = "FILE_DATA", nullable = false)
 	private byte[] fileData;
 

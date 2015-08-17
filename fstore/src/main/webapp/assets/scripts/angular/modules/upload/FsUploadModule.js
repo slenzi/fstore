@@ -56,8 +56,27 @@ Angular HTTP upload module
 				},
 				setFile: function(file){
 					this.file = file;
-				}			
-			};	
+				},
+				getHumanReadableSize(){
+					return _humanFileSize(this.file.size,true);
+				}
+			};
+
+			function _humanFileSize(bytes, si) {
+				var thresh = si ? 1000 : 1024;
+				if(Math.abs(bytes) < thresh) {
+					return bytes + ' B';
+				}
+				var units = si
+					? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+					: ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+				var u = -1;
+				do {
+					bytes /= thresh;
+					++u;
+				} while(Math.abs(bytes) >= thresh && u < units.length - 1);
+				return bytes.toFixed(1)+' '+units[u];
+			}			
 			
 			// return this
 			return FsFileItem;
@@ -113,6 +132,15 @@ Angular HTTP upload module
 			}
 			
 			/**
+			 * Clear all form data / value
+			 */
+			FsFileUploader.prototype.clearFormValues = function(){
+				
+				this.formData = {};
+				
+			}			
+			
+			/**
 			 * Add a file to the upload queue.
 			 */
 			FsFileUploader.prototype.addFile = function(fileToAdd){
@@ -146,6 +174,16 @@ Angular HTTP upload module
 			FsFileUploader.prototype.clearQueue = function(){
 				this.files = {};
 			};
+			
+			/**
+			 * Check if the upload queue is empty. Returns true if empty, false if not.
+			 */
+			FsFileUploader.prototype.isQueueEmpty = function(){
+				if( Object.keys(this.files).length == 0 ){
+					return true;
+				}
+				return false;
+			};			
 			
 			/**
 			 * XML Http Request onprogress event handler
@@ -392,7 +430,7 @@ Angular HTTP upload module
 				xhr.open(fsUploader.method, fsUploader.url);
 				xhr.send(form);                 
                 
-            }
+            }			
 
 			// return object prototype
 			return FsFileUploader;
@@ -464,7 +502,7 @@ Angular HTTP upload module
 			},
 			template:
 				'<ul ng-repeat="fsFileItem in fsUploader.files">' +
-				'   <li>{{fsFileItem.name}} ({{fsFileItem.file.size}})</li>' +
+				'   <li>{{fsFileItem.name}} ({{fsFileItem.getHumanReadableSize()}})</li>' +
 				'</ul>',
 			link: function ($scope, element, attributes){
 
@@ -498,7 +536,7 @@ Angular HTTP upload module
                 '    <tbody>' +
                 '    <tr ng-repeat="fsFileItem in fsUploader.files">' +
                 '        <td>{{fsFileItem.name}}</td>' +
-                '        <td>{{fsFileItem.file.size}}</td>' +
+                '        <td>{{fsFileItem.getHumanReadableSize()}}</td>' +
                 '        <td>' +
                 '           {{fsFileItem.progress}}% ' +
                 '        </td>' +

@@ -21,10 +21,10 @@ Uploa form partial that's loaded for the "home_upload" state
 	<label class="md-raised md-button" md-ink-ripple for="file-input">
         <span>Select Files</span>
     </label>
-	<label class="md-raised md-button" md-ink-ripple ng-click="home.handleEventClearUploadQueue()">
+	<label class="md-raised md-button" md-ink-ripple ng-click="home.handleEventClearUploadQueue()" ng-disabled="home.uploader().isQueueEmpty()">
         <span>Clear Files</span>
     </label>
-	<label class="md-raised md-button" md-ink-ripple ng-click="home.handleEventDoUpload()">
+	<label class="md-raised md-button" md-ink-ripple ng-click="home.handleEventDoUpload()" ng-disabled="home.uploader().isQueueEmpty()">
         <span>Start Upload</span>
     </label>	
 	</p>

@@ -34,7 +34,8 @@ public class FsFileMetaResource extends FsPathResource {
 	@Column(name = "MIME_TYPE", nullable = true)
 	private String mimeType = null;
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+	// optional = false to ensure lazy loading of FsFileResource (which contains the binary file data)
+	@OneToOne(cascade = {CascadeType.ALL}, optional = false, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
 	private FsFileResource fileResource = null;
 

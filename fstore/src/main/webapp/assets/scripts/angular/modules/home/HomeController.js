@@ -87,6 +87,7 @@
 		function _myStompConnect(frame){
 			var testSubscription = myStomp.subscribe('/topic/tests', _myStompReceiveTestMessages);
 			var echoSubscription = myStomp.subscribe('/topic/echos', _myStompReceiveEchoMessages);
+			var uploadSubscription = myStomp.subscribe('/topic/uploads', _myStompReceiveUploadMessages);
 		}
 		function _myStompConnectError(error){
 			$log.debug('_onStompConnectError...');
@@ -94,10 +95,13 @@
 			$log.debug('error = ' + JSON.stringify(error));
 		}
 		function _myStompReceiveTestMessages(socketMessage){
-			$log.info('message = ' + JSON.stringify(socketMessage));
+			$log.info('STOMP Received = ' + JSON.stringify(socketMessage));
 		}
 		function _myStompReceiveEchoMessages(socketMessage){
-			$log.info('message = ' + JSON.stringify(socketMessage));
+			$log.info('STOMP Received = ' + JSON.stringify(socketMessage));
+		}
+		function _myStompReceiveUploadMessages(socketMessage){
+			$log.info('STOMP Received = ' + JSON.stringify(socketMessage));
 		}		
 		
 		/**
@@ -210,14 +214,31 @@
 		 */
 		function _handleEventDoUpload(){
 			
-			// set parent dir id so we know where to create the new directory on the server
-			myFsUploader.addFormValue('dirId', currentDirectory.dirId);
-			
-			// upload all files in queue as one single upload
-			//myFsUploader.doUpload(_uploadProgressHandler, _uploadAllCompleteHandler);
-            
-            // upload all files in queue as seperate, individual uploads.
-            myFsUploader.doUploadSingular(_uploadProgressHandler, _uploadSingleCompleteHandler, _uploadAllCompleteHandler);
+				var confirm = $mdDialog.confirm()
+					.parent(angular.element(document.body))
+					.title('Upload Confirmation')
+					.content("Please confirm upload.")
+					.ariaLabel('Continue Upload')
+					.ok('Continue')
+					.cancel('Cancel')
+					.targetEvent(event);
+				
+				$mdDialog.show(confirm).then(function() {
+					
+					// set parent dir id so we know where to create the new directory on the server
+					myFsUploader.addFormValue('dirId', currentDirectory.dirId);
+					
+					// upload all files in queue as one single upload
+					//myFsUploader.doUpload(_uploadProgressHandler, _uploadAllCompleteHandler);
+					
+					// upload all files in queue as seperate, individual uploads.
+					myFsUploader.doUploadSingular(_uploadProgressHandler, _uploadSingleCompleteHandler, _uploadAllCompleteHandler);
+						
+				}, function() {
+					
+					$log.debug('Uploade operation canceled.');
+					
+				});
 			
 		}
 		function _uploadProgressHandler(event){

@@ -16,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * Sample messaging service. Currently disabled (uncomment @PostConstruct and @PreDestroy to re-enable)
+ * 
+ * @author sal
+ */
 @Service
 public class TestMessageService {
 
@@ -31,7 +36,7 @@ public class TestMessageService {
 
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	private void init(){
 		
 		executor.submit(() -> {
@@ -56,7 +61,7 @@ public class TestMessageService {
 		
 	}
 	
-	@PreDestroy
+	//@PreDestroy
 	private void cleanup(){
 		
 		executor.shutdownNow();

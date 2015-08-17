@@ -16,6 +16,14 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 * @return
 	 */
 	public String getRepositoryName();
+	
+	/**
+	 * Fetch next node ID from sequence.
+	 * 
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public long getNextNodeId() throws DatabaseException;
 
 	/**
 	 * Get a node, not closure data, or children. Just the node data.
@@ -81,7 +89,7 @@ public interface TreeRepository<N extends FSNode<N>> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public N addChildNode(N parentNode, N newNode) throws DatabaseException;
+	public N addChildNode(N parentNode, N newNode) throws DatabaseException;	
 	
 	/**
 	 * Copy a node.

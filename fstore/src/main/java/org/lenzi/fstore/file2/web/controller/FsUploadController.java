@@ -17,6 +17,7 @@ import org.lenzi.fstore.core.util.StringUtil;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsUploadPipeline;
+import org.lenzi.fstore.file2.web.messaging.UploadMessageService;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
@@ -48,6 +49,9 @@ public class FsUploadController extends AbstractSpringController {
     
     @Autowired
     private FsUploadPipeline uploadPipeline;
+    
+    @Autowired
+    private UploadMessageService uploadMessageService;
 
 	public FsUploadController() {
 		
@@ -93,6 +97,7 @@ public class FsUploadController extends AbstractSpringController {
 		fileMap.values().stream().forEach(
 			(filePart) -> {
 				logger.info("Received file: " + filePart.getOriginalFilename() + ", " + filePart.getSize() + " bytes.");
+				uploadMessageService.sendUploadReceivedMessage(filePart.getOriginalFilename());
 			});
 		
 		// save all files to holding store

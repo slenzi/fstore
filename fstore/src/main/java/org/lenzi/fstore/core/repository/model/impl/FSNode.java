@@ -116,6 +116,15 @@ public abstract class FSNode<N extends FSNode<N>> implements DBNode<N> {
 	public void setNodeId(Long nodeId) {
 		this.nodeId = nodeId;
 	}
+	
+	/**
+	 * Check if the node has a node id set. Returns true if the node has a node ID (Long object is not null)
+	 * 
+	 * @return
+	 */
+	public boolean hasNodeId(){
+		return this.nodeId != null ? true : false;
+	}
 
 	/**
 	 * @return the parentNodeId

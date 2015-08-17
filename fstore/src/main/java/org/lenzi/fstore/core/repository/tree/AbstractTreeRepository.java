@@ -44,7 +44,6 @@ import org.lenzi.fstore.core.util.CollectionUtil;
 import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.core.repository.model.impl.FSClosure_;
 import org.lenzi.fstore.core.repository.model.impl.FSNode_;
-import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -132,6 +131,17 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 */
 	public abstract N postCopy(N originalNode, N newCopyNode) throws DatabaseException;
 	
+	
+	/**
+	 * Get next node id from sequence
+	 */
+	@Override
+	public long getNextNodeId() throws DatabaseException {
+		
+		return queryRepository.getSequenceValue(queryRepository.getSqlQueryNodeIdSequence());
+		
+	}
+
 	/**
 	 * Fetch node, just meta data. No closure data with parent child relationships is fetched.
 	 * 
@@ -481,11 +491,13 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		newNode.setDateCreated(dateNow);
 		newNode.setDateUpdated(dateNow);	
 		
-		// Get next available node id from sequence
-		long nodeId = queryRepository.getSequenceValue(queryRepository.getSqlQueryNodeIdSequence());
+		long nodeId = 0L;
 		
-		// Set node id and parent node id
-		newNode.setNodeId(nodeId);
+		// Get next available node id from sequence
+		if(!newNode.hasNodeId()){
+			nodeId = queryRepository.getSequenceValue(queryRepository.getSqlQueryNodeIdSequence());
+			newNode.setNodeId(nodeId);
+		}
 		newNode.setParentNodeId(parentNodeId);
 		
 		//logger.debug("Adding node " + nodeId + " (" + newNode.getName() + ") to parent node " + parentNodeId);
