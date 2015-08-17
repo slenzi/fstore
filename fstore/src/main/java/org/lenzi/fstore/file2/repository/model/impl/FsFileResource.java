@@ -20,6 +20,9 @@ public class FsFileResource extends FsAbstractBinaryResource implements Serializ
 	@Transient
 	private static final long serialVersionUID = -6133759070827743119L;
 	
+	// @Fetch(FetchMode.SELECT)
+	// @Type(type="org.hibernate.type.PrimitiveByteArrayBlobType")
+	// http://stackoverflow.com/questions/2605477/spring-hibernate-blob-lazy-loading
 	@Lob
 	@Column(name = "FILE_DATA", nullable = false)
 	private byte[] fileData;
