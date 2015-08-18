@@ -203,12 +203,14 @@ public class PostgreSQLCreate {
 	 * Constraints
 	 * 
 	 */
+	/*
 	private String SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE =
 		"ALTER TABLE " + SCHEMA + "FS_FILE_RESOURCE DROP CONSTRAINT FK_FS_FILE_RESOURCE";		
 	private String SQL_CREATE_CONSTRAINT_FK_FS_FILE_RESOURCE =
 		"ALTER TABLE " + SCHEMA + "FS_FILE_RESOURCE ADD CONSTRAINT FK_FS_FILE_RESOURCE " +  
 		"  FOREIGN KEY (NODE_ID) " +  
 		"  REFERENCES " + SCHEMA + "FS_FILE_META_RESOURCE(NODE_ID)";
+	*/
 	private String SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE =
 		"ALTER TABLE " + SCHEMA + "FS_FILE_META_RESOURCE DROP CONSTRAINT FK_FS_FILE_META_RESOURCE";		
 	private String SQL_CREATE_CONSTRAINT_FK_FS_FILE_META_RESOURCE =
@@ -347,7 +349,7 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();
 		
 		// file 2 constraints
-		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
+		//entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();
@@ -362,7 +364,7 @@ public class PostgreSQLCreate {
 	public void dropDatabase() throws DatabaseException {
 		
 		// file 2 constraints
-		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
+		//entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();
