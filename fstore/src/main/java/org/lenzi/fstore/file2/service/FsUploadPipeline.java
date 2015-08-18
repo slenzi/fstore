@@ -1,9 +1,14 @@
 package org.lenzi.fstore.file2.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,6 +17,7 @@ import javax.transaction.Transactional;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
@@ -71,6 +77,48 @@ public class FsUploadPipeline {
 	}
 	
 	/**
+	 * Save all files in the file map to the temp upload directory.
+	 * 
+	 * @param fileMap
+	 * @return Path to newly created temp directory where all files are saved.
+	 * @throws ServiceException
+	 */
+	public Path processToTemp(Map<String, MultipartFile> fileMap) throws ServiceException {
+		
+		String parentTempDir = appProps.getProperty("upload.temp.path");
+		
+		long epochMilli = System.currentTimeMillis();
+		String uuid = UUID.randomUUID().toString();
+		
+		String tempDir = parentTempDir + File.separator + String.valueOf(epochMilli) + "." + uuid;
+		
+		Path tempPath = Paths.get(tempDir);
+		
+		try {
+			FileUtil.createDirectory(tempPath, true);
+		} catch (IOException e) {
+			throw new ServiceException("Failed to create temporary directory for uploaded files, at " + tempDir + ". " + e.getMessage());
+		}
+		
+		// save all files
+		fileMap.values().stream().forEach(
+			(filePart) -> {
+				
+				Path filePath = Paths.get(tempDir + File.separator + filePart.getOriginalFilename());
+				
+				try {
+					Files.write(filePath, filePart.getBytes());
+				} catch (Exception e) {
+					throw new RuntimeException("Error saving file " + filePart.getOriginalFilename() + " to directory " + tempDir + ". " + e.getMessage(), e);
+				}
+				
+			});
+		
+		return tempPath;
+		
+	}
+	
+	/**
 	 * Get the holding resource store. This is where uploads are temporarily stored.
 	 * 
 	 * @return
@@ -104,17 +152,25 @@ public class FsUploadPipeline {
 	/**
 	 * Creates a new directory in the holding resource store for the uploaded files, then saves all files to the directory.
 	 * 
-	 * @param fileMap - map of files that were uploaded by a client
+	 * @param tempDir - temporary directory where uploaded files reside
+	 * @param replaceExisting - true to replace existing files
 	 * @return reference to the newly created directory in the holding resource store.
 	 * @throws ServiceException
 	 */
-	public FsDirectoryResource processToHolding(Map<String, MultipartFile> fileMap) throws ServiceException {
+	public FsDirectoryResource processToHolding(Path tempDir, boolean replaceExisting) throws ServiceException {
 		
 		if(holdingStore == null){
 			throw new ServiceException("Error, holding resource store is null. Check application logs for error message. " + holdingSetupErrorMsg);
 		}
 		
 		logger.info("Got holding store");
+		
+		List<Path> filePaths = null;
+		try {
+			filePaths = FileUtil.listFilesToDepth(tempDir, 1);
+		} catch (IOException e) {
+			throw new ServiceException("Error listing files in temporary directory " + tempDir.toString());
+		}
 		
 		LocalDateTime timePoint = LocalDateTime.now();
 		
@@ -135,26 +191,31 @@ public class FsUploadPipeline {
 		logger.info("Created new directory in holding store for uploaded data: '" + dirName + "'");
 		
 		final FsDirectoryResource finalDir = uploadDir;
-		fileMap.values().stream().forEach(
-			(filePart) -> {
+		filePaths.stream().forEach(
+			(pathToFile) ->{
+			
+				executor.execute(() -> {
 				
-				executor.submit(() -> {
+					byte[] fileBytes = null;
+	
+					String fileName = pathToFile.getFileName().toString();
 					
 					try {
 						
-						FsFileMetaResource resource = fsResourceService.addFileResource(
-								filePart.getOriginalFilename(), filePart.getBytes(), finalDir.getDirId(), true);
+						fileBytes = Files.readAllBytes(pathToFile);
 						
-						logger.info("Saved file '" + filePart.getName() + "' to holding store directory '" + dirName + "'.");
+						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, finalDir.getDirId(), replaceExisting);
+						
+						logger.info("Saved file '" + fileName + "' to holding store directory '" + dirName + "'.");
 						
 						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), resource.getName());
 						
 					} catch (ServiceException e) {
-						throw new RuntimeException("Error saving file '" + filePart.getName() + "' to directory '" + dirName + "' in the holding resource store.", e);
+						throw new RuntimeException("Error saving file '" + fileName + "' to directory '" + dirName + "'.", e);
 					} catch (IOException e){
-						throw new RuntimeException("IOException thrown when attempting to read file byte data from MultipartFile map. " + e.getMessage(), e);
-					}						
-					
+						throw new RuntimeException("IOException thrown when attempting to read file byte data from path. " + e.getMessage(), e);
+					}
+				
 				});
 				
 			});
@@ -166,35 +227,46 @@ public class FsUploadPipeline {
 	/**
 	 * Processes files to existing directory
 	 * 
-	 * @param fileMap
-	 * @param parentDirId
-	 * @param replaceExisting
+	 * @param tempDir - temporary directory where uploaded files reside
+	 * @param parentDirId - 
+	 * @param replaceExisting - true to replace existing files
 	 * @throws ServiceException
 	 */
-	public void processToDirectory(Map<String, MultipartFile> fileMap, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	public void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
-		fileMap.values().stream().forEach(
-			(filePart) -> {
-				
+		List<Path> filePaths = null;
+		try {
+			filePaths = FileUtil.listFilesToDepth(tempDir, 1);
+		} catch (IOException e) {
+			throw new ServiceException("Error listing files in temporary directory " + tempDir.toString());
+		}
+		
+		filePaths.stream().forEach(
+			(pathToFile) ->{
+			
 				executor.execute(() -> {
 				
+					byte[] fileBytes = null;
+	
+					String fileName = pathToFile.getFileName().toString();
+					
 					try {
 						
-						FsFileMetaResource resource = fsResourceService.addFileResource(
-								filePart.getOriginalFilename(), filePart.getBytes(), parentDirId, replaceExisting);
+						fileBytes = Files.readAllBytes(pathToFile);
 						
-						logger.info("Saved file '" + filePart.getName() + "' to directory with id '" + parentDirId + "'.");
+						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, parentDirId, replaceExisting);
+						
+						logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'.");
 						
 						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), resource.getName());
 						
 					} catch (ServiceException e) {
-						throw new RuntimeException("Error saving file '" + filePart.getName() + "' to directory with id '" + parentDirId + "'.", e);
+						throw new RuntimeException("Error saving file '" + fileName + "' to directory with id '" + parentDirId + "'.", e);
 					} catch (IOException e){
-						throw new RuntimeException("IOException thrown when attempting to read file byte data from MultipartFile map. " + e.getMessage(), e);
-					}						
-					
-				});
+						throw new RuntimeException("IOException thrown when attempting to read file byte data from path. " + e.getMessage(), e);
+					}
 				
+				});
 				
 			});
 		

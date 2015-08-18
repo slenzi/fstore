@@ -3,6 +3,7 @@
  */
 package org.lenzi.fstore.file2.web.controller;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -100,18 +101,16 @@ public class FsUploadController extends AbstractSpringController {
 				uploadMessageService.sendUploadReceivedMessage(filePart.getOriginalFilename());
 			});
 		
-		// save all files to holding store
-		/*
+		Path tempDir = null;
 		try {
-			uploadPipeline.processToHolding(fileMap);
+			tempDir = uploadPipeline.processToTemp(fileMap);
 		} catch (ServiceException e) {
-			handleError(logger, "Failed to process upload to holding store. " + e.getMessage(), model);
-			return "Failed to process upload to holding store";
+			handleError(logger, "Failed to process uploaded files to temporary directory. " + e.getMessage(), model);
+			return "Failed to process uploaded files to temporary directory. " + e.getMessage();
 		}
-		*/
 		
 		try {
-			uploadPipeline.processToDirectory(fileMap, parentDirId, true);
+			uploadPipeline.processToDirectory(tempDir, parentDirId, true);
 		} catch (ServiceException e) {
 			handleError(logger, "Failed to process uploaded files to directory " + parentDirId + ". " + e.getMessage(), model);
 			return "Failed to process uploaded files to directory " + parentDirId + ". " + e.getMessage();
