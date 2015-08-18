@@ -101,8 +101,26 @@
 			$log.info('STOMP Received = ' + JSON.stringify(socketMessage));
 		}
 		function _myStompReceiveUploadMessages(socketMessage){
+			
 			$log.info('STOMP Received = ' + JSON.stringify(socketMessage));
-		}		
+			
+			var uploadMessage = JSON.parse(socketMessage.body);
+			
+			$log.info('Upload Message Type = ' + uploadMessage.type);
+			
+			if(uploadMessage.type == 'UPLOAD_PROCESSED'){
+				_handleUploadProcessedMessage(uploadMessage);
+			}
+			
+		}
+		function _handleUploadProcessedMessage(uploadMessage){
+			
+			var messageDirId = uploadMessage.dirId;
+			if(_currentDirectory().dirId == messageDirId){
+				$log.debug("Current directory user is viewing has updated files on the server.");
+			}
+			
+		}
 		
 		/**
 		 * Say hello

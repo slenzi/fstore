@@ -3,6 +3,7 @@
  */
 package org.lenzi.fstore.file2.web.messaging.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -10,11 +11,13 @@ import java.time.LocalTime;
  * @author sal
  *
  */
-public abstract class AbstractMessage {
+public abstract class AbstractMessage implements Serializable {
 
+	private static final long serialVersionUID = -3702032509091865887L;
+	
 	private LocalDate date = null;
 	private LocalTime time = null;
-	
+	private String command = null;
 	private String message = null;
 	
 	/**
@@ -22,6 +25,20 @@ public abstract class AbstractMessage {
 	 */
 	public AbstractMessage() {
 		
+	}
+
+	/**
+	 * @return the command
+	 */
+	public String getCommand() {
+		return command;
+	}
+
+	/**
+	 * @param command the command to set
+	 */
+	public void setCommand(String command) {
+		this.command = command;
 	}
 
 	/**

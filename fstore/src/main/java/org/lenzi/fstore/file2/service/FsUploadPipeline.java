@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.transaction.Transactional;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
@@ -73,6 +74,13 @@ public class FsUploadPipeline {
 				logger.error(e.getMessage());
 			}
 		}
+		
+	}
+	
+	@PreDestroy
+	private void cleanup(){
+		
+		executor.shutdownNow();
 		
 	}
 	
@@ -208,7 +216,7 @@ public class FsUploadPipeline {
 						
 						logger.info("Saved file '" + fileName + "' to holding store directory '" + dirName + "'.");
 						
-						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), resource.getName());
+						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), finalDir.getDirId(), resource.getName());
 						
 					} catch (ServiceException e) {
 						throw new RuntimeException("Error saving file '" + fileName + "' to directory '" + dirName + "'.", e);
@@ -228,7 +236,7 @@ public class FsUploadPipeline {
 	 * Processes files to existing directory
 	 * 
 	 * @param tempDir - temporary directory where uploaded files reside
-	 * @param parentDirId - 
+	 * @param parentDirId - id of parent directory node
 	 * @param replaceExisting - true to replace existing files
 	 * @throws ServiceException
 	 */
@@ -258,7 +266,7 @@ public class FsUploadPipeline {
 						
 						logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'.");
 						
-						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), resource.getName());
+						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), parentDirId, resource.getName());
 						
 					} catch (ServiceException e) {
 						throw new RuntimeException("Error saving file '" + fileName + "' to directory with id '" + parentDirId + "'.", e);

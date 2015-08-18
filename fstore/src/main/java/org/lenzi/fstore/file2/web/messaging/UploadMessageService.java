@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.file2.web.messaging.model.UploadProcessedMessage;
-import org.lenzi.fstore.file2.web.messaging.model.UploadReceivedMessage;
+import org.lenzi.fstore.file2.web.messaging.model.UploadMessage;
+import org.lenzi.fstore.file2.web.messaging.model.UploadMessageType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,7 +41,7 @@ public class UploadMessageService {
 		LocalDate nowDate = LocalDate.now();
 		LocalTime nowTime = LocalTime.now();
 		
-		UploadReceivedMessage message = new UploadReceivedMessage();
+		UploadMessage message = new UploadMessage(UploadMessageType.UPLOAD_RECEIVED);
 		message.setFileName(fileName);
 		message.setDate(nowDate);
 		message.setTime(nowTime);
@@ -56,16 +56,17 @@ public class UploadMessageService {
 	 * @param fileId
 	 * @param fileName
 	 */
-	public void sendUploadProcessedMessage(Long fileId, String fileName){
+	public void sendUploadProcessedMessage(Long fileId, Long dirId, String fileName){
 		
 		LocalDate nowDate = LocalDate.now();
 		LocalTime nowTime = LocalTime.now();
 		
-		UploadProcessedMessage message = new UploadProcessedMessage();
+		UploadMessage message = new UploadMessage(UploadMessageType.UPLOAD_PROCESSED);
 		message.setFileId(fileId);
+		message.setDirId(dirId);
 		message.setFileName(fileName);
 		message.setDate(nowDate);
-		message.setTime(nowTime);
+		message.setTime(nowTime);	
 		
 		template.convertAndSend(destination, message);
 		
