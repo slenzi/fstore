@@ -11,7 +11,10 @@
 	function HomeController(
 		appConstants, homeService, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
-		// internal models bound to UI
+   
+		/****************************************************************************************
+		 * Internal models bound to UI
+		 */
 		var sectionTitle = "Not set";
 		var storeList = [{ "name": "empty"}];
 		var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
@@ -40,18 +43,13 @@
 		// they will be moved to a new location when the user performs a "paste"
 		var pathResourceToMove = [];
 
-		/*
-		var socket = {
-			client: null, // SockJS object
-			stomp: null // Stomp object
-		};
-		*/
 
-		//
-		// load all resource stores when page loads (asynchronously)
-		//
+		/****************************************************************************************
+		 * On application load:  load all resource stores when page loads (asynchronously)
+		 */		
 		_handleOnPageLoad();
 
+		
 		/**
 		 * Fetch all resource stores from server and pre-load first one (if one exists)
 		 */
@@ -132,35 +130,6 @@
 		}
 		
 		/**
-		 * Fetch sample ui-grid
-		 */
-		 /*
-		 self.sampleGrid = sampleGrid;
-		var sampleGridData = [
-			{ "Store Name": "Example Store 1" },
-			{ "Store Name": "Example Store 2" },
-			{ "Store Name": "Example Store 3" },
-			{ "Store Name": "Example Store 4" },
-			{ "Store Name": "Example Store 5" },
-			{ "Store Name": "Example Store 6" },
-			{ "Store Name": "Example Store 7" },
-			{ "Store Name": "Example Store 8" },
-			{ "Store Name": "Example Store 9" },
-		];
-		var sampleGrid = {
-			paginationPageSizes: [25, 50, 75],
-			paginationPageSize: 25,
-			columnDefs: [
-			  { name: 'Store Name' },
-			],
-			data: sampleGridData
-		  };		 
-		function sampleGrid(){
-			return sampleGrid;
-		}
-		*/
-		
-		/**
 		 * Get current section title
 		 */
 		function _sectionTitle(){
@@ -230,7 +199,7 @@
 		/**
 		 * Trigger FsFileUploader to start uploading
 		 */
-		function _handleEventDoUpload(){
+		function _handleEventDoUpload(event){
 			
 				var confirm = $mdDialog.confirm()
 					.parent(angular.element(document.body))
@@ -244,7 +213,7 @@
 				$mdDialog.show(confirm).then(function() {
 					
 					// set parent dir id so we know where to create the new directory on the server
-					myFsUploader.addFormValue('dirId', currentDirectory.dirId);
+					myFsUploader.addFormValue('dirId', _currentDirectory().dirId);
 					
 					// upload all files in queue as one single upload
 					//myFsUploader.doUpload(_uploadProgressHandler, _uploadAllCompleteHandler);
@@ -264,22 +233,36 @@
 			//$log.debug('Home progress = ' + progressValue);
 			$scope.$apply();
 		}
-        function _uploadSingleCompleteHandler(){
+        function _uploadSingleCompleteHandler(event){
            
             $log.debug('Upload of single file complete.');
             
         }
-		function _uploadAllCompleteHandler(){
+		function _uploadAllCompleteHandler(event){
 			
-			$log.debug('Upload completed.');
+			$log.debug('Upload completed. Have event obj? => ' + event);
             
             myFsUploader.clearQueue();
 			
 			$scope.$apply();
 			
-			alert('Upload complete. Thank you.');
+			$state.go('home_directory');
 			
-			_handleLoadDirectory(currentDirectory.dirId, true);
+			alert('All files have been received on the server. Please note large file take time to procee. Refresh view to see latest files.');
+			/*
+			$mdDialog.show(
+				$mdDialog.alert()
+					.parent(angular.element(document.body))
+					.clickOutsideToClose(true)
+					.title('Upload Complete')
+					.content('All files have been received on the server.')
+					.ariaLabel('Upload Complete')
+					.ok('Got it!')
+					.targetEvent(event)
+			);
+			*/
+			
+			_handleLoadDirectory(_currentDirectory().dirId, true);
 			
 			//$state.go('home_directory');
 		}
@@ -412,7 +395,7 @@
 		 * Reload the current directory.
 		 */
 		function _reloadCurrentDirectory(){
-			_handleLoadDirectory(currentDirectory.dirId, true);
+			_handleLoadDirectory(_currentDirectory().dirId, true);
 		}
         
 		/**

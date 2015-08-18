@@ -481,7 +481,7 @@ public class FsResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsResourceStore getStoreById(Long storeId) throws ServiceException {
+	public FsResourceStore getResourceStoreById(Long storeId) throws ServiceException {
 		
 		FsResourceStore store = null;
 		try {

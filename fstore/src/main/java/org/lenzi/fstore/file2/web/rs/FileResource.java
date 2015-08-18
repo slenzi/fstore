@@ -23,6 +23,7 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
@@ -42,7 +43,10 @@ public class FileResource extends AbstractResource {
     Logger logger;
     
     @Autowired
-    private FsQueuedResourceService fsResourceService;
+    private FsQueuedResourceService fsQueuedResourceService;
+    
+    @Autowired
+    private FsResourceService fsResourceService;    
 	
 	public FileResource() {
 		
@@ -63,7 +67,7 @@ public class FileResource extends AbstractResource {
 		logger.info(FileResource.class.getName() + " jax-rs service called, delete file, fileId = " + fileId);
 		
 		try {
-			fsResourceService.removeFileResource(fileId);
+			fsQueuedResourceService.removeFileResource(fileId);
 		} catch (ServiceException e) {
 			handleError("Failed to delete file data from server", WebExceptionType.CODE_DATABSE_ERROR, e);
 		}
@@ -100,7 +104,7 @@ public class FileResource extends AbstractResource {
 		logger.info("Number of files to delete: " + fileIdList.size() + ". [" + fileIdLog.toString() + "]");
 		
 		try {
-			fsResourceService.removeFileResourceList(fileIdList);
+			fsQueuedResourceService.removeFileResourceList(fileIdList);
 		} catch (ServiceException e) {
 			handleError("Failed to delete file data from server. File Id list = [" + fileIdLog.toString() + "]",
 					WebExceptionType.CODE_DATABSE_ERROR, e);

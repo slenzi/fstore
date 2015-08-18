@@ -15,6 +15,7 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.file2.web.rs.model.JsResourceStore;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
@@ -35,7 +36,10 @@ public class StoreResource extends AbstractResource {
     Logger logger;
     
     @Autowired
-    private FsQueuedResourceService fsResourceService;	
+    private FsQueuedResourceService fsQueuedResourceService;
+    
+    @Autowired
+    private FsResourceService fsResourceService;    
 	
 	public StoreResource() {
 		

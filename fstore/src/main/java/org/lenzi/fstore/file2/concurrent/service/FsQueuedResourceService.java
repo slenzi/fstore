@@ -260,7 +260,7 @@ public class FsQueuedResourceService {
 
 			@Override
 			public FsResourceStore doWork() throws ServiceException {
-				return fsResourceService.getStoreById(storeId);
+				return fsResourceService.getResourceStoreById(storeId);
 			}
 
 			@Override

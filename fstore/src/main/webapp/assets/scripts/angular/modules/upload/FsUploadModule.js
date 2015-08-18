@@ -17,8 +17,9 @@ Angular HTTP upload module
 		progress: 0,                      // tracks progress for the upload. 0 = 0% and 100 = 100%
 		method: 'POST',                   // http method used to submit the upload
 		formData: {},                     // optional form data (key-value pairs) to be submitted along with the file data.
-		files: {},                        // tracks file to be uploaded. All files added to upload queue will be added to this object.
-		headers: {}                       // optional http headers (currently not used.)
+		files: [],                        // tracks file to be uploaded. All files added to upload queue will be added to this object.
+		headers: {},                      // optional http headers (currently not used.)
+		smartTableFiles: []				  // for the angular smart table
 	})
 	// object for storing file data
 	.factory('FsFileItem', ['$log', '$q',
@@ -31,7 +32,7 @@ Angular HTTP upload module
 				angular.extend(this, {
 					name: 'name not set',  // name of file being uploaded
                     progress: 0,           // tracks progress for the upload. 0 = 0% and 100 = 100%
-					file: []               // file being uploaded
+					files: []              // file being uploaded
 				});
 				
 				if(fileData){
@@ -57,7 +58,7 @@ Angular HTTP upload module
 				setFile: function(file){
 					this.file = file;
 				},
-				getHumanReadableSize(){
+				getHumanReadableSize: function(){
 					return _humanFileSize(this.file.size,true);
 				}
 			};
@@ -149,37 +150,59 @@ Angular HTTP upload module
 					return;
 				}
 				
-				//$log.debug('Adding file [name=' + fileToAdd.name + ', lastModifiedDate=' + fileToAdd.lastModifiedDate + ']');
-				
 				// create new file item
 				var fileItem = new FsFileItem({
 					name: fileToAdd.name,
 					file: fileToAdd
 				});
-                
-                //$log.debug('fileToAdd = ' + fileToAdd);
-                //$log.debug('FsFileItem.file = ' + fileItem.file);
-                //$log.debug('Adding FsFileItem = ' + JSON.stringify(fileItem));
-	
-                this.files[fileToAdd.name] = fileItem;
-				//this.progress += 1;
+              
+                //this.files[fileToAdd.name] = fileItem;
+				this.files.push(fileItem);
 				
-				//$log.debug('fsUploader: ' + JSON.stringify(this));
+				// copy files to smart table file array
+				this.smartTableFiles = [].concat(this.files);
 				
+			};
+			
+			FsFileUploader.prototype.removeFile = function(fsFileItem){
+			
+				var fileIndex = 0;
+				for(var i=0; i<this.files.length; i++){
+					if(this.files[i].name == fsFileItem.name){
+						fileIndex = i;
+						break;
+					}
+				}
+				if(fileIndex > -1){
+					this.files.splice(fileIndex, 1);
+					this.smartTableFiles = [].concat(this.files);
+				}
+			
+			}
+			
+			/**
+			 * Get all files in the queue
+			 */
+			FsFileUploader.prototype.getFilesInQueue = function(){
+				return this.files;
 			};
 			
 			/**
 			 * Removes all files from the upload queue.
 			 */
 			FsFileUploader.prototype.clearQueue = function(){
-				this.files = {};
+				this.files = [];
+				this.smartTableFiles = [];
 			};
 			
 			/**
 			 * Check if the upload queue is empty. Returns true if empty, false if not.
 			 */
 			FsFileUploader.prototype.isQueueEmpty = function(){
-				if( Object.keys(this.files).length == 0 ){
+				//if( Object.keys(this.files).length == 0 ){
+				//	return true;
+				//}
+				if(this.files.length == 0){
 					return true;
 				}
 				return false;
@@ -282,6 +305,22 @@ Angular HTTP upload module
 				_doUploadSingular(this, uploadProgressCallback, individualUploadCompleteCallback, allUploadCompleteCallback);
                 
 			};
+			
+			/**
+			 * Returns an object containing a bunch of functions for sorting data in our angular smart table (table that displays files in upload queue)
+			 */
+			FsFileUploader.prototype.uploadQueueTableGetters = function(){
+				return {
+					// sort by name
+					fileName: function (fsFileItem) {
+						return fsFileItem.name;
+					},
+					// sort by size
+					fileSize: function(fsFileItem){
+						return fsFileItem.file.size;
+					}
+				}
+			};
             
             /**
              * Uploads all files in the queue as one single upload to the server.
@@ -295,12 +334,10 @@ Angular HTTP upload module
                 $log.debug('Uploading all files in queue as one single upload.');
                 
                 fsUploader.progress = 0;
-                
-				var fileNames = Object.keys(fsUploader.files);
 				
-				if(fileNames.length == 0){
+				if(fsUploader.isQueueEmpty()){
 					alert('There are no files in the upload queue. Try adding some files...');
-                    return;
+					return;
 				}
 				
 				var form = new FormData();
@@ -323,9 +360,7 @@ Angular HTTP upload module
 				xhr.onerror = fsUploader.xhrOnError;
 				xhr.onabort = fsUploader.xhrOnAbort;
 
-				// append file data
-				angular.forEach(fileNames, function(fileName, fileIndex) {
-					var fsFileItem = fsUploader.files[fileName];
+				angular.forEach(fsUploader.files, function(fsFileItem, fileIndex) {
 					form.append("file_" + fileIndex, fsFileItem.file);
 				}, fsUploader);
 			
@@ -356,30 +391,24 @@ Angular HTTP upload module
                 $log.debug('Uploading all files in queue as seperate, singular uploads.');
                 
                 fsUploader.progress = 0;
-                
-				var fileNames = Object.keys(fsUploader.files);
 				
-				if(fileNames.length == 0){
+				if(fsUploader.isQueueEmpty()){
 					alert('There are no files in the upload queue. Try adding some files...');
-                    return;
-				}
+					return;
+				}				
                 
                 var completeCallback = individualUploadCompleteCallback;
                 
-				angular.forEach(fileNames, function(fileName, fileIndex) {
-                    
-                    var fsFileItem = fsUploader.files[fileName];
+				angular.forEach(fsUploader.files, function(fsFileItem, fileIndex) {
                     
                     // use upload complete callback if last file
-                    if(fileIndex == (fileNames.length - 1)){
+                    if(fileIndex == (fsUploader.files.length - 1)){
                         completeCallback = allUploadCompleteCallback;
                     }
                     
                     _doUploadFileItem(fsUploader, fsFileItem, uploadProgressCallback, completeCallback);
 	
 				}, fsUploader);
-                
-                //allUploadCompleteCallback();
                 
             }
             
@@ -524,17 +553,19 @@ Angular HTTP upload module
 				fsUploader: '=uploader'
 			},
 			template:
-                '<table st-table="fsUploader.files" class="table table-striped">' +
+                '<table st-table="fsUploader.smartTableFiles" st-safe-src="fsUploader.files" class="table table-striped">' +
                 '    <thead>' +
                 '    <tr>' +
-                '        <th>Name</th>' +
-                '        <th>Size</th>' +
+				'        <th></th>' +
+                '        <th st-sort="fsUploader.uploadQueueTableGetters().fileName">Name</th>' +
+                '        <th st-sort="fsUploader.uploadQueueTableGetters().fileSize">Size</th>' +
                 '        <th>Progress Value</th>' +
                 '        <th>Progress Bar</th>' +
                 '    </tr>' +
                 '    </thead>' +
                 '    <tbody>' +
-                '    <tr ng-repeat="fsFileItem in fsUploader.files">' +
+                '    <tr ng-repeat="fsFileItem in fsUploader.smartTableFiles">' +
+				'        <td><a href ng-click="fsUploader.removeFile(fsFileItem)">[Remove]</a></td>' +
                 '        <td>{{fsFileItem.name}}</td>' +
                 '        <td>{{fsFileItem.getHumanReadableSize()}}</td>' +
                 '        <td>' +
@@ -551,6 +582,15 @@ Angular HTTP upload module
                 '</table>',
 			link: function ($scope, element, attributes){
 
+				/*
+				$scope.getters={
+					fileName: function (fsFileItem) {
+						//this will sort by the length of the first name string
+						return fsFileItem.name.length;
+					}
+				}
+				*/
+			
 			}
 		};
 	}])
