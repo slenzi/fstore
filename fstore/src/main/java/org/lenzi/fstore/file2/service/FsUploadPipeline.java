@@ -190,7 +190,7 @@ public class FsUploadPipeline {
 		
 		FsDirectoryResource uploadDir = null;
 		try {
-			uploadDir = fsResourceService.addDirectoryResource(dirName, holdingStore.getRootDirectoryResource().getDirId());
+			uploadDir = fsResourceService.addDirectoryResource(holdingStore.getRootDirectoryResource().getDirId(), dirName);
 		} catch (ServiceException e) {
 			throw new ServiceException("Error creating new directory for upload in the holding resource store. "
 					+ "Directory name = " + dirName + ". " + e.getMessage(),e);

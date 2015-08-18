@@ -96,7 +96,7 @@ public abstract class AbstractConcurrentAdd extends AbstractTreeTest {
 			
 			// create sub directory
 			try {
-				dirResource = resourceService.addDirectoryResource(dirName, store.getRootDirectoryResource().getDirId());
+				dirResource = resourceService.addDirectoryResource(store.getRootDirectoryResource().getDirId(), dirName);
 			} catch (ServiceException e) {
 				logger.error("Failed to add child directory to dir => " + store.getRootDirectoryResource().getDirId() + 
 						". " + e.getMessage());

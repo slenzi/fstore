@@ -481,7 +481,7 @@ public class FsQueuedResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsDirectoryResource addDirectoryResource(String name, Long parentDirId) throws ServiceException {
+	public FsDirectoryResource addDirectoryResource(Long parentDirId, String name) throws ServiceException {
 		
 		class Task extends AbstractFsTask<FsDirectoryResource> {
 

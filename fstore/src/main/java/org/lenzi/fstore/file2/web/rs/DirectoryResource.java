@@ -1,6 +1,5 @@
 package org.lenzi.fstore.file2.web.rs;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -16,9 +15,7 @@ import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.core.tree.TreeNode;
-import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
-import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.file2.service.FsJsonHelper;
@@ -200,7 +197,7 @@ public class DirectoryResource extends AbstractResource {
 		}
 		
 		try {
-			fsQueuedResourceService.addDirectoryResource(dirName, dirId);
+			fsResourceService.addDirectoryResource(dirId, dirName);
 		} catch (ServiceException e) {
 			handleError("Failed to create new directory. [ parent dir id = " + dirId + ", new dir name = " + dirName + "]",
 					WebExceptionType.CODE_DATABSE_ERROR, e);
