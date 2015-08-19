@@ -17,7 +17,7 @@ partial which display path resources in a table, using the angular smart table m
 <md-content layout-padding id="directoryTableContent" style="padding: 10px;">
 
 	<p>
-		<div fs-table-resource-view directory="home.directory()"></div>
+		<div fs-table-resource-view directory="home.directory()" resource-click-handler="home.handleEventClickTablePathResource(theResource)"></div>
 	</p>
 
 </md-content>

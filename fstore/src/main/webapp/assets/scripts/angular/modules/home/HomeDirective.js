@@ -46,6 +46,12 @@
 				$scope.resourceList = $scope.directory.getChildren();
 				$scope.resourceListView = [].concat($scope.directory.getChildren());
 				
+				// update resource list when directory changes
+				$scope.$watch('directory', function(newDirectory, oldDirectory){
+					$scope.resourceList = newDirectory.getChildren();
+					$scope.resourceListView = [].concat(newDirectory.getChildren());
+				}, true);				
+				
 			}
 
 			init();
@@ -68,8 +74,9 @@
 				}
 			};
 			
-			$scope.testClick = function(event){
-				alert('test click');
+			$scope.clickPathResource = function(pathResource){
+				//alert('test click resource = ' + JSON.stringify(pathResource));
+				$scope.resourceClickHandler( {theResource: pathResource} );
 			};
 			
 		}];
@@ -78,7 +85,6 @@
 			'<table st-table="resourceListView" st-safe-src="resourceList" class="table table-striped">' +
 			'	<thead>' +
 			'	<tr>' +
-			'        <th></th>' +
 			'        <th st-sort="tableGetters().resourceName">Name</th>' +
 			'        <th st-sort="tableGetters().resourceType">Type</th>' +
 			'        <th st-sort="tableGetters().resourceSize" st-skip-natural="true">Size</th>' +
@@ -92,16 +98,15 @@
 			'	</thead>' +
 			'	<tbody>' +
 			'	<tr ng-repeat="pathResource in resourceListView">' +
-			'        <td><a href ng-click="testClick()">[Test1]</a></td>' +
-			'        <td>{{pathResource.name}}</td>' +
+			'        <td><a href ng-click="clickPathResource(pathResource)">{{pathResource.name}}</a></td>' +
 			'        <td>{{pathResource.type == "DIRECTORY" ? "Folder" : pathResource.mimeType}}</td>' +
 			'        <td>{{pathResource.type == "FILE" ? pathResource.getHumanReadableSize() : ""}}</td>' +
 			'        <td>{{pathResource.dateUpdated}}</td>' +
 			'	</tr>' +
 			'	</tbody>' +
 			'	<tfoot>' +
-			'		<tr>' +
-			'			<td colspan="5" class="text-center">' +
+			'		<tr>' +		
+			'			<td colspan="4" class="text-center">' +
 			'				<div st-pagination="" st-items-by-page="20" st-displayed-pages="7"></div>' +
 			'			</td>' +
 			'		</tr>' +
@@ -111,7 +116,8 @@
 		return {
 			restrict: 'AE',
 			scope: {
-				directory: '='
+				directory: '=',
+				resourceClickHandler: '&'
 			},
 			controller: controller,
 			template: template

@@ -29,8 +29,8 @@ Directory partial that's loaded for the "home_directory" state
 			md-rowspan="1" md-colspan="1" md-colspan-sm="1"
 			ng-repeat="pathResource in home.directory().getChildren()"
 			ng-class="{'selectedTile' : pathResource.isSelected}"
-			sglclick="home.handleEventClickPathResource(pathResource)"
-			ng-dblclick="home.handleEventDblClickPathResource(pathResource)"
+			sglclick="home.handleEventClickIconGridPathResource(pathResource)"
+			ng-dblclick="home.handleEventDblClickIconGridPathResource(pathResource)"
 			ng-mouseover="home.handlePathResourceMouseOver(pathResource)">
 		
             <md-grid-tile-header ng-if="pathResource.isSelected">

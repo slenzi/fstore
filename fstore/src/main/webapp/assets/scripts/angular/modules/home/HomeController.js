@@ -354,25 +354,32 @@
 			}else{
 				$state.go('home_directory_table');
 			}
-		}		
+		}
+
+		/**
+		 * handle click of path resource in our smart table
+		 */
+		function _handleEventClickTablePathResource(pathResource){
+			if(pathResource.type == 'FILE'){
+				homeService.downloadFile(pathResource.fileId);
+			}else if(pathResource.type == 'DIRECTORY'){
+				_handleLoadDirectory(pathResource.dirId, true);
+			}
+		}
 		
 		/**
 		 * pathResource - the path resource the user moused-over
 		 */		
 		function _handlePathResourceMouseOver(pathResource){
-			
 			//$log.debug('user moused-over path resource ' + JSON.stringify(pathResource));
-			
 		}		
 		
 		/**
 		 * pathResource - the path resource the user clicked on (file, directory, etc)
 		 */
-		function _handleEventClickPathResource(pathResource){
-			
+		function _handleEventClickIconGridPathResource(pathResource){
 			// toggle isSelected attribute
 			pathResource.isSelected = !pathResource.isSelected;
-			
 			/*
 			if(pathResource.type == 'FILE'){
 				_handleEventClickFile(pathResource);
@@ -381,17 +388,9 @@
 			}
 			*/
 		}
-
-		/**
-		 * Event handler for click of file resource
-		 */
 		function _handleEventClickFile(fileResource){
 			//alert('You clicked on a file, id = ' + fileResource.fileId);
 		}
-		
-		/**
-		 * Event handler for click of directory resource
-		 */
 		function _handleEventClickDirectory(directoryResource){
 			//alert('You clicked on a directory, id = ' + directoryResource.dirId);
 		}		
@@ -399,7 +398,7 @@
 		/**
 		 * pathResource - the path resource the user double clicked on (file, directory, etc)
 		 */
-		function _handleEventDblClickPathResource(pathResource){
+		function _handleEventDblClickIconGridPathResource(pathResource){
 			if(pathResource.type == 'FILE'){
 				_handleEventDblClickFile(pathResource);
 			}else if(pathResource.type == 'DIRECTORY'){
@@ -942,8 +941,9 @@
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventViewStoreList : _handleEventViewStoreList,
-			handleEventClickPathResource : _handleEventClickPathResource,
-			handleEventDblClickPathResource : _handleEventDblClickPathResource,
+			handleEventClickTablePathResource : _handleEventClickTablePathResource,
+			handleEventClickIconGridPathResource : _handleEventClickIconGridPathResource,
+			handleEventDblClickIconGridPathResource : _handleEventDblClickIconGridPathResource,
 			handleEventClickBreadcrumb : _handleEventClickBreadcrumb,
 			handleEventViewUploadForm : _handleEventViewUploadForm,
 			handleEventClickNewFolder : _handleEventClickNewFolder,
