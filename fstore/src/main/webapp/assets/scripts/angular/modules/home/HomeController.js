@@ -33,6 +33,9 @@
         });
 		var myStomp;
 		
+		// true to use icon view to display resource, false to use smart table view
+		var useIconView = true;
+		
 		// will be true when directory data, or some other path resource data is being fetched from the server. 
 		var isLoadingPathResource = false;
 		
@@ -171,8 +174,18 @@
 			return breadcrumbNav;
 		}
 		
+		/**
+		 * Return true if there is a currently running async process that's fetching path resource data from server.
+		 */
 		function _isLoadingPathResource(){
 			return isLoadingPathResource;
+		}
+		
+		/**
+		 * Return true if currently using icon view, otherwise false if using smart table view.
+		 */
+		function _isUsingIconView(){
+			return useIconView;
 		}
 		
         /**
@@ -186,7 +199,7 @@
 		 * Handle cancle upload button click
 		 */
         function _handleEventClickCancelUpload(){
-        	$state.go('home_directory');
+			_showDirectoryView();
         }		
 		
 		/**
@@ -246,7 +259,7 @@
 			
 			$scope.$apply();
 			
-			$state.go('home_directory');
+			_showDirectoryView();
 			
 			alert('All files have been received on the server. Please note large file take time to procee. Refresh view to see latest files.');
 			/*
@@ -264,7 +277,7 @@
 			
 			_handleLoadDirectory(_currentDirectory().dirId, true);
 			
-			//$state.go('home_directory');
+			//_showDirectoryView();
 		}
 		
 		/**
@@ -312,11 +325,36 @@
 		}
 		
 		/**
-		 * Handle cancle upload button click
+		 * Handle cancel upload button click
 		 */
         function _handleEventClickCancelStoreSettings(){
-        	$state.go('home_directory');
+        	_showDirectoryView();
         }
+		
+		/**
+		 * Switches resource view between icon style and table style
+		 */
+		function _handleEventSwitchResourceView(){
+			if(useIconView){
+				useIconView = false;
+				$state.go('home_directory_table');
+				
+			}else{
+				useIconView = true;
+				$state.go('home_directory_icon');
+			}
+		}
+		
+		/**
+		 * Shows the directory view route
+		 */
+		function _showDirectoryView(){
+			if(useIconView){
+				$state.go('home_directory_icon');
+			}else{
+				$state.go('home_directory_table');
+			}
+		}		
 		
 		/**
 		 * pathResource - the path resource the user moused-over
@@ -440,7 +478,7 @@
 			
 			if(showDirectoryPartial){
 				$log.info('show directory partial');
-				$state.go('home_directory');
+				_showDirectoryView();
 			}
 			
             // fetch directory listing with max depth 1
@@ -899,6 +937,8 @@
 			breadcrumb : _breadcrumb,
 			haveChildPathResources : _haveChildPathResources,
 			isLoadingPathResource : _isLoadingPathResource,
+			isUsingIconView : _isUsingIconView,
+			handleEventSwitchResourceView : _handleEventSwitchResourceView,
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventViewStoreList : _handleEventViewStoreList,

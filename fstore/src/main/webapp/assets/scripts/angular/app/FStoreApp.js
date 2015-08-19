@@ -93,22 +93,33 @@
 		 */
 		function uiRouteConfig(appConstants, $stateProvider, $urlRouterProvider){
 			
-			// For any unmatched url, redirect to /state1
+			// For any unmatched url, redirect to /stores state. This partial shows a list of all resource stores.
 			$urlRouterProvider.otherwise("/stores");
 
 			// Now set up the states
 			$stateProvider
-				.state('home_directory', {
-					url: '/directory/:dirId',
+				.state('home_directory_icon', {
+					url: '/directory-icon/:dirId',
 					views: {
 						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryPartial.jsp'							
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryGridPartial.jsp'					
 						},
 						'toolbarContent': {
 							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/toolbarDirectoryPartial.jsp'							
 						}
 					}
 				})
+				.state('home_directory_table', {
+					url: '/directory-table/:dirId',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryTablePartial.jsp'				
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/toolbarDirectoryPartial.jsp'							
+						}
+					}
+				})				
 				.state('home_storeList', {
 					url: '/stores',
 					views: {
@@ -144,9 +155,9 @@
 				});
 			
 				/*
-				.state('home_directory', {
-					url: '/directory',
-					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryPartial.jsp'
+				.state('home_directory_icon', {
+					url: '/directory-grid',
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/directoryGridPartial.jsp'
 				})
 				.state('home_storeList', {
 					url: '/stores',

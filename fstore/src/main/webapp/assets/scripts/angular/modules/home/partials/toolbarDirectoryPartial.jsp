@@ -14,6 +14,11 @@ Toolbar partial that's loaded for the "home_directory" state
 	</md-button>
 	-->
 	
+	<md-button class="" ng-click="home.handleEventSwitchResourceView()" aria-label="Toggle Resource View">
+		<md-icon ng-if="home.isUsingIconView()" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_view_list_24px.svg"></md-icon>
+		<md-icon ng-if="!home.isUsingIconView()" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_view_module_24px.svg"></md-icon>
+	</md-button>	
+	
 	<md-progress-circular class="md-hue-2" md-mode="indeterminate" md-diameter="24" ng-if="home.isLoadingPathResource()"></md-progress-circular>
 	<span ng-if="home.isLoadingPathResource()" style="font-style: italic; font-size: .75em;">Loading...</span>
 	
