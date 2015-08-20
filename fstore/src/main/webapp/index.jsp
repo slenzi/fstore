@@ -63,6 +63,11 @@
 		<a href="<%=request.getContextPath() %>/cxf/resource/file/download/id/14">CXF JAX-RS download file resource (fileId=14).</a><br>
 		Download file #14 from Apache CXF JAX-RS service, should prompt user with a save dialog window.
 	</p>
+	
+	<p>
+		<a href="<%=request.getContextPath() %>/spring/file2/res/load/path/upload_holding/cms/test.jsp">Dispatcher path /upload_holding/cms/test.jsp</a><br>
+		Dispatcher path /upload_holding/cms/test.jsp
+	</p>
 
 
 </body>

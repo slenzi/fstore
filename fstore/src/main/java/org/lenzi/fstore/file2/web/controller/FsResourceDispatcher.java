@@ -8,6 +8,7 @@ import java.io.File;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -129,7 +130,7 @@ public class FsResourceDispatcher extends AbstractSpringController {
 			value = "/load/path/**", 
 			method = RequestMethod.GET
 			)
-	public ResponseEntity<InputStreamResource> loadFileResourceByPath(HttpServletRequest request){
+	public ResponseEntity<InputStreamResource> loadFileResourceByPath(HttpServletRequest request, HttpServletResponse response){
 		
 		// TODO - if file data is on file system, then use it, otherwise go to database.
 
@@ -149,12 +150,47 @@ public class FsResourceDispatcher extends AbstractSpringController {
 		
 		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
 		
+		//request.getRequestDispatcher("/file.jsp").forward(request, response);
+		
+		//request.getRequestDispatcher(arg0)
+		
 		return ResponseEntity.ok()
 	            .contentLength(fileData.length)
 	            .contentType(MediaType.parseMediaType(mimeType))
 	            .body(new InputStreamResource(bis));
 		
 	}
+	
+	/*
+	public ResponseEntity<InputStreamResource> loadFileResourceByPath(HttpServletRequest request, HttpServletResponse response){
+		
+		// TODO - if file data is on file system, then use it, otherwise go to database.
+
+		// extract the remainder of the URL (the ** part)
+		String filePath = extractPathFromPattern(request);
+		
+		logger.info("loading file path before => " + filePath);
+		//filePath = filePath.replace("/", File.separator); // convert web path separator to file path separator
+		logger.info("loading file path after => " + filePath);
+		
+		FsFileMetaResource fileResource = this.getFileByPath(filePath);
+		String mimeType = fileResource.getMimeType();
+		byte[] fileData = fileResource.getFileResource().getFileData();
+		
+		//logger.info("Load file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
+		//		", byte size => " + fileData.length);
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
+		
+		//request.getRequestDispatcher("/file.jsp").forward(request, response);
+		
+		return ResponseEntity.ok()
+	            .contentLength(fileData.length)
+	            .contentType(MediaType.parseMediaType(mimeType))
+	            .body(new InputStreamResource(bis));
+		
+	}
+	 */
 	
 	/**
 	 * Fetch file data from database, including byte data
