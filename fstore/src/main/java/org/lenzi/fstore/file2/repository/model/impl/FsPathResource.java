@@ -190,7 +190,7 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 			if(getPathTypeValue().equals(FsPathType.DIRECTORY.getType()) && other.getPathTypeValue().equals(FsPathType.DIRECTORY.getType())){
 		
 				// both directories, compare names
-				return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+				return StringUtil.changeNull(getName()).toLowerCase().compareTo(StringUtil.changeNull(other.getName()).toLowerCase());
 				
 			}else if(getPathTypeValue().equals(FsPathType.FILE.getType()) && other.getPathTypeValue().equals(FsPathType.DIRECTORY.getType())){
 				
@@ -205,12 +205,12 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 			}else if(getPathTypeValue().equals(FsPathType.FILE.getType()) && other.getPathTypeValue().equals(FsPathType.FILE.getType())){
 				
 				// both files, compare names
-				return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+				return StringUtil.changeNull(getName()).toLowerCase().compareTo(StringUtil.changeNull(other.getName()).toLowerCase());
 				
 			}else{
 				
 				// not sure of types...
-				return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+				return StringUtil.changeNull(getName()).toLowerCase().compareTo(StringUtil.changeNull(other.getName()).toLowerCase());
 				
 			}
 			
@@ -225,7 +225,7 @@ public abstract class FsPathResource extends FSNode<FsPathResource> implements F
 		}else{
 			
 			// compare names
-			return StringUtil.changeNull(getName()).compareTo(StringUtil.changeNull(other.getName()));
+			return StringUtil.changeNull(getName()).toLowerCase().compareTo(StringUtil.changeNull(other.getName()).toLowerCase());
 			
 		}
 		

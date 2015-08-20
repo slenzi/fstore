@@ -4,9 +4,11 @@
 package org.lenzi.fstore.file2.web.controller;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
+import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,6 +17,7 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,9 @@ public class FsResourceDispatcher extends AbstractSpringController {
     @InjectLogger
     Logger logger;
 	
+    @Autowired
+    private ManagedProperties appProps;
+    
     @Autowired
     private FsQueuedResourceService fsResourceService;
     
@@ -160,6 +166,65 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	            .body(new InputStreamResource(bis));
 		
 	}
+	
+	@RequestMapping(
+			value = "/dispatch/**", 
+			method = RequestMethod.GET
+			)
+	public void dispatchResource(HttpServletRequest request, HttpServletResponse response){
+		
+		String resourcePath = "/" + extractPathFromPattern(request);
+		//String springDispatcher = "/spring";
+		//String appContext = appProps.getProperty("application.context");
+		//String dispatchLoadPath = "/file2/res/load/path";
+		
+		String jspHome = "/WEB-INF/jsp";
+		String forwardPath = jspHome + resourcePath;
+		
+		//String fullResourcePath = appContext + springDispatcher + dispatchLoadPath + resourcePath;
+		
+		logger.info("Dispatch forward => " + forwardPath);
+		
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher(forwardPath);
+		
+		try {
+			requestDispatcher.forward(request, response);
+		} catch (ServletException e) {
+			logger.error("Servlet expception thrown while attempting to use RequestDispatcher to inlcude resource, " + forwardPath);
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.error("IO expception thrown while attempting to use RequestDispatcher to inlcude resource, " + forwardPath);
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/*
+	public void dispatchResource(HttpServletRequest request, HttpServletResponse response){
+		
+		String resourcePath = "/" + extractPathFromPattern(request);
+		String springDispatcher = "/spring";
+		String appContext = appProps.getProperty("application.context");
+		String dispatchLoadPath = "/file2/res/load/path";
+		
+		String fullResourcePath = appContext + springDispatcher + dispatchLoadPath + resourcePath;
+		
+		logger.info("Dispatching path => " + fullResourcePath);
+		
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher(fullResourcePath);
+		
+		try {
+			requestDispatcher.include(request, response);
+		} catch (ServletException e) {
+			logger.error("Servlet expception thrown while attempting to use RequestDispatcher to inlcude resource, " + fullResourcePath);
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.error("IO expception thrown while attempting to use RequestDispatcher to inlcude resource, " + fullResourcePath);
+			e.printStackTrace();
+		}
+		
+	}
+	 */
 	
 	/*
 	public ResponseEntity<InputStreamResource> loadFileResourceByPath(HttpServletRequest request, HttpServletResponse response){
