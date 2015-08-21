@@ -72,6 +72,8 @@ public class FsCmsService {
 		String appPath = servletContext.getRealPath("");
 		Path sitePath = Paths.get(appPath + sitesRoot + File.separator + siteName);
 		
+		siteName += "CMS: ";
+		
 		/*
 		logger.debug("Context path = " + contextPath);
 		logger.debug("Sites root = " + sitesRoot);

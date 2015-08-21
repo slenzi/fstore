@@ -53,13 +53,20 @@ public class CmsSiteResource extends AbstractResource {
 	@POST
 	@Path("/add")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addSite() throws WebServiceException {
+	public Response addSite(@QueryParam("siteName") String siteName, @QueryParam("siteDesc") String siteDesc, 
+			@QueryParam("clearIfExists") Boolean clearIfExists) throws WebServiceException {
+		
+		if(siteName == null || siteDesc == null || clearIfExists == null || siteName.equals("") || siteDesc.equals("")){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,
+					"Missing required input for creating cms site. Check request.");
+		}		
 		
 		logger.info("Adding CMS site...");
+		logger.info("Name = " + siteName + ", Description = " + siteDesc + ", ClearIfExists = " + clearIfExists);
 		
 		FsCmsSite site = null;
 		try {
-			site = cmsService.createSite("testing", "this is a test cms site", true);
+			site = cmsService.createSite(siteName, siteDesc, clearIfExists);
 		} catch (ServiceException e) {
 			handleError("Failed to create new cms site.",
 					WebExceptionType.CODE_DATABSE_ERROR, e);

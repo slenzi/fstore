@@ -131,6 +131,17 @@
 						}
 					}
 				})
+				.state('home_siteList', {
+					url: '/sites',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/siteListPartial.jsp'
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/modules/home/partials/toolbarSiteListPartial.jsp'							
+						}
+					}
+				})				
 				.state('home_storeSettings', {
 					url: '/storeSettings',
 					views: {

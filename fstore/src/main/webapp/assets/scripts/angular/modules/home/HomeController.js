@@ -280,6 +280,14 @@
 			//_showDirectoryView();
 		}
 		
+		function _handleEventViewSiteList(){
+			
+			sectionTitle = "CMS Site List";
+			
+			$state.go('home_siteList');
+			
+		}
+		
 		/**
 		 * View list of all stores
 		 */
@@ -941,6 +949,7 @@
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventViewStoreList : _handleEventViewStoreList,
+			handleEventViewSiteList : _handleEventViewSiteList,
 			handleEventClickTablePathResource : _handleEventClickTablePathResource,
 			handleEventClickIconGridPathResource : _handleEventClickIconGridPathResource,
 			handleEventDblClickIconGridPathResource : _handleEventDblClickIconGridPathResource,

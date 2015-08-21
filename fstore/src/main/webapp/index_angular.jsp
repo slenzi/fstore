@@ -42,18 +42,26 @@
 				</h3>
 			</md-toolbar>
 
-			<md-content layout="column" class="md-hue-1" style="padding-top: 5px;">
+			<md-content layout="column" class="md-hue-1" style="padding-top: 0px;">
 			
-				<!-- ui-sref="settings" -->
-				<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
-					System Settings
-				</md-button>
+				<md-toolbar class="md-toolbar-tools md-hue-1">
 				
+					<!-- ui-sref="settings" -->
+					<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
+						System Settings
+					</md-button>				
+				
+				</md-toolbar>
+		
 				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewStoreList()">
 					Store List
 				</md-button>
-
+				
+				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewSiteList()">
+					Site List
+				</md-button>				
+				
 				<md-button class="md-raised leftNavButton" ng-click="home.handleEventSendSampleStomp()">
 					Sample STOMP
 				</md-button>				

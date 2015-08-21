@@ -33,9 +33,13 @@ Directory partial that's loaded for the "home_directory" state
 			ng-dblclick="home.handleEventDblClickIconGridPathResource(pathResource)"
 			ng-mouseover="home.handlePathResourceMouseOver(pathResource)">
 		
+			<%-- fails in IE when you have checkbox inside the grid-tile header
             <md-grid-tile-header ng-if="pathResource.isSelected">
-                <md-checkbox ng-model="pathResource.isSelected" ng-init="pathResource.isSelected" aria-label="Check"/>
+				<!--[if !IE]>-->
+				<md-checkbox ng-model="pathResource.isSelected" ng-init="pathResource.isSelected" aria-label="Check"/>
+				<!--<![endif]-->
             </md-grid-tile-header>
+			--%>
             
 			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
 			
