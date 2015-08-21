@@ -360,47 +360,42 @@ public class OracleCreate {
 	 */
 	public void createDatabase() throws DatabaseException {
 		
-		// core
+		// sequences
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_PRUNE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_NODE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_LINK_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_TREE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_TREE_ID).executeUpdate();		
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_FILE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_STORE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
+		
+		// core tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TREE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
 		
-		// file
-		/*
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_STORE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_ENTRY).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIR_FILE_LINK).executeUpdate();
-		*/
-		
-		// test
+		// test tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
 		
-		// file 2
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_FILE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_STORE_ID).executeUpdate();		
+		// file 2 tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();
-		//entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();	
+		
+		// cms tables
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_SITE).executeUpdate();
+		
+		// constraints
 		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();		
+		entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();
 		
-		// cms
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_SITE).executeUpdate();
-
+		// indexes
+		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
 		
 	}
 	
@@ -411,46 +406,42 @@ public class OracleCreate {
 	 */
 	public void dropDatabase() throws DatabaseException {
 
-		// core
+		// constraints
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();		
+		
+		// indexes
 		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_PRUNE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_NODE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_LINK_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();		
+		
+		// cms tables
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CMS_SITE).executeUpdate();		
+		
+		// test tables
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
+		
+		// file 2 tables	
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_RESOURCE_STORE).executeUpdate();		
+		
+		// core tables
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
 		
-		// file
-		/*
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_STORE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_ENTRY).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIR_FILE_LINK).executeUpdate();
-		*/
-		
-		// test
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
-		
-		// file 2
-		//entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();		
+		// sequences
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_PRUNE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_NODE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_LINK_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_FILE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_STORE_ID).executeUpdate();		
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_RESOURCE_STORE).executeUpdate();
-		
-		// cms
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CMS_SITE).executeUpdate();
 		
 	}
 	
