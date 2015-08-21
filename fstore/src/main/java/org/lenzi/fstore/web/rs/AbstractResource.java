@@ -1,4 +1,4 @@
-package org.lenzi.fstore.file2.web.rs;
+package org.lenzi.fstore.web.rs;
 
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;

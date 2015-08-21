@@ -12,9 +12,9 @@ import javax.ws.rs.core.Application;
  * @author slenzi
  */
 @ApplicationPath( "resource" )
-public class JaxRsResourceStoreApplication extends Application {
+public class JaxRsFileResourceApplication extends Application {
 
-	public JaxRsResourceStoreApplication() {
+	public JaxRsFileResourceApplication() {
 		
 	}
 

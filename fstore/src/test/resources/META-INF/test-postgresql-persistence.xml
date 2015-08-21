@@ -29,6 +29,9 @@
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsFileResource</class>
       	<class>org.lenzi.fstore.file2.repository.model.impl.FsResourceStore</class>        		      	
     
+      	<!--  cms models -->
+      	<class>org.lenzi.fstore.cms.repository.model.impl.FsCmsSite</class>     
+    
         <properties>
         
         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>

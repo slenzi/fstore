@@ -38,6 +38,15 @@ public class PersistenceConfig {
 	@Qualifier("primaryDataSource")
 	private DataSource primaryDataSource;
 	
+	private final String[] entityPackages = new String[]{
+			
+			"org.lenzi.fstore.core.repository.model.impl",
+			"org.lenzi.fstore.example.repository.model.impl",
+			"org.lenzi.fstore.file2.repository.model.impl",
+			"org.lenzi.fstore.cms.repository.model.impl"
+			
+	};
+	
 	/**
 	 * Setup entity manager factory
 	 * 
@@ -50,13 +59,7 @@ public class PersistenceConfig {
 		
 		em.setDataSource(primaryDataSource);
 		
-		em.setPackagesToScan(new String[] {
-				
-				"org.lenzi.fstore.core.repository.model.impl",
-				"org.lenzi.fstore.example.repository.model.impl",
-				"org.lenzi.fstore.file2.repository.model.impl"
-				
-				});
+		em.setPackagesToScan(entityPackages);
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);

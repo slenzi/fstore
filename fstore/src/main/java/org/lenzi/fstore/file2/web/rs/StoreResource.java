@@ -17,6 +17,7 @@ import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.file2.web.rs.model.JsResourceStore;
+import org.lenzi.fstore.web.rs.AbstractResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;

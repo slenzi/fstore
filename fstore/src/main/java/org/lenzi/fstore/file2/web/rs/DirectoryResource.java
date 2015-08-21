@@ -20,6 +20,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
 import org.lenzi.fstore.file2.service.FsJsonHelper;
 import org.lenzi.fstore.file2.service.FsResourceService;
+import org.lenzi.fstore.web.rs.AbstractResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;

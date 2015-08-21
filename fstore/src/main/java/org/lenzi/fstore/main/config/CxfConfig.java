@@ -9,11 +9,13 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.provider.BinaryDataProvider;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import org.lenzi.fstore.cms.web.rs.CmsSiteResource;
+import org.lenzi.fstore.cms.web.rs.JaxRsCmsResourceApplication;
 import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
 import org.lenzi.fstore.example.web.rs.TreeResource;
 import org.lenzi.fstore.file2.web.rs.DirectoryResource;
 import org.lenzi.fstore.file2.web.rs.FileResource;
-import org.lenzi.fstore.file2.web.rs.JaxRsResourceStoreApplication;
+import org.lenzi.fstore.file2.web.rs.JaxRsFileResourceApplication;
 import org.lenzi.fstore.file2.web.rs.StoreResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceExceptionMapper;
 import org.springframework.context.annotation.Bean;
@@ -76,14 +78,14 @@ public class CxfConfig {
 	 * 
 	 * @return
 	 */
-	@Bean(name="jaxRsResourceServer")
+	@Bean(name="jaxRsFileResourceServer")
 	@DependsOn ( "cxf" )
-	public Server getJaxRsResourceServer() {
+	public Server getJaxRsFileResourceServer() {
 		
 		RuntimeDelegate delegate = RuntimeDelegate.getInstance();
 		
 		JAXRSServerFactoryBean factory = delegate.createEndpoint( 
-				getJaxRsResourceStoreApplication(), JAXRSServerFactoryBean.class );
+				getJaxRsFileResourceApplication(), JAXRSServerFactoryBean.class );
 		
 		//
 		// Add service beans
@@ -108,6 +110,42 @@ public class CxfConfig {
 	}
 	
 	/**
+	 * Load "cms" server which runs cms resource service
+	 * 
+	 * @return
+	 */
+	@Bean(name="jaxRsCmsResourceServer")
+	@DependsOn ( "cxf" )
+	public Server getJaxRsCmsResourceServer() {
+		
+		RuntimeDelegate delegate = RuntimeDelegate.getInstance();
+		
+		JAXRSServerFactoryBean factory = delegate.createEndpoint( 
+				getJaxRsCmsResourceApplication(), JAXRSServerFactoryBean.class );
+		
+		//
+		// Add service beans
+		//
+		factory.setServiceBeans(
+			Arrays.<Object>asList(
+					getCmsSiteResource(), getExceptionMapper()
+			)
+		);
+		
+		factory.setAddress( factory.getAddress() );
+		
+		// 
+		// Add providers for binary data and json marshalling
+		//
+		factory.setProviders( Arrays.<Object>asList( 
+				getBinaryDataProvider(),
+				getJsonProvider()
+				) );
+		
+		return factory.create();
+	}	
+	
+	/**
 	 * Create our "/example" jax-rs application 
 	 * 
 	 * @return
@@ -123,9 +161,19 @@ public class CxfConfig {
 	 * @return
 	 */
 	@Bean
-	public JaxRsResourceStoreApplication getJaxRsResourceStoreApplication(){
-		return new JaxRsResourceStoreApplication();
+	public JaxRsFileResourceApplication getJaxRsFileResourceApplication(){
+		return new JaxRsFileResourceApplication();
 	}
+	
+	/**
+	 * Create our "/cms" jax-rs application
+	 * 
+	 * @return
+	 */
+	@Bean
+	public JaxRsCmsResourceApplication getJaxRsCmsResourceApplication(){
+		return new JaxRsCmsResourceApplication();
+	}	
 	
 	/**
 	 * Jax-rs tree service bean
@@ -166,6 +214,16 @@ public class CxfConfig {
 	public DirectoryResource getDirectoryResource(){
 		return new DirectoryResource();
 	}
+	
+	/**
+	 * jax-rs cms resource bean
+	 * 
+	 * @return
+	 */
+	@Bean
+	public CmsSiteResource getCmsSiteResource(){
+		return new CmsSiteResource();
+	}	
 	
 	/**
 	 * jax-rs JSON marshalling / provider

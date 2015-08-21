@@ -52,6 +52,8 @@
       	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsFileResource"/>
       	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsPathResource"/>	  
     	<mapping class="org.lenzi.fstore.file2.repository.model.impl.FsResourceStore"/>
+    	
+    	<mapping class="org.lenzi.fstore.cms.repository.model.impl.FsCmsSite"/>
     
     </session-factory>
     
