@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 	basePackages = {
 		"org.lenzi.fstore.main",
 		"org.lenzi.fstore.core",
+		"org.lenzi.fstore.web",
 		"org.lenzi.fstore.example",
 		"org.lenzi.fstore.file2",
 		"org.lenzi.fstore.cms"

@@ -9,15 +9,15 @@
 <html>
 
 <head>
-	<title>CMS Test Page 1</title>
+	<title>CMS Test Page 2</title>
 </head>
 
 <body>
 
-<h2>CMS Test Page 1</h2>
+<h2>CMS Test Page 2</h2>
 
 <p>
-This is the CMS test page. It should load as a regular JSP.
+This is the second CMS test page..
 </p>
 
 <p>
@@ -25,16 +25,9 @@ The time is <b><%=LocalTime.now() %></b> on <b><%=LocalDate.now() %></b>
 </p>
 
 <p>
-<a href="<%=CmsLink.getInstance().createLink("/test/sub/test.jsp") %>">Link to second page</a>
+<a href="<%=CmsLink.getInstance().createLink("/test/test.jsp") %>">Link back to first page</a>
 </p>
 
-<p>
-<%
-for(int i=0; i<10; i++){
-	out.println("i = " + (i + 1) + "<br>");
-}
-%>
-</p>
 
 </body>
 

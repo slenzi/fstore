@@ -79,7 +79,8 @@
 	<h2>CMS Tests</h2>
 	
 	<p>
-		<a href="<%=request.getContextPath() %>/cxf/cms/site/add">CXF JAX-RS cms site add.</a><br>
+		<a href="<%=request.getContextPath() %>/spring/cms/test/test.jsp">Dispatcher dispatch /test/test.jsp (/WEB-INF/jsp)</a><br>
+		Dispatcher dispatch /upload_holding/cms/test.jsp
 	</p>	
 
 </body>

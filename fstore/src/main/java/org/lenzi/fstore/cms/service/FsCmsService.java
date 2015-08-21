@@ -16,6 +16,7 @@ import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.main.properties.ManagedProperties;
+import org.lenzi.fstore.web.util.AppServices;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,11 +35,14 @@ public class FsCmsService {
 	@InjectLogger
 	private Logger logger;
 	
+	@Autowired
+	private AppServices appServices;
+	
     @Autowired
     private ManagedProperties appProps; 	
 	
-	@Autowired
-	ServletContext servletContext = null;
+	//@Autowired
+	//ServletContext servletContext = null;
 	
 	//
 	// cms site operators
@@ -66,20 +70,11 @@ public class FsCmsService {
 	 */
 	public FsCmsSite createSite(String siteName, String description, boolean clearIfExists) throws ServiceException {
 	
-		//String contextPath = servletContext.getContextPath();
-		
+		String appPath = appServices.getRuntimePath();
 		String sitesRoot = appProps.getProperty("cms.sites.root");
-		String appPath = servletContext.getRealPath("");
 		Path sitePath = Paths.get(appPath + sitesRoot + File.separator + siteName);
 		
 		siteName += "CMS: ";
-		
-		/*
-		logger.debug("Context path = " + contextPath);
-		logger.debug("Sites root = " + sitesRoot);
-		logger.debug("app path = " + appPath);
-		logger.debug("Site path = " + sitePath.toString());
-		*/
 		
 		FsCmsSite site = null;
 		try {
