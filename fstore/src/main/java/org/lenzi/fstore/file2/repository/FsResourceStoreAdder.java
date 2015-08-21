@@ -3,7 +3,6 @@
  */
 package org.lenzi.fstore.file2.repository;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;

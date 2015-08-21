@@ -200,6 +200,24 @@ public class PostgreSQLCreate {
 	
 	/***********************************************************************************
 	 * 
+	 * CMS tables
+	 * 
+	 */
+	private String SQL_DROP_TABLE_FS_CMS_SITE =
+		"drop table " + SCHEMA + "FS_CMS_SITE";	
+	private String SQL_CREATE_TABLE_FS_CMS_SITE =
+		"create table " + SCHEMA + "FS_CMS_SITE ( " +  
+		"	SITE_ID NUMERIC(15,0) NOT NULL, " + 
+		"	SITE_NAME CHARACTER VARYING(250) NOT NULL, " + 
+		"	SITE_DESCRIPTION CHARACTER VARYING(4000) NOT NULL, " + 
+		"	STORE_ID NUMERIC(15,0) NOT NULL, " +  
+		"	CREATION_DATE TIMESTAMP NOT NULL,  " + 
+		"	UPDATED_DATE TIMESTAMP NOT NULL,  " + 
+		"	PRIMARY KEY (SITE_ID)  " + 
+		")";
+	
+	/***********************************************************************************
+	 * 
 	 * Constraints
 	 * 
 	 */
@@ -298,6 +316,14 @@ public class PostgreSQLCreate {
 		"START WITH 1 " +
 		"CACHE 10  " +
 		"NO CYCLE";	
+	private String SQL_DROP_SEQUENCE_FS_CMS_SITE_ID =
+		"drop sequence " + SCHEMA + "FS_CMS_SITE_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_CMS_SITE_ID =
+		"CREATE SEQUENCE " + SCHEMA + "FS_CMS_SITE_ID_SEQUENCE " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"NO CYCLE";
 	
 	
 	public PostgreSQLCreate() {
@@ -320,8 +346,6 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_NODE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_LINK_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_TREE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_FILE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
@@ -329,7 +353,7 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
 		
-		// file tables
+		// file
 		/*
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_STORE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE).executeUpdate();
@@ -341,12 +365,18 @@ public class PostgreSQLCreate {
 		// test
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
 		
-		// file 2 tables
+		// file 2
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_FILE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();
+		
+		// cms
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_SITE).executeUpdate();
 		
 		// file 2 constraints
 		//entityManager.createNativeQuery(SQL_CREATE_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
@@ -363,12 +393,6 @@ public class PostgreSQLCreate {
 	 */
 	public void dropDatabase() throws DatabaseException {
 		
-		// file 2 constraints
-		//entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();
-		
 		// core
 		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
@@ -376,8 +400,6 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_NODE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_LINK_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_TREE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_FILE_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
@@ -395,12 +417,22 @@ public class PostgreSQLCreate {
 		// test
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
 		
-		// file 2 tables
+		// file 2
+		//entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_FILE_META_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_DIRECTORY_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_CONSTRAINT_FK_FS_PATH_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_FILE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_RESOURCE_STORE).executeUpdate();
+		
+		// cms
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CMS_SITE).executeUpdate();
 		
 	}
 	

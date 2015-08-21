@@ -2,8 +2,6 @@ package org.lenzi.fstore.cms.repository.model.impl;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,16 +10,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.lenzi.fstore.core.util.StringUtil;
-import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
-import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 
 /**
@@ -48,12 +41,8 @@ public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 	@Column(name = "SITE_DESCRIPTION", nullable = false)
 	private String description;
 	
-	@Column(name = "SITE_PATH", nullable = false)
-	private String path;
-	
-	// id of root directory resource
-	@Column(name = "NODE_ID", updatable = false, nullable = false)
-	private Long nodeId;	
+	@Column(name = "STORE_ID", nullable = false)
+	private Long storeId;	
 	
 	@Column(name = "CREATION_DATE", nullable = false)
 	private Timestamp dateCreated;
@@ -61,22 +50,9 @@ public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;
 	
-	/*
-	//
-	// the root directory for the site
-	//
-	@OneToOne(optional=false, fetch=FetchType.EAGER, targetEntity = FsDirectoryResource.class)
-	@JoinColumn(name = "NODE_ID", insertable=false, updatable=false)
-	@Fetch(FetchMode.JOIN)
-	private FsDirectoryResource rootDirectoryResource = null;
-	
-	//
-	// all the path resource under this site
-	//
-	@OneToMany(mappedBy="resourceStore", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	private Set<FsPathResource> pathResources = new HashSet<FsPathResource>(0);
-	*/
-	
+	// resource store containing all files for the cms site
+	@OneToOne(cascade=CascadeType.ALL, optional=false, fetch=FetchType.EAGER)
+    @JoinColumn(name="STORE_ID", insertable=false, updatable=false, unique=true)
 	private FsResourceStore resourceStore = null;
 	
 	public FsCmsSite() {
@@ -126,34 +102,6 @@ public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 	}
 
 	/**
-	 * @return the path
-	 */
-	public String getPath() {
-		return path;
-	}
-
-	/**
-	 * @param path the path to set
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	/**
-	 * @return the nodeId
-	 */
-	public Long getNodeId() {
-		return nodeId;
-	}
-
-	/**
-	 * @param nodeId the nodeId to set
-	 */
-	public void setNodeId(Long nodeId) {
-		this.nodeId = nodeId;
-	}
-
-	/**
 	 * @return the dateCreated
 	 */
 	public Timestamp getDateCreated() {
@@ -179,6 +127,34 @@ public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 	 */
 	public void setDateUpdated(Timestamp dateUpdated) {
 		this.dateUpdated = dateUpdated;
+	}
+
+	/**
+	 * @return the storeId
+	 */
+	public Long getStoreId() {
+		return storeId;
+	}
+
+	/**
+	 * @param storeId the storeId to set
+	 */
+	public void setStoreId(Long storeId) {
+		this.storeId = storeId;
+	}
+
+	/**
+	 * @return the resourceStore
+	 */
+	public FsResourceStore getResourceStore() {
+		return resourceStore;
+	}
+
+	/**
+	 * @param resourceStore the resourceStore to set
+	 */
+	public void setResourceStore(FsResourceStore resourceStore) {
+		this.resourceStore = resourceStore;
 	}
 
 	@Override
