@@ -3,6 +3,8 @@
  */
 package org.lenzi.fstore.cms.api;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.lenzi.fstore.cms.constants.CmsConstants;
 
 /**
@@ -11,18 +13,17 @@ import org.lenzi.fstore.cms.constants.CmsConstants;
  * @author sal
  */
 public class CmsLink {
-
-	private static CmsLink link = null;
 	
-	private CmsLink() {
-
+	private HttpServletRequest request = null;
+	
+	private CmsLink(HttpServletRequest request) {
+		this.request = request;
 	}
 	
-	public static CmsLink getInstance(){
-		if(link == null){
-			link = new CmsLink();
-		}
-		return link;
+	public static CmsLink getInstance(HttpServletRequest request){
+		
+		return new CmsLink(request);
+		
 	}
 	
 	public String createLink(String sitePath){
@@ -34,7 +35,7 @@ public class CmsLink {
 			sitePath = "/" + sitePath;
 		}
 		
-		return CmsConstants.DISPATCHER_MAPPING + sitePath;
+		return request.getContextPath() + CmsConstants.DISPATCHER_MAPPING + sitePath;
 		
 	}
 

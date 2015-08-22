@@ -25,7 +25,7 @@ The time is <b><%=LocalTime.now() %></b> on <b><%=LocalDate.now() %></b>
 </p>
 
 <p>
-<a href="<%=CmsLink.getInstance().createLink("/test/test.jsp") %>">Link back to first page</a>
+<a href="<%=CmsLink.getInstance(request).createLink("/test/test.jsp") %>">Link back to first page</a>
 </p>
 
 
