@@ -3,7 +3,10 @@
  */
 package org.lenzi.fstore.cms.repository;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
 
 import org.lenzi.fstore.cms.repository.model.impl.FsCmsSite;
 import org.lenzi.fstore.core.repository.AbstractRepository;
@@ -15,6 +18,8 @@ import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceHelper;
+import org.lenzi.fstore.main.properties.ManagedProperties;
+import org.lenzi.fstore.web.util.AppServices;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,6 +45,12 @@ public class FsCmsSiteAdder extends AbstractRepository {
 	private Logger logger;
 	
 	@Autowired
+	private AppServices appServices;
+	
+    @Autowired
+    private ManagedProperties appProps; 
+	
+	@Autowired
 	@Qualifier("FsPathResourceTree")
 	private TreeRepository<FsPathResource> treeRepository;
 	
@@ -62,36 +73,55 @@ public class FsCmsSiteAdder extends AbstractRepository {
 	/**
 	 * Create cms site
 	 * 
-	 * @param sitePath
 	 * @param name
 	 * @param description
 	 * @param clearIfExists
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsCmsSite createCmsSite(Path sitePath, String name, String description, boolean clearIfExists) throws DatabaseException {
+	public FsCmsSite createCmsSite(String name, String description, boolean clearIfExists) throws DatabaseException {
 		
-		return doCreateSite(sitePath, name, description, clearIfExists);
+		return doCreateSite(name, description, clearIfExists);
 		
 	}
 	// helper method for create operation
-	private FsCmsSite doCreateSite(Path sitePath, String name, String description, boolean clearIfExists) throws DatabaseException {
+	private FsCmsSite doCreateSite(String name, String description, boolean clearIfExists) throws DatabaseException {
 		
-		// create resource store for storing cms files
-		FsResourceStore cmsStore = null;
+		String appPath = appServices.getRuntimePath();
+		String offline = appProps.getProperty("cms.sites.offline");
+		String online = appProps.getProperty("cms.sites.online");
+		
+		Path siteOfflinePath = Paths.get(appPath + offline + File.separator + name);
+		Path siteOnlinePath = Paths.get(appPath + online + File.separator + name);
+		
+		String offlineStoreName = "CMS Site Offline: " + name;
+		String onlineStoreName = "CMS Site Online: " + name;
+		
+		// create offline resource store
+		FsResourceStore offlineStore = null;
 		try {
-			cmsStore = fsResourceStoreAdder.createResourceStore(sitePath, name, description, clearIfExists);
+			offlineStore = fsResourceStoreAdder.createResourceStore(siteOfflinePath, offlineStoreName, description, clearIfExists);
 		} catch (DatabaseException e) {
-			throw new DatabaseException("Error creating resource store for new cms site. Path = " + sitePath, e);
+			throw new DatabaseException("Error creating offline resource store for new cms site. Path = " + siteOfflinePath, e);
+		}
+		
+		// create online resource store
+		FsResourceStore onlineStore = null;
+		try {
+			onlineStore = fsResourceStoreAdder.createResourceStore(siteOnlinePath, onlineStoreName, description, clearIfExists);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error creating online resource store for new cms site. Path = " + siteOnlinePath, e);
 		}
 		
 		// create new cms site
+		Timestamp nowTime = DateUtil.getCurrentTime();
 		FsCmsSite cmsSite = new FsCmsSite();
 		cmsSite.setName(name);
 		cmsSite.setDescription(description);
-		cmsSite.setStoreId(cmsStore.getStoreId());
-		cmsSite.setDateCreated(DateUtil.getCurrentTime());
-		cmsSite.setDateUpdated(DateUtil.getCurrentTime());
+		cmsSite.setOfflineStoreId(offlineStore.getStoreId());
+		cmsSite.setOnlineStoreId(onlineStore.getStoreId());
+		cmsSite.setDateCreated(nowTime);
+		cmsSite.setDateUpdated(nowTime);
 		try {
 			persist(cmsSite);
 		}catch(DatabaseException e){

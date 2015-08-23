@@ -41,8 +41,11 @@ public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 	@Column(name = "SITE_DESCRIPTION", nullable = false)
 	private String description;
 	
-	@Column(name = "STORE_ID", nullable = false)
-	private Long storeId;	
+	@Column(name = "OFFLINE_STORE_ID", nullable = false)
+	private Long offlineStoreId;
+	
+	@Column(name = "ONLINE_STORE_ID", nullable = false)
+	private Long onlineStoreId;
 	
 	@Column(name = "CREATION_DATE", nullable = false)
 	private Timestamp dateCreated;
@@ -50,10 +53,15 @@ public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 	@Column(name = "UPDATED_DATE", nullable = false)
 	private Timestamp dateUpdated;
 	
-	// resource store containing all files for the cms site
+	// resource store containing offline files for cms site (development files)
 	@OneToOne(cascade=CascadeType.ALL, optional=false, fetch=FetchType.EAGER)
-    @JoinColumn(name="STORE_ID", insertable=false, updatable=false, unique=true)
-	private FsResourceStore resourceStore = null;
+    @JoinColumn(name="OFFLINE_STORE_ID", insertable=false, updatable=false, unique=true)
+	private FsResourceStore offlineResourceStore = null;
+	
+	// resource store containing online files for cms site (production files)
+	@OneToOne(cascade=CascadeType.ALL, optional=false, fetch=FetchType.EAGER)
+    @JoinColumn(name="ONLINE_STORE_ID", insertable=false, updatable=false, unique=true)
+	private FsResourceStore onlineResourceStore = null;
 	
 	public FsCmsSite() {
 		
@@ -130,31 +138,59 @@ public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 	}
 
 	/**
-	 * @return the storeId
+	 * @return the offlineStoreId
 	 */
-	public Long getStoreId() {
-		return storeId;
+	public Long getOfflineStoreId() {
+		return offlineStoreId;
 	}
 
 	/**
-	 * @param storeId the storeId to set
+	 * @param offlineStoreId the offlineStoreId to set
 	 */
-	public void setStoreId(Long storeId) {
-		this.storeId = storeId;
+	public void setOfflineStoreId(Long offlineStoreId) {
+		this.offlineStoreId = offlineStoreId;
 	}
 
 	/**
-	 * @return the resourceStore
+	 * @return the onlineStoreId
 	 */
-	public FsResourceStore getResourceStore() {
-		return resourceStore;
+	public Long getOnlineStoreId() {
+		return onlineStoreId;
 	}
 
 	/**
-	 * @param resourceStore the resourceStore to set
+	 * @param onlineStoreId the onlineStoreId to set
 	 */
-	public void setResourceStore(FsResourceStore resourceStore) {
-		this.resourceStore = resourceStore;
+	public void setOnlineStoreId(Long onlineStoreId) {
+		this.onlineStoreId = onlineStoreId;
+	}
+
+	/**
+	 * @return the offlineResourceStore
+	 */
+	public FsResourceStore getOfflineResourceStore() {
+		return offlineResourceStore;
+	}
+
+	/**
+	 * @param offlineResourceStore the offlineResourceStore to set
+	 */
+	public void setOfflineResourceStore(FsResourceStore offlineResourceStore) {
+		this.offlineResourceStore = offlineResourceStore;
+	}
+
+	/**
+	 * @return the onlineResourceStore
+	 */
+	public FsResourceStore getOnlineResourceStore() {
+		return onlineResourceStore;
+	}
+
+	/**
+	 * @param onlineResourceStore the onlineResourceStore to set
+	 */
+	public void setOnlineResourceStore(FsResourceStore onlineResourceStore) {
+		this.onlineResourceStore = onlineResourceStore;
 	}
 
 	@Override

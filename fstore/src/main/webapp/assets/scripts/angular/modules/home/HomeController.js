@@ -924,6 +924,49 @@
 			}
 			
 		}
+            
+		/**
+		 * Display dialog where users can enter values for new cms site
+		 */
+		function _handleEventClickNewCmsSite(event){
+			
+			$mdDialog.show({
+				parent: angular.element(document.body),
+				targetEvent: event,
+				template:
+					'<md-dialog aria-label="List dialog">' +
+					'  <md-dialog-content>'+
+					'		<h2>Create New CMS Site</h2>'+
+					'		Site Context Name: <input ng-model=\"newCmsSiteDialog.siteName\" required ><br>'+
+					'		Site Description: <input ng-model=\"newCmsSiteDialog.siteDesc\" required ><br>'+                
+					'  </md-dialog-content>' +       
+					'  <div class="md-actions">' +
+					'    <md-button ng-click="closeDialog()" class="md-primary">' +
+					'      Cancel' +
+					'    </md-button>' +
+					'    <md-button ng-click="createCmsSite()" class="md-primary">' +
+					'      Create' +
+					'    </md-button>' +					
+					'  </div>' +
+					'</md-dialog>',
+				controller: _createCmsSiteDialogController
+			});
+		
+			function _createCmsSiteDialogController($scope, $mdDialog) {
+				$scope.closeDialog = function() {
+					$mdDialog.hide();
+				}
+				$scope.createCmsSite = function() {
+				
+					var siteName = $scope.newCmsSiteDialog.siteName;
+                    var siteDesc = $scope.newCmsSiteDialog.siteDesc;
+					
+					alert('create site: name => ' + siteName + ', desc => ' + siteDesc);
+					
+				}				
+			}
+			
+		}    
 	
 		var self = this;
 		
@@ -965,7 +1008,8 @@
 			handleEventClickDeletePathResources : _handleEventClickDeletePathResources,
 			handleEventClickSelectAllPathResources : _handleEventClickSelectAllPathResources,
 			handlePathResourceMouseOver: _handlePathResourceMouseOver,
-			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources
+			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources,
+            handleEventClickNewCmsSite : _handleEventClickNewCmsSite
 		}
 
 	}
