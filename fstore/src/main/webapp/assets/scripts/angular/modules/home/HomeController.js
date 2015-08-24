@@ -880,11 +880,16 @@
 				parent: angular.element(document.body),
 				targetEvent: event,
 				template:
-					'<md-dialog aria-label="List dialog">' +
-					'  <md-dialog-content>'+
-					'		<h2>Create New Folder</h2>'+
-					'		Name: <input ng-model=\"newFolderDialog.newFolderName\" required >'+
-					'  </md-dialog-content>' +
+					'<md-dialog aria-label="List dialog" flex="35">' +
+					'	<md-dialog-content>'+
+					'		<md-content layout-padding>' +
+					'			<h3>Create New Folder</h3>' +
+					'			<md-input-container flex>' +
+					'				<label>Folder Name</label>' +
+					'				<input ng-model="newFolderDialog.newFolderName" required>' +
+					'			</md-input-container>' +
+					'		</md-content>' +
+					'  </md-dialog-content>' + 					
 					'  <div class="md-actions">' +
 					'    <md-button ng-click="closeDialog()" class="md-primary">' +
 					'      Cancel' +
@@ -934,11 +939,19 @@
 				parent: angular.element(document.body),
 				targetEvent: event,
 				template:
-					'<md-dialog aria-label="List dialog">' +
-					'  <md-dialog-content>'+
-					'		<h2>Create New CMS Site</h2>'+
-					'		Site Context Name: <input ng-model=\"newCmsSiteDialog.siteName\" required ><br>'+
-					'		Site Description: <input ng-model=\"newCmsSiteDialog.siteDesc\" required ><br>'+                
+					'<md-dialog aria-label="List dialog" flex="35">' +
+					'	<md-dialog-content>'+
+					'		<md-content layout-padding>' +
+					'			<h3>Create New CMS Site</h3>' +
+					'			<md-input-container flex>' +
+					'				<label>Site Context Name</label>' +
+					'				<input ng-model="newCmsSiteDialog.siteName" required>' +
+					'			</md-input-container>' +
+					'			<md-input-container flex>' +
+					'				<label>Site Description</label>' +
+					'				<textarea ng-model="newCmsSiteDialog.siteDesc" columns="1" md-maxlength="150" required></textarea>' +
+					'			</md-input-container>' +
+					'		</md-content>' +
 					'  </md-dialog-content>' +       
 					'  <div class="md-actions">' +
 					'    <md-button ng-click="closeDialog()" class="md-primary">' +

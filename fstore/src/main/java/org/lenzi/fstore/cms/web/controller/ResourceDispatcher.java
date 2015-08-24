@@ -38,12 +38,35 @@ public class ResourceDispatcher extends AbstractSpringController {
 		
 	}
 	
+	/**
+	 * Forward the request to the resource that's mapped in the request URL (the part after /cms)
+	 * 
+	 * If the user is logged into fstore, check if they are in 'online' or 'offline' mode. If offline mode then
+	 * forward the request to the offline version of the resource, otherwise forward to the online version. When in
+	 * doubt assume the online version. (feature coming shortly.) 
+	 * 
+	 * @param request
+	 * @param response
+	 * @param model
+	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public void dispatchResource(HttpServletRequest request, HttpServletResponse response, ModelMap model){
 		
 		String resourcePath = "/" + extractPathFromPattern(request);
 		String sitesRoot = appProps.getProperty("cms.sites.root");
-		String forwardPath = sitesRoot + resourcePath;
+		String sitesOnline = appProps.getProperty("cms.sites.online");
+		String sitesOffline = appProps.getProperty("cms.sites.offline");
+		
+		String sitePath = sitesOnline;
+		
+		// eventually this flag will be controlled by the user that is logged in (for cms editor roles.)
+		boolean isOffline = false;
+		
+		if(isOffline){
+			sitePath = sitesOffline;
+		}
+		
+		String forwardPath = sitePath + resourcePath;
 		
 		logger.info("Dispatch forward => " + forwardPath);
 		
