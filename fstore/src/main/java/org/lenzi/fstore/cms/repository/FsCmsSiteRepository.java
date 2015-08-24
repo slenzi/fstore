@@ -5,25 +5,19 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.lenzi.fstore.cms.repository.model.impl.FsCmsSite;
+import org.lenzi.fstore.cms.repository.model.impl.FsCmsSite_;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
-import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
-import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource_;
-import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
-import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
-import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore_;
 import org.lenzi.fstore.file2.service.FsResourceHelper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,10 +40,6 @@ public class FsCmsSiteRepository extends AbstractRepository {
 	private Logger logger;
 	
 	@Autowired
-	@Qualifier("FsPathResourceTree")
-	private TreeRepository<FsPathResource> treeRepository;
-	
-	@Autowired
 	private FsResourceHelper fsResourceHelper;
 	
 	
@@ -58,102 +48,46 @@ public class FsCmsSiteRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Get all resource stores
+	 * Get all cms sites
 	 * 
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<FsResourceStore> getAllStores() throws DatabaseException {
+	public List<FsCmsSite> getAllSites() throws DatabaseException {
 		
-		return getAllStoresCriteria();
+		return getAllSitesCriteria();
 		
 	}
 	
 	/**
-	 * Get resource store by store id
+	 * Get site by site id
 	 * 
-	 * @param storeId
+	 * @param siteId
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsResourceStore getStoreByStoreId(Long storeId) throws DatabaseException {
+	public FsCmsSite getSiteBySiteId(Long siteId) throws DatabaseException {
 		
-		return getStoreByStoreIdCriteria(storeId);
+		return getSiteBySiteIdCriteria(siteId);
 		
 	}
 	
 	/**
-	 * Get resource store by store name. Store names should be unique, so only
-	 * one store object is returned (if a store with the provided name exists.)
-	 * 
-	 * @param storeName
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public FsResourceStore getStoreByStoreName(String storeName) throws DatabaseException {
-		
-		return getStoreByStoreNameCriteria(storeName);
-		
-	}	
-	
-	/**
-	 * Get the file store for the *root* directory.
-	 * 
-	 * @param dirId - id of the root dir for the file store
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public FsResourceStore getStoreByRootDirectoryId(Long dirId) throws DatabaseException {
-		
-		return getStoreByRootDirectoryIdCriteria(dirId);
-		
-	}
-	
-	/**
-	 * Fetch resource store by any path resource, a FsDirectoryResource, or FsFileMetaResource, or any other future
-	 * resource that extends from FsPathResource.
-	 * 
-	 * @param resourceId - the node id / resource id of the FsPathResource.
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public FsResourceStore getStoreByPathResourceId(Long resourceId) throws DatabaseException {
-		
-		// TODO - test this method, if it works you don't need get store by dir id or get store by file id
-		
-		FsDirectoryResource rootDir = null;
-		try {
-			rootDir = (FsDirectoryResource) treeRepository.getRootNode(resourceId, FsPathResource.class);
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Error fetching store root directory for path resource id => " + resourceId, e);
-		}
-		
-		FsResourceStore store = null;
-		try {
-			store = getStoreByRootDirectoryId(rootDir.getDirId());
-		} catch (DatabaseException e) {
-			throw new DatabaseException("Erro fetching file store by root dir id => " + rootDir.getDirId(), e);
-		}
-		
-		return store;
-		
-	}
-	
-	/**
-	 * Criteria query to get all resource stores
+	 * Criteria query to get all cms sites
 	 * 
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private List<FsResourceStore> getAllStoresCriteria() throws DatabaseException {
+	private List<FsCmsSite> getAllSitesCriteria() throws DatabaseException {
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
-		Class<FsResourceStore> type = FsResourceStore.class;
-		CriteriaQuery<FsResourceStore> query = cb.createQuery(type);
-		Root<FsResourceStore> root = query.from(type);
+		Class<FsCmsSite> type = FsCmsSite.class;
+		CriteriaQuery<FsCmsSite> query = cb.createQuery(type);
+		Root<FsCmsSite> root = query.from(type);
 
-		root.fetch(FsResourceStore_.rootDirectoryResource, JoinType.LEFT);
+		root.fetch(FsCmsSite_.offlineResourceStore, JoinType.LEFT);
+		root.fetch(FsCmsSite_.onlineResourceStore, JoinType.LEFT);
 		
 		query.select(root);
 		
@@ -162,29 +96,25 @@ public class FsCmsSiteRepository extends AbstractRepository {
 	}
 	
 	/**
-	 * Criteria query to get resource store by store id
+	 * Criteria query to get site by site id
 	 * 
-	 * @param storeId
+	 * @param siteId
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private FsResourceStore getStoreByStoreIdCriteria(Long storeId) throws DatabaseException {
-		
-		//logger.info("Get file store by store id " + storeId + " criteria");
+	private FsCmsSite getSiteBySiteIdCriteria(Long siteId) throws DatabaseException {
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
-		Class<FsResourceStore> type = FsResourceStore.class;
-		CriteriaQuery<FsResourceStore> query = cb.createQuery(type);
-		Root<FsResourceStore> root = query.from(type);
+		Class<FsCmsSite> type = FsCmsSite.class;
+		CriteriaQuery<FsCmsSite> query = cb.createQuery(type);
+		Root<FsCmsSite> root = query.from(type);
 		
-		//javax.persistence.criteria.Path<CmsDirectory> rootDir = root.get(CmsFileStore_.rootDir);
-		//Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir, JoinType.INNER);
-		Fetch<FsResourceStore,FsDirectoryResource> rootDirFetch =  root.fetch(FsResourceStore_.rootDirectoryResource, JoinType.LEFT);
+		root.fetch(FsCmsSite_.offlineResourceStore, JoinType.LEFT);
+		root.fetch(FsCmsSite_.onlineResourceStore, JoinType.LEFT);
 		
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
-		andPredicates.add( cb.equal(root.get(FsResourceStore_.storeId), storeId) );
-		//andPredicates.add( cb.equal(root.get(CmsFileStore_.nodeId), rootDir.get(CmsDirectory_.nodeId)) );
+		andPredicates.add( cb.equal(root.get(FsCmsSite_.siteId), siteId) );
 		
 		query.select(root);
 		query.where(
@@ -194,73 +124,5 @@ public class FsCmsSiteRepository extends AbstractRepository {
 		return ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
 		
 	}
-	
-	/**
-	 * Criteria query to get resource store by store name. Store names should be unique, so only
-	 * one store object is returned (if a store with the provided name exists.)
-	 * 
-	 * @param storeName
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private FsResourceStore getStoreByStoreNameCriteria(String storeName) throws DatabaseException {
-
-		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		
-		Class<FsResourceStore> type = FsResourceStore.class;
-		CriteriaQuery<FsResourceStore> query = cb.createQuery(type);
-		Root<FsResourceStore> root = query.from(type);
-		
-		Fetch<FsResourceStore,FsDirectoryResource> rootDirFetch =  root.fetch(FsResourceStore_.rootDirectoryResource, JoinType.LEFT);
-		
-		List<Predicate> andPredicates = new ArrayList<Predicate>();
-		andPredicates.add( cb.equal(root.get(FsResourceStore_.name), storeName) );
-		
-		query.select(root);
-		query.where(
-				cb.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
-				);
-		
-		return ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
-		
-	}	
-	
-	/**
-	 * Criteria query to get FsFileStore by the stores root directory.
-	 * 
-	 * @param dirId - the ID of the store's root directory
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private FsResourceStore getStoreByRootDirectoryIdCriteria(Long dirId) throws DatabaseException {
-		
-		//logger.info("Get store by root dir id " + dirId + " criteria");
-		
-		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		
-		Class<FsResourceStore> type = FsResourceStore.class;
-		CriteriaQuery<FsResourceStore> query = cb.createQuery(type);
-		Root<FsResourceStore> root = query.from(type);
-		
-		//Join<CmsFileStore,CmsDirectory> rootDirJoin = root.join(CmsFileStore_.rootDir, JoinType.LEFT);
-		Fetch<FsResourceStore,FsDirectoryResource> rootDirFetch =  root.fetch(FsResourceStore_.rootDirectoryResource, JoinType.LEFT);
-		
-		javax.persistence.criteria.Path<FsDirectoryResource> rootDir = root.get(FsResourceStore_.rootDirectoryResource);
-		
-		query.select(root);
-		query.where(
-				cb.equal(rootDir.get(FsDirectoryResource_.nodeId), dirId)
-				);
-		
-		FsResourceStore store = null;
-		try {
-			store = ResultFetcher.getSingleResultOrNull(getEntityManager().createQuery(query));
-		} catch (Exception e) {
-			throw new DatabaseException("Error retrieving file store for for root dir id => " + dirId);
-		}
-		
-		return store;
-		
-	}	
 
 }

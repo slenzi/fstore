@@ -96,6 +96,11 @@
 		// Internal RESTful methods
 		// *********************************
 
+		
+		// *********************************
+		// Store resource operations
+		// *********************************			
+		
 		// fetch all resource stores
 		function _fetchResourceStoreList(){
 			
@@ -114,23 +119,10 @@
 			
 		};
 		
-		// fetch directory listing
-		function _fetchDirectoryListing(dirId, maxDepth){
-			
-			//$log.debug('fetching directory listing for dir id ' + dirId + ', max depth ' + maxDepth);
-			
-			//return directoryService.get({ dirId: dirId, maxDepth: maxDepth }).$promise;
-			
-			return directoryService.depthGet({ dirId: dirId, maxDepth: maxDepth }).$promise;
-			
-		};
 		
-		// fetch parent tree / breadcrumb listing for some child directory
-		function _fetchBreadcrumb(dirId){
-			
-			return directoryService.breadcrumbGet({ dirId: dirId }).$promise;
-			
-		}
+		// *********************************
+		// File resource operations
+		// *********************************		
 		
 		// download a file resource
 		function _downloadFile(fileId){
@@ -157,6 +149,29 @@
 			
 		}
 		
+		
+		// *********************************
+		// Directory resource operations
+		// *********************************
+		
+		// fetch directory listing
+		function _fetchDirectoryListing(dirId, maxDepth){
+			
+			//$log.debug('fetching directory listing for dir id ' + dirId + ', max depth ' + maxDepth);
+			
+			//return directoryService.get({ dirId: dirId, maxDepth: maxDepth }).$promise;
+			
+			return directoryService.depthGet({ dirId: dirId, maxDepth: maxDepth }).$promise;
+			
+		};
+		
+		// fetch parent tree / breadcrumb listing for some child directory
+		function _fetchBreadcrumb(dirId){
+			
+			return directoryService.breadcrumbGet({ dirId: dirId }).$promise;
+			
+		}		
+		
 		// delete a list of directories
 		function _deleteDirectories(dirIdList){
 			
@@ -171,6 +186,18 @@
 			
 		}
 		
+		
+		// *********************************
+		// CMS Site operations
+		// *********************************		
+		
+		// fetch all cms sites
+		function _fetchCmsSiteList(){
+			
+			return cmsSiteService.query().$promise;
+			
+		};		
+		
 		// add new cms site
 		function _addCmsSite(siteName, siteDesc){
 			
@@ -179,6 +206,7 @@
 			return cmsSiteService.addSite({ 'siteName' : siteName, 'siteDesc': siteDesc, 'clearIfExists': clearIfExists }).$promise;
 			
 		}
+		
 		
 		// *********************************
 		// External API
@@ -195,7 +223,8 @@
 			deleteFiles: _deleteFiles,
 			deleteDirectories: _deleteDirectories,
 			addDirectory: _addDirectory,
-			addCmsSite: _addCmsSite
+			addCmsSite: _addCmsSite,
+			getCmsSites: _fetchCmsSiteList
 	    };
 		
 	}

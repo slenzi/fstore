@@ -18,7 +18,7 @@ import org.lenzi.fstore.core.tree.TreeNode;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
-import org.lenzi.fstore.file2.service.FsJsonHelper;
+import org.lenzi.fstore.file2.service.FsResourceJsonHelper;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.web.rs.AbstractResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
@@ -46,7 +46,7 @@ public class DirectoryResource extends AbstractResource {
     private FsResourceService fsResourceService;    
     
     @Autowired
-    private FsJsonHelper fsJsonHelper;
+    private FsResourceJsonHelper fsJsonHelper;
 	
 	public DirectoryResource() {
 

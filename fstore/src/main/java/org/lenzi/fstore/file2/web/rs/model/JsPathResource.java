@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.lenzi.fstore.core.util.StringUtil;
 
+/**
+ * @deprecated - not used
+ * @author sal
+ *
+ */
 @XmlRootElement
 public class JsPathResource implements Comparable<JsPathResource> {
 

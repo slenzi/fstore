@@ -3,6 +3,8 @@
  */
 package org.lenzi.fstore.cms.web.rs;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -12,9 +14,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.lenzi.fstore.cms.repository.model.impl.FsCmsSite;
+import org.lenzi.fstore.cms.service.FsCmsJsonHelper;
 import org.lenzi.fstore.cms.service.FsCmsService;
+import org.lenzi.fstore.cms.web.rs.model.JsCmsSite;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.file2.web.rs.StoreResource;
 import org.lenzi.fstore.web.rs.AbstractResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
@@ -35,6 +40,9 @@ public class CmsSiteResource extends AbstractResource {
     
     @Autowired
     private FsCmsService cmsService;
+    
+    @Autowired
+    private FsCmsJsonHelper fsCmsJsonHelper;
 	
 	/**
 	 * 
@@ -42,6 +50,39 @@ public class CmsSiteResource extends AbstractResource {
 	public CmsSiteResource() {
 		
 	}
+	
+	/**
+	 * Fetch all cms sites
+	 * 
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getStores() throws WebServiceException {
+		
+		logger.info(StoreResource.class.getName() + ": fetch all resource stores");
+		
+		List<FsCmsSite> sites = null;
+		try {
+			sites = cmsService.getAllSites();
+		} catch (ServiceException e) {
+			handleError("Failed to fetch cms site list", WebExceptionType.CODE_DATABSE_ERROR, e);
+		}
+		if(sites == null){
+			handleError("Failed to fetch cms site list, returned site collection was null.",
+					WebExceptionType.CODE_DATABSE_ERROR);
+		}
+		
+		logger.info("Fetched " + ((sites != null) ? sites.size() : " null ") + " cms sites from database");
+		
+		List<JsCmsSite> jsites = fsCmsJsonHelper.convertSites(sites);
+
+		return Response.status(Response.Status.OK)
+                .entity(jsites)
+                .type(MediaType.APPLICATION_JSON).build();		
+		
+	}	
 	
 	/**
 	 * Add new CMS site

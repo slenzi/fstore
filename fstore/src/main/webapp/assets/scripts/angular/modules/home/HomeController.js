@@ -17,6 +17,7 @@
 		 */
 		var sectionTitle = "Not set";
 		var storeList = [{ "name": "empty"}];
+		var cmsSiteList = [{ "name": "empty"}];
 		var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 		var currentDirectory = new PathResource({
 			name: 'Loading...',
@@ -140,7 +141,7 @@
 		}
 		
 		/**
-		 * Get list of stores
+		 * Get list of resource stores
 		 */
 		function _storeList(){
 			return storeList;
@@ -159,6 +160,13 @@
 		function _currentDirectory(){
 			return currentDirectory;
 		}
+		
+		/**
+		 * Get list of cms sites
+		 */
+		function _cmsSiteList(){
+			return cmsSiteList;
+		}		
 		
 		/**
 		 * Get reference to fsUploader
@@ -286,6 +294,10 @@
 			
 			$state.go('home_siteList');
 			
+			homeService
+				.getCmsSites()
+				.then(_handleCmsSiteDataCallback);			
+			
 		}
 		
 		/**
@@ -318,6 +330,24 @@
 				if(storeList != null && storeList[0]){
 					currentStore.setData(storeList[0]);
 					_handleLoadDirectory(storeList[0].rootDirectoryId, false);
+					
+					_leftNavClose();
+				}				
+			}			
+			
+		}
+		
+		function _handleCmsSiteDataCallback(siteDate){
+			
+			if(siteDate.error){
+				$log.debug("Error, " + siteDate.error);
+			}else{
+				$log.debug("got site data => " + JSON.stringify(siteDate));
+				cmsSiteList = siteDate;
+				if(cmsSiteList != null && cmsSiteList[0]){
+					
+					//currentStore.setData(storeList[0]);
+					//_handleLoadDirectory(storeList[0].rootDirectoryId, false);
 					
 					_leftNavClose();
 				}				
@@ -1006,6 +1036,7 @@
 			sectionTitle : _sectionTitle,
 			store : _currentStore,
 			storeList : _storeList,
+			cmsSiteList : _cmsSiteList,
 			directory : _currentDirectory,
 			uploader : _uploader,
 			breadcrumb : _breadcrumb,

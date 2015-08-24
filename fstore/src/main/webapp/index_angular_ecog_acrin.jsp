@@ -58,11 +58,11 @@
 				</md-toolbar>
 				
 				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewStoreList()">
-					Store List
+					Resource Store List
 				</md-button>
 
 				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewSiteList()">
-					Site List
+					CMS Site List
 				</md-button>
 
 				<md-button class="md-raised leftNavButton" ng-click="home.handleEventSendSampleStomp()">

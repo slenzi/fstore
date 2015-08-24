@@ -1,5 +1,8 @@
 package org.lenzi.fstore.file2.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.TreeNode;
@@ -7,6 +10,8 @@ import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.web.rs.model.JsResourceStore;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +21,12 @@ import org.springframework.stereotype.Service;
  * @author sal
  */
 @Service
-public class FsJsonHelper {
+public class FsResourceJsonHelper {
 
 	@InjectLogger
 	private Logger logger;	
 	
-	public FsJsonHelper() {
+	public FsResourceJsonHelper() {
 		
 	}
 	
@@ -98,6 +103,47 @@ public class FsJsonHelper {
 		jsonData.append("}");
 		
 		return jsonData.toString();
+	}
+	
+	/**
+	 * Convert database layer FsResourceStore to web service layer JsResourceStore
+	 * 
+	 * @param stores
+	 * @return
+	 */
+	public List<JsResourceStore> convertStore(List<FsResourceStore> stores){
+		
+		if(stores == null){
+			return null;
+		}
+		List<JsResourceStore> jsStores = new ArrayList<JsResourceStore>();
+		for(FsResourceStore store : stores){
+			jsStores.add(convertStore(store));
+		}
+		return jsStores;
+		
+	}
+	
+	/**
+	 * Convert database layer FsResourceStore to web service layer JsResourceStore
+	 * 
+	 * @param store
+	 * @return
+	 */
+	public JsResourceStore convertStore(FsResourceStore store){
+		
+		JsResourceStore js = new JsResourceStore();
+		
+		js.setId(String.valueOf(store.getStoreId()));
+		js.setName(store.getName());
+		js.setDescription(store.getDescription());
+		js.setStorePath(store.getStorePath());
+		js.setDateCreated(DateUtil.defaultFormat(store.getDateCreated()));
+		js.setDateUpdated(DateUtil.defaultFormat(store.getDateUpdated()));
+		js.setRootDirectoryId(String.valueOf(store.getNodeId()));
+		
+		return js;
+		
 	}	
 
 }

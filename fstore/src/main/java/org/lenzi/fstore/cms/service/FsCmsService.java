@@ -3,6 +3,8 @@
  */
 package org.lenzi.fstore.cms.service;
 
+import java.util.List;
+
 import org.lenzi.fstore.cms.repository.FsCmsSiteAdder;
 import org.lenzi.fstore.cms.repository.FsCmsSiteRepository;
 import org.lenzi.fstore.cms.repository.model.impl.FsCmsSite;
@@ -29,11 +31,8 @@ public class FsCmsService {
 	private Logger logger;
 	
     @Autowired
-    private ManagedProperties appProps; 	
-	
-	//@Autowired
-	//ServletContext servletContext = null;
-	
+    private ManagedProperties appProps;
+    
 	//
 	// cms site operators
 	//
@@ -68,6 +67,43 @@ public class FsCmsService {
 					siteName + ", clear if exists = " + clearIfExists + "]. " + e.getMessage(), e);
 		}
 		
+		return site;
+		
+	}
+	
+	/**
+	 * Retrieve all CMS sites.
+	 * 
+	 * @return
+	 * @throws ServiceException
+	 */
+	public List<FsCmsSite> getAllSites() throws ServiceException {
+		
+		List<FsCmsSite> sites = null;
+		try {
+			sites = fsCmsSiteRepository.getAllSites();
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching all cms sites. " + e.getMessage(), e);
+		}
+		return sites;
+		
+	}
+	
+	/**
+	 * Fetch CMS site by it's site id.
+	 * 
+	 * @param siteId - the id of the site
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsCmsSite getSiteBySiteId(Long siteId) throws ServiceException {
+		
+		FsCmsSite site = null;
+		try {
+			site = fsCmsSiteRepository.getSiteBySiteId(siteId);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching cms site for site id = " + siteId + ". " + e.getMessage(), e);
+		}
 		return site;
 		
 	}
