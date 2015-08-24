@@ -54,6 +54,18 @@
 						dirId: '@dirId', dirName: '@newDirName'
 					}					
 				}
+			});
+
+		// cms site service
+		var cmsSiteService = $resource(
+			appConstants.restServiceCmsSite, { siteId: '@siteId' }, {
+				addSite: {
+					url: appConstants.restServiceCmsSite + '/add',
+					method: 'POST',
+					params: {
+						siteName: '@siteName', siteDesc: '@siteDesc', clearIfExists: true
+					}					
+				}
 			});		
 		
 		var sampleData = [
@@ -159,6 +171,15 @@
 			
 		}
 		
+		// add new cms site
+		function _addCmsSite(siteName, siteDesc){
+			
+			var clearIfExists = true;
+			
+			return cmsSiteService.addSite({ 'siteName' : siteName, 'siteDesc': siteDesc, 'clearIfExists': clearIfExists }).$promise;
+			
+		}
+		
 		// *********************************
 		// External API
 		// *********************************
@@ -173,7 +194,8 @@
 			deleteFile: _deleteFile,
 			deleteFiles: _deleteFiles,
 			deleteDirectories: _deleteDirectories,
-			addDirectory: _addDirectory
+			addDirectory: _addDirectory,
+			addCmsSite: _addCmsSite
 	    };
 		
 	}

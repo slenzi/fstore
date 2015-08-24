@@ -974,7 +974,18 @@
 					var siteName = $scope.newCmsSiteDialog.siteName;
                     var siteDesc = $scope.newCmsSiteDialog.siteDesc;
 					
-					alert('create site: name => ' + siteName + ', desc => ' + siteDesc);
+					homeService
+						.addCmsSite(siteName, siteDesc)
+						.then( function( reply ) {
+							
+							$log.debug('add cms site reply: ' + JSON.stringify(reply));
+							
+							// reload sites!
+							//_reloadCurrentDirectory();
+							
+							$mdDialog.hide();
+							
+						});	
 					
 				}				
 			}

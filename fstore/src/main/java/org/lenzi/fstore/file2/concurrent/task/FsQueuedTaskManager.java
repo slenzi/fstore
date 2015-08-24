@@ -122,7 +122,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		
 		while(true){
 			
-			logger.debug("Polling queued task manager... size => " + taskCount());
+			//logger.debug("Polling queued task manager... size => " + taskCount());
 			
 			if(Thread.currentThread().isInterrupted()){
 				break;

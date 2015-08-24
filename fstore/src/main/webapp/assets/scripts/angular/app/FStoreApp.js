@@ -25,7 +25,8 @@
 			httpUploadHandler: '@http.upload.handler@',
 			restServiceStore: '@services.rest.store@',
 			restServiceFile: '@services.rest.file@',
-			restServiceDirectory: '@services.rest.directory@'
+			restServiceDirectory: '@services.rest.directory@',
+			restServiceCmsSite: '@services.cms.rest.site@'
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);

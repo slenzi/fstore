@@ -49,7 +49,6 @@ public class CmsSiteResource extends AbstractResource {
 	 * @return
 	 * @throws WebServiceException
 	 */
-	@GET
 	@POST
 	@Path("/add")
 	@Produces(MediaType.APPLICATION_JSON)
