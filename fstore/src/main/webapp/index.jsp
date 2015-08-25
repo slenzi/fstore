@@ -14,18 +14,20 @@
 	This application also builds upon the basic tree structure to store files and directories.
 	</p>
 	
+	<h2>File Manager</h2>
+	
 	<p>
-	<a href="index_angular.jsp">Angular test</a>
+		<a href="file/index_angular.jsp">File Manager</a>
 	</p>
 	
 	<p>
-	<a href="index_angular_ecog_acrin.jsp">ECOG-ACRIN Angular test</a>
+		<a href="file/index_angular_ecog_acrin.jsp">File Manager (ECOG-ACRIN Themed)</a>
 	</p>
 	
 	<h2>WebSocket Setup Check</h2>
 	
 	<p>
-	<a href="<%=request.getContextPath() %>/spring/hello/info">/spring/hello/info</a>
+		<a href="<%=request.getContextPath() %>/spring/hello/info">/spring/hello/info</a>
 	</p>
 	
 	<h2>Sample Tree Tests</h2>

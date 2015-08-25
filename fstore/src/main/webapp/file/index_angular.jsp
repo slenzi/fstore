@@ -17,10 +17,10 @@
 		<jsp:include page="common_includes_header.jsp" />
 	    
 	    <!-- app resources -->
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/app.css"/>
+	    <link rel="stylesheet" href="<%=request.getContextPath()%>/file/assets/css/app.css"/>
 	    
 		<!-- for angular location provider -->
-		<base href="/">	    
+		<base href="/file">	    
 	    
 	</head>
 
@@ -37,7 +37,7 @@
 					<a href="<%=request.getContextPath()%>">Fstore</a>
 					<span flex></span>
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>
 				</h3>
 			</md-toolbar>
@@ -48,7 +48,7 @@
 				
 					<!-- ui-sref="settings" -->
 					<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
-						<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_settings_24px.svg"></md-icon>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_settings_24px.svg"></md-icon>
 						System Settings
 					</md-button>				
 				
@@ -84,7 +84,7 @@
 			<span flex></span>
 			<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
 				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_menu_18px.svg"></md-icon>
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
 				<span style="font-style: italic; whitespace:nowrap;">{{home.sectionTitle()}}</span>
 				<div flex></div>

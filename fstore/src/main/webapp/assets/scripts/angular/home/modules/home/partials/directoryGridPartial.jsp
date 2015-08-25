@@ -41,9 +41,9 @@ Directory partial that's loaded for the "home_directory" state
             </md-grid-tile-header>
 			--%>
             
-			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_folder_48px.svg"></md-icon>
+			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_folder_48px.svg"></md-icon>
 			
-			<md-icon ng-if="pathResource.type == 'FILE'" class="red shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_insert_drive_file_24px.svg"></md-icon>
+			<md-icon ng-if="pathResource.type == 'FILE'" class="red shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_insert_drive_file_24px.svg"></md-icon>
 			
 			<md-grid-tile-footer ng-class="{'selectedFooter' : pathResource.isSelected}">
 				<h3 ng-if="pathResource.type == 'DIRECTORY'" ng-class="{'selectedFooterText' : pathResource.isSelected}">

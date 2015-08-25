@@ -19,12 +19,12 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/stomp-websocket/lib/stomp.js"></script>
 
 <!-- app scripts -->
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/upload/FsUploadModule.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/stomp/FsStomp.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModule.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeModels.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeController.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeService.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeFilter.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/modules/home/HomeDirective.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/app/FStoreApp.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/upload/FsUploadModule.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/stomp/FsStomp.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/home/HomeModule.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/home/HomeModels.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/home/HomeController.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/home/HomeService.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/home/HomeFilter.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/modules/home/HomeDirective.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/home/app/FStoreApp.js"></script>

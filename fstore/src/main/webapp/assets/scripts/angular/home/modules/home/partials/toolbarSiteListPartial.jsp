@@ -10,7 +10,7 @@ Toolbar partial that's loaded for the "home_siteList" state
 	<div flex></div>
 	
 	<md-button class="" ng-click="home.handleEventClickNewCmsSite()">
-		<md-icon md-svg-icon="<%=request.getContextPath()%>/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
+		<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>
 		Create New Site
 	</md-button>
 	
