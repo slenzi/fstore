@@ -3,13 +3,13 @@
 	angular
 		.module('fsCmsMain')
 		.controller('mainController',[
-			'appConstants', 'mainService',
+			'appConstants', 'mainService', 'CmsSite',
 			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
 
 	function MainController(
-		appConstants, mainService, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, mainService, CmsSite, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -17,6 +17,12 @@
 		 */
 		var sectionTitle = "Not set";
 		var cmsSiteList = [{ "name": "empty"}];
+		
+		var currentSite = new CmsSite({
+			name: 'Loading...',
+			dateCreated: 'Loading...',
+			dateUpdated: 'Loading...'
+		});		
 
 
 		/****************************************************************************************
@@ -60,20 +66,27 @@
 			
 		}
 		
-		function _handleCmsSiteDataCallback(siteDate){
+		function _handleCmsSiteDataCallback(siteData){
 			
-			if(siteDate.error){
-				$log.debug("Error, " + siteDate.error);
+			if(siteData.error){
+				$log.debug("Error, " + siteData.error);
 			}else{
-				$log.debug("got site data => " + JSON.stringify(siteDate));
-				cmsSiteList = siteDate;
+				
+				$log.debug("got site data => " + JSON.stringify(siteData));
+				
+				cmsSiteList = siteData;
+				
 				if(cmsSiteList != null && cmsSiteList[0]){
 					
-					//currentStore.setData(storeList[0]);
+					currentSite.setData(cmsSiteList[0]);
+					
 					//_handleLoadDirectory(storeList[0].rootDirectoryId, false);
 					
 					_leftNavClose();
-				}				
+				}
+
+				$log.debug('current site = ' + JSON.stringify(currentSite));
+				$log.debug('current site list = ' + JSON.stringify(cmsSiteList));
 			}			
 			
 		}
@@ -186,7 +199,13 @@
 				}				
 			}
 			
-		}    
+		}
+		
+		function _handleEventClickSiteTable(siteData){
+			
+			alert('you clicked on a site');
+			
+		}
 	
 		var self = this;
 		
@@ -207,7 +226,9 @@
 			
 			handleEventClickCancelSiteSettings : _handleEventClickCancelSiteSettings,
 			
-            handleEventClickNewCmsSite : _handleEventClickNewCmsSite
+            handleEventClickNewCmsSite : _handleEventClickNewCmsSite,
+            
+            handleEventClickSiteTable : _handleEventClickSiteTable
 		}
 
 	}
