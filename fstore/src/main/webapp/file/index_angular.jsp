@@ -7,14 +7,14 @@
 	
 	<head>
 	
-    	<title>Fstore</title>
+    	<title>FStore: File Manager</title>
 
 	    <meta charset="utf-8">
 	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 	    <meta name="description" content="">
 	    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-		<jsp:include page="common_includes_header.jsp" />
+		<jsp:include page="includes_header.jsp" />
 	    
 	    <!-- app resources -->
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/file/assets/css/app.css"/>
@@ -24,7 +24,7 @@
 	    
 	</head>
 
-	<body ng-app="fstoreApp" layout="row" ng-controller="homeController as home">
+	<body ng-app="fstoreFileManager" layout="row" ng-controller="homeController as home">
 	
 	<md-sidenav class="md-sidenav-left  md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
@@ -34,7 +34,7 @@
 			<md-toolbar class="md-tall md-hue-2">
 				<span flex></span>
 				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
-					<a href="<%=request.getContextPath()%>">Fstore</a>
+					<a href="<%=request.getContextPath()%>">File Manager</a>
 					<span flex></span>
 					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
@@ -112,7 +112,7 @@
 		
 	</md-content>
 
-	<jsp:include page="common_includes_footer.jsp" />
+	<jsp:include page="includes_footer.jsp" />
 
   </body>
 </html>

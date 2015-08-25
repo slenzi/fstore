@@ -5,7 +5,7 @@
 	var homeApp;
 	
 	/**
-	 * Initialize home app with 'angular material' and our 'home' module
+	 * Initialize app with 'angular material' and our 'home' module
 	 *
 	 * ui.router - Routing frameworks, essentially more powerful version of built in ngRoute.
 	 * ngMaterial - Material design UI components
@@ -14,11 +14,13 @@
 	 * fsUpload - multi-part HTTP uploader
 	 * fsStomp - Stomp websocket module
 	 * smart-table - lightweight table module
+	 * 
+	 * -- no longer used --
 	 * ui.grid - ui data grid component
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	homeApp = angular
-		.module('fstoreApp', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'fsUpload', 'fsStomp', 'smart-table', 'ui.grid', 'ui.grid.pagination'])
+		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'home', 'fsUpload', 'fsStomp', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
@@ -103,10 +105,10 @@
 					url: '/directory-icon/:dirId',
 					views: {
 						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/directoryGridPartial.jsp'					
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/directoryGridPartial.jsp'					
 						},
 						'toolbarContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/toolbarDirectoryPartial.jsp'							
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/toolbarDirectoryPartial.jsp'							
 						}
 					}
 				})
@@ -114,10 +116,10 @@
 					url: '/directory-table/:dirId',
 					views: {
 						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/directoryTablePartial.jsp'				
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/directoryTablePartial.jsp'				
 						},
 						'toolbarContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/toolbarDirectoryPartial.jsp'							
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/toolbarDirectoryPartial.jsp'							
 						}
 					}
 				})				
@@ -125,10 +127,10 @@
 					url: '/stores',
 					views: {
 						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/storeListPartial.jsp'
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/storeListPartial.jsp'
 						},
 						'toolbarContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/toolbarStoreListPartial.jsp'							
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/toolbarStoreListPartial.jsp'							
 						}
 					}
 				})
@@ -136,10 +138,10 @@
 					url: '/sites',
 					views: {
 						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/siteListPartial.jsp'
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/siteListPartial.jsp'
 						},
 						'toolbarContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/toolbarSiteListPartial.jsp'							
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/toolbarSiteListPartial.jsp'							
 						}
 					}
 				})				
@@ -147,10 +149,10 @@
 					url: '/storeSettings',
 					views: {
 						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/storeSettingsPartial.jsp'
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/storeSettingsPartial.jsp'
 						},
 						'toolbarContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/toolbarStoreSettingsPartial.jsp'							
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/toolbarStoreSettingsPartial.jsp'							
 						}
 					}
 				})
@@ -158,10 +160,10 @@
 					url: '/upload',
 					views: {
 						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/uploadPartial.jsp'
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/uploadPartial.jsp'
 						},
 						'toolbarContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/toolbarUploadPartial.jsp'							
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/toolbarUploadPartial.jsp'							
 						}
 					}
 				});
@@ -169,19 +171,19 @@
 				/*
 				.state('home_directory_icon', {
 					url: '/directory-grid',
-					templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/directoryGridPartial.jsp'
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/directoryGridPartial.jsp'
 				})
 				.state('home_storeList', {
 					url: '/stores',
-					templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/storeListPartial.jsp'
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/storeListPartial.jsp'
 				})				
 				.state('home_storeSettings', {
 					url: '/storeSettings',
-					templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/storeSettingsPartial.jsp'
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/storeSettingsPartial.jsp'
 				})
 				.state('home_upload', {
 					url: '/upload',
-					templateUrl: appConstants.contextPath + '/assets/scripts/angular/home/modules/home/partials/uploadPartial.jsp'
+					templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/home/partials/uploadPartial.jsp'
 				});
 				*/
 			
