@@ -24,7 +24,7 @@
 	    
 	</head>
 
-	<body ng-app="fstoreFileManager" layout="row" ng-controller="homeController as home">
+	<body ng-app="fstoreFileManager" layout="row" ng-controller="mainController as main">
 	
 	<md-sidenav class="md-sidenav-left  md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
@@ -36,7 +36,7 @@
 				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
 					<a href="<%=request.getContextPath()%>">File Manager</a>
 					<span flex></span>
-					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+					<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>
 				</h3>
@@ -47,22 +47,22 @@
 				<md-toolbar class="md-toolbar-tools md-hue-1">
 				
 					<!-- ui-sref="settings" -->
-					<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
+					<md-button class="md-raised md-warn leftNavButton" ng-click="main.notImplemented()">
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_settings_24px.svg"></md-icon>
 						System Settings
 					</md-button>				
 				
 				</md-toolbar>
 		
-				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewStoreList()">
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewStoreList()">
 					Resource Store List
 				</md-button>
 
-				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewSiteList()">
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewSiteList()">
 					CMS Site List
 				</md-button>				
 				
-				<md-button class="md-raised leftNavButton" ng-click="home.handleEventSendSampleStomp()">
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventSendSampleStomp()">
 					Sample STOMP
 				</md-button>				
 				
@@ -83,10 +83,10 @@
 		<md-toolbar class="md-tall md-hue-3">
 			<span flex></span>
 			<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
-				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+				<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
-				<span style="font-style: italic; whitespace:nowrap;">{{home.sectionTitle()}}</span>
+				<span style="font-style: italic; whitespace:nowrap;">{{main.sectionTitle()}}</span>
 				<div flex></div>
 			</h3>
 		</md-toolbar>

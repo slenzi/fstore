@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 
 <!--
-Toolbar partial that's loaded for the "home_storeList" state
+Toolbar partial that's loaded for the "main_upload" state
 -->
 
 <md-toolbar class="md-toolbar-tools">
@@ -11,7 +11,7 @@ Toolbar partial that's loaded for the "home_storeList" state
 	
 	<div flex></div>
 	
-	<md-button class="" ng-click="home.handleEventClickCancelUpload()">
+	<md-button class="" ng-click="main.handleEventClickCancelUpload()">
 		Cancel Upload
 	</md-button>	
 	

@@ -2,14 +2,14 @@
 	pageEncoding="ISO-8859-1"%>
 
 <!--
-Directory partial that's loaded for the "home_directory" state
+Directory partial that's loaded for the "main_directory_icon" state
 -->
 
 <md-toolbar class="directoryTitle-Toolbar">
 	<div class="md-toolbar-tools directoryTitle">
-		<!--ng-model="home.directory.getName"-->
-		<h2 class="md-flex" ng-repeat="crumb in home.breadcrumb() track by $index">
-			> <md-button ng-click="home.handleEventClickBreadcrumb(crumb)">{{crumb.name}}</md-button>
+		<!--ng-model="main.directory.getName"-->
+		<h2 class="md-flex" ng-repeat="crumb in main.breadcrumb() track by $index">
+			> <md-button ng-click="main.handleEventClickBreadcrumb(crumb)">{{crumb.name}}</md-button>
 		</h2>
 	</div>
 </md-toolbar>
@@ -27,11 +27,11 @@ Directory partial that's loaded for the "home_directory" state
 		--%>
 		<md-grid-tile
 			md-rowspan="1" md-colspan="1" md-colspan-sm="1"
-			ng-repeat="pathResource in home.directory().getChildren()"
+			ng-repeat="pathResource in main.directory().getChildren()"
 			ng-class="{'selectedTile' : pathResource.isSelected}"
-			sglclick="home.handleEventClickIconGridPathResource(pathResource)"
-			ng-dblclick="home.handleEventDblClickIconGridPathResource(pathResource)"
-			ng-mouseover="home.handlePathResourceMouseOver(pathResource)">
+			sglclick="main.handleEventClickIconGridPathResource(pathResource)"
+			ng-dblclick="main.handleEventDblClickIconGridPathResource(pathResource)"
+			ng-mouseover="main.handlePathResourceMouseOver(pathResource)">
 		
 			<%-- fails in IE when you have checkbox inside the grid-tile header
             <md-grid-tile-header ng-if="pathResource.isSelected">

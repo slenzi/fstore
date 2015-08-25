@@ -24,7 +24,7 @@
 	    
 	</head>
 
-	<body ng-app="fstoreFileManager" layout="row" ng-controller="homeController as home" class="">
+	<body ng-app="fstoreFileManager" layout="row" ng-controller="mainController as main" class="">
 	
 	<md-sidenav class="md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
@@ -35,7 +35,7 @@
 				<h3 class="md-toolbar-tools" style="min-height: 64px;">
 					<a href="<%=request.getContextPath()%>">File Manager</a>
 					<span flex></span>
-					<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+					<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>
 				</h3>
@@ -50,22 +50,22 @@
 				<md-toolbar class="md-toolbar-tools md-hue-1">
 			
 					<!--  ui-sref="settings" -->
-					<md-button class="md-raised md-warn leftNavButton" ng-click="home.notImplemented()">
+					<md-button class="md-raised md-warn leftNavButton" ng-click="main.notImplemented()">
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_settings_24px.svg"></md-icon>
 						System Settings
 					</md-button>
 				
 				</md-toolbar>
 				
-				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewStoreList()">
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewStoreList()">
 					Resource Store List
 				</md-button>
 
-				<md-button class="md-raised leftNavButton" ng-click="home.handleEventViewSiteList()">
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewSiteList()">
 					CMS Site List
 				</md-button>
 
-				<md-button class="md-raised leftNavButton" ng-click="home.handleEventSendSampleStomp()">
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventSendSampleStomp()">
 					Sample STOMP
 				</md-button>				
 				
@@ -83,8 +83,8 @@
 				<md-content layout="column" class="storeList">
                     <h3>Resource Stores</h3>
 					<md-list>
-						<div ng-repeat="store in home.storeList() track by $index" ui-sref="home_directory">
-							<md-list-item ng-click="home.handleEventViewStore(store.id)">
+						<div ng-repeat="store in main.storeList() track by $index" ui-sref="main_directory">
+							<md-list-item ng-click="main.handleEventViewStore(store.id)">
 								<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_archive_24px.svg"></md-icon>
 								{{store.name}}
 								<span flex></span>
@@ -102,7 +102,7 @@
 				<input type="text" ng-model="book.tags[$index]">
 				<br>
 				<md-content layout-padding layout="column">
-					<div ui-grid="home.sampleGrid()" class="storeGrid"></div>
+					<div ui-grid="main.sampleGrid()" class="storeGrid"></div>
 				</md-content>
 				-->
 				
@@ -124,10 +124,10 @@
 		<md-toolbar class="md-hue-3">
 			<span flex></span>
 			<h3 class="md-toolbar-tools">
-				<md-button ng-click="home.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+				<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
-				<span style="font-style: italic; whitespace:nowrap;">{{home.sectionTitle()}}</span>
+				<span style="font-style: italic; whitespace:nowrap;">{{main.sectionTitle()}}</span>
 				<div flex></div>
 			</h3>
 		</md-toolbar>

@@ -1,15 +1,15 @@
 (function(){
 
 	angular
-		.module('home')
-		.controller('homeController',[
-			'appConstants', 'homeService', 'ResourceStore', 'PathResource', 'FsFileUploader', 'FsStomp',
-			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', HomeController
+		.module('fsFileManagerMain')
+		.controller('mainController',[
+			'appConstants', 'mainService', 'ResourceStore', 'PathResource', 'FsFileUploader', 'FsStomp',
+			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
 
-	function HomeController(
-		appConstants, homeService, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+	function MainController(
+		appConstants, mainService, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -128,7 +128,7 @@
 		 * Say hello
 		 */
 		function _doHello(){
-			alert("hello from home controller");
+			alert("hello from main controller");
 			// $mdSidenav('MyLeftNav').toggle();
 			// $mdBottomSheet.hide()
 		}
@@ -200,7 +200,7 @@
          * Show the upload form.
          */
         function _handleEventViewUploadForm(){
-        	$state.go('home_upload');
+        	$state.go('main_upload');
         }
 		
 		/**
@@ -251,7 +251,7 @@
 		}
 		function _uploadProgressHandler(event){
 			var progressValue = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
-			//$log.debug('Home progress = ' + progressValue);
+			//$log.debug('main progress = ' + progressValue);
 			$scope.$apply();
 		}
         function _uploadSingleCompleteHandler(event){
@@ -292,9 +292,9 @@
 			
 			sectionTitle = "CMS Site List";
 			
-			$state.go('home_siteList');
+			$state.go('main_siteList');
 			
-			homeService
+			mainService
 				.getCmsSites()
 				.then(_handleCmsSiteDataCallback);			
 			
@@ -306,9 +306,9 @@
 		function _handleEventViewStoreList(){
 
 			sectionTitle = "Resource Store List";
-			$state.go('home_storeList');
+			$state.go('main_storeList');
 	
-			homeService
+			mainService
 				.getResourceStores()
 				.then(_handleStoreDataCallback);
 				
@@ -318,7 +318,7 @@
 		 * Helper function for _handleEventViewStoreList. Called when store data is
 		 * returned from REST service.
 		 *
-		 * storeData - data returned from home service getResourceStores() function.
+		 * storeData - data returned from main service getResourceStores() function.
 		 */
 		function _handleStoreDataCallback(storeData){
 			
@@ -359,7 +359,7 @@
 		 * View settings for current store
 		 */
 		function _handleEventViewStoreSettings(){
-			$state.go('home_storeSettings');
+			$state.go('main_storeSettings');
 		}
 		
 		/**
@@ -375,11 +375,11 @@
 		function _handleEventSwitchResourceView(){
 			if(useIconView){
 				useIconView = false;
-				$state.go('home_directory_table');
+				$state.go('main_directory_table');
 				
 			}else{
 				useIconView = true;
-				$state.go('home_directory_icon');
+				$state.go('main_directory_icon');
 			}
 		}
 		
@@ -388,9 +388,9 @@
 		 */
 		function _showDirectoryView(){
 			if(useIconView){
-				$state.go('home_directory_icon');
+				$state.go('main_directory_icon');
 			}else{
-				$state.go('home_directory_table');
+				$state.go('main_directory_table');
 			}
 		}
 
@@ -399,7 +399,7 @@
 		 */
 		function _handleEventClickTablePathResource(pathResource){
 			if(pathResource.type == 'FILE'){
-				homeService.downloadFile(pathResource.fileId);
+				mainService.downloadFile(pathResource.fileId);
 			}else if(pathResource.type == 'DIRECTORY'){
 				_handleLoadDirectory(pathResource.dirId, true);
 			}
@@ -449,7 +449,7 @@
 		 */
 		function _handleEventDblClickFile(fileResource){
 			//alert('You double clicked on a file, id = ' + fileResource.fileId);
-			homeService.downloadFile(fileResource.fileId)
+			mainService.downloadFile(fileResource.fileId)
 		}
 		
 		/**
@@ -478,7 +478,7 @@
 		 */
 		function _handleEventViewStore(storeId){
 
-			homeService
+			mainService
 				.getResourceStoreById(storeId)
 				.then( function( storeData ) {
 						if (storeData.error){
@@ -519,7 +519,7 @@
 			}
 			
             // fetch directory listing with max depth 1
-			homeService
+			mainService
 				.getDirectoryListing(dirId, 1)
 				.then( function( directoryData ) {
 					
@@ -565,7 +565,7 @@
          */		
 		function _handleLoadBreadcrumb(dirId){
 			
-			homeService
+			mainService
 				.getBreadcrumb(dirId)
 				.then( function( directoryData ) {
 						if (directoryData.error){
@@ -777,13 +777,13 @@
 			
 			if(fileIdList.length > 0 && dirIdList.length > 0){
 				
-				homeService
+				mainService
 				.deleteFiles(fileIdList)
 				.then( function( reply ) {
 					
 					$log.debug('delete files reply: ' + JSON.stringify(reply));
 					
-					return homeService
+					return mainService
 						.deleteDirectories(dirIdList)
 						.then( function( reply ) {
 							
@@ -804,7 +804,7 @@
 			} else if (fileIdList.length > 0){
 				
 				// delete via rest service (pass array of file ids)
-				homeService
+				mainService
 					.deleteFiles(fileIdList)
 					.then( function( reply ) {
 						
@@ -819,7 +819,7 @@
 			} else if (dirIdList.length > 0){
 				
 				// delete via rest service (pass array of dir ids)
-				homeService
+				mainService
 					.deleteDirectories(dirIdList)
 					.then( function( reply ) {
 						
@@ -941,7 +941,7 @@
 					var parentDirId = currentDirectory.dirId;
 					var newFolderName = $scope.newFolderDialog.newFolderName;
 					
-					homeService
+					mainService
 						.addDirectory(parentDirId, newFolderName)
 						.then( function( reply ) {
 							
@@ -1004,7 +1004,7 @@
 					var siteName = $scope.newCmsSiteDialog.siteName;
                     var siteDesc = $scope.newCmsSiteDialog.siteDesc;
 					
-					homeService
+					mainService
 						.addCmsSite(siteName, siteDesc)
 						.then( function( reply ) {
 							

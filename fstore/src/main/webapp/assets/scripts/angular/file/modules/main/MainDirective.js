@@ -2,8 +2,8 @@
 	
 	'use strict';
 	
-	// fetch home module
-	var homeModule = angular.module('home');
+	// fetch main module
+	var mainModule = angular.module('fsFileManagerMain');
 	
 	/**
 	 * Handle single click when also using ng-dblclick. Allows for both
@@ -12,7 +12,7 @@
 	 * Thanks to Rob:
 	 * http://stackoverflow.com/questions/20444409/handling-ng-click-and-ng-dblclick-on-the-same-element-with-angularjs
 	 */
-	homeModule.directive('sglclick', ['$parse', function($parse) {
+	mainModule.directive('sglclick', ['$parse', function($parse) {
 		return {
 			restrict: 'A',
 			link: function(scope, element, attr) {

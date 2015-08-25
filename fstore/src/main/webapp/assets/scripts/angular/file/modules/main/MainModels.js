@@ -2,16 +2,16 @@
 	
 	'use strict';
 	
-	var homeApp = angular.module('home');
+	var mainModule = angular.module('fsFileManagerMain');
 
 	// Create directory resource model
-	homeApp.factory('PathResource', [
+	mainModule.factory('PathResource', [
 			'appConstants', '$log', '$q', PathResourceFactory
 			]
 		);
 		
 	// Create resource store model
-	homeApp.factory('ResourceStore', [
+	mainModule.factory('ResourceStore', [
 			'appConstants', '$log', '$q', ResourceStoreFactory
 			]
 		);

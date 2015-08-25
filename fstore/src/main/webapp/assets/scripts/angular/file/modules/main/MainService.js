@@ -3,13 +3,13 @@
 	'use strict';
 	
 	angular
-		.module('home')
-		.service('homeService', [
-			'appConstants', '$log', '$q', '$location', '$resource', HomeService
+		.module('fsFileManagerMain')
+		.service('mainService', [
+			'appConstants', '$log', '$q', '$location', '$resource', MainService
 			]
 		);
 	
-	function HomeService(appConstants, $log, $q, $location, $resource){
+	function MainService(appConstants, $log, $q, $location, $resource){
 		
 		// resource store service
 		var storeService = $resource(

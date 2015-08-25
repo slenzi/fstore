@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 
 <!--
-Resource store settings partial that's loaded for the "home_storeSettings" state
+Resource store settings partial that's loaded for the "main_storeSettings" state
 -->
 	
 <md-content layout-padding id="storeSettingsContent" style="padding: 10px;">

@@ -7,7 +7,7 @@
 	 *
 	 * e.g., <div ng-repeat="n in [10] | makeRange">Do something 0..9: {{n}}</div>
 	 */
-	angular.module('home').filter('makeRange', function() {
+	angular.module('fsFileManagerMain').filter('makeRange', function() {
         return function(input) {
             var lowBound, highBound;
             switch (input.length) {
