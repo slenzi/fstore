@@ -7,7 +7,7 @@
 	
 	<head>
 	
-    	<title>FStore: File Manager</title>
+    	<title>FStore: CMS</title>
 
 	    <meta charset="utf-8">
 	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,14 +17,14 @@
 	    <jsp:include page="includes_header.jsp" />
 	    
 	    <!-- app resources -->
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/file/assets/css/ecog.css"/>
+	    <link rel="stylesheet" href="<%=request.getContextPath()%>/cms/assets/css/ecog.css"/>
 		
 		<!-- for angular location provider -->
-		<base href="/file">
+		<base href="/cms">
 	    
 	</head>
 
-	<body ng-app="fstoreFileManager" layout="row" ng-controller="mainController as main" class="">
+	<body ng-app="fstoreCms" layout="row" ng-controller="mainController as main" class="">
 	
 	<md-sidenav class="md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
@@ -33,15 +33,15 @@
 			
 			<md-toolbar class="md-hue-3 md-whiteframe-z1" style="min-height: 120px;">
 				<h3 class="md-toolbar-tools" style="min-height: 64px;">
-					<a href="<%=request.getContextPath()%>">File Manager</a>
+					<a href="<%=request.getContextPath()%>">Content Management System</a>
 					<span flex></span>
 					<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>
 				</h3>
 				<span flex></span>				
 				<md-content layout="column" style="background-color: rgba(255,255,255, 1); overflow: hidden; min-height: 64px;">
-					<img src="<%=request.getContextPath()%>/file/assets/img/ecog/ecog-acrin_logobanner_sm_1.png" style="width: 95%; margin: 0 auto; margin-top: 2px; margin-bottom: 2px; border: 0px solid red; padding-right: 8px; padding-left: 5px; padding-top: 5px;">
+					<img src="<%=request.getContextPath()%>/cms/assets/img/ecog/ecog-acrin_logobanner_sm_1.png" style="width: 95%; margin: 0 auto; margin-top: 2px; margin-bottom: 2px; border: 0px solid red; padding-right: 8px; padding-left: 5px; padding-top: 5px;">
 				</md-content>
 			</md-toolbar>
 
@@ -51,23 +51,25 @@
 			
 					<!--  ui-sref="settings" -->
 					<md-button class="md-raised md-warn leftNavButton" ng-click="main.notImplemented()">
-						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_settings_24px.svg"></md-icon>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_settings_24px.svg"></md-icon>
 						System Settings
 					</md-button>
 				
 				</md-toolbar>
 				
-				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewStoreList()">
-					Resource Store List
-				</md-button>
-
 				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewSiteList()">
 					CMS Site List
 				</md-button>
-
-				<md-button class="md-raised leftNavButton" ng-click="main.handleEventSendSampleStomp()">
-					Sample STOMP
-				</md-button>				
+				
+				<md-button class="md-raised leftNavButton" ng-href="<%=request.getContextPath()%>/file/index.jsp">
+					File Manager
+				</md-button>
+				
+				<!--
+				<md-button class="md-raised leftNavButton" ng-click="main.notImplemented()">
+					File Manager
+				</md-button>
+				-->				
 				
 			</md-content>			
 			
@@ -85,7 +87,7 @@
 					<md-list>
 						<div ng-repeat="store in main.storeList() track by $index" ui-sref="main_directory">
 							<md-list-item ng-click="main.handleEventViewStore(store.id)">
-								<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_archive_24px.svg"></md-icon>
+								<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_archive_24px.svg"></md-icon>
 								{{store.name}}
 								<span flex></span>
 							</md-list-item>
@@ -125,7 +127,7 @@
 			<span flex></span>
 			<h3 class="md-toolbar-tools">
 				<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
 				<span style="font-style: italic; whitespace:nowrap;">{{main.sectionTitle()}}</span>
 				<div flex></div>

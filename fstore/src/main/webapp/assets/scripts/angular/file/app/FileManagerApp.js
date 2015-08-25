@@ -2,7 +2,7 @@
 	
 	'use strict';
 	
-	var homeApp;
+	var fileApp;
 	
 	/**
 	 * Initialize app with 'angular material' and our 'fsFileManagerMain' module
@@ -19,7 +19,7 @@
 	 * ui.grid - ui data grid component
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
-	homeApp = angular
+	fileApp = angular
 		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsUpload', 'fsStomp', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {

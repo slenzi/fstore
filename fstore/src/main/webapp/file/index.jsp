@@ -58,9 +58,15 @@
 					Resource Store List
 				</md-button>
 
+				<md-button class="md-raised leftNavButton" ng-href="<%=request.getContextPath()%>/cms/index.jsp">
+					CMS Site List
+				</md-button>
+				
+				<!--
 				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewSiteList()">
 					CMS Site List
-				</md-button>				
+				</md-button>
+				-->				
 				
 				<md-button class="md-raised leftNavButton" ng-click="main.handleEventSendSampleStomp()">
 					Sample STOMP

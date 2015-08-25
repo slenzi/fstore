@@ -15,4 +15,4 @@ application scripts
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/modules/main/MainService.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/modules/main/MainFilter.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/modules/main/MainDirective.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/app/FileManager.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/app/FileManagerApp.js"></script>

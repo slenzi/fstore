@@ -14,15 +14,25 @@
 	This application also builds upon the basic tree structure to store files and directories.
 	</p>
 	
-	<h2>File Manager</h2>
+	<h2>File Manager Application</h2>
 	
 	<p>
-		<a href="file/index_angular.jsp">File Manager</a>
+		<a href="file/index.jsp">File Manager</a>
 	</p>
 	
 	<p>
-		<a href="file/index_angular_ecog_acrin.jsp">File Manager (ECOG-ACRIN Themed)</a>
+		<a href="file/index_ecog_acrin.jsp">File Manager (ECOG-ACRIN Themed)</a>
 	</p>
+	
+	<h2>CMS Application</h2>
+	
+	<p>
+		<a href="cms/index.jsp">Content Management System</a>
+	</p>
+	
+	<p>
+		<a href="cms/index_ecog_acrin.jsp">Content Management System (ECOG-ACRIN Themed)</a>
+	</p>	
 	
 	<h2>WebSocket Setup Check</h2>
 	
