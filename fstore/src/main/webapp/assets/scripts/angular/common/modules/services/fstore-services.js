@@ -1,75 +1,148 @@
 /**
- * main services for file module is deprecated. all services have been moved to fstore-services-module
+ * Common rest services use by all fstore modules/apps
  */
 (function(){
 	
 	'use strict';
 	
-	angular
-		.module('fsFileManagerMain')
-		.service('mainService', [
-			'appConstants', '$log', '$q', '$location', '$resource', MainService
-			]
-		);
+	var fstoreServices;
 	
-	function MainService(appConstants, $log, $q, $location, $resource){
+	fstoreServices = angular
+		.module('fstore-services-module', ['ngResource'])
+		// @xyz@ values are replaced/filtered by maven during build process
+		.constant('FstoreServiceConstants', {
+			contextPath: '@application.context@',
+			httpUploadHandler: '@http.upload.handler@',
+			restServiceStore: '@services.rest.store@',
+			restServiceFile: '@services.rest.file@',
+			restServiceDirectory: '@services.rest.directory@',
+			restServiceCmsSite: '@services.cms.rest.site@'
+		})
+		.service('CmsServices', [
+			'FstoreServiceConstants', '$log', '$q', '$resource', CmsServices
+			]
+		)
+		.service('FileServices', [
+			'FstoreServiceConstants', '$log', '$q', '$resource', FileServices
+			]
+		);	
+	
+	/**
+	 * Setup CMS services
+	 * 
+	 * @param FstoreServiceConstants
+	 * @param $log
+	 * @param $q
+	 * @param $resource
+	 * @returns
+	 */
+	function CmsServices(FstoreServiceConstants, $log, $q, $resource){
+
+		// cms site service
+		var cmsSiteService = $resource(
+				FstoreServiceConstants.restServiceCmsSite, { siteId: '@siteId' }, {
+				addSite: {
+					url: FstoreServiceConstants.restServiceCmsSite + '/add',
+					method: 'POST',
+					params: {
+						siteName: '@siteName', siteDesc: '@siteDesc', clearIfExists: true
+					}					
+				}
+			});
+
+		
+		// *********************************
+		// Internal RESTful methods
+		// *********************************
+		
+		
+		// *********************************
+		// CMS Site operations
+		// *********************************		
+		
+		// fetch all cms sites
+		function _fetchCmsSiteList(){
+			
+			return cmsSiteService.query().$promise;
+			
+		};		
+		
+		// add new cms site
+		function _addCmsSite(siteName, siteDesc){
+			
+			var clearIfExists = true;
+			
+			return cmsSiteService.addSite({ 'siteName' : siteName, 'siteDesc': siteDesc, 'clearIfExists': clearIfExists }).$promise;
+			
+		}
+		
+		
+		// *********************************
+		// External API
+		// *********************************
+	    return {
+			addCmsSite: _addCmsSite,
+			getCmsSites: _fetchCmsSiteList
+	    };
+		
+	}
+	
+	/**
+	 * Setup File services
+	 * 
+	 * @param FstoreServiceConstants
+	 * @param $log
+	 * @param $q
+	 * @param $location
+	 * @param $resource
+	 * @returns
+	 */
+	function FileServices(FstoreServiceConstants, $log, $q, $resource){
 		
 		// resource store service
 		var storeService = $resource(
-			appConstants.restServiceStore + '/:storeId',
+			FstoreServiceConstants.restServiceStore + '/:storeId',
 				{ storeId: '@storeId' }
 			);
 			
 		// file resource service
 		var fileService = $resource(
-			appConstants.restServiceFile + '/:fileId', { fileId: '@fileId' }, {
+			FstoreServiceConstants.restServiceFile + '/:fileId', { fileId: '@fileId' }, {
 				deleteFiles: {
-					url: appConstants.restServiceFile + '/delete',
+					url: FstoreServiceConstants.restServiceFile + '/delete',
 					method: 'POST'
 				}
 			}); 
 		
 		// directory resource service
 		var directoryService = $resource(
-			appConstants.restServiceDirectory, { dirId: '@dirId' }, {
+			FstoreServiceConstants.restServiceDirectory, { dirId: '@dirId' }, {
 				depthGet: {
-					url: appConstants.restServiceDirectory + '/:dirId/depth/:maxDepth',
+					url: FstoreServiceConstants.restServiceDirectory + '/:dirId/depth/:maxDepth',
 					method: 'GET',
 					params: {
 						dirId: '@dirId', maxDepth: '@maxDepth'
 					}
 				},
 				breadcrumbGet: {
-					url: appConstants.restServiceDirectory + '/breadcrumb/:dirId',
+					url: FstoreServiceConstants.restServiceDirectory + '/breadcrumb/:dirId',
 					method: 'GET',
 					params: {
 						dirId: '@dirId'
 					}
 				},
 				deleteDirectories: {
-					url: appConstants.restServiceDirectory + '/delete',
+					url: FstoreServiceConstants.restServiceDirectory + '/delete',
 					method: 'POST'
 				},
 				addDirectory: {
-					url: appConstants.restServiceDirectory + '/add',
+					url: FstoreServiceConstants.restServiceDirectory + '/add',
 					method: 'POST',
 					params: {
 						dirId: '@dirId', dirName: '@newDirName'
 					}					
 				}
-			});
-
-		// cms site service
-		var cmsSiteService = $resource(
-			appConstants.restServiceCmsSite, { siteId: '@siteId' }, {
-				addSite: {
-					url: appConstants.restServiceCmsSite + '/add',
-					method: 'POST',
-					params: {
-						siteName: '@siteName', siteDesc: '@siteDesc', clearIfExists: true
-					}					
-				}
-			});		
+			});	
 		
 		var sampleData = [
 			{
@@ -132,7 +205,7 @@
 			
 			//alert('download file coming soon. file id = ' + fileId);
 			
-			var downloadUrl = appConstants.contextPath + '/cxf/resource/file/download/id/' + fileId;
+			var downloadUrl = FstoreServiceConstants.contextPath + '/cxf/resource/file/download/id/' + fileId;
 			
 			window.location.href = downloadUrl;
 			
@@ -191,27 +264,6 @@
 		
 		
 		// *********************************
-		// CMS Site operations
-		// *********************************		
-		
-		// fetch all cms sites
-		function _fetchCmsSiteList(){
-			
-			return cmsSiteService.query().$promise;
-			
-		};		
-		
-		// add new cms site
-		function _addCmsSite(siteName, siteDesc){
-			
-			var clearIfExists = true;
-			
-			return cmsSiteService.addSite({ 'siteName' : siteName, 'siteDesc': siteDesc, 'clearIfExists': clearIfExists }).$promise;
-			
-		}
-		
-		
-		// *********************************
 		// External API
 		// *********************************
 	    return {
@@ -225,11 +277,9 @@
 			deleteFile: _deleteFile,
 			deleteFiles: _deleteFiles,
 			deleteDirectories: _deleteDirectories,
-			addDirectory: _addDirectory,
-			addCmsSite: _addCmsSite,
-			getCmsSites: _fetchCmsSiteList
+			addDirectory: _addDirectory
 	    };
 		
-	}
-
+	}	
+	
 })();

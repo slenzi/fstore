@@ -11,10 +11,11 @@
 	 * ngMaterial - Material design UI components
 	 * ngResource - Provides interaction support with RESTful services via the $resource service
 	 * fsCmsMain - Our main cms module
+	 * fstore-services-module - common fstore services module
 	 * smart-table - lightweight table module
 	 */
 	cmsApp = angular
-		.module('fstoreCms', ['ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'smart-table'])
+		.module('fstoreCms', ['ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-services-module', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',

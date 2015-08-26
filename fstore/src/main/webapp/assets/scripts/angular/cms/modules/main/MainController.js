@@ -3,20 +3,22 @@
 	angular
 		.module('fsCmsMain')
 		.controller('mainController',[
-			'appConstants', 'mainService', 'CmsSite',
+			'appConstants', 'CmsServices', 'CmsSite',
 			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
+		
+	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 
 	function MainController(
-		appConstants, mainService, CmsSite, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, CmsServices, CmsSite, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
 		 * Internal models bound to UI
 		 */
-		var sectionTitle = "Not set";
-		var cmsSiteList = [{ "name": "empty"}];
+		var sectionTitle = "Loading...";
+		var cmsSiteList = [{ "name": "Loading..."}];
 		
 		var currentSite = new CmsSite({
 			name: 'Loading...',
@@ -60,7 +62,7 @@
 			
 			$state.go('main_siteList');
 			
-			mainService
+			CmsServices
 				.getCmsSites()
 				.then(_handleCmsSiteDataCallback);			
 			
@@ -72,21 +74,31 @@
 				$log.debug("Error, " + siteData.error);
 			}else{
 				
-				$log.debug("got site data => " + JSON.stringify(siteData));
+				//$log.debug("got site data => " + JSON.stringify(siteData));
 				
-				cmsSiteList = siteData;
+				cmsSiteList = [{ "name": "loading..."}];
+				
+				var newSiteList = [];
 				
 				if(cmsSiteList != null && cmsSiteList[0]){
 					
 					currentSite.setData(cmsSiteList[0]);
+					
+					for( var siteIndex = 0; siteIndex < siteData.length; siteIndex++ ){
+						var newSiteEntry = new CmsSite();
+						newSiteEntry.setData(siteData[siteIndex]);
+						newSiteList.push(newSiteEntry);						
+					}
+					
+					cmsSiteList = newSiteList;
 					
 					//_handleLoadDirectory(storeList[0].rootDirectoryId, false);
 					
 					_leftNavClose();
 				}
 
-				$log.debug('current site = ' + JSON.stringify(currentSite));
-				$log.debug('current site list = ' + JSON.stringify(cmsSiteList));
+				//$log.debug('current site = ' + JSON.stringify(currentSite));
+				//$log.debug('current site list = ' + JSON.stringify(cmsSiteList));
 			}			
 			
 		}
@@ -183,7 +195,7 @@
 					var siteName = $scope.newCmsSiteDialog.siteName;
                     var siteDesc = $scope.newCmsSiteDialog.siteDesc;
 					
-					mainService
+					CmsServices
 						.addCmsSite(siteName, siteDesc)
 						.then( function( reply ) {
 							
@@ -203,7 +215,7 @@
 		
 		function _handleEventClickSiteTable(siteData){
 			
-			alert('you clicked on a site');
+			alert('you clicked on a site - load the resources view');
 			
 		}
 	

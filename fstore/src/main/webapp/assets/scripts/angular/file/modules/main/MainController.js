@@ -3,13 +3,15 @@
 	angular
 		.module('fsFileManagerMain')
 		.controller('mainController',[
-			'appConstants', 'mainService', 'ResourceStore', 'PathResource', 'FsFileUploader', 'FsStomp',
+			'appConstants', 'FileServices', 'ResourceStore', 'PathResource', 'FsFileUploader', 'FsStomp',
 			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
 
+	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
+	
 	function MainController(
-		appConstants, mainService, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, FileServices, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -17,7 +19,7 @@
 		 */
 		var sectionTitle = "Not set";
 		var storeList = [{ "name": "empty"}];
-		var cmsSiteList = [{ "name": "empty"}];
+		//var cmsSiteList = [{ "name": "empty"}];
 		var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 		var currentDirectory = new PathResource({
 			name: 'Loading...',
@@ -161,12 +163,11 @@
 			return currentDirectory;
 		}
 		
-		/**
-		 * Get list of cms sites
-		 */
+		/*
 		function _cmsSiteList(){
 			return cmsSiteList;
-		}		
+		}
+		*/		
 		
 		/**
 		 * Get reference to fsUploader
@@ -288,17 +289,19 @@
 			//_showDirectoryView();
 		}
 		
+		/*
 		function _handleEventViewSiteList(){
 			
 			sectionTitle = "CMS Site List";
 			
 			$state.go('main_siteList');
 			
-			mainService
+			FileServices
 				.getCmsSites()
 				.then(_handleCmsSiteDataCallback);			
 			
 		}
+		*/
 		
 		/**
 		 * View list of all stores
@@ -308,7 +311,7 @@
 			sectionTitle = "Resource Store List";
 			$state.go('main_storeList');
 	
-			mainService
+			FileServices
 				.getResourceStores()
 				.then(_handleStoreDataCallback);
 				
@@ -337,6 +340,7 @@
 			
 		}
 		
+		/*
 		function _handleCmsSiteDataCallback(siteDate){
 			
 			if(siteDate.error){
@@ -354,6 +358,7 @@
 			}			
 			
 		}
+		*/
 		
 		/**
 		 * View settings for current store
@@ -399,7 +404,7 @@
 		 */
 		function _handleEventClickTablePathResource(pathResource){
 			if(pathResource.type == 'FILE'){
-				mainService.downloadFile(pathResource.fileId);
+				FileServices.downloadFile(pathResource.fileId);
 			}else if(pathResource.type == 'DIRECTORY'){
 				_handleLoadDirectory(pathResource.dirId, true);
 			}
@@ -449,7 +454,7 @@
 		 */
 		function _handleEventDblClickFile(fileResource){
 			//alert('You double clicked on a file, id = ' + fileResource.fileId);
-			mainService.downloadFile(fileResource.fileId)
+			FileServices.downloadFile(fileResource.fileId)
 		}
 		
 		/**
@@ -478,7 +483,7 @@
 		 */
 		function _handleEventViewStore(storeId){
 
-			mainService
+			FileServices
 				.getResourceStoreById(storeId)
 				.then( function( storeData ) {
 						if (storeData.error){
@@ -519,7 +524,7 @@
 			}
 			
             // fetch directory listing with max depth 1
-			mainService
+			FileServices
 				.getDirectoryListing(dirId, 1)
 				.then( function( directoryData ) {
 					
@@ -565,7 +570,7 @@
          */		
 		function _handleLoadBreadcrumb(dirId){
 			
-			mainService
+			FileServices
 				.getBreadcrumb(dirId)
 				.then( function( directoryData ) {
 						if (directoryData.error){
@@ -777,34 +782,34 @@
 			
 			if(fileIdList.length > 0 && dirIdList.length > 0){
 				
-				mainService
-				.deleteFiles(fileIdList)
-				.then( function( reply ) {
-					
-					$log.debug('delete files reply: ' + JSON.stringify(reply));
-					
-					return mainService
-						.deleteDirectories(dirIdList)
-						.then( function( reply ) {
-							
-							$log.debug('delete directories reply: ' + JSON.stringify(reply));
-							
-						});
-					
-				}).then( function( result ) {
-					
-					_reloadCurrentDirectory();
-					
-					$mdDialog.hide(pleaseWaitDialog, "finished");
-					
-				});
+				FileServices
+					.deleteFiles(fileIdList)
+					.then( function( reply ) {
+						
+						$log.debug('delete files reply: ' + JSON.stringify(reply));
+						
+						return FileServices
+							.deleteDirectories(dirIdList)
+							.then( function( reply ) {
+								
+								$log.debug('delete directories reply: ' + JSON.stringify(reply));
+								
+							});
+						
+					}).then( function( result ) {
+						
+						_reloadCurrentDirectory();
+						
+						$mdDialog.hide(pleaseWaitDialog, "finished");
+						
+					});
 							
 				
 				
 			} else if (fileIdList.length > 0){
 				
 				// delete via rest service (pass array of file ids)
-				mainService
+				FileServices
 					.deleteFiles(fileIdList)
 					.then( function( reply ) {
 						
@@ -819,7 +824,7 @@
 			} else if (dirIdList.length > 0){
 				
 				// delete via rest service (pass array of dir ids)
-				mainService
+				FileServices
 					.deleteDirectories(dirIdList)
 					.then( function( reply ) {
 						
@@ -941,7 +946,7 @@
 					var parentDirId = currentDirectory.dirId;
 					var newFolderName = $scope.newFolderDialog.newFolderName;
 					
-					mainService
+					FileServices
 						.addDirectory(parentDirId, newFolderName)
 						.then( function( reply ) {
 							
@@ -960,9 +965,7 @@
 			
 		}
             
-		/**
-		 * Display dialog where users can enter values for new cms site
-		 */
+		/*
 		function _handleEventClickNewCmsSite(event){
 			
 			$mdDialog.show({
@@ -1004,7 +1007,7 @@
 					var siteName = $scope.newCmsSiteDialog.siteName;
                     var siteDesc = $scope.newCmsSiteDialog.siteDesc;
 					
-					mainService
+					FileServices
 						.addCmsSite(siteName, siteDesc)
 						.then( function( reply ) {
 							
@@ -1020,7 +1023,8 @@
 				}				
 			}
 			
-		}    
+		}
+		*/  
 	
 		var self = this;
 		
@@ -1036,7 +1040,7 @@
 			sectionTitle : _sectionTitle,
 			store : _currentStore,
 			storeList : _storeList,
-			cmsSiteList : _cmsSiteList,
+			//cmsSiteList : _cmsSiteList,
 			directory : _currentDirectory,
 			uploader : _uploader,
 			breadcrumb : _breadcrumb,
@@ -1047,7 +1051,7 @@
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventViewStoreList : _handleEventViewStoreList,
-			handleEventViewSiteList : _handleEventViewSiteList,
+			//handleEventViewSiteList : _handleEventViewSiteList,
 			handleEventClickTablePathResource : _handleEventClickTablePathResource,
 			handleEventClickIconGridPathResource : _handleEventClickIconGridPathResource,
 			handleEventDblClickIconGridPathResource : _handleEventDblClickIconGridPathResource,
@@ -1063,8 +1067,8 @@
 			handleEventClickDeletePathResources : _handleEventClickDeletePathResources,
 			handleEventClickSelectAllPathResources : _handleEventClickSelectAllPathResources,
 			handlePathResourceMouseOver: _handlePathResourceMouseOver,
-			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources,
-            handleEventClickNewCmsSite : _handleEventClickNewCmsSite
+			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources
+            //handleEventClickNewCmsSite : _handleEventClickNewCmsSite
 		}
 
 	}

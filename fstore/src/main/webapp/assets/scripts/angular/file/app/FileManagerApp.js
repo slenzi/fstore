@@ -13,6 +13,7 @@
 	 * fsFileManagerMain - Our main file manager module
 	 * fsUpload - multi-part HTTP uploader
 	 * fsStomp - Stomp websocket module
+	 * fstore-services-module - common fstore services module
 	 * smart-table - lightweight table module
 	 * 
 	 * -- no longer used --
@@ -20,19 +21,23 @@
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	fileApp = angular
-		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsUpload', 'fsStomp', 'smart-table'])
+		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsUpload', 'fsStomp', 'fstore-services-module', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
-			httpUploadHandler: '@http.upload.handler@',
-			restServiceStore: '@services.rest.store@',
-			restServiceFile: '@services.rest.file@',
-			restServiceDirectory: '@services.rest.directory@',
-			restServiceCmsSite: '@services.cms.rest.site@'
+			httpUploadHandler: '@http.upload.handler@'
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);
 		
+		/*
+			,
+			restServiceStore: '@services.rest.store@',
+			restServiceFile: '@services.rest.file@',
+			restServiceDirectory: '@services.rest.directory@',
+			restServiceCmsSite: '@services.cms.rest.site@'		 
+		 */
+	
 		/**
 		 * Main app config
 		 *
@@ -131,17 +136,6 @@
 						},
 						'toolbarContent': {
 							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/main/partials/toolbarStoreListPartial.jsp'							
-						}
-					}
-				})
-				.state('main_siteList', {
-					url: '/sites',
-					views: {
-						'mainContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/main/partials/siteListPartial.jsp'
-						},
-						'toolbarContent': {
-							templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/main/partials/toolbarSiteListPartial.jsp'							
 						}
 					}
 				})				

@@ -7,6 +7,9 @@
 application scripts
 
 --------------------------------------------- -->
+
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/common/modules/services/fstore-services.js"></script>
+
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/modules/upload/FsUploadModule.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/modules/stomp/FsStomp.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/file/modules/main/MainModule.js"></script>
