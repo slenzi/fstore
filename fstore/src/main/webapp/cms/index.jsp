@@ -55,18 +55,16 @@
 				</md-toolbar>
 
 				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewSiteList()">
-					CMS Site List
+					Site List
 				</md-button>
+				
+				<md-content layout-padding class="md-hue-1">
+				<h5>Sections</h5>
+				</md-content>				
 				
 				<md-button class="md-raised leftNavButton" ng-href="<%=request.getContextPath()%>/file/index.jsp">
 					File Manager
 				</md-button>
-				
-				<!--
-				<md-button class="md-raised leftNavButton" ng-click="main.notImplemented()">
-					File Manager
-				</md-button>
-				-->	
 				
 			</md-content>
 			

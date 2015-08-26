@@ -61,16 +61,18 @@
 					Resource Store List
 				</md-button>
 
-				<md-button class="md-raised leftNavButton" ng-href="<%=request.getContextPath()%>/cms/index.jsp">
-					CMS Site List
-				</md-button>
+				<md-content layout-padding class="md-hue-1">
+				<h5>Sections</h5>
+				</md-content>				
 				
-				<!--
-				<md-button class="md-raised leftNavButton" ng-click="main.handleEventViewSiteList()">
-					CMS Site List
-				</md-button>
-				-->	
-
+				<md-button class="md-raised leftNavButton" ng-href="<%=request.getContextPath()%>/cms/index.jsp">
+					CMS
+				</md-button>			
+				
+				<md-content layout-padding class="md-hue-1">
+				<h5>Miscellaneous</h5>
+				</md-content>
+				
 				<md-button class="md-raised leftNavButton" ng-click="main.handleEventSendSampleStomp()">
 					Sample STOMP
 				</md-button>				

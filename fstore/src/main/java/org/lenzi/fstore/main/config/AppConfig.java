@@ -28,7 +28,8 @@ import org.springframework.stereotype.Controller;
 		"org.lenzi.fstore.web",
 		"org.lenzi.fstore.example",
 		"org.lenzi.fstore.file2",
-		"org.lenzi.fstore.cms"
+		"org.lenzi.fstore.cms",
+		"org.lenzi.fstore.chat"
 	},
 	excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class),
@@ -43,7 +44,8 @@ import org.springframework.stereotype.Controller;
 	UploadConfig.class,
 	CxfConfig.class,
 	RepositoryConfig.class,
-	WebSocketConfig.class
+	WebSocketConfig.class,
+	WebSocketChatConfig.class
 })
 public class AppConfig {
 
@@ -59,6 +61,8 @@ public class AppConfig {
 	
 	// RepositoryConfig - Setup repositories depending on which spring profiles are active
 	
-	// WebSocketConfig - Setup websocket support
+	// WebSocketConfig - Setup websocket STOMP messaging support
+	
+	// WebSocketChatConfig - Setup websocket chat support
 	
 }
