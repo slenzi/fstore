@@ -59,7 +59,7 @@ public class FsCmsJsonHelper {
 		
 		JsCmsSite js = new JsCmsSite();
 		
-		js.setId(String.valueOf(site.getSiteId()));
+		js.setSiteId(String.valueOf(site.getSiteId()));
 		js.setName(site.getName());
 		js.setDescription(site.getDescription());		
 		js.setDateCreated(DateUtil.defaultFormat(site.getDateCreated()));

@@ -15,7 +15,7 @@ import org.lenzi.fstore.file2.web.rs.model.JsResourceStore;
 @XmlRootElement
 public class JsCmsSite implements Comparable<JsCmsSite> {
 
-	private String id;
+	private String siteId;
 	private String name;
 	private String description;
 	
@@ -30,17 +30,17 @@ public class JsCmsSite implements Comparable<JsCmsSite> {
 	}
 
 	/**
-	 * @return the id
+	 * @return the siteId
 	 */
-	public String getId() {
-		return id;
+	public String getSiteId() {
+		return siteId;
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param siteId the id to set
 	 */
-	public void setId(String id) {
-		this.id = id;
+	public void setSiteId(String siteId) {
+		this.siteId = siteId;
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class JsCmsSite implements Comparable<JsCmsSite> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((siteId == null) ? 0 : siteId.hashCode());
 		return result;
 	}
 
@@ -150,10 +150,10 @@ public class JsCmsSite implements Comparable<JsCmsSite> {
 		if (getClass() != obj.getClass())
 			return false;
 		JsCmsSite other = (JsCmsSite) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (siteId == null) {
+			if (other.siteId != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!siteId.equals(other.siteId))
 			return false;
 		return true;
 	}
