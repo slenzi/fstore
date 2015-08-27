@@ -46,7 +46,10 @@
 			name: 'Loading...',
 			dateCreated: 'Loading...',
 			dateUpdated: 'Loading...'
-		});			
+		});
+            
+        var offlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
+        var onlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 
 		/****************************************************************************************
 		 * On application load:  load all cms sites when page loads (asynchronously)
@@ -122,6 +125,22 @@
         function _setOnlineDirectory(directoryPathResource){
             currentOnlineDirectory = directoryPathResource;
         }
+            
+        function _offlineBreadcrumb(){
+            return offlineBreadcrumbNav;   
+        }
+            
+        function _onlineBreadcrumb(){
+            return onlineBreadcrumbNav;   
+        }
+            
+        function _setOfflineBreadcrumb(crumb){
+            offlineBreadcrumbNav = crumb;
+        }
+            
+        function _setOnlineBreadcrumb(crumb){
+            onlineBreadcrumbNav = crumb;
+        }    
 		
 		function _handleEventViewSiteList(){
 			
@@ -260,6 +279,8 @@
             
             _setOnlineDirectory(directory);
             
+            _fetchBreadcrumb(directory.dirId, _processOnlineBreadcrumb);
+            
         }
             
         function _processOfflineDirectoryData(directory){
@@ -267,6 +288,8 @@
             $log.debug('processing offline dir => ' + JSON.stringify(directory));
             
             _setOfflineDirectory(directory);
+            
+            _fetchBreadcrumb(directory.dirId, _processOfflineBreadcrumb);
             
         }
 
@@ -322,7 +345,70 @@
 					}
 				);
             
-        };		
+        };
+            
+        function _processOfflineBreadcrumb(crumb){
+            
+            _setOfflineBreadcrumb(crumb);
+            
+        }
+            
+        function _processOnlineBreadcrumb(crumb){
+            
+            _setOnlineBreadcrumb(crumb);
+            
+        }
+        
+        /**
+         * Fetch breadcrumb tree for specific directory
+         *
+         * dirId - id of the directory
+         * crumbHandler - callback method, the crumb data will be passed to this function
+         */
+		function _fetchBreadcrumb(dirId, crumbHandler){
+			
+			FileServices
+				.getBreadcrumb(dirId)
+				.then( function( directoryData ) {
+						if (directoryData.error){
+							$log.debug("Error, " + directoryData.error);
+						} else {
+							
+							//$log.debug("got breadcrumb data => " + JSON.stringify(directoryData));
+							
+							// var breadcrumbNav = [{"dirId": "empty", "name": "empty"}];
+							
+							var breadcrumbNav = [];
+							var crumb = {};
+							var currentDir = directoryData;
+							if(currentDir.hasOwnProperty('dirId') && currentDir.hasOwnProperty('name')){
+								crumb.dirId = currentDir.dirId;
+								crumb.name = currentDir.name;
+								breadcrumbNav.push(crumb);								
+							}
+							//$log.debug('added crumb: ' + JSON.stringify(directoryData));
+							while(currentDir.hasOwnProperty('children') && currentDir.children.length > 0){
+								
+								currentDir = currentDir.children[0];
+								
+								crumb = {};
+								crumb.dirId = currentDir.dirId;
+								crumb.name = currentDir.name;
+								breadcrumbNav.push(crumb);
+								
+								//$log.debug('added crumb: ' + JSON.stringify(directoryData));
+								
+							}
+                            
+                            if(typeof crumbHandler === "function"){
+                                crumbHandler(breadcrumbNav);
+                            }
+						
+						}
+					}
+				);			
+			
+		}
 		
 		/**
 		 * View settings for current store
@@ -442,7 +528,7 @@
 			
 		}
 		
-		function _handleEventClickTablePathResource(){
+		function _handleEventClickTablePathResource(pathResource){
 			if(pathResource.type == 'FILE'){
 				// pathResource.fileId
 				alert('You clicked on a file');
@@ -468,6 +554,8 @@
 			onlineDirectory : _onlineDirectory,
 			offlineResourceStore : _offlineResourceStore,
 			onlineResourceStore : _onlineResourceStore,
+            offlineBreadcrumb : _offlineBreadcrumb,
+            onlineBreadcrumb : _onlineBreadcrumb,
 		
 			handleEventViewSiteSettings : _handleEventViewSiteSettings,
 			
