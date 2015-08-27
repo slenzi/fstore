@@ -103,7 +103,25 @@
 		 */
 		function _onlineResourceStore(){
 			return currentOnlineStore;
-		}		
+		}
+            
+		function _setOfflineStore(store){
+			//$log.debug('set ofline store => ' + JSON.stringify(store));
+			currentOfflineStore = store;
+		}
+		
+		function _setOnlineStore(store){
+			//$log.debug('set online store => ' + JSON.stringify(store));
+			currentOnlineStore = store;
+		}
+            
+        function _setOfflineDirectory(directoryPathResource){
+            currentOfflineDirectory = directoryPathResource;
+        }
+            
+        function _setOnlineDirectory(directoryPathResource){
+            currentOnlineDirectory = directoryPathResource;
+        }
 		
 		function _handleEventViewSiteList(){
 			
@@ -166,8 +184,8 @@
 				
 				//$log.debug('online store id = ' + onlineStoreId + ', offline store id = ' + offlineStoreId);
 				
-				_fetchStore(offlineStoreId, _setOfflineStore);
-				_fetchStore(onlineStoreId, _setOnlineStore);
+				_fetchStore(offlineStoreId, _processOfflineStoreData);
+				_fetchStore(onlineStoreId, _processOnlineStoreData);
 				
 			}else{
 				$log.error('Error, cannot load online and offline resource stores for cms site. Site object is missing requires data');
@@ -175,14 +193,36 @@
 			}
 			
 		}
+            
+        function _processOfflineStoreData(store){
+         
+            $log.debug('processing offline store => ' + JSON.stringify(store));
+            
+            _setOfflineStore(store);
+            
+            // load offline directory
+            _fetchDirectory(store.rootDirectoryId, _processOfflineDirectoryData);
+            
+        }
+            
+        function _processOnlineStoreData(store){
+         
+            $log.debug('processing online store => ' + JSON.stringify(store));
+            
+            _setOnlineStore(store);
+            
+            // load online directory
+            _fetchDirectory(store.rootDirectoryId, _processOnlineDirectoryData);
+            
+        }
 		
 		/**
 		 * Fetch resource store data
 		 *
 		 * storeId - id of store to fetch
-		 * storeSetter - callback handler. a new resource store object with all the store data is passed off to this function
+		 * storeHandler - callback handler. a new resource store object with all the store data is passed off to this function
 		 */
-		function _fetchStore(storeId, storeSetter){
+		function _fetchStore(storeId, storeHandler){
 
 			$log.debug('fecthing resource store with id => ' + storeId);
 		
@@ -201,8 +241,8 @@
 								});
 								newStore.setData(storeData);								
 								
-								if(typeof storeSetter === "function"){
-									storeSetter(newStore);
+								if(typeof storeHandler === "function"){
+									storeHandler(newStore);
 								}
 								
 							}else{
@@ -213,21 +253,30 @@
 				);
 			
 		}
-		
-		function _setOfflineStore(store){
-			//$log.debug('set ofline store => ' + JSON.stringify(store));
-			currentOfflineStore = store;
-		}
-		
-		function _setOnlineStore(store){
-			//$log.debug('set online store => ' + JSON.stringify(store));
-			currentOfflineStore = store;
-		}		
+            
+        function _processOnlineDirectoryData(directory){
+            
+            $log.debug('processing online dir => ' + JSON.stringify(directory));
+            
+            _setOnlineDirectory(directory);
+            
+        }
+            
+        function _processOfflineDirectoryData(directory){
+            
+            $log.debug('processing offline dir => ' + JSON.stringify(directory));
+            
+            _setOfflineDirectory(directory);
+            
+        }
 
         /**
          * Fetch directory data from server
+         *
+         * dirId - the id of the directory to fetch
+         * directoryHandler - callback handler, a new path resource object with the directory data will be passed off to this function
          */
-        function _fetchDirectory(dirId){
+        function _fetchDirectory(dirId, directoryHandler){
 			
             // fetch directory listing with max depth 1
 			FileServices
@@ -256,14 +305,18 @@
 							}
 							directory.children = childPathResources;
 							
+                            //$log.debug('dir data from server => ' + JSON.stringify(directory))
+                            
 							// update current directory model
-							currentDirectory = directory;
+                            if(typeof directoryHandler === "function"){
+                                directoryHandler(directory);
+                            }
 							
-							_handleLoadBreadcrumb(directoryData.dirId);
+							//_handleLoadBreadcrumb(directoryData.dirId);
 							
 							//sectionTitle = currentStore.name;
 							
-							isLoadingPathResource = false;
+							//isLoadingPathResource = false;
 							
 						}
 					}
