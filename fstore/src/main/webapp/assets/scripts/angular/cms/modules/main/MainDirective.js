@@ -134,22 +134,38 @@
 		}];
 
 		var template = 
-			'<table st-table="resourceListView" st-safe-src="resourceList" class="table table-striped">' +
+			'<table st-table="resourceListView" st-safe-src="resourceList" class="table">' +
 			'	<thead>' +
 			'	<tr>' +
-			'        <th st-sort="tableGetters().resourceName">Name</th>' +
-			'        <th st-sort="tableGetters().resourceType">Type</th>' +
-			'        <th st-sort="tableGetters().resourceSize" st-skip-natural="true">Size</th>' +
-			'        <th>Update Date</th>' +
+			'        <th st-ratio="5"></th>' +			
+			'        <th st-ratio="30" st-sort="tableGetters().resourceName">Name</th>' +
+			'        <th st-ratio="20" st-sort="tableGetters().resourceType">Type</th>' +
+			'        <th st-ratio="15" st-sort="tableGetters().resourceSize" st-skip-natural="true">Size</th>' +
+			'        <th st-ratio="30">Update Date</th>' +
 			'	</tr>' +
 			'	<tr>' +
+			'		<th></th>' +
 			'		<th>' +	
 			'			<input st-search="name" placeholder="search for file name" class="input-sm form-control" type="search"/>' +
 			'		</th>' +				
 			'	</tr>' +			
 			'	</thead>' +
 			'	<tbody>' +
-			'	<tr ng-repeat="pathResource in resourceListView">' +
+			'	<tr st-select-row="pathResource" st-select-mode="multiple" ng-repeat="pathResource in resourceListView">' +
+			'        <td>' +
+			'			<md-menu >' +
+			'				<md-button aria-label="Open phone interactions menu" class="md-icon-button" ng-click="$mdOpenMenu()">' +
+			'					<md-icon md-menu-origin md-svg-icon="/fstore/file/assets/img/icons/ic_more_vert_24px.svg"></md-icon>' +
+			'				</md-button>' +
+			'				<md-menu-content width="4">' +
+			'					<md-menu-item>' +
+			'						<md-button ng-click="main.notImplemented()">' +
+			'							New Folder' +
+			'						</md-button>' +
+			'					</md-menu-item>' +
+			'				</md-menu-content>' +
+			'			</md-menu>' +
+			'        </td>' +			
 			'        <td><a href ng-click="clickPathResource(pathResource)">{{pathResource.name}}</a></td>' +
 			'        <td>{{pathResource.type == "DIRECTORY" ? "Folder" : pathResource.mimeType}}</td>' +
 			'        <td>{{pathResource.type == "FILE" ? pathResource.getHumanReadableSize() : ""}}</td>' +
@@ -158,7 +174,7 @@
 			'	</tbody>' +
 			'	<tfoot>' +
 			'		<tr>' +		
-			'			<td colspan="4" class="text-center">' +
+			'			<td colspan="5" class="text-center">' +
 			'				<div st-pagination="" st-items-by-page="20" st-displayed-pages="7"></div>' +
 			'			</td>' +
 			'		</tr>' +
@@ -177,5 +193,6 @@
 		
 	}]);
 
+	// 			'							<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>' +
 
 })();

@@ -415,13 +415,17 @@
          */
         function _handleEventClickOfflineBreadcrumb(crumb){
             
+			_fetchDirectory(crumb.dirId ,_processOfflineDirectoryData);
+			
         }
          
         /**
-         * Handle event click for offline breadcrumb navigation
+         * Handle event click for online breadcrumb navigation
          */
         function _handleEventClickOnlineBreadcrumb(crumb){
             
+			_fetchDirectory(crumb.dirId ,_processOnlineDirectoryData);
+			
         }
 		
 		/**
@@ -523,7 +527,7 @@
 							$log.debug('add cms site reply: ' + JSON.stringify(reply));
 							
 							// reload sites!
-							//_reloadCurrentDirectory();
+							_handleEventViewSiteList();
 							
 							$mdDialog.hide();
 							
@@ -538,19 +542,33 @@
 			
 			//alert('you clicked on a site - load the resources view');
 			
+			_handleLoadSiteStores(siteData);
+			
+			sectionTitle = 'Site: ' + siteData.name;
+			
 			$state.go('main_siteResources');
 			
 		}
 		
-		function _handleEventClickTablePathResource(pathResource){
+		function _handleEventClickTableOfflinePathResource(pathResource){
 			if(pathResource.type == 'FILE'){
 				// pathResource.fileId
-				alert('You clicked on a file');
+				FileServices.downloadFile(pathResource.fileId);
 			}else if(pathResource.type == 'DIRECTORY'){
 				// pathResource.dirId
-				alert('You clicked on a directory');
+				_fetchDirectory(pathResource.dirId, _processOfflineDirectoryData);
 			}			
 		}
+		
+		function _handleEventClickTableOnlinePathResource(pathResource){
+			if(pathResource.type == 'FILE'){
+				// pathResource.fileId
+				FileServices.downloadFile(pathResource.fileId);
+			}else if(pathResource.type == 'DIRECTORY'){
+				// pathResource.dirId
+				_fetchDirectory(pathResource.dirId, _processOnlineDirectoryData);
+			}			
+		}		
 	
 		var self = this;
 		
@@ -581,7 +599,9 @@
             
             handleEventClickSiteTable : _handleEventClickSiteTable,
 			
-			handleEventClickTablePathResource : _handleEventClickTablePathResource,
+			handleEventClickTableOfflinePathResource : _handleEventClickTableOfflinePathResource,
+			
+			handleEventClickTableOnlinePathResource : _handleEventClickTableOnlinePathResource,
             
             handleEventClickOfflineBreadcrumb : _handleEventClickOfflineBreadcrumb,
             

@@ -23,10 +23,23 @@
 }
 
 /**
- * override button style on dialogs
+ * Angular Material Override - button style on dialogs
  */
 .md-dialog-container .md-button {
 	color: #000;
+}
+/**
+ * Angular Material Override - font color on active tabs
+ */
+md-tab-item.md-active  span {
+	color: red;
+}
+
+/**
+ * Angular Smart Table:  selected row
+ */
+tr.st-selected {
+	background-color: #FFB84D 
 }
 
 /**

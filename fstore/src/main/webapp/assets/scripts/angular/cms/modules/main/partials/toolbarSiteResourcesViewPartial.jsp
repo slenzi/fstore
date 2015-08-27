@@ -7,7 +7,9 @@ Toolbar partial that's loaded for the "main_storeList" state
 
 <md-toolbar class="md-toolbar-tools">
 	
+	<!--
 	<h2>Site Resources Toolbar</h2>
+	-->
 	
 	<div flex></div>
 	
