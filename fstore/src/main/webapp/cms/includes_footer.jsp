@@ -8,6 +8,7 @@ application scripts
 
 --------------------------------------------- -->
 
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/common/modules/models/fstore-models.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/common/modules/services/fstore-services.js"></script>
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/scripts/angular/cms/modules/main/MainModule.js"></script>

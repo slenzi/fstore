@@ -1,9 +1,13 @@
+/**
+ * All common models have been moved to new fstore-models-module
+ */
 (function(){
 	
 	'use strict';
 	
 	var mainModule = angular.module('fsCmsMain');
 	
+	/*
 	mainModule.factory('CmsSite', [
 		'appConstants', '$log', '$q', CmsSiteFactory
 		]
@@ -69,6 +73,7 @@
 		// return this
 		return CmsSite;
 		
-	}	
+	}
+	*/
 
 })();

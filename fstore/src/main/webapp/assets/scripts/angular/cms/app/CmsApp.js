@@ -11,11 +11,12 @@
 	 * ngMaterial - Material design UI components
 	 * ngResource - Provides interaction support with RESTful services via the $resource service
 	 * fsCmsMain - Our main cms module
-	 * fstore-services-module - common fstore services module
+	 * fstore-models-module - common fstore models
+	 * fstore-services-module - common fstore services
 	 * smart-table - lightweight table module
 	 */
 	cmsApp = angular
-		.module('fstoreCms', ['ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-services-module', 'smart-table'])
+		.module('fstoreCms', ['ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-models-module', 'fstore-services-module', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
@@ -92,6 +93,7 @@
 
 			// Now set up the states
 			$stateProvider
+				// list all cms sites
 				.state('main_siteList', {
 					url: '/sites',
 					views: {
@@ -102,7 +104,8 @@
 							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/toolbarSiteListPartial.jsp'							
 						}
 					}
-				})				
+				})
+				// show site settings
 				.state('main_siteSettings', {
 					url: '/siteSettings',
 					views: {
@@ -111,6 +114,18 @@
 						},
 						'toolbarContent': {
 							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/toolbarSiteSettingsPartial.jsp'							
+						}
+					}
+				})
+				// view specific site, and it's resources
+				.state('main_siteResources', {
+					url: '/siteResources',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/siteResourcesViewPartial.jsp'
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/toolbarSiteResourcesViewPartial.jsp'							
 						}
 					}
 				});

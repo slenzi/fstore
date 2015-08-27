@@ -13,7 +13,8 @@
 	 * fsFileManagerMain - Our main file manager module
 	 * fsUpload - multi-part HTTP uploader
 	 * fsStomp - Stomp websocket module
-	 * fstore-services-module - common fstore services module
+	 * fstore-models-module - common fstore models
+	 * fstore-services-module - common fstore services
 	 * smart-table - lightweight table module
 	 * 
 	 * -- no longer used --
@@ -21,7 +22,7 @@
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	fileApp = angular
-		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsUpload', 'fsStomp', 'fstore-services-module', 'smart-table'])
+		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsUpload', 'fsStomp', 'fstore-models-module', 'fstore-services-module', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
@@ -32,10 +33,10 @@
 		
 		/*
 			,
-			restServiceStore: '@services.rest.store@',
-			restServiceFile: '@services.rest.file@',
-			restServiceDirectory: '@services.rest.directory@',
-			restServiceCmsSite: '@services.cms.rest.site@'		 
+			restServiceStore: '/fstore/cxf/resource/store',
+			restServiceFile: '/fstore/cxf/resource/file',
+			restServiceDirectory: '/fstore/cxf/resource/directory',
+			restServiceCmsSite: '/fstore/cxf/cms/site'		 
 		 */
 	
 		/**

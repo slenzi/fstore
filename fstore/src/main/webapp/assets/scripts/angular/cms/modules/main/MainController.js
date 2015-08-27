@@ -3,7 +3,7 @@
 	angular
 		.module('fsCmsMain')
 		.controller('mainController',[
-			'appConstants', 'CmsServices', 'CmsSite',
+			'appConstants', 'CmsServices', 'CmsSite', 'FileServices', 'ResourceStore', 'PathResource',
 			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
@@ -11,7 +11,7 @@
 	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 
 	function MainController(
-		appConstants, CmsServices, CmsSite, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, CmsServices, CmsSite, FileServices, ResourceStore, PathResource, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -24,8 +24,29 @@
 			name: 'Loading...',
 			dateCreated: 'Loading...',
 			dateUpdated: 'Loading...'
-		});		
+		});
 
+		var currentOfflineStore = new ResourceStore({
+			name: 'Loading...',
+			dateCreated: 'Loading...',
+			dateUpdated: 'Loading...'
+		});
+		var currentOnlineStore = new ResourceStore({
+			name: 'Loading...',
+			dateCreated: 'Loading...',
+			dateUpdated: 'Loading...'
+		});
+
+		var currentOfflineDirectory = new PathResource({
+			name: 'Loading...',
+			dateCreated: 'Loading...',
+			dateUpdated: 'Loading...'
+		});
+		var currentOnlineDirectory = new PathResource({
+			name: 'Loading...',
+			dateCreated: 'Loading...',
+			dateUpdated: 'Loading...'
+		});			
 
 		/****************************************************************************************
 		 * On application load:  load all cms sites when page loads (asynchronously)
@@ -54,6 +75,34 @@
 		 */
 		function _cmsSiteList(){
 			return cmsSiteList;
+		}
+
+		/**
+		 * Return current offline directory user is viewing in offline resource store
+		 */
+		function _offlineDirectory(){
+			return currentOfflineDirectory;
+		}
+		
+		/**
+		 * Return current online directory user is viewing in online resource store
+		 */
+		function _onlineDirectory(){
+			return currentOnlineDirectory;
+		}		
+		
+		/**
+		 * Return current offline resource store
+		 */
+		function _offlineResourceStore(){
+			return currentOfflineStore;
+		}
+		
+		/**
+		 * Return current online resource store
+		 */
+		function _onlineResourceStore(){
+			return currentOnlineStore;
 		}		
 		
 		function _handleEventViewSiteList(){
@@ -68,21 +117,23 @@
 			
 		}
 		
+		/**
+		 * Process cms site data from server
+		 */
 		function _handleCmsSiteDataCallback(siteData){
 			
 			if(siteData.error){
 				$log.debug("Error, " + siteData.error);
 			}else{
 				
-				//$log.debug("got site data => " + JSON.stringify(siteData));
-				
-				cmsSiteList = [{ "name": "loading..."}];
+				$log.debug("got site data => " + JSON.stringify(siteData));
 				
 				var newSiteList = [];
+				cmsSiteList = [{ "name": "loading..."}];
 				
-				if(cmsSiteList != null && cmsSiteList[0]){
+				if(siteData != null && siteData[0]){
 					
-					currentSite.setData(cmsSiteList[0]);
+					currentSite.setData(siteData[0]);
 					
 					for( var siteIndex = 0; siteIndex < siteData.length; siteIndex++ ){
 						var newSiteEntry = new CmsSite();
@@ -92,7 +143,7 @@
 					
 					cmsSiteList = newSiteList;
 					
-					//_handleLoadDirectory(storeList[0].rootDirectoryId, false);
+					_handleLoadSiteStores(currentSite);
 					
 					_leftNavClose();
 				}
@@ -102,6 +153,123 @@
 			}			
 			
 		}
+		
+		/**
+		 * Load the offline and online resource stores for the cms site
+		 */
+		function _handleLoadSiteStores(cmsSite){
+			
+			if(cmsSite && cmsSite.onlineStore && cmsSite.offlineStore){
+				
+				var onlineStoreId = cmsSite.onlineStore.id;
+				var offlineStoreId = cmsSite.offlineStore.id;
+				
+				//$log.debug('online store id = ' + onlineStoreId + ', offline store id = ' + offlineStoreId);
+				
+				_fetchStore(offlineStoreId, _setOfflineStore);
+				_fetchStore(onlineStoreId, _setOnlineStore);
+				
+			}else{
+				$log.error('Error, cannot load online and offline resource stores for cms site. Site object is missing requires data');
+				$log.error('cms site => ' + JSON.stringify(cmsSite));
+			}
+			
+		}
+		
+		/**
+		 * Fetch resource store data
+		 *
+		 * storeId - id of store to fetch
+		 * storeSetter - callback handler. a new resource store object with all the store data is passed off to this function
+		 */
+		function _fetchStore(storeId, storeSetter){
+
+			$log.debug('fecthing resource store with id => ' + storeId);
+		
+			FileServices
+				.getResourceStoreById(storeId)
+				.then( function( storeData ) {
+						if (storeData.error){
+							$log.debug("Error, " + storeData.error);
+						} else {
+							if(storeData && storeData.rootDirectoryId){
+								
+								var newStore = new ResourceStore({
+									name: 'Loading...',
+									dateCreated: 'Loading...',
+									dateUpdated: 'Loading...'
+								});
+								newStore.setData(storeData);								
+								
+								if(typeof storeSetter === "function"){
+									storeSetter(newStore);
+								}
+								
+							}else{
+								$log.error('Error, no store data, or no root directory id for store...');
+							}
+						}
+					}
+				);
+			
+		}
+		
+		function _setOfflineStore(store){
+			//$log.debug('set ofline store => ' + JSON.stringify(store));
+			currentOfflineStore = store;
+		}
+		
+		function _setOnlineStore(store){
+			//$log.debug('set online store => ' + JSON.stringify(store));
+			currentOfflineStore = store;
+		}		
+
+        /**
+         * Fetch directory data from server
+         */
+        function _fetchDirectory(dirId){
+			
+            // fetch directory listing with max depth 1
+			FileServices
+				.getDirectoryListing(dirId, 1)
+				.then( function( directoryData ) {
+					
+						if (directoryData.error){
+							$log.debug("Error, " + directoryData.error);
+						} else {
+							
+							//$log.debug("got directory data => " + JSON.stringify(directoryData));
+							
+							// create path resource for directory
+							var directory = new PathResource({
+								name: 'Loading...'
+							});
+							directory.setData(directoryData);
+							
+							// build path resource for each child
+							var childResource;
+							var childPathResources = [];
+							for(childIndex = 0; childIndex < directory.children.length; childIndex++){
+								childResource = new PathResource();
+								childResource.setData(directory.children[childIndex]);
+								childPathResources.push(childResource);
+							}
+							directory.children = childPathResources;
+							
+							// update current directory model
+							currentDirectory = directory;
+							
+							_handleLoadBreadcrumb(directoryData.dirId);
+							
+							//sectionTitle = currentStore.name;
+							
+							isLoadingPathResource = false;
+							
+						}
+					}
+				);
+            
+        };		
 		
 		/**
 		 * View settings for current store
@@ -215,8 +383,20 @@
 		
 		function _handleEventClickSiteTable(siteData){
 			
-			alert('you clicked on a site - load the resources view');
+			//alert('you clicked on a site - load the resources view');
 			
+			$state.go('main_siteResources');
+			
+		}
+		
+		function _handleEventClickTablePathResource(){
+			if(pathResource.type == 'FILE'){
+				// pathResource.fileId
+				alert('You clicked on a file');
+			}else if(pathResource.type == 'DIRECTORY'){
+				// pathResource.dirId
+				alert('You clicked on a directory');
+			}			
 		}
 	
 		var self = this;
@@ -231,6 +411,10 @@
 			notImplemented : _notImplemented,
 			sectionTitle : _sectionTitle,
 			cmsSiteList : _cmsSiteList,
+			offlineDirectory : _offlineDirectory,
+			onlineDirectory : _onlineDirectory,
+			offlineResourceStore : _offlineResourceStore,
+			onlineResourceStore : _onlineResourceStore,
 		
 			handleEventViewSiteSettings : _handleEventViewSiteSettings,
 			
@@ -240,7 +424,9 @@
 			
             handleEventClickNewCmsSite : _handleEventClickNewCmsSite,
             
-            handleEventClickSiteTable : _handleEventClickSiteTable
+            handleEventClickSiteTable : _handleEventClickSiteTable,
+			
+			handleEventClickTablePathResource : _handleEventClickTablePathResource
 		}
 
 	}
