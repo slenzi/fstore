@@ -409,6 +409,20 @@
 				);			
 			
 		}
+        
+        /**
+         * Handle event click for offline breadcrumb navigation
+         */
+        function _handleEventClickOfflineBreadcrumb(crumb){
+            
+        }
+         
+        /**
+         * Handle event click for offline breadcrumb navigation
+         */
+        function _handleEventClickOnlineBreadcrumb(crumb){
+            
+        }
 		
 		/**
 		 * View settings for current store
@@ -567,7 +581,11 @@
             
             handleEventClickSiteTable : _handleEventClickSiteTable,
 			
-			handleEventClickTablePathResource : _handleEventClickTablePathResource
+			handleEventClickTablePathResource : _handleEventClickTablePathResource,
+            
+            handleEventClickOfflineBreadcrumb : _handleEventClickOfflineBreadcrumb,
+            
+            handleEventClickOnlineBreadcrumb : _handleEventClickOnlineBreadcrumb
 		}
 
 	}
