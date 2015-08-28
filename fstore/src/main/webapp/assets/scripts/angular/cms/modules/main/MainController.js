@@ -50,6 +50,8 @@
             
         var offlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
         var onlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
+		
+		var isViewingOnline = false; // true if viewing online, false if viewing offline (switch this value when user clicks 'Offline Resources' and 'Online Resources' tabs) 
 
 		/****************************************************************************************
 		 * On application load:  load all cms sites when page loads (asynchronously)
@@ -71,6 +73,21 @@
 		 */
 		function _sectionTitle(){
 			return sectionTitle;
+			/*
+			if(isViewingOnline){
+				return sectionTitle + ' (Online)';
+			}else{
+				return sectionTitle + ' (Offline)';
+			}
+			*/
+		}
+		
+		function _isViewingOnline(){
+			return isViewingOnline;
+		}
+		
+		function _setIsViewingOnline(isOnline){
+			isViewingOnline = isOnline;
 		}
 		
 		/**
@@ -544,7 +561,7 @@
 			
 			_handleLoadSiteStores(siteData);
 			
-			sectionTitle = 'Site: ' + siteData.name;
+			sectionTitle = siteData.name;
 			
 			$state.go('main_siteResources');
 			
@@ -568,6 +585,81 @@
 				// pathResource.dirId
 				_fetchDirectory(pathResource.dirId, _processOnlineDirectoryData);
 			}			
+		}
+
+		/**
+		 * smart table will add a property to the values it's displaying called isSelected, and set it to true
+		 */
+		function _haveSelectedOfflinePathResources(){
+			if(currentOfflineDirectory && currentOfflineDirectory.children){
+				for(i=0; i<currentOfflineDirectory.children.length; i++){
+					if(currentOfflineDirectory.children[i].isSelected){
+						return true;
+					}
+				}				
+			}
+		}
+		/**
+		 * smart table will add a property to the values it's displaying called isSelected, and set it to true
+		 */
+		function _haveSelectedOnlinePathResources(){
+			if(currentOnlineDirectory && currentOnlineDirectory.children){
+				for(i=0; i<currentOnlineDirectory.children.length; i++){
+					if(currentOnlineDirectory.children[i].isSelected){
+						return true;
+					}
+				}				
+			}
+		}
+		// unselect all offline resources in current working offline directory
+		function _handleEventClickClearSelectedOfflinePathResources(){
+			if(currentOfflineDirectory && currentOfflineDirectory.children){
+				for(i=0; i<currentOfflineDirectory.children.length; i++){
+					if(currentOfflineDirectory.children[i].isSelected){
+						currentOfflineDirectory.children[i].isSelected = false;
+					}
+				}				
+			}			
+		}
+		// unselect all online resources in current working online directory
+		function _handleEventClickClearSelectedOnlinePathResources(){
+			if(currentOnlineDirectory && currentOnlineDirectory.children){
+				for(i=0; i<currentOnlineDirectory.children.length; i++){
+					if(currentOnlineDirectory.children[i].isSelected){
+						currentOnlineDirectory.children[i].isSelected = false;
+					}
+				}				
+			}
+		}
+		// select all offline resources in current working offline directory
+		function _handleEventClickSelectAllOfflinePathResources(){
+			if(currentOfflineDirectory && currentOfflineDirectory.children){
+				for(i=0; i<currentOfflineDirectory.children.length; i++){
+					currentOfflineDirectory.children[i].isSelected = true;
+				}				
+			}			
+		}
+		// select all online resources in current working online directory
+		function _handleEventClickSelectAllOnlinePathResources(){
+			if(currentOnlineDirectory && currentOnlineDirectory.children){
+				for(i=0; i<currentOnlineDirectory.children.length; i++){
+					currentOnlineDirectory.children[i].isSelected = true;
+				}				
+			}			
+		}		
+
+		function _haveOfflineChildPathResources(){
+			return currentOfflineDirectory && currentOfflineDirectory.children && (currentOfflineDirectory.children.length > 0);
+		}
+		function _haveOnlineChildPathResources(){
+			return currentOnlineDirectory && currentOnlineDirectory.children && (currentOnlineDirectory.children.length > 0);
+		}
+
+		function _handleEventClickNewOfflineFolder(){
+			alert('create new offline folder');
+		}
+		function _handleEventClickNewOnlineFolder(){
+			alert('create new online folder');
 		}		
 	
 		var self = this;
@@ -581,13 +673,31 @@
 			toggleLeftNav : _buildToggler('MyLeftNav'),
 			notImplemented : _notImplemented,
 			sectionTitle : _sectionTitle,
+			
+			isViewingOnline : _isViewingOnline,
+			setIsViewingOnline : _setIsViewingOnline,
+			
 			cmsSiteList : _cmsSiteList,
+			
 			offlineDirectory : _offlineDirectory,
 			onlineDirectory : _onlineDirectory,
+			
 			offlineResourceStore : _offlineResourceStore,
 			onlineResourceStore : _onlineResourceStore,
+			
             offlineBreadcrumb : _offlineBreadcrumb,
             onlineBreadcrumb : _onlineBreadcrumb,
+			
+			haveOfflineChildPathResources : _haveOfflineChildPathResources,
+			haveOnlineChildPathResources : _haveOnlineChildPathResources,
+			haveSelectedOfflinePathResources : _haveSelectedOfflinePathResources,
+			haveSelectedOnlinePathResources : _haveSelectedOnlinePathResources,
+			handleEventClickClearSelectedOfflinePathResources : _handleEventClickClearSelectedOfflinePathResources,
+			handleEventClickClearSelectedOnlinePathResources : _handleEventClickClearSelectedOnlinePathResources,
+			handleEventClickSelectAllOfflinePathResources : _handleEventClickSelectAllOfflinePathResources,
+			handleEventClickSelectAllOnlinePathResources : _handleEventClickSelectAllOnlinePathResources,
+			handleEventClickNewOfflineFolder : _handleEventClickNewOfflineFolder,
+			handleEventClickNewOnlineFolder : _handleEventClickNewOnlineFolder,
 		
 			handleEventViewSiteSettings : _handleEventViewSiteSettings,
 			
@@ -600,11 +710,9 @@
             handleEventClickSiteTable : _handleEventClickSiteTable,
 			
 			handleEventClickTableOfflinePathResource : _handleEventClickTableOfflinePathResource,
-			
 			handleEventClickTableOnlinePathResource : _handleEventClickTableOnlinePathResource,
             
             handleEventClickOfflineBreadcrumb : _handleEventClickOfflineBreadcrumb,
-            
             handleEventClickOnlineBreadcrumb : _handleEventClickOnlineBreadcrumb
 		}
 

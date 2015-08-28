@@ -134,10 +134,10 @@
 		}];
 
 		var template = 
-			'<table st-table="resourceListView" st-safe-src="resourceList" class="table">' +
+			'<table st-table="resourceListView" st-safe-src="resourceList" class="table fstoreSmartTable">' +
 			'	<thead>' +
 			'	<tr>' +
-			'        <th st-ratio="5"></th>' +			
+			'        <th st-ratio="5">Menu</th>' +			
 			'        <th st-ratio="30" st-sort="tableGetters().resourceName">Name</th>' +
 			'        <th st-ratio="20" st-sort="tableGetters().resourceType">Type</th>' +
 			'        <th st-ratio="15" st-sort="tableGetters().resourceSize" st-skip-natural="true">Size</th>' +
@@ -154,19 +154,19 @@
 			'	<tr st-select-row="pathResource" st-select-mode="multiple" ng-repeat="pathResource in resourceListView">' +
 			'        <td>' +
 			'			<md-menu >' +
-			'				<md-button aria-label="Open phone interactions menu" class="md-icon-button" ng-click="$mdOpenMenu()">' +
-			'					<md-icon md-menu-origin md-svg-icon="/fstore/file/assets/img/icons/ic_more_vert_24px.svg"></md-icon>' +
+			'				<md-button aria-label="Open phone interactions menu" class="md-icon-button" ng-click="$mdOpenMenu(); $event.stopPropagation();">' +
+			'					<md-icon md-menu-origin md-svg-icon="/fstore/file/assets/img/icons/ic_more_horiz_24px.svg" style="height: 20px;"></md-icon>' +
 			'				</md-button>' +
-			'				<md-menu-content width="4">' +
+			'				<md-menu-content width="3">' +
 			'					<md-menu-item>' +
 			'						<md-button ng-click="main.notImplemented()">' +
-			'							New Folder' +
+			'							So something...' +
 			'						</md-button>' +
 			'					</md-menu-item>' +
 			'				</md-menu-content>' +
 			'			</md-menu>' +
 			'        </td>' +			
-			'        <td><a href ng-click="clickPathResource(pathResource)">{{pathResource.name}}</a></td>' +
+			'        <td><a href ng-click="clickPathResource(pathResource); $event.stopPropagation();">{{pathResource.name}}</a></td>' +
 			'        <td>{{pathResource.type == "DIRECTORY" ? "Folder" : pathResource.mimeType}}</td>' +
 			'        <td>{{pathResource.type == "FILE" ? pathResource.getHumanReadableSize() : ""}}</td>' +
 			'        <td>{{pathResource.dateUpdated}}</td>' +
