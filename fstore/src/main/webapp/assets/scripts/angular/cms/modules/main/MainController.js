@@ -3,7 +3,7 @@
 	angular
 		.module('fsCmsMain')
 		.controller('mainController',[
-			'appConstants', 'CmsServices', 'CmsSite', 'FileServices', 'ResourceStore', 'PathResource',
+			'appConstants', 'CmsServices', 'CmsSite', 'FileServices', 'ResourceStore', 'PathResource', 'FsFileUploader',
 			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
@@ -11,7 +11,7 @@
 	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 
 	function MainController(
-		appConstants, CmsServices, CmsSite, FileServices, ResourceStore, PathResource, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, CmsServices, CmsSite, FileServices, ResourceStore, PathResource, FsFileUploader, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -19,6 +19,10 @@
 		 */
 		var sectionTitle = "Loading...";
 		var cmsSiteList = [{ "name": "Loading..."}];
+		
+		var myFsUploader = new FsFileUploader({
+			url: appConstants.httpUploadHandler
+        });		
 		
 		var currentSite = new CmsSite({
 			name: 'Loading...',
@@ -51,6 +55,7 @@
         var offlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
         var onlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 		
+		$scope.selectedResourceTabIndex = 1;
 		var isViewingOnline = false; // true if viewing online, false if viewing offline (switch this value when user clicks 'Offline Resources' and 'Online Resources' tabs) 
 
 		/****************************************************************************************
@@ -63,32 +68,133 @@
 		 * Fetch all cms from server and pre-load first one (if one exists)
 		 */
 		function _handleOnPageLoad(){
-			
 			_handleEventViewSiteList();
+		}
+
+		/**
+		 * Get reference to fsUploader
+		 */
+		function _uploader(){
+			return myFsUploader;
+		}
+
+		function _handleEventViewUploadForm(){
+			$state.go('main_upload');
+		}
+
+		/**
+		 * Handle cancel upload button click
+		 */
+        function _handleEventClickCancelUpload(){
+			$state.go('main_siteResources');
+        }
+
+		/**
+		 * Clear upload queue for FsFileUploader
+		 */
+		function _handleEventClearUploadQueue(){
+			myFsUploader.clearQueue();
+		}
+
+		/**
+		 * Trigger FsFileUploader to start uploading
+		 */
+		function _handleEventDoUpload(event){
+			if(_isViewingOnline()){
+				_handleEventStartUpload(event, true);
+			}else{
+				_handleEventStartUpload(event, false);
+			}
+		}
+		function _handleEventStartUpload(event, isOnline){
 			
-		}	
+				var confirm = $mdDialog.confirm()
+					.parent(angular.element(document.body))
+					.title('Upload Confirmation')
+					.content("Please confirm upload.")
+					.ariaLabel('Continue Upload')
+					.ok('Continue')
+					.cancel('Cancel')
+					.targetEvent(event);
+				
+				$mdDialog.show(confirm).then(function() {
+					
+					var uploadDirId = 0;
+					if(isOnline){
+						uploadDirId = currentOnlineDirectory.dirId;
+					}else{
+						uploadDirId = currentOfflineDirectory.dirId;
+					}
+					
+					// set parent dir id so we know where to create the new directory on the server
+					myFsUploader.addFormValue('dirId', uploadDirId);
+					
+					// upload all files in queue as one single upload
+					//myFsUploader.doUpload(_uploadProgressHandler, _uploadAllCompleteHandler);
+					
+					// upload all files in queue as separate, individual uploads.
+					myFsUploader.doUploadSingular(_uploadProgressHandler, _uploadSingleCompleteHandler, _uploadAllCompleteHandler);
+						
+				}, function() {
+					
+					$log.debug('Uploade operation canceled.');
+					
+				});
+			
+		}
+		function _uploadProgressHandler(event){
+			var progressValue = Math.round(event.lengthComputable ? event.loaded * 100 / event.total : 0);
+			//$log.debug('main progress = ' + progressValue);
+			$scope.$apply();
+		}
+        function _uploadSingleCompleteHandler(event){
+           
+            $log.debug('Upload of single file complete.');
+            
+        }
+		function _uploadAllCompleteHandler(event){
+			
+			$log.debug('Upload completed. Have event obj? => ' + event);
+            
+            myFsUploader.clearQueue();
+			
+			$scope.$apply();
+			
+			$state.go('main_siteResources');
+			
+			alert('All files have been received on the server. Please note large file take time to procee. Refresh view to see latest files.');
+			
+			if(_isViewingOnline()){
+				_fetchDirectory(currentOnlineDirectory.dirId, _processOnlineDirectoryData);
+			}else{
+				_fetchDirectory(currentOfflineDirectory.dirId, _processOfflineDirectoryData);
+			}			
+			
+			_handleLoadDirectory(_currentDirectory().dirId, true);
+			
+		}		
 		
 		/**
 		 * Get current section title
 		 */
 		function _sectionTitle(){
 			return sectionTitle;
-			/*
-			if(isViewingOnline){
-				return sectionTitle + ' (Online)';
-			}else{
-				return sectionTitle + ' (Offline)';
-			}
-			*/
 		}
 		
 		function _isViewingOnline(){
 			return isViewingOnline;
-		}
-		
+		}		
 		function _setIsViewingOnline(isOnline){
 			isViewingOnline = isOnline;
+			if(isOnline){
+				$scope.selectedResourceTabIndex = 1;
+			}else{
+				$scope.selectedResourceTabIndex = 0;
+			}
 		}
+		function _selectedResourceTabIndex(){
+			return selectedResourceTabIndex;
+		}		
 		
 		/**
 		 * Get list of cms sites
@@ -556,9 +662,7 @@
 		}
 		
 		function _handleEventClickSiteTable(siteData){
-			
-			//alert('you clicked on a site - load the resources view');
-			
+	
 			_handleLoadSiteStores(siteData);
 			
 			sectionTitle = siteData.name;
@@ -567,100 +671,208 @@
 			
 		}
 		
+		/**
+		 * Handle click of path resource in our smart table
+		 */
 		function _handleEventClickTableOfflinePathResource(pathResource){
-			if(pathResource.type == 'FILE'){
-				// pathResource.fileId
-				FileServices.downloadFile(pathResource.fileId);
-			}else if(pathResource.type == 'DIRECTORY'){
-				// pathResource.dirId
-				_fetchDirectory(pathResource.dirId, _processOfflineDirectoryData);
-			}			
+			_handleEventClickTablePathResource(pathResource, false);
 		}
-		
 		function _handleEventClickTableOnlinePathResource(pathResource){
-			if(pathResource.type == 'FILE'){
-				// pathResource.fileId
-				FileServices.downloadFile(pathResource.fileId);
-			}else if(pathResource.type == 'DIRECTORY'){
-				// pathResource.dirId
-				_fetchDirectory(pathResource.dirId, _processOnlineDirectoryData);
-			}			
+			_handleEventClickTablePathResource(pathResource, true);
+		}
+		function _handleEventClickTablePathResource(pathResource, isOnline){
+			if(isOnline){
+				if(pathResource.type == 'FILE'){
+					// pathResource.fileId
+					FileServices.downloadFile(pathResource.fileId);
+				}else if(pathResource.type == 'DIRECTORY'){
+					// pathResource.dirId
+					_fetchDirectory(pathResource.dirId, _processOnlineDirectoryData);
+				}				
+			}else{
+				if(pathResource.type == 'FILE'){
+					// pathResource.fileId
+					FileServices.downloadFile(pathResource.fileId);
+				}else if(pathResource.type == 'DIRECTORY'){
+					// pathResource.dirId
+					_fetchDirectory(pathResource.dirId, _processOfflineDirectoryData);
+				}				
+			}
 		}
 
 		/**
 		 * smart table will add a property to the values it's displaying called isSelected, and set it to true
 		 */
 		function _haveSelectedOfflinePathResources(){
-			if(currentOfflineDirectory && currentOfflineDirectory.children){
-				for(i=0; i<currentOfflineDirectory.children.length; i++){
-					if(currentOfflineDirectory.children[i].isSelected){
-						return true;
-					}
-				}				
-			}
+			return _haveSelectedPathResources(false);
 		}
-		/**
-		 * smart table will add a property to the values it's displaying called isSelected, and set it to true
-		 */
 		function _haveSelectedOnlinePathResources(){
-			if(currentOnlineDirectory && currentOnlineDirectory.children){
-				for(i=0; i<currentOnlineDirectory.children.length; i++){
-					if(currentOnlineDirectory.children[i].isSelected){
-						return true;
-					}
-				}				
+			return _haveSelectedPathResources(true);
+		}
+		function _haveSelectedPathResources(isOnline){
+			if(isOnline){
+				if(currentOnlineDirectory && currentOnlineDirectory.children){
+					for(i=0; i<currentOnlineDirectory.children.length; i++){
+						if(currentOnlineDirectory.children[i].isSelected){
+							return true;
+						}
+					}				
+				}
+			}else{
+				if(currentOfflineDirectory && currentOfflineDirectory.children){
+					for(i=0; i<currentOfflineDirectory.children.length; i++){
+						if(currentOfflineDirectory.children[i].isSelected){
+							return true;
+						}
+					}				
+				}
 			}
 		}
-		// unselect all offline resources in current working offline directory
+		
+		/**
+		 * unselect all resources in current working directory (offline or online)
+		 */
 		function _handleEventClickClearSelectedOfflinePathResources(){
-			if(currentOfflineDirectory && currentOfflineDirectory.children){
-				for(i=0; i<currentOfflineDirectory.children.length; i++){
-					if(currentOfflineDirectory.children[i].isSelected){
-						currentOfflineDirectory.children[i].isSelected = false;
-					}
-				}				
-			}			
+			_handleEventClickClearSelectedPathResources(false);			
 		}
-		// unselect all online resources in current working online directory
 		function _handleEventClickClearSelectedOnlinePathResources(){
-			if(currentOnlineDirectory && currentOnlineDirectory.children){
-				for(i=0; i<currentOnlineDirectory.children.length; i++){
-					if(currentOnlineDirectory.children[i].isSelected){
-						currentOnlineDirectory.children[i].isSelected = false;
-					}
+			_handleEventClickClearSelectedPathResources(true);
+		}
+		function _handleEventClickClearSelectedPathResources(isOnline){
+			if(isOnline){
+				if(currentOnlineDirectory && currentOnlineDirectory.children){
+					for(i=0; i<currentOnlineDirectory.children.length; i++){
+						if(currentOnlineDirectory.children[i].isSelected){
+							currentOnlineDirectory.children[i].isSelected = false;
+						}
+					}				
+				}
+			}else{
+				if(currentOfflineDirectory && currentOfflineDirectory.children){
+					for(i=0; i<currentOfflineDirectory.children.length; i++){
+						if(currentOfflineDirectory.children[i].isSelected){
+							currentOfflineDirectory.children[i].isSelected = false;
+						}
+					}				
 				}				
 			}
 		}
-		// select all offline resources in current working offline directory
-		function _handleEventClickSelectAllOfflinePathResources(){
-			if(currentOfflineDirectory && currentOfflineDirectory.children){
-				for(i=0; i<currentOfflineDirectory.children.length; i++){
-					currentOfflineDirectory.children[i].isSelected = true;
-				}				
-			}			
-		}
-		// select all online resources in current working online directory
-		function _handleEventClickSelectAllOnlinePathResources(){
-			if(currentOnlineDirectory && currentOnlineDirectory.children){
-				for(i=0; i<currentOnlineDirectory.children.length; i++){
-					currentOnlineDirectory.children[i].isSelected = true;
-				}				
-			}			
-		}		
 
+		/**
+		 * select all resources in current working directory (offline or online)
+		 */
+		function _handleEventClickSelectAllOfflinePathResources(){
+			_handleEventClickSelectAllPathResources(false);
+		}
+		function _handleEventClickSelectAllOnlinePathResources(){
+			_handleEventClickSelectAllPathResources(true);
+		}
+		function _handleEventClickSelectAllPathResources(isOnline){
+			if(isOnline){
+				if(currentOnlineDirectory && currentOnlineDirectory.children){
+					for(i=0; i<currentOnlineDirectory.children.length; i++){
+						currentOnlineDirectory.children[i].isSelected = true;
+					}				
+				}				
+			}else{
+				if(currentOfflineDirectory && currentOfflineDirectory.children){
+					for(i=0; i<currentOfflineDirectory.children.length; i++){
+						currentOfflineDirectory.children[i].isSelected = true;
+					}				
+				}				
+			}
+		}
+
+		/**
+		 * Check if current working directory (offline or online) has any child resources
+		 */
 		function _haveOfflineChildPathResources(){
-			return currentOfflineDirectory && currentOfflineDirectory.children && (currentOfflineDirectory.children.length > 0);
+			return _haveChildPathResources(false);
 		}
 		function _haveOnlineChildPathResources(){
-			return currentOnlineDirectory && currentOnlineDirectory.children && (currentOnlineDirectory.children.length > 0);
+			return _haveChildPathResources(true);
+		}
+		function _haveChildPathResources(isOnline){
+			if(isOnline){
+				return currentOnlineDirectory && currentOnlineDirectory.children && (currentOnlineDirectory.children.length > 0);
+			}else{
+				return currentOfflineDirectory && currentOfflineDirectory.children && (currentOfflineDirectory.children.length > 0);
+			}
 		}
 
-		function _handleEventClickNewOfflineFolder(){
-			alert('create new offline folder');
+		/**
+		 * Create new folder
+		 */
+		function _handleEventClickNewOfflineFolder(event){			
+			_handleEventClickNewFolder(event, false);
 		}
-		function _handleEventClickNewOnlineFolder(){
-			alert('create new online folder');
-		}		
+		function _handleEventClickNewOnlineFolder(event){
+			_handleEventClickNewFolder(event, true);
+		}
+		function _handleEventClickNewFolder(event, isOnline){
+			
+			var dialogTitle = isOnline ? 'Create New Online Folder' : 'Create New Offline Folder';
+			
+			$mdDialog.show({
+				parent: angular.element(document.body),
+				targetEvent: event,
+				template:
+					'<md-dialog aria-label="List dialog" flex="35">' +
+					'	<md-dialog-content>'+
+					'		<md-content layout-padding>' +
+					'			<h3>' + dialogTitle + '</h3>' +
+					'			<h4>For site \'' + currentSite.name + '\'</h4>' +					
+					'			<md-input-container flex>' +
+					'				<label>Folder Name</label>' +
+					'				<input ng-model="newFolderDialog.newFolderName" required>' +
+					'			</md-input-container>' +
+					'		</md-content>' +
+					'  </md-dialog-content>' + 					
+					'  <div class="md-actions">' +
+					'    <md-button ng-click="closeDialog()" class="md-primary">' +
+					'      Cancel' +
+					'    </md-button>' +
+					'    <md-button ng-click="createFolder()" class="md-primary">' +
+					'      Create' +
+					'    </md-button>' +					
+					'  </div>' +
+					'</md-dialog>',
+				controller: _createFolderDialogController
+			});
+		
+			function _createFolderDialogController($scope, $mdDialog) {
+				$scope.closeDialog = function() {
+					$mdDialog.hide();
+				}
+				$scope.createFolder = function() {
+					
+					var parentDirId = 0;
+					if(isOnline){
+						parentDirId = currentOnlineDirectory.dirId;
+					}else{
+						parentDirId = currentOfflineDirectory.dirId;
+					}
+					
+					var newFolderName = $scope.newFolderDialog.newFolderName;
+					
+					FileServices
+						.addDirectory(parentDirId, newFolderName)
+						.then( function( reply ) {
+							
+							$log.debug('add directory reply: ' + JSON.stringify(reply));
+							
+							if(isOnline){
+								_fetchDirectory(parentDirId ,_processOnlineDirectoryData);
+							}else{
+								_fetchDirectory(parentDirId ,_processOfflineDirectoryData);
+							}
+							
+							$mdDialog.hide();
+							
+						});
+				}				
+			}
+		}
 	
 		var self = this;
 		
@@ -674,6 +886,13 @@
 			notImplemented : _notImplemented,
 			sectionTitle : _sectionTitle,
 			
+			uploader : _uploader,
+			handleEventViewUploadForm : _handleEventViewUploadForm,
+			handleEventClickCancelUpload : _handleEventClickCancelUpload,
+			handleEventClearUploadQueue : _handleEventClearUploadQueue,
+			handleEventDoUpload : _handleEventDoUpload,
+			
+			selectedResourceTabIndex : _selectedResourceTabIndex,
 			isViewingOnline : _isViewingOnline,
 			setIsViewingOnline : _setIsViewingOnline,
 			
@@ -687,6 +906,8 @@
 			
             offlineBreadcrumb : _offlineBreadcrumb,
             onlineBreadcrumb : _onlineBreadcrumb,
+			
+			handleEventViewUploadForm : _handleEventViewUploadForm,
 			
 			haveOfflineChildPathResources : _haveOfflineChildPathResources,
 			haveOnlineChildPathResources : _haveOnlineChildPathResources,

@@ -5,7 +5,7 @@
 Resource store settings partial that's loaded for the "main_storeSettings" state
 -->
     
-<md-tabs md-dynamic-height md-border-bottom>
+<md-tabs md-dynamic-height md-border-bottom md-selected="selectedResourceTabIndex">
     
     <md-tab label="Offline Resources" md-on-select="main.setIsViewingOnline(false)">
         

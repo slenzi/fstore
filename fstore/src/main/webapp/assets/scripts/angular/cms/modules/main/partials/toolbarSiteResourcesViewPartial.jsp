@@ -7,7 +7,11 @@ Toolbar partial that's loaded for the "main_storeList" state
 
 <md-toolbar class="md-toolbar-tools">
 	
+	<!--
 	<h2>{{main.isViewingOnline() ? 'Online Resources' : 'Offline Resources'}}</h2>
+	-->
+	
+	Selected Tab Index = {{selectedResourceTabIndex}}
 	
 	<div flex></div>
 	
@@ -71,10 +75,15 @@ Toolbar partial that's loaded for the "main_storeList" state
 			</md-menu-content>
 		</md-menu>		
 	
-	</span>	
+	</span>
+	
+	<md-button class="" ng-click="main.handleEventViewUploadForm()">
+		<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_file_upload_24px.svg"></md-icon>
+		Add Files
+	</md-button>	
 		
 	<md-button class="" ng-click="main.notImplemented()">
-		Some future button...
+		Site Settings
 	</md-button>		
 	
 </md-toolbar>

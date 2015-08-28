@@ -13,13 +13,15 @@
 	 * fsCmsMain - Our main cms module
 	 * fstore-models-module - common fstore models
 	 * fstore-services-module - common fstore services
+	 * fstore-upload-module - common fstore services
 	 * smart-table - lightweight table module
 	 */
 	cmsApp = angular
-		.module('fstoreCms', ['ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-models-module', 'fstore-services-module', 'smart-table'])
+		.module('fstoreCms', ['ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-models-module', 'fstore-services-module', 'fstore-upload-module', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
+			httpUploadHandler: '@http.upload.handler@',			
 			restServiceCmsSite: '@services.cms.rest.site@'
 		})
 		// inject our own constants into our config
@@ -128,7 +130,18 @@
 							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/toolbarSiteResourcesViewPartial.jsp'							
 						}
 					}
-				});
+				})
+				.state('main_upload', {
+					url: '/upload',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/uploadPartial.jsp'
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/toolbarUploadPartial.jsp'							
+						}
+					}
+				});				
 			
 		};
 			

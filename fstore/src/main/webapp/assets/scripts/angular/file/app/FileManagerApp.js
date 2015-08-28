@@ -11,10 +11,10 @@
 	 * ngMaterial - Material design UI components
 	 * ngResource - Provides interaction support with RESTful services via the $resource service
 	 * fsFileManagerMain - Our main file manager module
-	 * fsUpload - multi-part HTTP uploader
 	 * fsStomp - Stomp websocket module
 	 * fstore-models-module - common fstore models
 	 * fstore-services-module - common fstore services
+	 * fstore-upload-module - common fstore services
 	 * smart-table - lightweight table module
 	 * 
 	 * -- no longer used --
@@ -22,7 +22,7 @@
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	fileApp = angular
-		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsUpload', 'fsStomp', 'fstore-models-module', 'fstore-services-module', 'smart-table'])
+		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsStomp', 'fstore-models-module', 'fstore-services-module', 'fstore-upload-module', 'smart-table'])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',

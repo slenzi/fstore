@@ -205,7 +205,7 @@
         }
 		
 		/**
-		 * Handle cancle upload button click
+		 * Handle cancel upload button click
 		 */
         function _handleEventClickCancelUpload(){
 			_showDirectoryView();
@@ -240,7 +240,7 @@
 					// upload all files in queue as one single upload
 					//myFsUploader.doUpload(_uploadProgressHandler, _uploadAllCompleteHandler);
 					
-					// upload all files in queue as seperate, individual uploads.
+					// upload all files in queue as separate, individual uploads.
 					myFsUploader.doUploadSingular(_uploadProgressHandler, _uploadSingleCompleteHandler, _uploadAllCompleteHandler);
 						
 				}, function() {
