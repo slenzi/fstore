@@ -11,7 +11,9 @@ Toolbar partial that's loaded for the "main_storeList" state
 	<h2>{{main.isViewingOnline() ? 'Online Resources' : 'Offline Resources'}}</h2>
 	-->
 	
+	<!--
 	Selected Tab Index = {{selectedResourceTabIndex}}
+	-->
 	
 	<div flex></div>
 	

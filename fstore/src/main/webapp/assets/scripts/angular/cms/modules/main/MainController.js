@@ -55,7 +55,7 @@
         var offlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
         var onlineBreadcrumbNav = [{"dirId": "empty", "name": "empty"}];
 		
-		$scope.selectedResourceTabIndex = 1;
+		$scope.selectedResourceTabIndex = 0;
 		var isViewingOnline = false; // true if viewing online, false if viewing offline (switch this value when user clicks 'Offline Resources' and 'Online Resources' tabs) 
 
 		/****************************************************************************************

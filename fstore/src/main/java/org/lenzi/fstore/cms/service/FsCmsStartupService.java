@@ -172,10 +172,30 @@ public class FsCmsStartupService {
 				try {
 					FileUtil.createDirectory(resourcePath, true);
 				} catch (IOException e) {
-					throw new ServiceException("Faile to create RFS directory " + resourcePath.toString() + ". " + e.getMessage(), e);
+					throw new ServiceException("Failed to create RFS directory " + resourcePath.toString() + ". " + e.getMessage(), e);
 				}
 			}else{
 				writeVfsFileResourceToRfs(store, pathResource);
+			}
+		}else{
+			
+			if(pathResource.getPathType().equals(FsPathType.FILE)){
+				
+				FsFileMetaResource meta = (FsFileMetaResource)pathResource;
+				
+				Long vfsFileSize = meta.getFileSize();
+				
+				long rfsFileSize = 0L;
+				try {
+					rfsFileSize = Files.size(resourcePath);
+				} catch (IOException e) {
+					throw new ServiceException("Error checking RFS files site " + resourcePath.toString() + ". " + e.getMessage(), e);
+				}
+				
+				if(vfsFileSize.longValue() != rfsFileSize){
+					logger.warn("RFS file size is not the same as VFS file size!");
+				}
+				
 			}
 		}
 		
