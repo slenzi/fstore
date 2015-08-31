@@ -290,6 +290,41 @@ public class FsFileResourceAdder extends AbstractRepository {
 				", Directory Id => " + fsDirectory.getDirId() + ", Directory Name => " + fsDirectory.getName() +
 				", File system path => " + absoluteDirPath.toString());
 		
+		// get next node id
+		long nodeId = treeRepository.getNextNodeId();
+		
+		// create file entry for byte[] data
+		FsFileResource fileResource = new FsFileResource();
+		fileResource.setFileId(nodeId);
+		fileResource.setFileData(fileBytes);
+		//persist(fileResource);		
+		
+		// create file entry for meta data
+		FsFileMetaResource metaResource = new FsFileMetaResource();
+		metaResource.setNodeId(nodeId);
+		metaResource.setPathType(FsPathType.FILE);
+		metaResource.setStoreId(fsStore.getStoreId());
+		metaResource.setName(fileName);
+		metaResource.setMimeType(contentType);
+		metaResource.setFileSize((long)fileBytes.length); // TODO check this
+		metaResource.setRelativePath(relativeFilePath);		
+		
+		metaResource.setFileResource(fileResource);
+		
+		//fileResource.setFileMetaResource(metaResource);
+		
+		FsFileMetaResource persistedMetaResource = null;
+		try {
+			persistedMetaResource = (FsFileMetaResource) treeRepository.addChildNode(fsDirectory, metaResource);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error persisting new " + FsFileMetaResource.class.getName() + 
+					", file name => " + metaResource.getName() + " to directory " + absoluteDirPath.toString() + 
+					": " + e.getMessage());
+		}
+	
+		getEntityManager().flush();		
+		
+		/*
 		// create file entry for meta data
 		FsFileMetaResource metaResource = new FsFileMetaResource();
 		metaResource.setPathType(FsPathType.FILE);
@@ -316,6 +351,12 @@ public class FsFileResourceAdder extends AbstractRepository {
 		// make sure objects have all data set before returning
 		persistedMetaResource.setFileResource(fileResource);
 		fileResource.setFileMetaResource(persistedMetaResource);
+		*/
+		
+		// make sure objects have all data set before returning
+		persistedMetaResource.setFileResource(fileResource);
+		fileResource.setFileMetaResource(persistedMetaResource);
+		
 		
 		// copy file to directory
 		try {

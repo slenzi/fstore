@@ -17,12 +17,16 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 /**
  * @author sal
@@ -30,6 +34,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
  * Configuration setup for our PostgreSQL unit test cases.
  */
 @Configuration
+@EnableWebSocketMessageBroker
 @PropertySource("classpath:my.application.test.postgresql.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
@@ -47,12 +52,13 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 				"org.lenzi.fstore.file2.repository",
 				"org.lenzi.fstore.file2.repository.model.impl",
 				"org.lenzi.fstore.file2.concurrent",
+				"org.lenzi.fstore.file2.web.messaging",
 				"org.lenzi.fstore.cms.repository.model.impl"
 		}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 @TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=true)
-public class PostgresqlCmsTestConfiguration implements TransactionManagementConfigurer {
+public class PostgresqlCmsTestConfiguration extends AbstractWebSocketMessageBrokerConfigurer implements TransactionManagementConfigurer {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 	
@@ -115,6 +121,27 @@ public class PostgresqlCmsTestConfiguration implements TransactionManagementConf
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
-	}    
+	}
+	
+	/**
+	 * Needed for autowiring org.lenzi.fstore.file2.web.messaging dependencies
+	 * 
+	 * @param registry
+	 */
+	@Override
+	public void configureMessageBroker(MessageBrokerRegistry registry) {
+		registry.enableSimpleBroker("/topic");
+		registry.setApplicationDestinationPrefixes("/app");
+	}
+
+	/**
+	 * Needed for autowiring org.lenzi.fstore.file2.web.messaging dependencies
+	 * 
+	 * @param arg0
+	 */
+	@Override
+	public void registerStompEndpoints(StompEndpointRegistry registry) {
+		registry.addEndpoint("/hello").withSockJS();
+	} 	
     
 }
