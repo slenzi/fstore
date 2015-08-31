@@ -151,6 +151,41 @@ public class FsFileResourceCopier extends AbstractRepository {
 		
 		logger.info("File copy, source => " + absoluteSourceFilePath.toString() + ", target => " + absoluteTargetFilePath.toString());
 		
+		// get next node id
+		long nodeId = treeRepository.getNextNodeId();
+		
+		// create file entry for byte[] data
+		FsFileResource fileResource = new FsFileResource();
+		fileResource.setFileId(nodeId);
+		fileResource.setFileData(sourceEntry.getFileResource().getFileData());
+		//persist(fileResource);
+		
+		// create file entry for meta data
+		FsFileMetaResource metaResource = new FsFileMetaResource();
+		metaResource.setNodeId(nodeId);
+		metaResource.setPathType(FsPathType.FILE);
+		metaResource.setStoreId(targetStore.getStoreId());
+		metaResource.setName(newFileName);
+		metaResource.setMimeType(sourceEntry.getMimeType());
+		metaResource.setFileSize(sourceEntry.getFileSize()); // TODO check this
+		metaResource.setRelativePath(relativeFilePath);		
+		
+		metaResource.setFileResource(fileResource);
+		
+		//fileResource.setFileMetaResource(metaResource);
+		
+		FsFileMetaResource persistedMetaResource = null;
+		try {
+			persistedMetaResource = (FsFileMetaResource) treeRepository.addChildNode(targetDir, metaResource);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error persisting new " + FsFileMetaResource.class.getName() + 
+					", file name => " + metaResource.getName() + " to directory " + absoluteDirPath.toString() + 
+					": " + e.getMessage());
+		}
+	
+		getEntityManager().flush();			
+		
+		/*
 		// create file entry for meta data
 		FsFileMetaResource metaResource = new FsFileMetaResource();
 		metaResource.setPathType(FsPathType.FILE);
@@ -176,8 +211,13 @@ public class FsFileResourceCopier extends AbstractRepository {
 		
 		// make sure objects have all data set before returning
 		persistedMetaResource.setFileResource(fileResource);
-		fileResource.setFileMetaResource(persistedMetaResource);		
+		fileResource.setFileMetaResource(persistedMetaResource);
+		*/
 		
+		// make sure objects have all data set before returning
+		persistedMetaResource.setFileResource(fileResource);
+		fileResource.setFileMetaResource(persistedMetaResource);
+				
 		// copy physical file on disk
 		try {
 			
@@ -239,7 +279,42 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// remove FsFileMetaResource (tree node)
 		logger.info("Remove existing file, id => " + conflictingTargetEntry.getFileId());
 		treeRepository.removeNode(conflictingTargetEntry);
+		
+		// get next node id
+		long nodeId = treeRepository.getNextNodeId();
+		
+		// create file entry for byte[] data
+		FsFileResource fileResource = new FsFileResource();
+		fileResource.setFileId(nodeId);
+		fileResource.setFileData(sourceEntry.getFileResource().getFileData());
+		//persist(fileResource);
+		
+		// create file entry for meta data
+		FsFileMetaResource metaResource = new FsFileMetaResource();
+		metaResource.setNodeId(nodeId);
+		metaResource.setPathType(FsPathType.FILE);
+		metaResource.setStoreId(targetStore.getStoreId());
+		metaResource.setName(newFileName);
+		metaResource.setMimeType(sourceEntry.getMimeType());
+		metaResource.setFileSize(sourceEntry.getFileSize()); // TODO check this
+		metaResource.setRelativePath(relativeFilePath);
+		
+		metaResource.setFileResource(fileResource);
+		
+		//fileResource.setFileMetaResource(metaResource);
+		
+		FsFileMetaResource persistedMetaResource = null;
+		try {
+			persistedMetaResource = (FsFileMetaResource) treeRepository.addChildNode(targetDir, metaResource);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error persisting new " + FsFileMetaResource.class.getName() + 
+					", file name => " + metaResource.getName() + " to directory " + absoluteDirPath.toString() + 
+					": " + e.getMessage());
+		}
+	
+		getEntityManager().flush();			
 
+		/*
 		// create new file entry for meta data
 		FsFileMetaResource metaResource = new FsFileMetaResource();
 		metaResource.setPathType(FsPathType.FILE);
@@ -266,6 +341,11 @@ public class FsFileResourceCopier extends AbstractRepository {
 		// make sure objects have all data set before returning
 		persistedMetaResource.setFileResource(fileResource);
 		fileResource.setFileMetaResource(persistedMetaResource);
+		*/
+		
+		// make sure objects have all data set before returning
+		persistedMetaResource.setFileResource(fileResource);
+		fileResource.setFileMetaResource(persistedMetaResource);		
 		
 		// remove conflicting file, then copy over new file
 		try {
