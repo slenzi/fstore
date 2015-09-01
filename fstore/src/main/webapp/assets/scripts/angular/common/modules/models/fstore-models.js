@@ -7,27 +7,21 @@
 	
 	var fstoreModels;
 	
-	fstoreModels = angular
-		.module('fstore-models-module', []);
+	fstoreModels = angular.module('fstore-models-module', []);
 	
 	// Create directory resource model
-	fstoreModels.factory('PathResource', [
-			'appConstants', '$log', '$q', PathResourceFactory
-			]
-		);
+	fstoreModels.factory('PathResource', [ 'appConstants', '$log', '$q', PathResourceFactory ] );
 		
 	// Create resource store model
-	fstoreModels.factory('ResourceStore', [
-			'appConstants', '$log', '$q', ResourceStoreFactory
-			]
-		);
+	fstoreModels.factory('ResourceStore', [ 'appConstants', '$log', '$q', ResourceStoreFactory ] );
 
 	// Create cms site model
-	fstoreModels.factory('CmsSite', [
-		'appConstants', '$log', '$q', CmsSiteFactory
-		]
-	);
+	fstoreModels.factory('CmsSite', [ 'appConstants', '$log', '$q', CmsSiteFactory ] );
+	
+	// Create clipboard
+	fstoreModels.factory('FsClipboard', [ 'appConstants', '$log', '$q', FsClipboardFactory ] );	
 
+	
 	function PathResourceFactory(appConstants, $log, $q){
 		
 		function PathResource(data){
@@ -259,6 +253,90 @@
 		// return this
 		return CmsSite;
 		
-	}	
+	}
+
+	function FsClipboardFactory(appConstants, $log, $q){
+
+		var FsPathResourceOperation = {
+			fileIdList : [],
+			dirIdList : [],
+			sourceDirId : -1,
+			targetDirId : -1,
+			replaceExisting : true
+		};
+		
+		function FsClipboard(clipboardData){	
+			
+			// set defaults
+			angular.extend(this, {
+				operation: { type: '', data: {} }
+			});
+			
+			// update defaults with user provided data if we have some
+			if(clipboardData){
+				this.setData(clipboardData);
+			}
+			
+		};
+		
+		function _clear(){
+			
+			angular.extend(this, {
+				operation: { type: '', data: {} }		
+			});			
+			
+		}
+		
+		function _isEmpty(){
+			
+			var operation = this.operation;
+			
+			if(operation.data.fileIdList && operation.data.fileIdList.length > 0 ||
+				operation.data.dirIdList && operation.data.dirIdList.length > 0){
+					
+				return false;
+			}
+			return true;
+		}
+		
+		function _setOperation(type, fileIdList, dirIdList, sourceDirId, targetDirId, replaceExisting){
+			var pathOperation = fromPrototype(FsPathResourceOperation, {
+				fileIdList : fileIdList,
+				dirIdList : dirIdList,
+				sourceDirId : sourceDirId,
+				targetDirId : targetDirId,
+				replaceExisting : replaceExisting
+			});
+			var newOperation = {
+				type: type,
+				data: pathOperation
+			}
+			this.operation = newOperation;
+		}	
+
+		// extend functionality
+		FsClipboard.prototype = {
+			setData: function(clipboardData){
+				angular.extend(this, clipboardData);
+			},
+			clear : _clear,
+			isEmpty : _isEmpty,
+			setOperation : _setOperation
+		};	
+		
+		// return this
+		return FsClipboard;
+		
+	}
+
+	var fromPrototype = function(prototype, object) {  
+		var newObject = Object.create(prototype);
+		for (var prop in object) {
+			if (object.hasOwnProperty(prop)) {
+				newObject[prop] = object[prop];
+			}
+		}
+		return newObject;
+	};	
 	
 })();

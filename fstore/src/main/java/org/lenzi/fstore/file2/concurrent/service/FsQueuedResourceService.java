@@ -688,6 +688,134 @@ public class FsQueuedResourceService {
 		
 	}
 	
+	/**
+	 * Copy file resource
+	 * 
+	 * @param fileId
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource copyFileResource(Long fileId, Long dirId, boolean replaceExisting) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.copyFileResource(fileId, dirId, replaceExisting);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsFileMetaResource resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * move file resource
+	 * 
+	 * @param fileId
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource moveFileResource(Long fileId, Long dirId, boolean replaceExisting) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.moveFileResource(fileId, dirId, replaceExisting);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsFileMetaResource resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Copy directory
+	 * 
+	 * @param sourceDirId
+	 * @param targetDirId
+	 * @param replaceExisting
+	 * @throws ServiceException
+	 */
+	public void copyDirectoryResource(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws ServiceException {
+		
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				fsResourceService.copyDirectoryResource(sourceDirId, targetDirId, replaceExisting);
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		t.waitComplete(); // block until complete		
+		
+	}
+	
+	/**
+	 * Move directory
+	 * 
+	 * @param sourceDirId
+	 * @param targetDirId
+	 * @param replaceExisting
+	 * @throws ServiceException
+	 */
+	public void moveDirectoryResource(Long sourceDirId, Long targetDirId, boolean replaceExisting) throws ServiceException {
+		
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				fsResourceService.moveDirectoryResource(sourceDirId, targetDirId, replaceExisting);
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		t.waitComplete(); // block until complete		
+		
+	}	
+	
 	//private ExecutorService executorService = Executors.newFixedThreadPool(20);
 	
 	/*

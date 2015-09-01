@@ -178,6 +178,89 @@ public class DirectoryResource extends AbstractResource {
 	}
 	
 	/**
+	 * Copy directories
+	 * 
+	 * @param dirIdList
+	 * @param targetDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@POST
+	@Path("/copy")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response copyDirectories(@QueryParam("dirId") List<Long> dirIdList, @PathParam("targetDirId") Long targetDirId,
+			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
+		
+		
+		if(dirIdList == null || dirIdList.size() == 0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'dirId' parameter. Need at least one dir ID for copy.");
+		}
+		if(targetDirId == null || targetDirId <=0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'targetDirId' parameter. Need ID of destination directory.");
+		}
+		if(replaceExisting == null){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'replaceExisting' parameter. Need parameter to determine if user wants to overwrite existing directories & files in destinatioin directory.");
+		}
+		
+		Long nextDirId = 0L;
+		for(Long dirId : dirIdList){
+			nextDirId = dirId;
+			try {
+				fsQueuedResourceService.copyDirectoryResource(nextDirId, targetDirId, replaceExisting);
+			} catch (ServiceException e) {
+				handleError("Failed to copy directory. [dirId=" + nextDirId + ", targetDirId=" + targetDirId + ", replaceExisting=" + replaceExisting + "]",
+						WebExceptionType.CODE_DATABSE_ERROR, e);
+			}
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();		
+		
+	}
+	
+	/**
+	 * Move directories
+	 * 
+	 * @param dirIdList
+	 * @param targetDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@POST
+	@Path("/move")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response moveDirectories(@QueryParam("dirId") List<Long> dirIdList, @PathParam("targetDirId") Long targetDirId,
+			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
+		
+		
+		if(dirIdList == null || dirIdList.size() == 0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'dirId' parameter. Need at least one dir ID for move.");
+		}
+		if(targetDirId == null || targetDirId <=0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'targetDirId' parameter. Need ID of destination directory.");
+		}
+		if(replaceExisting == null){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'replaceExisting' parameter. Need parameter to determine if user wants to overwrite existing directories & files in destinatioin directory.");
+		}
+		
+		Long nextDirId = 0L;
+		for(Long dirId : dirIdList){
+			nextDirId = dirId;
+			try {
+				fsQueuedResourceService.moveDirectoryResource(nextDirId, targetDirId, replaceExisting);
+			} catch (ServiceException e) {
+				handleError("Failed to move directory. [dirId=" + nextDirId + ", targetDirId=" + targetDirId + ", replaceExisting=" + replaceExisting + "]",
+						WebExceptionType.CODE_DATABSE_ERROR, e);
+			}
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();		
+		
+	}	
+			
+	
+	/**
 	 * Add new directory
 	 * 
 	 * @param dirId - id of parent directory

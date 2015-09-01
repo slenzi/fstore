@@ -111,7 +111,21 @@
 				deleteFiles: {
 					url: FstoreServiceConstants.restServiceFile + '/delete',
 					method: 'POST'
-				}
+				},
+				moveFiles: {
+					url: FstoreServiceConstants.restServiceFile + '/move',
+					method: 'POST',
+					params: {
+						fileId: '@fileId', dirId: '@dirId', replaceExisting: true
+					}
+				},
+				copyFiles: {
+					url: FstoreServiceConstants.restServiceFile + '/copy',
+					method: 'POST',
+					params: {
+						fileId: '@fileId', dirId: '@dirId', replaceExisting: true
+					}
+				}				
 			}); 
 		
 		// directory resource service
@@ -141,7 +155,21 @@
 					params: {
 						dirId: '@dirId', dirName: '@newDirName'
 					}					
-				}
+				},
+				moveDirectories: {
+					url: FstoreServiceConstants.restServiceDirectory + '/move',
+					method: 'POST',
+					params: {
+						dirId: '@dirId', targetDirId: '@targetDirId', replaceExisting: true
+					}
+				},
+				copyDirectories: {
+					url: FstoreServiceConstants.restServiceDirectory + '/copy',
+					method: 'POST',
+					params: {
+						dirId: '@dirId', targetDirId: '@targetDirId', replaceExisting: true
+					}
+				}				
 			});	
 		
 		var sampleData = [
@@ -225,6 +253,24 @@
 			
 		}
 		
+		// move a list of files
+		function _moveFiles(fileIdList, targetDirId){
+			
+			var replaceExisting = true;
+			
+			return fileService.moveFiles({ 'fileId' : fileIdList, 'dirId' : targetDirId, 'replaceExisting': replaceExisting }).$promise;
+			
+		}
+
+		// copy a list of files
+		function _copyFiles(fileIdList, targetDirId){
+			
+			var replaceExisting = true;
+			
+			return fileService.copyFiles({ 'fileId' : fileIdList, 'dirId' : targetDirId, 'replaceExisting': replaceExisting }).$promise;
+			
+		}
+		
 		
 		// *********************************
 		// Directory resource operations
@@ -262,6 +308,24 @@
 			
 		}
 		
+		// move a list of directories
+		function _moveDirectories(dirIdList, targetDirId){
+			
+			var replaceExisting = true;
+			
+			return directoryService.moveDirectories({ 'dirId' : dirIdList, 'targetDirId' : targetDirId, 'replaceExisting': replaceExisting }).$promise;
+			
+		}
+
+		// copy a list of directories
+		function _copyDirectories(dirIdList, targetDirId){
+			
+			var replaceExisting = true;
+			
+			return directoryService.copyDirectories({ 'dirId' : dirIdList, 'targetDirId' : targetDirId, 'replaceExisting': replaceExisting }).$promise;
+			
+		}		
+		
 		
 		// *********************************
 		// External API
@@ -277,7 +341,11 @@
 			deleteFile: _deleteFile,
 			deleteFiles: _deleteFiles,
 			deleteDirectories: _deleteDirectories,
-			addDirectory: _addDirectory
+			addDirectory: _addDirectory,
+			copyFiles: _copyFiles,
+			moveFiles: _moveFiles,
+			moveDirectories: _moveDirectories,
+			copyDirectories: _copyDirectories
 	    };
 		
 	}	

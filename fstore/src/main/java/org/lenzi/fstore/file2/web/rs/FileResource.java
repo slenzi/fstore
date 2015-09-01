@@ -78,7 +78,7 @@ public class FileResource extends AbstractResource {
 	}
 	
 	/**
-	 * Delete a series of files
+	 * Delete a list of files
 	 * 
 	 * @param fileIdList - list of file ids. All files will be deleted.
 	 * @return
@@ -114,6 +114,87 @@ public class FileResource extends AbstractResource {
 		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
 		
 	}
+	
+
+	/**
+	 * Copy a list of files
+	 * 
+	 * @param fileIdList - list of file ids. These are the files being copied
+	 * @param dirId - destination directory id. where the files will be copied to.
+	 * @param replaceExisting - clear/overwrite file in destination directory if same file already exists.)
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@POST
+	@Path("/copy")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response copyFiles(@QueryParam("fileId") List<Long> fileIdList, @PathParam("dirId") Long dirId,
+			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
+		
+		if(fileIdList == null || fileIdList.size() == 0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'fileId' parameter. Need at least one file ID for copy.");
+		}
+		if(dirId == null || dirId <=0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'dirId' parameter. Need ID of destination directory.");
+		}
+		if(replaceExisting == null){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'replaceExisting' parameter. Need parameter to determine if user wants to overwrite existing files in destinatioin directory.");
+		}
+		
+		Long nextFileId = 0L;
+		for(Long fileId : fileIdList){
+			nextFileId = fileId;
+			try {
+				fsQueuedResourceService.copyFileResource(nextFileId, dirId, replaceExisting);
+			} catch (ServiceException e) {
+				handleError("Failed to copy file. [fileId=" + nextFileId + ", dirId=" + dirId + ", replaceExisting=" + replaceExisting + "]",
+						WebExceptionType.CODE_DATABSE_ERROR, e);
+			}
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
+		
+	}
+	
+	/**
+	 * Move a list of files
+	 * 
+	 * @param fileIdList - list of file ids. These are the files being moved
+	 * @param dirId - destination directory id. where the files will be moved to.
+	 * @param replaceExisting - clear/overwrite file in destination directory if same file already exists.)
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@POST
+	@Path("/move")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response moveFiles(@QueryParam("fileId") List<Long> fileIdList, @PathParam("dirId") Long dirId,
+			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
+		
+		if(fileIdList == null || fileIdList.size() == 0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'fileId' parameter. Need at least one file ID for move.");
+		}
+		if(dirId == null || dirId <=0){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'dirId' parameter. Need ID of destination directory.");
+		}
+		if(replaceExisting == null){
+			throw new WebServiceException(WebExceptionType.CODE_MISSING_REQUIRED_INPUT,"Missing 'replaceExisting' parameter. Need parameter to determine if user wants to overwrite existing files in destinatioin directory.");
+		}
+		
+		Long nextFileId = 0L;
+		for(Long fileId : fileIdList){
+			nextFileId = fileId;
+			try {
+				fsQueuedResourceService.moveFileResource(nextFileId, dirId, replaceExisting);
+			} catch (ServiceException e) {
+				handleError("Failed to move file. [fileId=" + nextFileId + ", dirId=" + dirId + ", replaceExisting=" + replaceExisting + "]",
+						WebExceptionType.CODE_DATABSE_ERROR, e);
+			}
+		}
+		
+		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
+		
+	}	
 	
 	/**
 	 * Download file resource

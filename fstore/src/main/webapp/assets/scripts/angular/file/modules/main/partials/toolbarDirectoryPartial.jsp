@@ -55,23 +55,33 @@ Toolbar partial that's loaded for the "main_directory" state
 				</md-button>
 			</md-menu-item>
 			<md-menu-item ng-if="main.haveSelectedPathResources()">
-				<md-button ng-click="main.notImplemented()">
+				<md-button ng-click="main.handleEventClickCopyPathResources()">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_content_copy_24px.svg"></md-icon>
 					Copy
 				</md-button>
 			</md-menu-item>
 			<md-menu-item ng-if="main.haveSelectedPathResources()">
-				<md-button ng-click="main.notImplemented()">
+				<md-button ng-click="main.handleEventClickCutPathResources()">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_content_cut_24px.svg"></md-icon>
 					Cut / Move
 				</md-button>
 			</md-menu-item>
-			<md-menu-item ng-if="true""> <%-- if have something copied or cut... --%>
-				<md-button ng-click="main.notImplemented()">
+			<md-menu-item ng-if="main.haveClipboardResources()">
+				<md-button ng-click="main.handleEventClickPastePathResources()">
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_content_paste_24px.svg"></md-icon>
 					Paste
 				</md-button>
-			</md-menu-item>				
+			</md-menu-item>
+
+			<md-menu-divider ng-if="main.haveSelectedPathResources()"></md-menu-divider>
+			
+			<md-menu-item ng-if="main.haveClipboardResources()">
+				<md-button ng-click="main.handleEventClickClearClipboard()">
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_delete_24px.svg"></md-icon>
+					Clear Clipboard
+				</md-button>
+			</md-menu-item>		
+			
 		</md-menu-content>
 	</md-menu>
 	

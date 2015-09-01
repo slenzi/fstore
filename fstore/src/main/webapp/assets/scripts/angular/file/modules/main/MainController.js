@@ -3,7 +3,7 @@
 	angular
 		.module('fsFileManagerMain')
 		.controller('mainController',[
-			'appConstants', 'FileServices', 'ResourceStore', 'PathResource', 'FsFileUploader', 'FsStomp',
+			'appConstants', 'FileServices', 'ResourceStore', 'PathResource', 'FsClipboard', 'FsFileUploader', 'FsStomp',
 			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
@@ -11,7 +11,7 @@
 	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 	
 	function MainController(
-		appConstants, FileServices, ResourceStore, PathResource, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -44,10 +44,12 @@
 		
 		// tracks path resources that have been selected for "copy".
 		// they will be copied to a new location when the user performs a "paste"
-		var pathResourceToCopy = [];
+		//var pathResourceToCopy = [];
 		// tracks path resources that have been selected for "cut".
 		// they will be moved to a new location when the user performs a "paste"
-		var pathResourceToMove = [];
+		//var pathResourceToMove = [];
+		
+		var clipboard = new FsClipboard({});
 
 
 		/****************************************************************************************
@@ -161,13 +163,7 @@
 		 */
 		function _currentDirectory(){
 			return currentDirectory;
-		}
-		
-		/*
-		function _cmsSiteList(){
-			return cmsSiteList;
-		}
-		*/		
+		}	
 		
 		/**
 		 * Get reference to fsUploader
@@ -289,20 +285,6 @@
 			//_showDirectoryView();
 		}
 		
-		/*
-		function _handleEventViewSiteList(){
-			
-			sectionTitle = "CMS Site List";
-			
-			$state.go('main_siteList');
-			
-			FileServices
-				.getCmsSites()
-				.then(_handleCmsSiteDataCallback);			
-			
-		}
-		*/
-		
 		/**
 		 * View list of all stores
 		 */
@@ -339,26 +321,6 @@
 			}			
 			
 		}
-		
-		/*
-		function _handleCmsSiteDataCallback(siteDate){
-			
-			if(siteDate.error){
-				$log.debug("Error, " + siteDate.error);
-			}else{
-				$log.debug("got site data => " + JSON.stringify(siteDate));
-				cmsSiteList = siteDate;
-				if(cmsSiteList != null && cmsSiteList[0]){
-					
-					//currentStore.setData(storeList[0]);
-					//_handleLoadDirectory(storeList[0].rootDirectoryId, false);
-					
-					_leftNavClose();
-				}				
-			}			
-			
-		}
-		*/
 		
 		/**
 		 * View settings for current store
@@ -964,67 +926,98 @@
 			}
 			
 		}
-            
-		/*
-		function _handleEventClickNewCmsSite(event){
-			
-			$mdDialog.show({
-				parent: angular.element(document.body),
-				targetEvent: event,
-				template:
-					'<md-dialog aria-label="List dialog" flex="35">' +
-					'	<md-dialog-content>'+
-					'		<md-content layout-padding>' +
-					'			<h3>Create New CMS Site</h3>' +
-					'			<md-input-container flex>' +
-					'				<label>Site Context Name</label>' +
-					'				<input ng-model="newCmsSiteDialog.siteName" required>' +
-					'			</md-input-container>' +
-					'			<md-input-container flex>' +
-					'				<label>Site Description</label>' +
-					'				<textarea ng-model="newCmsSiteDialog.siteDesc" columns="1" md-maxlength="150" required></textarea>' +
-					'			</md-input-container>' +
-					'		</md-content>' +
-					'  </md-dialog-content>' +       
-					'  <div class="md-actions">' +
-					'    <md-button ng-click="closeDialog()" class="md-primary">' +
-					'      Cancel' +
-					'    </md-button>' +
-					'    <md-button ng-click="createCmsSite()" class="md-primary">' +
-					'      Create' +
-					'    </md-button>' +					
-					'  </div>' +
-					'</md-dialog>',
-				controller: _createCmsSiteDialogController
-			});
 		
-			function _createCmsSiteDialogController($scope, $mdDialog) {
-				$scope.closeDialog = function() {
-					$mdDialog.hide();
+		/**
+		 * Clipboard methods
+		 */
+		function _haveClipboardResources(){
+			return clipboard && !clipboard.isEmpty();
+		}
+		function _handleEventClickClearClipboard(){
+			if(clipboard){
+				clipboard.clear();
+			}
+		}  
+		function _handleEventClickCopyPathResources(event){
+			_doClipboardOperationOnSelectedResources('copy', event);
+		}
+		function _handleEventClickCutPathResources(event){
+			_doClipboardOperationOnSelectedResources('cut', event);
+		}
+		function _doClipboardOperationOnSelectedResources(operationType, event){
+			
+			var fileIdList = [];
+			var dirIdList = []
+		
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						
+						pathResource = currentDirectory.children[i];
+						if(pathResource.type == 'FILE'){
+							fileIdList.push(pathResource.fileId);
+						}else if(pathResource.type == 'DIRECTORY'){
+							dirIdList.push(pathResource.dirId);
+						}else{
+							$log.error('Unknown path resource type \'' + pathResource.type + '\'. Don\'t know how to \'' + operationType + '\'.');
+						}						
+						
+					}
 				}
-				$scope.createCmsSite = function() {
+			}
+			
+			clipboard.setOperation(operationType, fileIdList, dirIdList, currentDirectory.dirId, -1, true);	
+			
+			$log.debug('clipboard => ' + JSON.stringify(clipboard));
+			$log.debug('is empty => ' + clipboard.isEmpty());			
+			
+		}
+
+		function _handleEventClickPastePathResources(event){
+			
+			var operation = clipboard.operation;
+			var operationType = clipboard.operation.type;
+			
+			if(operation.data.sourceDirId && operation.data.sourceDirId == currentDirectory.dirId){
+				alert('Cannot paste. Source and target directories are the same. Please navigate to a different directory');
+			}else{
 				
-					var siteName = $scope.newCmsSiteDialog.siteName;
-                    var siteDesc = $scope.newCmsSiteDialog.siteDesc;
+				if(operationType.toLowerCase() == 'copy'){
 					
+					var fileIdList = operation.data.fileIdList;
+					var dirIdList = operation.data.dirIdList;
+					var targetDirId = operation.data.targetDirId;
+					var replaceExisting = operation.data.replaceExisting;
+				
 					FileServices
-						.addCmsSite(siteName, siteDesc)
+						.copyFiles(fileIdList, currentDirectory.dirId)
 						.then( function( reply ) {
 							
-							$log.debug('add cms site reply: ' + JSON.stringify(reply));
+							$log.debug('copy files reply: ' + JSON.stringify(reply));
 							
-							// reload sites!
-							//_reloadCurrentDirectory();
+							return FileServices
+								.copyDirectories(dirIdList, currentDirectory.dirId)
+								.then( function( reply ) {
+									
+									$log.debug('copy directories reply: ' + JSON.stringify(reply));
+									
+								});
 							
-							$mdDialog.hide();
+						}).then( function( result ) {
 							
-						});	
+							_reloadCurrentDirectory();
+							
+						});					
 					
-				}				
+				}else if(operationType.toLowerCase() == 'cut'){
+					alert('Perform cut-paste!');
+				}else{
+					alert('Cannot paste. Unknown operation type. Type = \'' + operationType + '\'');
+				}
+				
 			}
 			
 		}
-		*/  
 	
 		var self = this;
 		
@@ -1040,18 +1033,17 @@
 			sectionTitle : _sectionTitle,
 			store : _currentStore,
 			storeList : _storeList,
-			//cmsSiteList : _cmsSiteList,
 			directory : _currentDirectory,
 			uploader : _uploader,
 			breadcrumb : _breadcrumb,
 			haveChildPathResources : _haveChildPathResources,
+			haveClipboardResources : _haveClipboardResources,
 			isLoadingPathResource : _isLoadingPathResource,
 			isUsingIconView : _isUsingIconView,
 			handleEventSwitchResourceView : _handleEventSwitchResourceView,
 			handleEventViewStore : _handleEventViewStore,
 			handleEventViewStoreSettings : _handleEventViewStoreSettings,
 			handleEventViewStoreList : _handleEventViewStoreList,
-			//handleEventViewSiteList : _handleEventViewSiteList,
 			handleEventClickTablePathResource : _handleEventClickTablePathResource,
 			handleEventClickIconGridPathResource : _handleEventClickIconGridPathResource,
 			handleEventDblClickIconGridPathResource : _handleEventDblClickIconGridPathResource,
@@ -1067,8 +1059,12 @@
 			handleEventClickDeletePathResources : _handleEventClickDeletePathResources,
 			handleEventClickSelectAllPathResources : _handleEventClickSelectAllPathResources,
 			handlePathResourceMouseOver: _handlePathResourceMouseOver,
-			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources
-            //handleEventClickNewCmsSite : _handleEventClickNewCmsSite
+			handleEventClickClearSelectedPathResources : _handleEventClickClearSelectedPathResources,
+			handleEventClickCopyPathResources : _handleEventClickCopyPathResources,
+			handleEventClickCutPathResources : _handleEventClickCutPathResources,
+			handleEventClickPastePathResources : _handleEventClickPastePathResources,
+			handleEventClickClearClipboard : _handleEventClickClearClipboard
+            
 		}
 
 	}
