@@ -189,7 +189,7 @@ public class DirectoryResource extends AbstractResource {
 	@POST
 	@Path("/copy")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response copyDirectories(@QueryParam("dirId") List<Long> dirIdList, @PathParam("targetDirId") Long targetDirId,
+	public Response copyDirectories(@QueryParam("dirId") List<Long> dirIdList, @QueryParam("targetDirId") Long targetDirId,
 			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
 		
 		
@@ -230,7 +230,7 @@ public class DirectoryResource extends AbstractResource {
 	@POST
 	@Path("/move")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response moveDirectories(@QueryParam("dirId") List<Long> dirIdList, @PathParam("targetDirId") Long targetDirId,
+	public Response moveDirectories(@QueryParam("dirId") List<Long> dirIdList, @QueryParam("targetDirId") Long targetDirId,
 			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
 		
 		

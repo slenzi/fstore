@@ -128,7 +128,7 @@ public class FileResource extends AbstractResource {
 	@POST
 	@Path("/copy")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response copyFiles(@QueryParam("fileId") List<Long> fileIdList, @PathParam("dirId") Long dirId,
+	public Response copyFiles(@QueryParam("fileId") List<Long> fileIdList, @QueryParam("dirId") Long dirId,
 			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
 		
 		if(fileIdList == null || fileIdList.size() == 0){
@@ -168,7 +168,7 @@ public class FileResource extends AbstractResource {
 	@POST
 	@Path("/move")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response moveFiles(@QueryParam("fileId") List<Long> fileIdList, @PathParam("dirId") Long dirId,
+	public Response moveFiles(@QueryParam("fileId") List<Long> fileIdList, @QueryParam("dirId") Long dirId,
 			@QueryParam("replaceExisting") Boolean replaceExisting) throws WebServiceException {
 		
 		if(fileIdList == null || fileIdList.size() == 0){

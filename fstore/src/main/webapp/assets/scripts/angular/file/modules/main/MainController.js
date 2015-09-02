@@ -988,27 +988,47 @@
 					var dirIdList = operation.data.dirIdList;
 					var targetDirId = operation.data.targetDirId;
 					var replaceExisting = operation.data.replaceExisting;
-				
-					FileServices
-						.copyFiles(fileIdList, currentDirectory.dirId)
-						.then( function( reply ) {
-							
-							$log.debug('copy files reply: ' + JSON.stringify(reply));
-							
-							return FileServices
-								.copyDirectories(dirIdList, currentDirectory.dirId)
-								.then( function( reply ) {
-									
-									$log.debug('copy directories reply: ' + JSON.stringify(reply));
-									
-								});
-							
-						}).then( function( result ) {
-							
-							_reloadCurrentDirectory();
-							
-						});					
 					
+					var haveFilesToCopy = fileIdList.length > 0;
+					var haveDirectoriesToCopy = dirIdList.length > 0;
+					
+					if(haveFilesToCopy && haveDirectoriesToCopy){
+						
+						FileServices
+							.copyFiles(fileIdList, currentDirectory.dirId)
+							.then( function( reply ) {
+								$log.debug('copy files reply: ' + JSON.stringify(reply));
+								return FileServices
+									.copyDirectories(dirIdList, currentDirectory.dirId)
+									.then( function( reply ) {
+										$log.debug('copy directories reply: ' + JSON.stringify(reply));
+									});
+							}).then( function( result ) {
+								_reloadCurrentDirectory();
+							});						
+						
+					}else if(haveFilesToCopy){
+						
+						FileServices
+							.copyFiles(fileIdList, currentDirectory.dirId)
+							.then( function( reply ) {
+								$log.debug('copy files reply: ' + JSON.stringify(reply));
+								_reloadCurrentDirectory();
+							});					
+						
+					}else if(haveDirectoriesToCopy){
+						
+						FileServices
+							.copyDirectories(dirIdList, currentDirectory.dirId)
+							.then( function( reply ) {
+								$log.debug('copy directories reply: ' + JSON.stringify(reply));
+								_reloadCurrentDirectory();
+							});						
+						
+					}else{
+						
+					}
+	
 				}else if(operationType.toLowerCase() == 'cut'){
 					alert('Perform cut-paste!');
 				}else{
