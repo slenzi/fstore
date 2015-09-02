@@ -1032,6 +1032,7 @@
 								$log.debug('copy directories reply: ' + JSON.stringify(reply));
 							});
 					}).then( function( result ) {
+						_handleEventClickClearClipboard();
 						_reloadCurrentDirectory();
 					});						
 				
@@ -1041,6 +1042,7 @@
 					.copyFiles(fileIdList, currentDirectory.dirId)
 					.then( function( reply ) {
 						$log.debug('copy files reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
 						_reloadCurrentDirectory();
 					});					
 				
@@ -1050,6 +1052,7 @@
 					.copyDirectories(dirIdList, currentDirectory.dirId)
 					.then( function( reply ) {
 						$log.debug('copy directories reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
 						_reloadCurrentDirectory();
 					});						
 				
@@ -1086,6 +1089,7 @@
 								$log.debug('move directories reply: ' + JSON.stringify(reply));
 							});
 					}).then( function( result ) {
+						_handleEventClickClearClipboard();
 						_reloadCurrentDirectory();
 					});						
 				
@@ -1095,6 +1099,7 @@
 					.moveFiles(fileIdList, currentDirectory.dirId)
 					.then( function( reply ) {
 						$log.debug('move files reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
 						_reloadCurrentDirectory();
 					});					
 				
@@ -1104,6 +1109,7 @@
 					.moveDirectories(dirIdList, currentDirectory.dirId)
 					.then( function( reply ) {
 						$log.debug('move directories reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
 						_reloadCurrentDirectory();
 					});						
 				
