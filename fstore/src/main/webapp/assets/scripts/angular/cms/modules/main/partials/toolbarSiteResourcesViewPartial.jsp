@@ -42,8 +42,36 @@ Toolbar partial that's loaded for the "main_storeList" state
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_select_all_24px.svg"></md-icon>
 						Select All
 					</md-button>
-				</md-menu-item>			
-			</md-menu-content>
+				</md-menu-item>
+				<md-menu-divider ng-if="main.haveSelectedOfflinePathResources()"></md-menu-divider>
+				
+				<md-menu-item ng-if="main.haveSelectedOfflinePathResources()">
+					<md-button ng-click="main.handleEventClickCopyOfflinePathResources()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_content_copy_24px.svg"></md-icon>
+						Copy
+					</md-button>
+				</md-menu-item>
+				<md-menu-item ng-if="main.haveSelectedOfflinePathResources()">
+					<md-button ng-click="main.handleEventClickCutOfflinePathResources()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_content_cut_24px.svg"></md-icon>
+						Cut / Move
+					</md-button>
+				</md-menu-item>
+				<md-menu-item ng-if="main.haveClipboardResources()">
+					<md-button ng-click="main.handleEventClickPasteOfflinePathResources()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_content_paste_24px.svg"></md-icon>
+						Paste
+					</md-button>
+				</md-menu-item>				
+				
+				<md-menu-divider ng-if="main.haveSelectedOfflinePathResources()"></md-menu-divider>
+				<md-menu-item ng-if="main.haveClipboardResources()">
+					<md-button ng-click="main.handleEventClickClearClipboard()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_delete_24px.svg"></md-icon>
+						Clear Clipboard
+					</md-button>
+				</md-menu-item>				
+			</md-menu-content>		
 		</md-menu>		
 	
 	</span>
@@ -73,7 +101,35 @@ Toolbar partial that's loaded for the "main_storeList" state
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_select_all_24px.svg"></md-icon>
 						Select All
 					</md-button>
-				</md-menu-item>			
+				</md-menu-item>
+				<md-menu-divider ng-if="main.haveSelectedOnlinePathResources()"></md-menu-divider>
+				
+				<md-menu-item ng-if="main.haveSelectedOnlinePathResources()">
+					<md-button ng-click="main.handleEventClickCopyOnlinePathResources()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_content_copy_24px.svg"></md-icon>
+						Copy
+					</md-button>
+				</md-menu-item>
+				<md-menu-item ng-if="main.haveSelectedOnlinePathResources()">
+					<md-button ng-click="main.handleEventClickCutOnlinePathResources()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_content_cut_24px.svg"></md-icon>
+						Cut / Move
+					</md-button>
+				</md-menu-item>
+				<md-menu-item ng-if="main.haveClipboardResources()">
+					<md-button ng-click="main.handleEventClickPasteOnlinePathResources()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_content_paste_24px.svg"></md-icon>
+						Paste
+					</md-button>
+				</md-menu-item>					
+				
+				<md-menu-divider ng-if="main.haveSelectedOnlinePathResources()"></md-menu-divider>
+				<md-menu-item ng-if="main.haveClipboardResources()">
+					<md-button ng-click="main.handleEventClickClearClipboard()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_delete_24px.svg"></md-icon>
+						Clear Clipboard
+					</md-button>
+				</md-menu-item>				
 			</md-menu-content>
 		</md-menu>		
 	

@@ -3,7 +3,7 @@
 	angular
 		.module('fsCmsMain')
 		.controller('mainController',[
-			'appConstants', 'CmsServices', 'CmsSite', 'FileServices', 'ResourceStore', 'PathResource', 'FsFileUploader',
+			'appConstants', 'CmsServices', 'CmsSite', 'FileServices', 'ResourceStore', 'PathResource', 'FsClipboard', 'FsFileUploader',
 			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
@@ -11,7 +11,7 @@
 	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 
 	function MainController(
-		appConstants, CmsServices, CmsSite, FileServices, ResourceStore, PathResource, FsFileUploader, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, CmsServices, CmsSite, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -58,6 +58,8 @@
 		$scope.selectedResourceTabIndex = 0;
 		var isViewingOnline = false; // true if viewing online, false if viewing offline (switch this value when user clicks 'Offline Resources' and 'Online Resources' tabs) 
 
+		var clipboard = new FsClipboard({});
+		
 		/****************************************************************************************
 		 * On application load:  load all cms sites when page loads (asynchronously)
 		 */		
@@ -168,9 +170,7 @@
 				_fetchDirectory(currentOnlineDirectory.dirId, _processOnlineDirectoryData);
 			}else{
 				_fetchDirectory(currentOfflineDirectory.dirId, _processOfflineDirectoryData);
-			}			
-			
-			_handleLoadDirectory(_currentDirectory().dirId, true);
+			}
 			
 		}		
 		
@@ -873,6 +873,262 @@
 				}				
 			}
 		}
+		
+		/**
+		 * Clipboard methods
+		 */
+		function _haveClipboardResources(){
+			return clipboard && !clipboard.isEmpty();
+		}
+		function _handleEventClickClearClipboard(){
+			if(clipboard){
+				clipboard.clear();
+			}
+		}  
+		function _handleEventClickCopyOnlinePathResources(event){
+			_doClipboardOperationOnSelectedResources('copy', true, event);
+		}
+		function _handleEventClickCopyOfflinePathResources(event){
+			_doClipboardOperationOnSelectedResources('copy', false, event);
+		}		
+		function _handleEventClickCutOnlinePathResources(event){
+			_doClipboardOperationOnSelectedResources('cut', true, event);
+		}
+		function _handleEventClickCutOfflinePathResources(event){
+			_doClipboardOperationOnSelectedResources('cut', false, event);
+		}		
+		function _doClipboardOperationOnSelectedResources(operationType, isOnline, event){
+			
+			var fileIdList = [];
+			var dirIdList = [];
+			
+			var currentDirectory;
+			if(isOnline){
+				currentDirectory = currentOnlineDirectory;
+			}else{
+				currentDirectory = currentOfflineDirectory;
+			}
+		
+			if(currentDirectory && currentDirectory.children){
+				for(i=0; i<currentDirectory.children.length; i++){
+					if(currentDirectory.children[i].isSelected){
+						
+						pathResource = currentDirectory.children[i];
+						if(pathResource.type == 'FILE'){
+							fileIdList.push(pathResource.fileId);
+						}else if(pathResource.type == 'DIRECTORY'){
+							dirIdList.push(pathResource.dirId);
+						}else{
+							$log.error('Unknown path resource type \'' + pathResource.type + '\'. Don\'t know how to \'' + operationType + '\'.');
+						}						
+						
+					}
+				}
+			}
+			
+			clipboard.setOperation(operationType, fileIdList, dirIdList, currentDirectory.dirId, -1, true);	
+			
+			$log.debug('clipboard => ' + JSON.stringify(clipboard));
+			$log.debug('is empty => ' + clipboard.isEmpty());			
+			
+		}
+
+		/**
+		 * Handle clipboard paste event (copy-paste or cut-paste)
+		 */
+		function _handleEventClickPasteOnlinePathResources(event){
+			_handleEventClickPastePathResources(true, event);
+		}
+		function _handleEventClickPasteOfflinePathResources(event){
+			_handleEventClickPastePathResources(false, event);
+		}
+		function _handleEventClickPastePathResources(isOnline, event){
+			
+			var operation = clipboard.operation;
+			var operationType = clipboard.operation.type;
+			
+			var currentDirectory;
+			if(isOnline){
+				currentDirectory = currentOnlineDirectory;
+			}else{
+				currentDirectory = currentOfflineDirectory;
+			}			
+			
+			if(operation.data.sourceDirId && operation.data.sourceDirId == currentDirectory.dirId){
+				alert('Cannot paste. Source and target directories are the same. Please navigate to a different directory');
+			}else{
+				
+				// perform copy operation
+				if(operationType.toLowerCase() == 'copy'){
+					
+					_handleCopyPaste(isOnline, event);
+	
+				// perform cut (move) operation
+				}else if(operationType.toLowerCase() == 'cut'){
+					
+					_handleCutPaste(isOnline, event);
+					
+				}else{
+					
+					alert('Cannot paste. Unknown operation type. Type = \'' + operationType + '\'');
+					
+				}
+				
+			}
+			
+		}
+		
+		/**
+		 * Handle copy-paste event
+		 */
+		function _handleCopyPaste(isOnline, event){
+			
+			var operation = clipboard.operation;
+			
+			var currentDirectory;
+			if(isOnline){
+				currentDirectory = currentOnlineDirectory;
+			}else{
+				currentDirectory = currentOfflineDirectory;
+			}			
+			
+			var fileIdList = operation.data.fileIdList;
+			var dirIdList = operation.data.dirIdList;
+			var targetDirId = operation.data.targetDirId;
+			var replaceExisting = operation.data.replaceExisting;
+			
+			var haveFilesToCopy = fileIdList.length > 0;
+			var haveDirectoriesToCopy = dirIdList.length > 0;
+			
+			if(haveFilesToCopy && haveDirectoriesToCopy){
+				
+				FileServices
+					.copyFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('copy files reply: ' + JSON.stringify(reply));
+						return FileServices
+							.copyDirectories(dirIdList, currentDirectory.dirId)
+							.then( function( reply ) {
+								$log.debug('copy directories reply: ' + JSON.stringify(reply));
+							});
+					}).then( function( result ) {
+						_handleEventClickClearClipboard();
+						if(isOnline){
+							_fetchDirectory(currentDirectory.dirId ,_processOnlineDirectoryData);
+						}else{
+							_fetchDirectory(currentDirectory.dirId ,_processOfflineDirectoryData);
+						}
+					});						
+				
+			}else if(haveFilesToCopy){
+				
+				FileServices
+					.copyFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('copy files reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
+						if(isOnline){
+							_fetchDirectory(currentDirectory.dirId ,_processOnlineDirectoryData);
+						}else{
+							_fetchDirectory(currentDirectory.dirId ,_processOfflineDirectoryData);
+						}
+					});					
+				
+			}else if(haveDirectoriesToCopy){
+				
+				FileServices
+					.copyDirectories(dirIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('copy directories reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
+						if(isOnline){
+							_fetchDirectory(currentDirectory.dirId ,_processOnlineDirectoryData);
+						}else{
+							_fetchDirectory(currentDirectory.dirId ,_processOfflineDirectoryData);
+						}
+					});						
+				
+			}else{
+				
+			}			
+			
+		}
+		
+		/**
+		 * Handle cut-paste event
+		 */
+		function _handleCutPaste(isOnline, event){
+			
+			var operation = clipboard.operation;
+			
+			var currentDirectory;
+			if(isOnline){
+				currentDirectory = currentOnlineDirectory;
+			}else{
+				currentDirectory = currentOfflineDirectory;
+			}			
+			
+			var fileIdList = operation.data.fileIdList;
+			var dirIdList = operation.data.dirIdList;
+			var targetDirId = operation.data.targetDirId;
+			var replaceExisting = operation.data.replaceExisting;
+			
+			var haveFilesToCopy = fileIdList.length > 0;
+			var haveDirectoriesToCopy = dirIdList.length > 0;
+			
+			if(haveFilesToCopy && haveDirectoriesToCopy){
+				
+				FileServices
+					.moveFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('move files reply: ' + JSON.stringify(reply));
+						return FileServices
+							.moveDirectories(dirIdList, currentDirectory.dirId)
+							.then( function( reply ) {
+								$log.debug('move directories reply: ' + JSON.stringify(reply));
+							});
+					}).then( function( result ) {
+						_handleEventClickClearClipboard();
+						if(isOnline){
+							_fetchDirectory(currentDirectory.dirId ,_processOnlineDirectoryData);
+						}else{
+							_fetchDirectory(currentDirectory.dirId ,_processOfflineDirectoryData);
+						}
+					});						
+				
+			}else if(haveFilesToCopy){
+				
+				FileServices
+					.moveFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('move files reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
+						if(isOnline){
+							_fetchDirectory(currentDirectory.dirId ,_processOnlineDirectoryData);
+						}else{
+							_fetchDirectory(currentDirectory.dirId ,_processOfflineDirectoryData);
+						}
+					});					
+				
+			}else if(haveDirectoriesToCopy){
+				
+				FileServices
+					.moveDirectories(dirIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('move directories reply: ' + JSON.stringify(reply));
+						_handleEventClickClearClipboard();
+						if(isOnline){
+							_fetchDirectory(currentDirectory.dirId ,_processOnlineDirectoryData);
+						}else{
+							_fetchDirectory(currentDirectory.dirId ,_processOfflineDirectoryData);
+						}
+					});						
+				
+			}else{
+				
+			}			
+			
+		}		
 	
 		var self = this;
 		
@@ -934,7 +1190,16 @@
 			handleEventClickTableOnlinePathResource : _handleEventClickTableOnlinePathResource,
             
             handleEventClickOfflineBreadcrumb : _handleEventClickOfflineBreadcrumb,
-            handleEventClickOnlineBreadcrumb : _handleEventClickOnlineBreadcrumb
+            handleEventClickOnlineBreadcrumb : _handleEventClickOnlineBreadcrumb,
+			
+			haveClipboardResources : _haveClipboardResources,
+			handleEventClickClearClipboard : _handleEventClickClearClipboard,
+			handleEventClickCopyOnlinePathResources : _handleEventClickCopyOnlinePathResources,
+			handleEventClickCopyOfflinePathResources : _handleEventClickCopyOfflinePathResources,
+			handleEventClickCutOnlinePathResources : _handleEventClickCutOnlinePathResources,
+			handleEventClickCutOfflinePathResources : _handleEventClickCutOfflinePathResources,
+			handleEventClickPasteOnlinePathResources : _handleEventClickPasteOnlinePathResources,
+			handleEventClickPasteOfflinePathResources : _handleEventClickPasteOfflinePathResources
 		}
 
 	}

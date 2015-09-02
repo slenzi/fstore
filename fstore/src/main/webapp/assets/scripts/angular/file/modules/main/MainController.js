@@ -947,7 +947,7 @@
 		function _doClipboardOperationOnSelectedResources(operationType, event){
 			
 			var fileIdList = [];
-			var dirIdList = []
+			var dirIdList = [];
 		
 			if(currentDirectory && currentDirectory.children){
 				for(i=0; i<currentDirectory.children.length; i++){
