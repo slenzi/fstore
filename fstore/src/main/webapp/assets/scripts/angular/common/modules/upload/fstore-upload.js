@@ -692,12 +692,30 @@ Angular HTTP upload module
 					
 					files = event.dataTransfer.files;
 					
+					var haveFolderSupport = isInputDirSupported();
+					var unsupportedFolderDrop = false;
+					
 					for(var i=0; i<files.length; i++){
-						uploader.addFile(files[i]);
+						//$log.debug('add file => [name=' + files[i].name + ', type=' + files[i].type + ', size=' + files[i].size + ']');
+						
+						if(isFolder(files[i])){
+							if(haveFolderSupport){
+								uploader.addFile(files[i]);
+							}else{
+								unsupportedFolderDrop = true;
+							}
+						}else{
+							uploader.addFile(files[i]);
+						}
+						
 					}
 				
 					// update parent scope (will update the uploader binded to the fsUploadDebug directive)
-					$scope.$parent.$apply();					
+					$scope.$parent.$apply();
+
+					if(unsupportedFolderDrop){
+						alert('Sorry, drag-and-drop of folders is not supported by your browser. This feature works in Chrome.');
+					}
 					
 					return false;
 					
@@ -705,7 +723,44 @@ Angular HTTP upload module
 				
 			}
 		};		
-	}])
+	}]);
+	
+	/**
+	 * Check if browser supports ability to select or drag-drop folders.
+	 */
+	function isInputDirSupported() {
+		var tmpInput = document.createElement('input');
+		if ('webkitdirectory' in tmpInput 
+			|| 'mozdirectory' in tmpInput 
+			|| 'odirectory' in tmpInput 
+			|| 'msdirectory' in tmpInput 
+			|| 'directory' in tmpInput) return true;
+
+		return false;
+	}
+	
+	/**
+	 * Attempts to check if the file 'f' is a folder.
+	 */
+	function isFolder(f){
+		if(f.size % 4096 == 0 && !f.type){
+			return true;
+		}else if(f.size % 4096 == 0 && getFileExtension(f.name) == ""){
+			return true;
+		} else if (getFileExtension(f.name) == ""){
+			// only files with extensions are allowed
+			return true;
+		}
+		return false;
+	}	
+
+	/**
+	 * Get the file extension, or empty string if no period in name.
+	 */
+	function getFileExtension(name){
+		var found = name.lastIndexOf(".") + 1;
+		return ((found > 0) ? name.substr(found) : "");
+	}	
 
 	return fsUploadModule;
 
