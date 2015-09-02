@@ -11,10 +11,10 @@
 	 * ngMaterial - Material design UI components
 	 * ngResource - Provides interaction support with RESTful services via the $resource service
 	 * fsFileManagerMain - Our main file manager module
-	 * fsStomp - Stomp websocket module
 	 * fstore-models-module - common fstore models
 	 * fstore-services-module - common fstore services
 	 * fstore-upload-module - common fstore services
+	 * fstore-stomp-module - common fstore stomp messaging
 	 * smart-table - lightweight table module
 	 * 
 	 * -- no longer used --
@@ -22,7 +22,11 @@
 	 * ui.grid.pagination - pagination support for ui.grid
 	 */
 	fileApp = angular
-		.module('fstoreFileManager', ['ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fsStomp', 'fstore-models-module', 'fstore-services-module', 'fstore-upload-module', 'smart-table'])
+		.module('fstoreFileManager',
+				[
+				 'ui.router', 'ngMaterial', 'ngResource', 'fsFileManagerMain', 'fstore-models-module', 
+				 'fstore-services-module', 'fstore-upload-module', 'fstore-stomp-module', 'smart-table'
+				 ])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
@@ -30,14 +34,6 @@
 		})
 		// inject our own constants into our config
 		.config(['appConstants', '$locationProvider', '$mdThemingProvider', '$stateProvider', '$urlRouterProvider', appConfig]);
-		
-		/*
-			,
-			restServiceStore: '/fstore/cxf/resource/store',
-			restServiceFile: '/fstore/cxf/resource/file',
-			restServiceDirectory: '/fstore/cxf/resource/directory',
-			restServiceCmsSite: '/fstore/cxf/cms/site'		 
-		 */
 	
 		/**
 		 * Main app config

@@ -1,3 +1,8 @@
+/*
+Angular module for STOMP messaging over web sockets
+-sal
+*/
+
 (function () {
 
 	'use strict';
@@ -5,7 +10,7 @@
 	var fsStompModule;
 
 	// create module
-	fsStompModule = angular.module('fsStomp', []);
+	fsStompModule = angular.module('fstore-stomp-module', []);
 
 	// set default options
 	fsStompModule.value('fsStompOptions', {

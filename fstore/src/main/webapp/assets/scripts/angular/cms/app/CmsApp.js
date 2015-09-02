@@ -14,10 +14,15 @@
 	 * fstore-models-module - common fstore models
 	 * fstore-services-module - common fstore services
 	 * fstore-upload-module - common fstore services
+	 * fstore-stomp-module - common fstore stomp messaging
 	 * smart-table - lightweight table module
 	 */
 	cmsApp = angular
-		.module('fstoreCms', ['ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-models-module', 'fstore-services-module', 'fstore-upload-module', 'smart-table'])
+		.module('fstoreCms',
+				[
+				 'ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-models-module', 
+				 'fstore-services-module', 'fstore-upload-module', 'fstore-stomp-module', 'smart-table'
+				 ])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
 			contextPath: '@application.context@',
