@@ -44,6 +44,7 @@
 				//$scope.localDir = angular.copy($scope.directory);
 				
 				$scope.resourceList = $scope.directory.getChildren();
+				// a separate list copy for display. this is needed for smart table
 				$scope.resourceListView = [].concat($scope.directory.getChildren());
 				
 				// update resource list when directory changes
@@ -82,7 +83,7 @@
 		}];
 
 		var template = 
-			'<table st-table="resourceListView" st-safe-src="resourceList" class="table table-striped">' +
+			'<table st-table="resourceListView" st-safe-src="resourceList" class="table fstoreSmartTable">' +
 			'	<thead>' +
 			'	<tr>' +
 			'        <th st-sort="tableGetters().resourceName">Name</th>' +
@@ -97,8 +98,8 @@
 			'	</tr>' +			
 			'	</thead>' +
 			'	<tbody>' +
-			'	<tr ng-repeat="pathResource in resourceListView">' +
-			'        <td><a href ng-click="clickPathResource(pathResource)">{{pathResource.name}}</a></td>' +
+			'	<tr st-select-row="pathResource" st-select-mode="multiple" ng-repeat="pathResource in resourceListView">' +
+			'        <td><a href ng-click="clickPathResource(pathResource);  $event.stopPropagation();">{{pathResource.name}}</a></td>' +
 			'        <td>{{pathResource.type == "DIRECTORY" ? "Folder" : pathResource.mimeType}}</td>' +
 			'        <td>{{pathResource.type == "FILE" ? pathResource.getHumanReadableSize() : ""}}</td>' +
 			'        <td>{{pathResource.dateUpdated}}</td>' +

@@ -973,6 +973,9 @@
 			
 		}
 
+		/**
+		 * Handle clipboard paste event (copy-paste or cut-paste)
+		 */
 		function _handleEventClickPastePathResources(event){
 			
 			var operation = clipboard.operation;
@@ -982,62 +985,133 @@
 				alert('Cannot paste. Source and target directories are the same. Please navigate to a different directory');
 			}else{
 				
+				// perform copy operation
 				if(operationType.toLowerCase() == 'copy'){
 					
-					var fileIdList = operation.data.fileIdList;
-					var dirIdList = operation.data.dirIdList;
-					var targetDirId = operation.data.targetDirId;
-					var replaceExisting = operation.data.replaceExisting;
-					
-					var haveFilesToCopy = fileIdList.length > 0;
-					var haveDirectoriesToCopy = dirIdList.length > 0;
-					
-					if(haveFilesToCopy && haveDirectoriesToCopy){
-						
-						FileServices
-							.copyFiles(fileIdList, currentDirectory.dirId)
-							.then( function( reply ) {
-								$log.debug('copy files reply: ' + JSON.stringify(reply));
-								return FileServices
-									.copyDirectories(dirIdList, currentDirectory.dirId)
-									.then( function( reply ) {
-										$log.debug('copy directories reply: ' + JSON.stringify(reply));
-									});
-							}).then( function( result ) {
-								_reloadCurrentDirectory();
-							});						
-						
-					}else if(haveFilesToCopy){
-						
-						FileServices
-							.copyFiles(fileIdList, currentDirectory.dirId)
-							.then( function( reply ) {
-								$log.debug('copy files reply: ' + JSON.stringify(reply));
-								_reloadCurrentDirectory();
-							});					
-						
-					}else if(haveDirectoriesToCopy){
-						
-						FileServices
-							.copyDirectories(dirIdList, currentDirectory.dirId)
-							.then( function( reply ) {
-								$log.debug('copy directories reply: ' + JSON.stringify(reply));
-								_reloadCurrentDirectory();
-							});						
-						
-					}else{
-						
-					}
+					_handleCopyPaste(event);
 	
+				// perform cut (move) operation
 				}else if(operationType.toLowerCase() == 'cut'){
-					alert('Perform cut-paste!');
+					
+					_handleCutPaste(event);
+					
 				}else{
+					
 					alert('Cannot paste. Unknown operation type. Type = \'' + operationType + '\'');
+					
 				}
 				
 			}
 			
 		}
+		
+		/**
+		 * Handle copy-paste event
+		 */
+		function _handleCopyPaste(event){
+			
+			var operation = clipboard.operation;
+			
+			var fileIdList = operation.data.fileIdList;
+			var dirIdList = operation.data.dirIdList;
+			var targetDirId = operation.data.targetDirId;
+			var replaceExisting = operation.data.replaceExisting;
+			
+			var haveFilesToCopy = fileIdList.length > 0;
+			var haveDirectoriesToCopy = dirIdList.length > 0;
+			
+			if(haveFilesToCopy && haveDirectoriesToCopy){
+				
+				FileServices
+					.copyFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('copy files reply: ' + JSON.stringify(reply));
+						return FileServices
+							.copyDirectories(dirIdList, currentDirectory.dirId)
+							.then( function( reply ) {
+								$log.debug('copy directories reply: ' + JSON.stringify(reply));
+							});
+					}).then( function( result ) {
+						_reloadCurrentDirectory();
+					});						
+				
+			}else if(haveFilesToCopy){
+				
+				FileServices
+					.copyFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('copy files reply: ' + JSON.stringify(reply));
+						_reloadCurrentDirectory();
+					});					
+				
+			}else if(haveDirectoriesToCopy){
+				
+				FileServices
+					.copyDirectories(dirIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('copy directories reply: ' + JSON.stringify(reply));
+						_reloadCurrentDirectory();
+					});						
+				
+			}else{
+				
+			}			
+			
+		}
+		
+		/**
+		 * Handle cut-paste event
+		 */
+		function _handleCutPaste(event){
+			
+			var operation = clipboard.operation;
+			
+			var fileIdList = operation.data.fileIdList;
+			var dirIdList = operation.data.dirIdList;
+			var targetDirId = operation.data.targetDirId;
+			var replaceExisting = operation.data.replaceExisting;
+			
+			var haveFilesToCopy = fileIdList.length > 0;
+			var haveDirectoriesToCopy = dirIdList.length > 0;
+			
+			if(haveFilesToCopy && haveDirectoriesToCopy){
+				
+				FileServices
+					.moveFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('move files reply: ' + JSON.stringify(reply));
+						return FileServices
+							.moveDirectories(dirIdList, currentDirectory.dirId)
+							.then( function( reply ) {
+								$log.debug('move directories reply: ' + JSON.stringify(reply));
+							});
+					}).then( function( result ) {
+						_reloadCurrentDirectory();
+					});						
+				
+			}else if(haveFilesToCopy){
+				
+				FileServices
+					.moveFiles(fileIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('move files reply: ' + JSON.stringify(reply));
+						_reloadCurrentDirectory();
+					});					
+				
+			}else if(haveDirectoriesToCopy){
+				
+				FileServices
+					.moveDirectories(dirIdList, currentDirectory.dirId)
+					.then( function( reply ) {
+						$log.debug('move directories reply: ' + JSON.stringify(reply));
+						_reloadCurrentDirectory();
+					});						
+				
+			}else{
+				
+			}			
+			
+		}		
 	
 		var self = this;
 		

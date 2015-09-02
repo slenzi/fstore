@@ -13,6 +13,7 @@
 				function init() {
 					
 					$scope.tableSiteList = $scope.cmsSiteList;
+					// a separate list copy for display. this is needed for smart table
 					$scope.tableSiteListView = [].concat($scope.cmsSiteList);
 					
 					// update resource list when directory changes
@@ -93,6 +94,7 @@
 				
 				if(theDirectory && theDirectory.getChildren()){
 					$scope.resourceList = theDirectory.getChildren();
+					// a separate list copy for display. this is needed for smart table
 					$scope.resourceListView = [].concat(theDirectory.getChildren());					
 				}
 			
