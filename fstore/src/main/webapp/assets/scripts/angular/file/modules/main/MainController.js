@@ -4,14 +4,14 @@
 		.module('fsFileManagerMain')
 		.controller('mainController',[
 			'appConstants', 'FileServices', 'ResourceStore', 'PathResource', 'FsClipboard', 'FsFileUploader', 'FsStomp',
-			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
+			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdToast', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
 			]
 		);
 
 	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 	
 	function MainController(
-		appConstants, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdToast, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
    
    
 		/****************************************************************************************
@@ -833,9 +833,7 @@
 			
 		}		
 		
-		/**
-		 * Handle copy of selected path resources
-		 */		
+		/*
 		function _handleEventClickCopyPathResources(event){
 			
 			if(_haveSelectedPathResources()){
@@ -845,10 +843,9 @@
 			}
 			
 		}
+		*
 		
-		/**
-		 * Handle cut of selected path resources
-		 */		
+		/*
 		function _handleEventClickCutPathResources(event){
 			
 			if(_haveSelectedPathResources()){
@@ -857,16 +854,16 @@
 				$log.error('No selected resources to cut.');
 			}			
 			
-		}		
-		
-		/**
-		 * Handle paste of path resources that we last copied/cut
-		 */		
+		}
+		*/
+	
+		/*
 		function _handleEventClickPastePathResources(event){
 			
 			
 			
 		}
+		*
 		
 		/**
 		 * Display dialog where users can enter name of new folder. Submit to REST service and reload current directory.
@@ -1117,7 +1114,30 @@
 				
 			}			
 			
-		}		
+		}
+
+		/**
+		 * Build sample md-toast element
+		 */
+		function _handleEventClickToastTest(event){
+
+			$mdToast.show({
+				controller: _toastyController,
+				targetEvent: event,
+				parent: angular.element(document.body),
+				templateUrl: appConstants.contextPath + '/assets/scripts/angular/file/modules/main/partials/sampleToast.jsp',
+				//template : 'hi',
+				hideDelay: 0,
+				position: 'bottom right'
+			});
+
+			function _toastyController($scope, $mdToast) {
+				$scope.closeToast = function() {
+					$mdToast.hide();
+				};				
+			}			
+			
+		}
 	
 		var self = this;
 		
@@ -1163,7 +1183,9 @@
 			handleEventClickCopyPathResources : _handleEventClickCopyPathResources,
 			handleEventClickCutPathResources : _handleEventClickCutPathResources,
 			handleEventClickPastePathResources : _handleEventClickPastePathResources,
-			handleEventClickClearClipboard : _handleEventClickClearClipboard
+			handleEventClickClearClipboard : _handleEventClickClearClipboard,
+			
+			handleEventClickToastTest : _handleEventClickToastTest
             
 		}
 

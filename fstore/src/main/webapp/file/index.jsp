@@ -72,6 +72,10 @@
 				
 				<md-button class="md-raised leftNavButton" ng-click="main.handleEventSendSampleStomp()">
 					Sample STOMP
+				</md-button>
+
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventClickToastTest()">
+					Toast Test
 				</md-button>				
 				
 			</md-content>
@@ -119,6 +123,17 @@
 		-->
 		
 	</md-content>
+
+	<!--	
+	<script type="text/ng-template" id="toast-template.html">
+		<md-toast style="width: 600px;">
+			<span flex>Custom toast!</span>
+			<md-button ng-click="closeToast()">
+			Close
+			</md-button>
+		</md-toast>
+	</script>
+	-->	
 
 	<jsp:include page="includes_footer.jsp" />
 
