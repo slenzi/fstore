@@ -6,6 +6,10 @@
 
 <%@ page import="org.lenzi.fstore.cms.api.CmsLink" %>
 
+<%
+CmsLink linker = CmsLink.getInstance(request);
+%>
+
 <html>
 
 <head>
@@ -25,7 +29,7 @@ The time is <b><%=LocalTime.now() %></b> on <b><%=LocalDate.now() %></b>
 </p>
 
 <p>
-<a href="<%=CmsLink.getInstance(request).createLink("/test/sub/test.jsp") %>">Link to second page</a>
+<a href="<%=linker.createLink("/test/sub/test.jsp") %>">Link to second page</a>
 </p>
 
 <p>
@@ -34,6 +38,10 @@ for(int i=0; i<10; i++){
 	out.println("i = " + (i + 1) + "<br>");
 }
 %>
+</p>
+
+<p>
+<img src="<%=linker.createLink("/test/img/cat.jpg") %>"/>
 </p>
 
 </body>

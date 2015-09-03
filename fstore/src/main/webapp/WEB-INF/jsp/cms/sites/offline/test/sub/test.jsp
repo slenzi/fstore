@@ -6,6 +6,10 @@
 
 <%@ page import="org.lenzi.fstore.cms.api.CmsLink" %>
 
+<%
+CmsLink linker = CmsLink.getInstance(request);
+%>
+
 <html>
 
 <head>
@@ -25,7 +29,7 @@ The time is <b><%=LocalTime.now() %></b> on <b><%=LocalDate.now() %></b>
 </p>
 
 <p>
-<a href="<%=CmsLink.getInstance(request).createLink("/test/test.jsp") %>">Link back to first page</a>
+<a href="<%=linker.createLink("/test/test.jsp") %>">Link back to first page</a>
 </p>
 
 

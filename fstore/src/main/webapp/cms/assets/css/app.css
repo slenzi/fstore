@@ -23,6 +23,13 @@
 }
 
 /**
+ * Used for some angular buttons
+ */
+ .redbutton span {
+	color: red;
+ }
+
+/**
  * Angular Material Override - button style on dialogs
  */
 .md-dialog-container .md-button {
@@ -48,8 +55,15 @@ md-tab-item.md-active  span {
 /**
  * Angular Smart Table:  selected row
  */
+.fstoreSmartTable {
+	border-collapse: collapse;
+}
 .fstoreSmartTable tr.st-selected {
-	background-color: #FFB84D 
+	background-color: #FF9E9E; /* was #FFB84D */
+	border: 1px dashed red;
+}
+.fstoreSmartTable tr.st-selected  a {
+	color: #FFFFFF;
 }
 
 /**

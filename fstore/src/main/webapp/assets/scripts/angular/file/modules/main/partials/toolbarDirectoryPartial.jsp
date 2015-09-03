@@ -24,7 +24,7 @@ Toolbar partial that's loaded for the "main_directory" state
 	
 	<div flex></div>
 	
-	<md-button class="" ng-if="main.haveSelectedPathResources()" ng-click="main.handleEventClickClearSelectedPathResources()">
+	<md-button class="redbutton" ng-if="main.haveSelectedPathResources()" ng-click="main.handleEventClickClearSelectedPathResources()">
 		[Unselect]
 	</md-button>
 	

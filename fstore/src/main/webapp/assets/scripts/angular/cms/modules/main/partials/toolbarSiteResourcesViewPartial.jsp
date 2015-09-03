@@ -22,7 +22,7 @@ Toolbar partial that's loaded for the "main_storeList" state
 	--%>
 	<span ng-if="!main.isViewingOnline()">
 	
-		<md-button class="" ng-if="main.haveSelectedOfflinePathResources()" ng-click="main.handleEventClickClearSelectedOfflinePathResources()">
+		<md-button class="redbutton" ng-if="main.haveSelectedOfflinePathResources()" ng-click="main.handleEventClickClearSelectedOfflinePathResources()">
 			[Unselect Offline]
 		</md-button>
 
@@ -81,7 +81,7 @@ Toolbar partial that's loaded for the "main_storeList" state
 	--%>	
 	<span ng-if="main.isViewingOnline()">
 	
-		<md-button class="" ng-if="main.haveSelectedOnlinePathResources()" ng-click="main.handleEventClickClearSelectedOnlinePathResources()">
+		<md-button class="redbutton" ng-if="main.haveSelectedOnlinePathResources()" ng-click="main.handleEventClickClearSelectedOnlinePathResources()">
 			[Unselect Online]
 		</md-button>
 

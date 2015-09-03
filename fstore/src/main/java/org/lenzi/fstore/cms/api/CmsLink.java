@@ -21,9 +21,7 @@ public class CmsLink {
 	}
 	
 	public static CmsLink getInstance(HttpServletRequest request){
-		
 		return new CmsLink(request);
-		
 	}
 	
 	public String createLink(String sitePath){
