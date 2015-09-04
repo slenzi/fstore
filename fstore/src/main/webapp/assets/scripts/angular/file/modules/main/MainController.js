@@ -1134,7 +1134,10 @@
 			function _toastyController($scope, $mdToast) {
 				$scope.closeToast = function() {
 					$mdToast.hide();
-				};				
+				};
+                $scope.getUploader = function(){
+                    return _uploader();
+                };
 			}			
 			
 		}
