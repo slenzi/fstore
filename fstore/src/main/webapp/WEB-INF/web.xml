@@ -12,6 +12,14 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 	
+	<error-page>
+	    <error-code>404</error-code>
+	    <!--
+	    <location>/WEB-INF/jsp/system/error/not_found.jsp</location>
+	    -->
+	    <location>/spring/error404</location> <!-- ErrorController request mapping -->
+	</error-page>	
+	
     <!-- Configure ContextLoaderListener to use AnnotationConfigWebApplicationContext
         instead of the default XmlWebApplicationContext -->
     <context-param>

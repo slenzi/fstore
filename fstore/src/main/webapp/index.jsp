@@ -94,7 +94,12 @@
 	
 	<p>
 		<a href="<%=request.getContextPath() %>/spring/cms/test/test.jsp">Dispatcher dispatch /test/test.jsp (/WEB-INF/jsp)</a><br>
-		Dispatcher dispatch /upload_holding/cms/test.jsp
+		Dispatcher dispatch spring/cms/test/test.jsp
+	</p>
+	
+	<p>
+		<a href="<%=request.getContextPath() %>/spring/cms/test">Dispatcher dispatch /test (/WEB-INF/jsp)</a><br>
+		Dispatcher dispatch spring/cms/test (should thrown an error, this is a directory, not a file.)
 	</p>	
 
 </body>
