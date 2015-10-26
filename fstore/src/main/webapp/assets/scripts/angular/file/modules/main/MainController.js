@@ -4,14 +4,14 @@
 		.module('fsFileManagerMain')
 		.controller('mainController',[
 			'appConstants', 'FileServices', 'ResourceStore', 'PathResource', 'FsClipboard', 'FsFileUploader', 'FsStomp',
-			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdToast', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', MainController
+			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdMenu', '$mdToast', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', '$element', MainController
 			]
 		);
 
 	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 	
 	function MainController(
-		appConstants, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdToast, $mdBottomSheet, $mdUtil, $log, $q, $scope) {
+		appConstants, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdMenu, $mdToast, $mdBottomSheet, $mdUtil, $log, $q, $scope, $element) {
    
    
 		/****************************************************************************************
@@ -51,8 +51,8 @@
 		
 		var clipboard = new FsClipboard({});
 		
-		// true if right nav is open, false if closed
-		var isRightNavOpen = true;
+		// true if right nav is open, false if closed. By default it's closed.
+		var isRightNavOpen = false;
 
 
 		/****************************************************************************************
@@ -1169,6 +1169,52 @@
 			}			
 			
 		}
+		
+		function _contextMenuTest(ev){
+			
+			$log.debug('right-click context menu test');
+			
+			var triggerElement = triggerElement || (ev ? ev.target : $element[0]);
+			
+			var myCustomMenu = angular.element(
+				'<div class="md-open-menu-container md-whiteframe-z2">' +
+				'<md-menu-content>' +
+				'hello!' +
+				'</md-menu-content>' +
+				'</div>');
+
+	
+			var RightClickMenuCtrl = {
+				open: function(event) {
+					$mdMenu.show({
+						scope: $scope,
+						mdMenuCtrl: RightClickMenuCtrl,
+						element: myCustomMenu,
+						target: triggerElement // used for where the menu animates out of
+					});
+				}, 
+				close: function() { $mdMenu.hide(); },
+				positionMode: function() { return { left: 'target', top: 'target' }; },
+				offsets: function() { return { top: 0, left: 0 }; }
+			};
+			
+			$mdMenu.show({
+				scope: $scope,
+				mdMenuCtrl: RightClickMenuCtrl,
+				element: myCustomMenu,
+				target: triggerElement // used for where the menu animates out of
+			});				
+
+			/*
+			function _createContextMenuController($scope, $mdMenu) {
+				$scope.closeMenu = function() {
+					$mdMenu.hide();
+				}
+				//$scope.positionMode = function() { return { left: 'target', top: 'target' }; }				
+			}
+			*/
+			
+		};
 	
 		var self = this;
 		
@@ -1184,6 +1230,7 @@
 			toggleRightNav : _buildToggler('MyRightNav'),
 			isRightNavOpen : _isRightNavOpen,
 			toggleRightNavLock : _toggleRightNavLock,
+			contextMenuTest : _contextMenuTest,
 			notImplemented : _notImplemented,
 			sectionTitle : _sectionTitle,
 			store : _currentStore,

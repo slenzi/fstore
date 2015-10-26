@@ -83,7 +83,11 @@
 
 				<md-button class="md-raised leftNavButton" ng-click="main.toggleRightNavLock()">
 					Toggle Right Nav
-				</md-button>			
+				</md-button>
+				
+				<md-button class="md-raised leftNavButton" ng-right-click="main.contextMenuTest()">
+					Right-click Menu Test
+				</md-button>							
 				
 			</md-content>
 			
