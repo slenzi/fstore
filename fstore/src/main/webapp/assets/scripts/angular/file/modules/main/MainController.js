@@ -50,6 +50,9 @@
 		//var pathResourceToMove = [];
 		
 		var clipboard = new FsClipboard({});
+		
+		// true if right nav is open, false if closed
+		var isRightNavOpen = true;
 
 
 		/****************************************************************************************
@@ -587,13 +590,38 @@
 		}
 		
 		/**
-		 * Close left side nav
+		 * Close left-side nav panel
 		 */
 		function _leftNavClose() {
 			$mdSidenav('MyLeftNav').close()
 			.then(function () {
 				$log.debug("close MyLeftNav is done");
 			});
+		};
+		
+		/**
+		 * Close right-side nav panel
+		 */
+		function _rightNavClose() {
+			$mdSidenav('MyRightNav').close()
+			.then(function () {
+				$log.debug("close MyRightNav is done");
+			});
+		};
+
+		/**
+		 * Return true if right nav is open, false otherwise
+		 */
+		function _isRightNavOpen(){
+			return isRightNavOpen;
+		};
+		
+		/**
+		 * Toggle right-nav md-is-locked-open attribute
+		 */
+		function _toggleRightNavLock(){
+			isRightNavOpen = !isRightNavOpen;
+			$log.debug("toggle right nav lock");
 		};
 
 		/**
@@ -1151,7 +1179,11 @@
 			doHello : _doHello,
 			showContactOptions : _showContactOptions,
 			leftNavClose : _leftNavClose,
+			rightNavClose : _rightNavClose,
 			toggleLeftNav : _buildToggler('MyLeftNav'),
+			toggleRightNav : _buildToggler('MyRightNav'),
+			isRightNavOpen : _isRightNavOpen,
+			toggleRightNavLock : _toggleRightNavLock,
 			notImplemented : _notImplemented,
 			sectionTitle : _sectionTitle,
 			store : _currentStore,

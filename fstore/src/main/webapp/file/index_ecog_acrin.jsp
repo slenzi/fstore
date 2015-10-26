@@ -70,11 +70,19 @@
 				</md-button>			
 				
 				<md-content layout-padding class="md-hue-1">
-				<h5>Miscellaneous</h5>
+				<h5>Miscellaneous / Test</h5>
 				</md-content>
 				
 				<md-button class="md-raised leftNavButton" ng-click="main.handleEventSendSampleStomp()">
 					Sample STOMP
+				</md-button>
+
+				<md-button class="md-raised leftNavButton" ng-click="main.handleEventClickToastTest()">
+					Toast Test
+				</md-button>
+
+				<md-button class="md-raised leftNavButton" ng-click="main.toggleRightNavLock()">
+					Toggle Right Nav
 				</md-button>				
 				
 			</md-content>			
@@ -160,6 +168,65 @@
 		-->
 		
 	</md-content>
+	
+	<!--
+	Right side navigation bar - show properties for currently selected resource.
+	-->
+	<md-sidenav class="md-sidenav-right md-hue-1" md-component-id="MyRightNav" md-is-locked-open="main.isRightNavOpen()">
+
+		<!-- make sidenav header sticky-->
+		<md-content layout="column" style="display: flex; flex-flow: column; height: 100%;">
+	
+			<md-toolbar class="md-hue-3">
+				<span flex></span>
+				<!--
+				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
+					<a href="<%=request.getContextPath()%>">Resource Properties</a>
+					<span flex></span>
+					<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_menu_18px.svg"></md-icon>
+					</md-button>
+				</h3>
+				-->
+			</md-toolbar>
+
+			<md-content layout="column" class="md-hue-1" style="padding-top: 0px;">
+			
+				<md-toolbar class="md-toolbar-tools md-hue-1">
+				
+					<span style="font-style: italic; whitespace:nowrap;">Resource Properties</a>
+					
+					<span flex></span>
+					<md-button ng-click="main.toggleRightNavLock()" class="md-icon-button" aria-label="Menu">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_close_18px.svg"></md-icon>
+					</md-button>					
+				
+					<!-- ui-sref="settings" -->
+					<!--
+					<md-button class="md-raised md-warn leftNavButton" ng-click="main.notImplemented()">
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_settings_24px.svg"></md-icon>
+						System Settings
+					</md-button>
+					-->
+				
+				</md-toolbar>
+				
+				<md-content layout-padding class="md-hue-1">
+				
+				Properties go here...
+				
+				</md-content>
+				
+			</md-content>
+			
+			<!-- felx background color to bottom of screen -->
+			<md-content layout="column" class="md-hue-1" style="min-height: 3px;" flex>
+			&nbsp;
+			</md-content>
+			
+		</md-content>
+		
+	</md-sidenav>	
 
 	<jsp:include page="includes_footer.jsp" />
 
