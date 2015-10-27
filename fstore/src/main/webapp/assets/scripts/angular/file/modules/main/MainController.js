@@ -4,14 +4,14 @@
 		.module('fsFileManagerMain')
 		.controller('mainController',[
 			'appConstants', 'FileServices', 'ResourceStore', 'PathResource', 'FsClipboard', 'FsFileUploader', 'FsStomp',
-			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdMenu', '$mdToast', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', '$element', MainController
+			'$state', '$stateParams', '$mdSidenav', '$mdDialog', '$mdMenu', '$mdToast', '$mdBottomSheet', '$mdUtil', '$log', '$q', '$scope', '$rootScope', '$element', MainController
 			]
 		);
 
 	// 'mainService'  mainService  - No longer use main services. Moved all services to external module called fstore-services-module
 	
 	function MainController(
-		appConstants, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdMenu, $mdToast, $mdBottomSheet, $mdUtil, $log, $q, $scope, $element) {
+		appConstants, FileServices, ResourceStore, PathResource, FsClipboard, FsFileUploader, FsStomp, $state, $stateParams, $mdSidenav, $mdDialog, $mdMenu, $mdToast, $mdBottomSheet, $mdUtil, $log, $q, $scope, $rootScope, $element) {
    
    
 		/****************************************************************************************
@@ -1170,11 +1170,11 @@
 			
 		}
 		
-		function _contextMenuTest(ev){
+		function _contextMenuTest(event){
 			
-			$log.debug('right-click context menu test');
+			$log.debug('right-click context menu test -> ' + event);
 			
-			var triggerElement = triggerElement || (ev ? ev.target : $element[0]);
+			//var triggerElement = triggerElement || (ev ? ev.target : $element[0]);
 			
 			var myCustomMenu = angular.element(
 				'<div class="md-open-menu-container md-whiteframe-z2">' +
@@ -1182,37 +1182,22 @@
 				'hello!' +
 				'</md-menu-content>' +
 				'</div>');
-
-	
-			var RightClickMenuCtrl = {
-				open: function(event) {
-					$mdMenu.show({
-						scope: $scope,
-						mdMenuCtrl: RightClickMenuCtrl,
-						element: myCustomMenu,
-						target: triggerElement // used for where the menu animates out of
-					});
-				}, 
-				close: function() { $mdMenu.hide(); },
-				positionMode: function() { return { left: 'target', top: 'target' }; },
-				offsets: function() { return { top: 0, left: 0 }; }
-			};
+			
+			$log.debug('ready to open');
 			
 			$mdMenu.show({
-				scope: $scope,
-				mdMenuCtrl: RightClickMenuCtrl,
-				element: myCustomMenu,
-				target: triggerElement // used for where the menu animates out of
-			});				
-
-			/*
-			function _createContextMenuController($scope, $mdMenu) {
-				$scope.closeMenu = function() {
-					$mdMenu.hide();
-				}
-				//$scope.positionMode = function() { return { left: 'target', top: 'target' }; }				
-			}
-			*/
+				scope: $rootScope.$new(),
+				mdMenuCtrl: {
+					open: function(evt) {
+						$log.debug('open called!');
+					}, 
+					close: function() { $mdMenu.hide(); },
+					positionMode: function() { return { left: 'target', top: 'target' }; },
+					offsets: function() { return { top: 200, left: 200 }; }
+				},
+				element: myCustomMenu//,
+				//target: event.target
+			});
 			
 		};
 	
