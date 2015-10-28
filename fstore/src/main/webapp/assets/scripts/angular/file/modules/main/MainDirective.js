@@ -35,6 +35,90 @@
 			}
 		};
 	}])
+    /**
+     * smart-table for displaying list of resource stores
+     */
+    .directive('fsTableStoreList', ['$log', function($log) {
+
+        var controller = ['$scope', function ($scope) {
+
+            function init() {
+
+                $scope.tableStoreList = $scope.storeList;
+                // a separate list copy for display. this is needed for smart table
+                $scope.tableStoreListView = [].concat($scope.storeList);
+
+                // update store list when it changes
+                $scope.$watch('storeList', function(newStoreList, oldStoreList){
+
+                    $scope.tableStoreList = newStoreList;
+                    $scope.tableStoreListView = [].concat(newStoreList);
+
+                }, true);				
+
+            }
+
+            init();
+
+            $scope.tableGetters = function(){
+                return {
+                    storeName: function (store) {
+                        return store.name;
+                    }					
+                }
+            };
+
+            $scope.clickStore = function(storeData){
+                //alert('test click store = ' + JSON.stringify(storeData));
+                $scope.storeClickHandler( {storeId: storeData.id} );
+            };
+
+        }];
+
+        var template = 
+            '<table st-table="tableStoreListView" st-safe-src="tableStoreList" class="table table-striped">' +
+            '	<thead>' +
+            '	<tr>' +
+            '        <th st-sort="tableGetters().storeName">Name</th>' +
+            '        <th>Desc</th>' +
+            '        <th>Update Date</th>' +
+            '	</tr>' +
+            '	<tr>' +
+            '		<th>' +	
+            '			<input st-search="name" placeholder="search for file name" class="input-sm form-control" type="search"/>' +
+            '		</th>' +				
+            '	</tr>' +			
+            '	</thead>' +
+            '	<tbody>' +
+            '	<tr ng-repeat="store in tableStoreListView">' +
+            '        <td><a href ng-click="clickStore(store)">{{store.name}}</a></td>' +
+            '        <td>{{store.description}}</td>' +
+            '        <td>{{store.dateUpdated}}</td>' +
+            '	</tr>' +
+            '	</tbody>' +
+            '	<tfoot>' +
+            '		<tr>' +		
+            '			<td colspan="4" class="text-center">' +
+            '				<div st-pagination="" st-items-by-page="20" st-displayed-pages="7"></div>' +
+            '			</td>' +
+            '		</tr>' +
+            '	</tfoot>' +		
+            '</table>';
+
+        return {
+            restrict: 'AE',
+            scope: {
+                storeList: '=',
+                storeClickHandler: '&'
+            },
+            controller: controller,
+            template: template
+        };
+
+    }])
+    /**
+     * smart-table for displaying list of child resources for a directory
+     */
 	.directive('fsTableResourceView', ['$log', function($log) {
 		
 		var controller = ['$scope', function ($scope) {
@@ -170,6 +254,9 @@
 
 	
 	}])
+    /**
+     * right-click directive
+     */
 	.directive('ngRightClick', ['$parse', '$log', function($parse, $log) {
 		
 	    return function(scope, element, attrs) {
