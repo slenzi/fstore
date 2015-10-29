@@ -11,6 +11,9 @@
 	<name>FStore Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	
+	<!-- 
+	Build properties.
+	-->
 	<properties>
 	
 		<java.version.source>1.8</java.version.source>
