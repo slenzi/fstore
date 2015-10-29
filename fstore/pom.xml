@@ -32,19 +32,24 @@
 		<version.apache.commons.io>2.4</version.apache.commons.io>
 		<version.apache.commons.fileupload>1.3.1</version.apache.commons.fileupload>
 		<version.apache.commons.lang3>3.4</version.apache.commons.lang3> <!-- was 3.3.2 5/28/2015 -->
-		<version.apache.cxf>3.1.1</version.apache.cxf> <!-- was 3.0.4 7/8/2015 -->
-		<version.apache.tika>1.9</version.apache.tika> <!-- was 1.8 7/8/2015 -->
+		<!-- http://cxf.apache.org/docs/31-migration-guide.html -->
+		<version.apache.cxf>3.1.3</version.apache.cxf> <!-- was 3.1.1 10/29/2015 -->
+		<version.apache.tika>1.10</version.apache.tika> <!-- was 1.9 10/29/2015 -->
 		
+		<!-- last version is 1.9.13, distributed in July 2013. Replaced by jackson-jaxrs-json-provider in group com.fasterxml.jackson.jaxrs -->
+		<!--
 		<version.jackson.jaxrs>1.9.13</version.jackson.jaxrs>
-		<version.jackson.databind>2.6.0</version.jackson.databind>
+		-->
+		<version.jackson.json.provider>2.6.3</version.jackson.json.provider>
+		<version.jackson.databind>2.6.3</version.jackson.databind> <!-- was 2.6.0 10/29/2015 -->
 		
 		<version.javax.inject>1</version.javax.inject>
 		<version.javax.servlet>3.1.0</version.javax.servlet>
 		<version.javax.jsr311.version>1.1.1</version.javax.jsr311.version>
 		
-		<version.spring>4.1.7.RELEASE</version.spring> <!-- was 4.1.6.RELEASE 7/8/2015 -->
+		<version.spring>4.2.2.RELEASE</version.spring> <!-- was 4.1.7.RELEASE 10/29/2015 -->
 		
-		<version.hibernate>4.3.10.Final</version.hibernate> <!-- was 4.3.8.Final 7/8/2015 -->
+		<version.hibernate>5.0.2.Final</version.hibernate> <!-- was 4.3.10.Final 10/29/2015 -->
 		<!-- not sure if hibernate jpa is needed -->
 		<version.hibernate.jpa>1.0.0.Final</version.hibernate.jpa>
 		
@@ -307,10 +312,20 @@
 		</dependency>
 		
 		<!-- Jax-RS provider for JSON content type, based on Jackson JSON processor's data binding functionality. -->
+		<!-- last version is 1.9.13, distributed in July 2013. Replaced by jackson-jaxrs-json-provider in group com.fasterxml.jackson.jaxrs -->
+		<!--
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-jaxrs</artifactId>
 			<version>${version.jackson.jaxrs}</version>
+		</dependency>
+		-->
+		
+		<!-- replacement for artifact jackson-jaxrs in group org.codehaus.jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>${version.jackson.json.provider}</version>
 		</dependency>
 		
 		<!-- possibly need for our websocket messaging controller -->

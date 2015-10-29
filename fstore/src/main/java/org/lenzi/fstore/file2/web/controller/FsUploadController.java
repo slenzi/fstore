@@ -7,7 +7,10 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
+
+//used before upgrading to hibernate 5. now we use org.springframework.transaction.annotation.Transactional
+//import javax.transaction.Transactional;
+
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -18,6 +21,7 @@ import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

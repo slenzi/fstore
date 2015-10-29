@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class StoreResource extends AbstractResource {
 
     @InjectLogger
-    Logger logger;
+    private Logger logger;
     
     @Autowired
     private FsQueuedResourceService fsQueuedResourceService;

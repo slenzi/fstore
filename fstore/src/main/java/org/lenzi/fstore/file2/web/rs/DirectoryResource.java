@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 public class DirectoryResource extends AbstractResource {
 
     @InjectLogger
-    Logger logger;
+    private Logger logger;
     
     @Autowired
     private FsQueuedResourceService fsQueuedResourceService;

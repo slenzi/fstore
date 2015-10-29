@@ -8,7 +8,6 @@ import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.provider.BinaryDataProvider;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.lenzi.fstore.cms.web.rs.CmsSiteResource;
 import org.lenzi.fstore.cms.web.rs.JaxRsCmsResourceApplication;
 import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
@@ -21,6 +20,11 @@ import org.lenzi.fstore.web.rs.exception.WebServiceExceptionMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
+// older JSON provider
+// import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 /**
  * Configure our Apache CXF services.

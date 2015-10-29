@@ -14,7 +14,9 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.transaction.Transactional;
+
+// used before upgrading to hibernate 5. now we use org.springframework.transaction.annotation.Transactional
+//import javax.transaction.Transactional;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -28,6 +30,7 @@ import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
