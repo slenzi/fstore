@@ -18,7 +18,7 @@ third party scripts
 -->
 
 <!-- upgrade to version 1.0.x -->
-<script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/sockjs-client/dist/sockjs-1.0.2.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/sockjs-client/dist/sockjs-1.0.3.js"></script>
 <!--
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/sockjs-client/dist/sockjs-0.3.4.js"></script>
 -->
