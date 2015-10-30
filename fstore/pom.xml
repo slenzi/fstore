@@ -99,6 +99,14 @@
 				<property.file>lenzi.frontier.pc.properties</property.file>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>eamrf.ecog2</id>
+			<properties>
+				<property.file>eamrf.ecog2.properties</property.file>
+			</properties>
+		</profile>		
+		
 	</profiles>
 	
 	<dependencies>
