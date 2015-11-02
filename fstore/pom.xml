@@ -347,11 +347,13 @@
 		</dependency>		
 
 		<!-- JSR-311 RESTful Services Specification -->
+		<!-- 11.2.2015 - not working on unix (ecog2). see if this helps.
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
 			<version>${version.javax.jsr311.version}</version>
 		</dependency>
+		-->
 		
 		<!-- apache tika, file mime type detection -->
 		<dependency>
