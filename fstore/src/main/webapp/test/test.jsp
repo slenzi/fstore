@@ -3,6 +3,9 @@
 	
 <%@ page import="org.lenzi.fstore.web.constants.WebConstants" %>
 
+<%-- used for accessing our spring managed properties --%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <html>
 <body>
 

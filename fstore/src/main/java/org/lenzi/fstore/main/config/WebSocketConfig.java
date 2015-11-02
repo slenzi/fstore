@@ -60,6 +60,9 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		
 		registry.addEndpoint("/hello").withSockJS();
 		
+		// http://docs.spring.io/spring/docs/current/spring-framework-reference/html/websocket.html#websocket-server-allowed-origins
+		//registry.addEndpoint("/hello").setAllowedOrigins("*").withSockJS();
+		
 		logger.info("Stomp endpoint registery = " + registry.toString());
 	}
 

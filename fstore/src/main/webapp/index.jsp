@@ -1,10 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+	
+<%-- used for accessing our spring managed properties --%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <html>
 <body>
 
 	<h1>FStore Test Ground</h1>
+	
+	<p>
+	<b>App name:</b> <spring:eval expression="@MyAppProperties.getProperty('application.title')" />
+	</p>
+
+	<p>
+	<b>Active spring profiles:</b> <spring:eval expression="@environment.getProperty('spring.profiles.active')" />
+	</p>	
 	
 	<p>
 	This application demos how to read/write trees to a database using a closure table.
