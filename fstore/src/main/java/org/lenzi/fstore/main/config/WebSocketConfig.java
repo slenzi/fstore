@@ -4,7 +4,9 @@
 package org.lenzi.fstore.main.config;
 
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -28,6 +30,9 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 	@InjectLogger
 	private Logger logger;
+	
+    @Autowired
+    private ManagedProperties appProps;	
 	
 	//@Autowired
 	//private ObjectMapper objectMapper;
@@ -58,7 +63,15 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		
 		logger.info("registerStompEndpoints called");
 		
-		registry.addEndpoint("/hello").withSockJS();
+		//registry.addEndpoint("/hello").withSockJS();
+		
+		// iframe support
+		// http://docs.spring.io/spring/docs/current/spring-framework-reference/html/websocket.html#websocket-fallback-xhr-vs-iframe
+		
+		// Use the following link (view page source) to see which sockjs client is used for iframe support
+		// http://localhost:8080/fstore/spring/hello/iframe.html
+		
+		registry.addEndpoint("/hello").withSockJS().setClientLibraryUrl(appProps.getProperty("js.sockjs"));
 		
 		// http://docs.spring.io/spring/docs/current/spring-framework-reference/html/websocket.html#websocket-server-allowed-origins
 		//registry.addEndpoint("/hello").setAllowedOrigins("*").withSockJS();
