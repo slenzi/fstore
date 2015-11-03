@@ -82,7 +82,9 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		// this version adds a handshake handler
 		TomcatRequestUpgradeStrategy tomcatStrategy = new TomcatRequestUpgradeStrategy();
 		DefaultHandshakeHandler handshakeHandler = new DefaultHandshakeHandler(tomcatStrategy);
-		registry.addEndpoint("/hello").setHandshakeHandler(handshakeHandler).withSockJS().setClientLibraryUrl(sockjsClientUrl);
+		//registry.addEndpoint("/hello").setHandshakeHandler(handshakeHandler).withSockJS().setClientLibraryUrl(sockjsClientUrl);
+		registry.addEndpoint("/hello").setAllowedOrigins("*").setHandshakeHandler(handshakeHandler)
+			.withSockJS().setClientLibraryUrl(sockjsClientUrl);
 		
 		// http://docs.spring.io/spring/docs/current/spring-framework-reference/html/websocket.html#websocket-server-allowed-origins
 		//registry.addEndpoint("/hello").setAllowedOrigins("*").withSockJS();
