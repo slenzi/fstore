@@ -65,6 +65,10 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		
 		logger.info("registerStompEndpoints called");
 		
+		String sockjsClientUrl = appProps.getProperty("js.sockjs");
+		
+		logger.info("Using sockjs client at " + sockjsClientUrl);
+		
 		//registry.addEndpoint("/hello").withSockJS();
 		
 		// iframe support
@@ -73,12 +77,12 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		// Use the following link (view page source) to see which sockjs client is used for iframe support
 		// http://localhost:8080/fstore/spring/hello/iframe.html
 		
-		//registry.addEndpoint("/hello").withSockJS().setClientLibraryUrl(appProps.getProperty("js.sockjs"));
+		//registry.addEndpoint("/hello").withSockJS().setClientLibraryUrl(sockjsClientUrl);
 		
 		// this version adds a handshake handler
 		TomcatRequestUpgradeStrategy tomcatStrategy = new TomcatRequestUpgradeStrategy();
 		DefaultHandshakeHandler handshakeHandler = new DefaultHandshakeHandler(tomcatStrategy);
-		registry.addEndpoint("/hello").setHandshakeHandler(handshakeHandler).withSockJS().setClientLibraryUrl(appProps.getProperty("js.sockjs"));
+		registry.addEndpoint("/hello").setHandshakeHandler(handshakeHandler).withSockJS().setClientLibraryUrl(sockjsClientUrl);
 		
 		// http://docs.spring.io/spring/docs/current/spring-framework-reference/html/websocket.html#websocket-server-allowed-origins
 		//registry.addEndpoint("/hello").setAllowedOrigins("*").withSockJS();
