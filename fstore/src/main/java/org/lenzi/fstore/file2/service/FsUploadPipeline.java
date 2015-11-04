@@ -59,6 +59,8 @@ public class FsUploadPipeline {
     private String holdingSetupErrorMsg = "";
     
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+    
+    private final boolean SAVE_FILE_TO_DATABASE = true;
 	
 	public FsUploadPipeline() {
 		
@@ -215,7 +217,7 @@ public class FsUploadPipeline {
 						
 						fileBytes = Files.readAllBytes(pathToFile);
 						
-						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, finalDir.getDirId(), replaceExisting);
+						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, finalDir.getDirId(), replaceExisting, SAVE_FILE_TO_DATABASE);
 						
 						logger.info("Saved file '" + fileName + "' to holding store directory '" + dirName + "'.");
 						
@@ -265,7 +267,7 @@ public class FsUploadPipeline {
 						
 						fileBytes = Files.readAllBytes(pathToFile);
 						
-						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, parentDirId, replaceExisting);
+						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, parentDirId, replaceExisting, SAVE_FILE_TO_DATABASE);
 						
 						logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'.");
 						

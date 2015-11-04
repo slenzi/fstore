@@ -413,16 +413,17 @@ public class FsQueuedResourceService {
 	 * @param fileBytes - file data bytes
 	 * @param dirId - id of directory where file will be added
 	 * @param replaceExisting - true to replace existing file, false not to.
+	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system.
 	 * @return reference to the newly added file
 	 * @throws ServiceException
 	 */
-	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long dirId, boolean replaceExisting) throws ServiceException {
+	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long dirId, boolean replaceExisting, boolean storeInDatabase) throws ServiceException {
 		
 		class Task extends AbstractFsTask<FsFileMetaResource> {
 
 			@Override
 			public FsFileMetaResource doWork() throws ServiceException {
-				return fsResourceService.addFileResource(fileName, fileBytes, dirId, replaceExisting);
+				return fsResourceService.addFileResource(fileName, fileBytes, dirId, replaceExisting, storeInDatabase);
 			}
 
 			@Override

@@ -56,6 +56,7 @@ public class FsResourceService {
 	@InjectLogger
 	private Logger logger;
 	
+	// access classpath resources
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
@@ -288,15 +289,17 @@ public class FsResourceService {
 	 * @param fileName
 	 * @param fileBytes
 	 * @param parentDirId
-	 * @param replaceExisting
+	 * @param replaceExisting - replace existing file if one already exists
+	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system.
+	 * 
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long parentDirId, boolean replaceExisting, boolean storeInDatabase) throws ServiceException {
 		
 		FsFileMetaResource fileResource = null;
 		try {
-			fileResource = fsFileResourceAdder.addFileResource(fileName, fileBytes, parentDirId, replaceExisting);
+			fileResource = fsFileResourceAdder.addFileResource(fileName, fileBytes, parentDirId, replaceExisting, storeInDatabase);
 		} catch (DatabaseException e) {
 			throw new ServiceException("Database error adding file resource => " + fileName + ", to directory, id => " + parentDirId, e);
 		} catch (IOException e) {

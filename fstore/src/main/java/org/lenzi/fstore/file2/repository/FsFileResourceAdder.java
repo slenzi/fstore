@@ -27,6 +27,7 @@ import org.lenzi.fstore.file2.service.FsResourceHelper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +63,10 @@ public class FsFileResourceAdder extends AbstractRepository {
 	
 	@Autowired
 	private FsResourceHelper fsResourceHelper;
+	
+	// access classpath resources
+	@Autowired
+	private ResourceLoader resourceLoader;
 
 	/**
 	 * 
@@ -131,13 +136,14 @@ public class FsFileResourceAdder extends AbstractRepository {
 	 * @param fileBytes - file byte data
 	 * @param fsDirId - id of directory where file will be added
 	 * @param replaceExisting - true to replace existing file if a file with the same name already exists, false not to replace.
+	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system.
 	 * 
 	 * @return reference to the newly added file
 	 * 
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long fsDirId, boolean replaceExisting) throws DatabaseException, IOException {
+	public FsFileMetaResource addFileResource(String fileName, byte[] fileBytes, Long fsDirId, boolean replaceExisting, boolean storeInDatabase) throws DatabaseException, IOException {
 		
 		if(fileName == null){
 			throw new DatabaseException("Missing file name. param is null.");
@@ -166,12 +172,12 @@ public class FsFileResourceAdder extends AbstractRepository {
 		}else if(needReplace && replaceExisting){
 			
 			// do replace
-			return addReplace(fileName, fileBytes, existingFileResource, parentDir, store);
+			return addReplace(fileName, fileBytes, existingFileResource, parentDir, store, storeInDatabase);
 			
 		}else{
 			
 			// do add
-			return add(fileName, fileBytes, parentDir, store);
+			return add(fileName, fileBytes, parentDir, store, storeInDatabase);
 			
 		}		
 		
@@ -389,11 +395,13 @@ public class FsFileResourceAdder extends AbstractRepository {
 	 * @param fileData
 	 * @param fsDirectory
 	 * @param fsStore
+	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system.
+	 * 
 	 * @return
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	public FsFileMetaResource add(String fileName, byte[] fileBytes, FsDirectoryResource fsDirectory, FsResourceStore fsStore) throws DatabaseException, IOException {
+	public FsFileMetaResource add(String fileName, byte[] fileBytes, FsDirectoryResource fsDirectory, FsResourceStore fsStore, boolean storeInDatabase) throws DatabaseException, IOException {
 		
 		Path absoluteDirPath	= fsResourceHelper.getAbsoluteDirectoryPath(fsStore, fsDirectory);
 		Path absoluteFilePath   = fsResourceHelper.getAbsolutePath(fsStore, fsDirectory, fileName);
@@ -404,7 +412,8 @@ public class FsFileResourceAdder extends AbstractRepository {
 		logger.info("Adding file => " + fileName + ", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
 				", mime type => " + contentType +
 				", Directory Id => " + fsDirectory.getDirId() + ", Directory Name => " + fsDirectory.getName() +
-				", File system path => " + absoluteDirPath.toString());
+				", File system path => " + absoluteDirPath.toString() +
+				", Store in Database => " + storeInDatabase);
 		
 		// get next node id
 		long nodeId = treeRepository.getNextNodeId();
@@ -412,7 +421,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 		// create file entry for byte[] data
 		FsFileResource fileResource = new FsFileResource();
 		fileResource.setFileId(nodeId);
-		fileResource.setFileData(fileBytes);
+		fileResource.setFileData( storeInDatabase ? fileBytes : new byte[0] );
 		//persist(fileResource);		
 		
 		// create file entry for meta data
@@ -582,12 +591,14 @@ public class FsFileResourceAdder extends AbstractRepository {
 	 * @param existingFsFileEntry
 	 * @param fsDirectory
 	 * @param fsStore
+	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system.
+	 * 
 	 * @return
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
 	public FsFileMetaResource addReplace(String newFileName, byte[] fileBytes, FsFileMetaResource existingFsFileEntry,
-			FsDirectoryResource fsDirectory, FsResourceStore fsStore) throws DatabaseException, IOException {
+			FsDirectoryResource fsDirectory, FsResourceStore fsStore, boolean storeInDatabase) throws DatabaseException, IOException {
 		
 		Long existingFileId = existingFsFileEntry.getFileId();
 		String existingFileName = existingFsFileEntry.getName();
@@ -604,12 +615,13 @@ public class FsFileResourceAdder extends AbstractRepository {
 				", size => " + ((fileBytes != null) ? fileBytes.length + " bytes" : "null bytes") +
 				", mime type => " + contentType +
 				", Directory Id => " + fsDirectory.getDirId() + ", Directory Name => " + fsDirectory.getName() +
-				", File system path => " + absoluteDirPath.toString());
+				", File system path => " + absoluteDirPath.toString() +
+				", Store in Database => " + storeInDatabase);
 		
 		// update database
 		FsFileResource updateFileResource = new FsFileResource();
 		updateFileResource.setFileId(existingFileId);
-		updateFileResource.setFileData(fileBytes);
+		updateFileResource.setFileData( storeInDatabase ? fileBytes : new byte[0]);
 		existingFsFileEntry.setStoreId(fsStore.getStoreId()); // not really necessary, same store
 		existingFsFileEntry.setName(newFileName);
 		existingFsFileEntry.setMimeType(contentType);
