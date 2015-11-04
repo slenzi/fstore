@@ -4,3 +4,4 @@
 .settings
 src/generated/
 /Users/*
+.DS_Store
