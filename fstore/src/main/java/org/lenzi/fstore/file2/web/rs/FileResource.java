@@ -3,6 +3,7 @@ package org.lenzi.fstore.file2.web.rs;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.List;
 
 import javax.ws.rs.DELETE;
@@ -23,6 +24,8 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.service.FsResourceHelper;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.web.rs.AbstractResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
@@ -47,7 +50,10 @@ public class FileResource extends AbstractResource {
     private FsQueuedResourceService fsQueuedResourceService;
     
     @Autowired
-    private FsResourceService fsResourceService;    
+    private FsResourceService fsResourceService;
+    
+    @Autowired
+    private FsResourceHelper fsResourceHelper;
 	
 	public FileResource() {
 		
@@ -222,9 +228,27 @@ public class FileResource extends AbstractResource {
 			handleError("Failed to fetch file data from database", WebExceptionType.CODE_DATABSE_ERROR, e);
 			
 		}
+
+		byte[] fileData = null;
 		String mimeType = fileResource.getMimeType();
-		byte[] fileData = fileResource.getFileResource().getFileData();
-		
+		boolean isFileDataInDatabase = fileResource.isFileDataInDatabase();
+		if(isFileDataInDatabase){
+			fileData = fileResource.getFileResource().getFileData();
+		}else{
+			// file probably too big to store in database, get file data from file system
+			FsResourceStore store = null;
+			try {
+				store = fsResourceService.getStoreByPathResourceId(fileId);
+			} catch (ServiceException e) {
+				handleError("Failed to fetch resource store for file resource with id => " + fileId, WebExceptionType.CODE_DATABSE_ERROR, e);
+			}
+			java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
+			try {
+				fileData = Files.readAllBytes(filePath);
+			} catch (IOException e) {
+				handleError("Failed to read file " + filePath, WebExceptionType.CODE_IO_ERROR, e);
+			}
+		}
 		
 		//
 		// Write data to output/response
@@ -232,7 +256,7 @@ public class FileResource extends AbstractResource {
 		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
 		//ContentDisposition contentDisposition = ContentDisposition.type("attachment")
 		//	    .fileName("filename.csv").creationDate(new Date()).build();
-		ContentDisposition contentDisposition = new ContentDisposition("attachment; filename=image.jpg");
+		//ContentDisposition contentDisposition = new ContentDisposition("attachment; filename=image.jpg");
 		
 		return Response.ok(
 			new StreamingOutput() {

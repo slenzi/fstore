@@ -15,6 +15,7 @@ import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.util.ByteUtil;
 import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
@@ -421,7 +422,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 		// create file entry for byte[] data
 		FsFileResource fileResource = new FsFileResource();
 		fileResource.setFileId(nodeId);
-		fileResource.setFileData( storeInDatabase ? fileBytes : new byte[0] );
+		fileResource.setFileData( storeInDatabase ? fileBytes : new byte[]{0x00} );
 		//persist(fileResource);		
 		
 		// create file entry for meta data
@@ -431,6 +432,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 		metaResource.setStoreId(fsStore.getStoreId());
 		metaResource.setName(fileName);
 		metaResource.setMimeType(contentType);
+		metaResource.setFileDataInDatabase(storeInDatabase);
 		metaResource.setFileSize((long)fileBytes.length); // TODO check this
 		metaResource.setRelativePath(relativeFilePath);
 		
@@ -621,10 +623,11 @@ public class FsFileResourceAdder extends AbstractRepository {
 		// update database
 		FsFileResource updateFileResource = new FsFileResource();
 		updateFileResource.setFileId(existingFileId);
-		updateFileResource.setFileData( storeInDatabase ? fileBytes : new byte[0]);
+		updateFileResource.setFileData( storeInDatabase ? fileBytes : new byte[]{0x00} );
 		existingFsFileEntry.setStoreId(fsStore.getStoreId()); // not really necessary, same store
 		existingFsFileEntry.setName(newFileName);
 		existingFsFileEntry.setMimeType(contentType);
+		existingFsFileEntry.setFileDataInDatabase(storeInDatabase);
 		existingFsFileEntry.setRelativePath(newRelativeFilePath);
 		existingFsFileEntry.setDateUpdated(DateUtil.getCurrentTime());
 		existingFsFileEntry.setFileSize((long)fileBytes.length); // TODO - check this

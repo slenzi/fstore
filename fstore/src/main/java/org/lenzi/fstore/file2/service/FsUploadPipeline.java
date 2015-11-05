@@ -18,6 +18,7 @@ import javax.annotation.PreDestroy;
 // used before upgrading to hibernate 5. now we use org.springframework.transaction.annotation.Transactional
 //import javax.transaction.Transactional;
 
+
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.FileUtil;
@@ -60,7 +61,7 @@ public class FsUploadPipeline {
     
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     
-    private final boolean SAVE_FILE_TO_DATABASE = true;
+    //private final boolean SAVE_FILE_TO_DATABASE = true;
 	
 	public FsUploadPipeline() {
 		
@@ -178,6 +179,8 @@ public class FsUploadPipeline {
 		
 		logger.info("Got holding store");
 		
+		final Long maxAllowedBytesInDb = holdingStore.getMaxFileSizeInDb();		
+		
 		List<Path> filePaths = null;
 		try {
 			filePaths = FileUtil.listFilesToDepth(tempDir, 1);
@@ -217,9 +220,12 @@ public class FsUploadPipeline {
 						
 						fileBytes = Files.readAllBytes(pathToFile);
 						
-						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, finalDir.getDirId(), replaceExisting, SAVE_FILE_TO_DATABASE);
+						boolean storeBinaryInDatabase = fileBytes.length > maxAllowedBytesInDb ? false : true;
 						
-						logger.info("Saved file '" + fileName + "' to holding store directory '" + dirName + "'.");
+						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, finalDir.getDirId(), replaceExisting, storeBinaryInDatabase);
+						
+						logger.info("Saved file '" + fileName + "' to holding store directory '" + dirName + "'. Size bytes => " + 
+								fileBytes.length + ", Store in DB => " + storeBinaryInDatabase);
 						
 						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), finalDir.getDirId(), resource.getName());
 						
@@ -247,12 +253,27 @@ public class FsUploadPipeline {
 	 */
 	public void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
+		//
+		// get paths to all uploaded files
+		//
 		List<Path> filePaths = null;
 		try {
 			filePaths = FileUtil.listFilesToDepth(tempDir, 1);
 		} catch (IOException e) {
 			throw new ServiceException("Error listing files in temporary directory " + tempDir.toString());
 		}
+		
+		//
+		// get resource store for the directory where the files will be stored
+		//
+		FsResourceStore store = null;
+		try {
+			store = fsResourceService.getResourceStoreByPathResource(parentDirId);
+		} catch (ServiceException e) {
+			throw new ServiceException("Failed to fetch resource store for directory path resource with id => " + 
+					parentDirId + ". " + e.getMessage());
+		}
+		final Long maxAllowedBytesInDb = store.getMaxFileSizeInDb();
 		
 		filePaths.stream().forEach(
 			(pathToFile) ->{
@@ -267,9 +288,12 @@ public class FsUploadPipeline {
 						
 						fileBytes = Files.readAllBytes(pathToFile);
 						
-						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, parentDirId, replaceExisting, SAVE_FILE_TO_DATABASE);
+						boolean storeBinaryInDatabase = fileBytes.length > maxAllowedBytesInDb ? false : true;
 						
-						logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'.");
+						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, parentDirId, replaceExisting, storeBinaryInDatabase);
+						
+						logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'. Size bytes => " + 
+								fileBytes.length + ", Store in DB => " + storeBinaryInDatabase);
 						
 						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), parentDirId, resource.getName());
 						

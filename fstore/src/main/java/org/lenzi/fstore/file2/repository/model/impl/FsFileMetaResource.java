@@ -5,12 +5,15 @@ package org.lenzi.fstore.file2.repository.model.impl;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.lenzi.fstore.core.persistence.BooleanToStringConverter;
 
 /**
  * Entity for file meta data, not actual byte data. 
@@ -34,11 +37,15 @@ public class FsFileMetaResource extends FsPathResource {
 	@Column(name = "MIME_TYPE", nullable = true)
 	private String mimeType = null;
 	
+	// true if file binary data is stored in database, false if only the meta data (file is stored on disk)
+	@Column(name = "IS_FILE_DATA_IN_DB", nullable = false)
+	@Convert(converter=BooleanToStringConverter.class)
+	private Boolean fileDataInDatabase = true;
+	
 	// optional = false to ensure lazy loading of FsFileResource (which contains the binary file data)
 	@OneToOne(cascade = {CascadeType.ALL}, optional = false, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
 	private FsFileResource fileResource = null;
-
 
 	public FsFileMetaResource() {
 		
@@ -93,6 +100,20 @@ public class FsFileMetaResource extends FsPathResource {
 	 */
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
+	}
+
+	/**
+	 * @return the fileDataInDatabase
+	 */
+	public Boolean isFileDataInDatabase() {
+		return fileDataInDatabase;
+	}
+
+	/**
+	 * @param fileDataInDatabase the fileDataInDatabase to set
+	 */
+	public void setFileDataInDatabase(Boolean fileDataInDatabase) {
+		this.fileDataInDatabase = fileDataInDatabase;
 	}
 
 	/**

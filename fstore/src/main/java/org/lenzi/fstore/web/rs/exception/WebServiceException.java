@@ -23,7 +23,8 @@ public class WebServiceException extends Exception {
 		CODE_NOT_FOUND(1),
 		CODE_MISSING_REQUIRED_INPUT(2),
 		CODE_INVALID_INPUT(3),
-		CODE_DATABSE_ERROR(4);
+		CODE_DATABSE_ERROR(4),
+		CODE_IO_ERROR(5);
 		
 		private final int value;
 

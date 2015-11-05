@@ -52,7 +52,13 @@ public class FsResourceStore implements Comparable<FsResourceStore>, Serializabl
 	
 	// id of root directory resource
 	@Column(name = "NODE_ID", updatable = false, nullable = false)
-	private Long nodeId;	
+	private Long nodeId;
+	
+	// max size in bytes for file binary data store in database. if size is large then
+	// file meta data will be stored in database, but binary data will only be on disk.
+	// 26,214,400 bytes = 25 megabytes
+	@Column(name = "MAX_FILE_SIZE_IN_DB", nullable = false)
+	private Long maxFileSizeInDb = 26214400L;
 	
 	@Column(name = "CREATION_DATE", nullable = false)
 	private Timestamp dateCreated;
@@ -146,6 +152,20 @@ public class FsResourceStore implements Comparable<FsResourceStore>, Serializabl
 	 */
 	public void setNodeId(Long nodeId) {
 		this.nodeId = nodeId;
+	}
+
+	/**
+	 * @return the maxFileSizeInDb
+	 */
+	public Long getMaxFileSizeInDb() {
+		return maxFileSizeInDb;
+	}
+
+	/**
+	 * @param maxFileSizeInDb the maxFileSizeInDb to set
+	 */
+	public void setMaxFileSizeInDb(Long maxFileSizeInDb) {
+		this.maxFileSizeInDb = maxFileSizeInDb;
 	}
 
 	/**

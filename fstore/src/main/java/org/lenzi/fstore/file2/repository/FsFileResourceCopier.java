@@ -167,6 +167,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		metaResource.setStoreId(targetStore.getStoreId());
 		metaResource.setName(newFileName);
 		metaResource.setMimeType(sourceEntry.getMimeType());
+		metaResource.setFileDataInDatabase(sourceEntry.isFileDataInDatabase());
 		metaResource.setFileSize(sourceEntry.getFileSize()); // TODO check this
 		metaResource.setRelativePath(relativeFilePath);		
 		
@@ -296,6 +297,7 @@ public class FsFileResourceCopier extends AbstractRepository {
 		metaResource.setStoreId(targetStore.getStoreId());
 		metaResource.setName(newFileName);
 		metaResource.setMimeType(sourceEntry.getMimeType());
+		metaResource.setFileDataInDatabase(sourceEntry.isFileDataInDatabase());
 		metaResource.setFileSize(sourceEntry.getFileSize()); // TODO check this
 		metaResource.setRelativePath(relativeFilePath);
 		

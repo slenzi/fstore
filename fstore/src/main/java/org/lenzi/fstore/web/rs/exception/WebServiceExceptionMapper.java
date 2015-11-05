@@ -25,6 +25,8 @@ public class WebServiceExceptionMapper implements ExceptionMapper<WebServiceExce
 			status = Response.Status.BAD_REQUEST;
 		}else if(exception.getExceptionType() == WebExceptionType.CODE_DATABSE_ERROR){
 			status = Response.Status.INTERNAL_SERVER_ERROR;
+		}else if(exception.getExceptionType() == WebExceptionType.CODE_IO_ERROR){
+			status = Response.Status.INTERNAL_SERVER_ERROR;			
 		}else if(exception.getExceptionType() == WebExceptionType.CODE_UNKNOWN){
 			status = Response.Status.BAD_REQUEST;
 		}else{
