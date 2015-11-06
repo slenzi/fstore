@@ -2,6 +2,7 @@ package org.lenzi.fstore.file2.service;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import org.lenzi.fstore.core.tree.TreeNodeVisitException;
 import org.lenzi.fstore.core.tree.Trees;
 import org.lenzi.fstore.core.tree.Trees.WalkOption;
 import org.lenzi.fstore.core.util.FileUtil;
+import org.lenzi.fstore.file2.FsFile;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceAdder;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceCopier;
 import org.lenzi.fstore.file2.repository.FsDirectoryResourceMover;
@@ -36,6 +38,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
+import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -59,6 +62,9 @@ public class FsResourceService {
 	// access classpath resources
 	@Autowired
 	private ResourceLoader resourceLoader;
+	
+    @Autowired
+    private FsResourceHelper fsResourceHelper;	
 	
 	//
 	// resource store operators
@@ -184,7 +190,7 @@ public class FsResourceService {
 	/**
 	 * Fetch file resource
 	 * 
-	 * @param path - resource store root dir name + file relative path
+	 * @param path - path of file resource (resource store root dir name + file relative path)
 	 * @param fetch - specify file data to fetch
 	 * @return
 	 * @throws ServiceException
@@ -199,6 +205,78 @@ public class FsResourceService {
 		}
 		return resource;
 		
+	}
+	
+	/**
+	 * Get file data
+	 * 
+	 * @param fileId - the id of the file path resource
+	 * @return An FsFile object
+	 * @throws ServiceException
+	 */
+	public FsFile getFsFileById(Long fileId) throws ServiceException {
+		
+		FsFileMetaResource fileResource = getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
+		FsResourceStore store = getStoreByPathResourceId(fileId);
+		java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
+		
+		byte[] fileData = null;
+		
+		boolean isFileDataInDatabase = fileResource.isFileDataInDatabase();
+		if(isFileDataInDatabase){
+			fileData = fileResource.getFileResource().getFileData();
+		}else{
+			// file probably too big to store in database, get file data from file system
+			try {
+				fileData = Files.readAllBytes(filePath);
+			} catch (IOException e) {
+				throw new ServiceException("Failed to read file " + filePath, e);
+			}
+		}
+		
+		FsFile fsFile = new FsFile();
+		fsFile.setFileName(fileResource.getName());
+		fsFile.setFilePath(filePath);
+		fsFile.setMimeType(fileResource.getMimeType());
+		fsFile.setBytes(fileData);
+		
+		return fsFile;
+	}
+	
+	/**
+	 * Get file data
+	 * 
+	 * @param path - path of file resource (resource store root dir name + file relative path)
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFile getFsFileByPath(String path) throws ServiceException {
+		
+		FsFileMetaResource fileResource = getFileResourceByPath(path, FsFileResourceFetch.FILE_META_WITH_DATA);
+		FsResourceStore store = getStoreByPathResourceId(fileResource.getFileId());
+		java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
+		
+		byte[] fileData = null;
+		
+		boolean isFileDataInDatabase = fileResource.isFileDataInDatabase();
+		if(isFileDataInDatabase){
+			fileData = fileResource.getFileResource().getFileData();
+		}else{
+			// file probably too big to store in database, get file data from file system
+			try {
+				fileData = Files.readAllBytes(filePath);
+			} catch (IOException e) {
+				throw new ServiceException("Failed to read file " + filePath, e);
+			}
+		}
+		
+		FsFile fsFile = new FsFile();
+		fsFile.setFileName(fileResource.getName());
+		fsFile.setFilePath(filePath);
+		fsFile.setMimeType(fileResource.getMimeType());
+		fsFile.setBytes(fileData);
+		
+		return fsFile;		
 	}
 	
 	/**

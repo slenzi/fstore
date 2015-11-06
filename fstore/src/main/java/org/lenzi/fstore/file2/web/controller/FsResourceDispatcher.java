@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.file2.FsFile;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
@@ -83,46 +84,29 @@ public class FsResourceDispatcher extends AbstractSpringController {
 			)
 	public HttpEntity<byte[]> downloadFileResourceById(@PathVariable("fileId") Long fileId){
 		
-		// TODO - if file data is on file system, then use it, otherwise go to database.
-
-		FsFileMetaResource fileResource = getFileById(fileId);
-		String mimeType = fileResource.getMimeType();
-		byte[] fileData = null;
+		// TODO - if file data is on file system, then use it, otherwise go to databasee
 		
-		boolean isFileDataInDatabase = fileResource.isFileDataInDatabase();
-		if(isFileDataInDatabase){
-			fileData = fileResource.getFileResource().getFileData();
-		}else{
-			// file probably too big to store in database, get file data from file system
-			FsResourceStore store = null;
-			try {
-				store = fsResourceService.getStoreByPathResourceId(fileId);
-			} catch (ServiceException e) {
-				logger.error("Failed to fetch resource store for file resource with id => " + fileId, e);
-				throw new RuntimeException(e);
-			}
-			java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
-			try {
-				fileData = Files.readAllBytes(filePath);
-			} catch (IOException e) {
-				logger.error("Failed to read file " + filePath, e);
-				throw new RuntimeException(e);
-			}
-		}
+		FsFile fsFile = null;
+		try {
+			fsFile = fsResourceService.getFsFileById(fileId);
+		} catch (ServiceException e) {
+			logger.error("Failed to retrieve file data for file path resource with id => " + fileId, e);
+			throw new RuntimeException(e);
+		}		
 		
 		//logger.info("Download file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
 		//		", byte size => " + fileData.length);
 	
 		final HttpHeaders headers = new HttpHeaders();
-	    headers.setContentType(MediaType.parseMediaType(mimeType));
-	    headers.setContentLength(fileData.length);
-	    headers.setContentDispositionFormData(fileResource.getName(), fileResource.getName());
+	    headers.setContentType(MediaType.parseMediaType(fsFile.getMimeType()));
+	    headers.setContentLength(fsFile.getBytes().length);
+	    headers.setContentDispositionFormData(fsFile.getFileName(), fsFile.getFileName());
 	    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 	    
-	    logger.info("Spring media type => " + MediaType.valueOf(mimeType));
+	    logger.info("Spring media type => " + MediaType.valueOf(fsFile.getMimeType()));
 	    
 	    //return new ResponseEntity<byte[]>(fileData, headers, HttpStatus.OK);
-	    return new HttpEntity<byte[]>(fileData, headers);
+	    return new HttpEntity<byte[]>(fsFile.getBytes(), headers);
 		
 	}
 	
@@ -140,19 +124,23 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	public ResponseEntity<InputStreamResource> loadFileResourceById(@PathVariable("fileId") Long fileId){
 		
 		// TODO - if file data is on file system, then use it, otherwise go to database.
-
-		FsFileMetaResource fileResource = getFileById(fileId);
-		String mimeType = fileResource.getMimeType();
-		byte[] fileData = fileResource.getFileResource().getFileData();
+		
+		FsFile fsFile = null;
+		try {
+			fsFile = fsResourceService.getFsFileById(fileId);
+		} catch (ServiceException e) {
+			logger.error("Failed to retrieve file data for file path resource with id => " + fileId, e);
+			throw new RuntimeException(e);
+		}		
 		
 		//logger.info("Load file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
 		//		", byte size => " + fileData.length);
 		
-		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
+		ByteArrayInputStream bis = new ByteArrayInputStream(fsFile.getBytes());
 		
 		return ResponseEntity.ok()
-	            .contentLength(fileData.length)
-	            .contentType(MediaType.parseMediaType(mimeType))
+	            .contentLength(fsFile.getBytes().length)
+	            .contentType(MediaType.parseMediaType(fsFile.getMimeType()))
 	            .body(new InputStreamResource(bis));
 		
 	}
@@ -179,22 +167,32 @@ public class FsResourceDispatcher extends AbstractSpringController {
 		//filePath = filePath.replace("/", File.separator); // convert web path separator to file path separator
 		logger.info("loading file path after => " + filePath);
 		
+		/*
 		FsFileMetaResource fileResource = this.getFileByPath(filePath);
 		String mimeType = fileResource.getMimeType();
 		byte[] fileData = fileResource.getFileResource().getFileData();
+		*/
+		
+		FsFile fsFile = null;
+		try {
+			fsFile = fsResourceService.getFsFileByPath(filePath);
+		} catch (ServiceException e) {
+			logger.error("Failed to retrieve file data for file path resource with path => " + filePath, e);
+			throw new RuntimeException(e);
+		}		
 		
 		//logger.info("Load file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
 		//		", byte size => " + fileData.length);
 		
-		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
+		ByteArrayInputStream bis = new ByteArrayInputStream(fsFile.getBytes());
 		
 		//request.getRequestDispatcher("/file.jsp").forward(request, response);
 		
 		//request.getRequestDispatcher(arg0)
 		
 		return ResponseEntity.ok()
-	            .contentLength(fileData.length)
-	            .contentType(MediaType.parseMediaType(mimeType))
+	            .contentLength(fsFile.getBytes().length)
+	            .contentType(MediaType.parseMediaType(fsFile.getMimeType()))
 	            .body(new InputStreamResource(bis));
 		
 	}
@@ -315,6 +313,7 @@ public class FsResourceDispatcher extends AbstractSpringController {
 	 * @return
 	 * @throws ServiceException
 	 */
+	/*
 	private FsFileMetaResource getFileByPath(String path) {
 		
 		FsFileMetaResource fileResource = null;
@@ -326,6 +325,7 @@ public class FsResourceDispatcher extends AbstractSpringController {
 		return fileResource;
 		
 	}
+	*/
 	
 	/**
 	 * Extract path from a controller mapping. /controllerUrl/** => return matched **

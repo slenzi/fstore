@@ -21,6 +21,7 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.cxf.attachment.ContentDisposition;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.file2.FsFile;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
@@ -218,42 +219,18 @@ public class FileResource extends AbstractResource {
 		
 		// TODO - stream file from database rather than loading entire file into memory / byte[]
 		
-		//
-		// pull file from database
-		//
-		FsFileMetaResource fileResource = null;
+		FsFile fsFile = null;
 		try {
-			fileResource = fsResourceService.getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
+			fsFile = fsResourceService.getFsFileById(fileId);
 		} catch (ServiceException e) {
-			handleError("Failed to fetch file data from database", WebExceptionType.CODE_DATABSE_ERROR, e);
-			
-		}
-
-		byte[] fileData = null;
-		String mimeType = fileResource.getMimeType();
-		boolean isFileDataInDatabase = fileResource.isFileDataInDatabase();
-		if(isFileDataInDatabase){
-			fileData = fileResource.getFileResource().getFileData();
-		}else{
-			// file probably too big to store in database, get file data from file system
-			FsResourceStore store = null;
-			try {
-				store = fsResourceService.getStoreByPathResourceId(fileId);
-			} catch (ServiceException e) {
-				handleError("Failed to fetch resource store for file resource with id => " + fileId, WebExceptionType.CODE_DATABSE_ERROR, e);
-			}
-			java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
-			try {
-				fileData = Files.readAllBytes(filePath);
-			} catch (IOException e) {
-				handleError("Failed to read file " + filePath, WebExceptionType.CODE_IO_ERROR, e);
-			}
+			handleError("Failed to retrieve file data for file path resource with id => " + fileId, WebExceptionType.CODE_IO_ERROR, e);
 		}
 		
 		//
 		// Write data to output/response
 		//
-		ByteArrayInputStream bis = new ByteArrayInputStream(fileData);
+		ByteArrayInputStream bis = new ByteArrayInputStream(fsFile.getBytes());
+		
 		//ContentDisposition contentDisposition = ContentDisposition.type("attachment")
 		//	    .fileName("filename.csv").creationDate(new Date()).build();
 		//ContentDisposition contentDisposition = new ContentDisposition("attachment; filename=image.jpg");
@@ -272,7 +249,7 @@ public class FileResource extends AbstractResource {
 					bis.close();
 				}
 			}
-		).header("Content-Disposition", "attachment; filename=" + fileResource.getName()).build();
+		).header("Content-Disposition", "attachment; filename=" + fsFile.getFileName()).build();
 		
 	}
 
