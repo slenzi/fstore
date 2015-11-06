@@ -5,6 +5,7 @@ package org.lenzi.fstore.file2.web.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -17,8 +18,12 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
+import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.service.FsResourceHelper;
+import org.lenzi.fstore.file2.service.FsResourceService;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
+import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -43,16 +48,22 @@ import org.springframework.web.servlet.HandlerMapping;
 public class FsResourceDispatcher extends AbstractSpringController {
 
     @InjectLogger
-    Logger logger;
+    private Logger logger;
 	
     @Autowired
     private ManagedProperties appProps;
     
     @Autowired
-    private FsQueuedResourceService fsResourceService;
+    private FsQueuedResourceService fsQueuedResourceService;
     
     @Autowired
-    ServletContext context;
+    private FsResourceService fsResourceService;
+    
+    @Autowired
+    private FsResourceHelper fsResourceHelper;
+    
+    @Autowired
+    private ServletContext context;
     
 	public FsResourceDispatcher() {
 		
@@ -76,7 +87,28 @@ public class FsResourceDispatcher extends AbstractSpringController {
 
 		FsFileMetaResource fileResource = getFileById(fileId);
 		String mimeType = fileResource.getMimeType();
-		byte[] fileData = fileResource.getFileResource().getFileData();
+		byte[] fileData = null;
+		
+		boolean isFileDataInDatabase = fileResource.isFileDataInDatabase();
+		if(isFileDataInDatabase){
+			fileData = fileResource.getFileResource().getFileData();
+		}else{
+			// file probably too big to store in database, get file data from file system
+			FsResourceStore store = null;
+			try {
+				store = fsResourceService.getStoreByPathResourceId(fileId);
+			} catch (ServiceException e) {
+				logger.error("Failed to fetch resource store for file resource with id => " + fileId, e);
+				throw new RuntimeException(e);
+			}
+			java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
+			try {
+				fileData = Files.readAllBytes(filePath);
+			} catch (IOException e) {
+				logger.error("Failed to read file " + filePath, e);
+				throw new RuntimeException(e);
+			}
+		}
 		
 		//logger.info("Download file, name => " + fileResource.getName() + ", fs meta mime => " + fileResource.getMimeType() +
 		//		", byte size => " + fileData.length);
@@ -268,7 +300,7 @@ public class FsResourceDispatcher extends AbstractSpringController {
 		
 		FsFileMetaResource fileResource = null;
 		try {
-			fileResource = fsResourceService.getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
+			fileResource = fsQueuedResourceService.getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
 		} catch (ServiceException e) {
 			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
 		}
@@ -287,7 +319,7 @@ public class FsResourceDispatcher extends AbstractSpringController {
 		
 		FsFileMetaResource fileResource = null;
 		try {
-			fileResource = fsResourceService.getFileResourceByPath(path, FsFileResourceFetch.FILE_META_WITH_DATA);
+			fileResource = fsQueuedResourceService.getFileResourceByPath(path, FsFileResourceFetch.FILE_META_WITH_DATA);
 		} catch (ServiceException e) {
 			logger.error("Failed to fetch file data from database, " + e.getMessage(), e);
 		}
