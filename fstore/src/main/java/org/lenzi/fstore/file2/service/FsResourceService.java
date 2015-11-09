@@ -633,6 +633,18 @@ public class FsResourceService {
 	}
 	
 	/**
+	 * Updates the binary data in the database
+	 * 
+	 * @param fileId - ID of file in database to update binary data
+	 * @param file - path to file on disk. data from this file will be written to the database file entry, uopdating
+	 * 	any exists binary data in the database
+	 * @throws ServiceException
+	 */
+	public void updateFileResourceBinary(Long fileId, Path file) throws ServiceException {
+		
+	}
+	
+	/**
 	 * Creates a sample file store with some file resources from classpath src/main/resources/images directory.
 	 * 
 	 * @param storePath - path where store will be created

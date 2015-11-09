@@ -213,7 +213,7 @@ public abstract class FileUtil {
 			}
 		}else{
 			
-			logger.info(directory.toString() + " does not exists.");
+			logger.info(directory.toString() + " does not exist yet. Need to create it.");
 			logger.info("Creating " + directory.toString());
 			
 			try {

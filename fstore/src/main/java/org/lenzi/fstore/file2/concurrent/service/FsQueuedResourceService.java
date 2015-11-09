@@ -63,6 +63,8 @@ public class FsQueuedResourceService {
 		
 		taskExecutorService = Executors.newSingleThreadExecutor();
 		
+		taskManager.setManagerName("Queued Resource Service");
+		
 		taskManager.startTaskManager(taskExecutorService);
 		
 		logger.info("Startup complete.");
@@ -80,7 +82,7 @@ public class FsQueuedResourceService {
 		taskManager.stopTaskManager();
 		
 		if(!taskExecutorService.isShutdown()){
-			logger.error("Executor service not shutdow...");
+			logger.error("Executor service not shutdown...");
 		}
 		
 		taskExecutorService = null;

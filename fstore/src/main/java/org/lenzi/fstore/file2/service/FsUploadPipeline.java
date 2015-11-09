@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,11 +18,17 @@ import javax.annotation.PreDestroy;
 //import javax.transaction.Transactional;
 
 
+
+
+
+
+
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
-import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
+import org.lenzi.fstore.file2.concurrent.task.AbstractFsTask;
+import org.lenzi.fstore.file2.concurrent.task.FsQueuedTaskManager;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.web.messaging.UploadMessageService;
@@ -49,24 +54,37 @@ public class FsUploadPipeline {
     @Autowired
     private ManagedProperties appProps; 	
 	
-	private FsResourceStore holdingStore = null;
-	
     @Autowired
     private FsQueuedResourceService fsResourceService;
     
     @Autowired
     private UploadMessageService uploadMessageService;
     
+    @Autowired
+    private FsResourceHelper fsResourceHelper;
+    
+    // task manager for adding files to database - adds file meta data, plus 1 byte placeholder for binary data.
+	@Autowired
+	private FsQueuedTaskManager addFileTaskManager;     
+	
+    // task manager for binary update process. after file is added we go back and add the binary data to the database
+	@Autowired
+	private FsQueuedTaskManager updateFileTaskManager;     
+    
     private String holdingSetupErrorMsg = "";
     
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
-    
-    //private final boolean SAVE_FILE_TO_DATABASE = true;
+	private FsResourceStore holdingStore = null;
 	
+	private ExecutorService addFileExecutorService;
+	private ExecutorService updateFileExecutorService;
+    
 	public FsUploadPipeline() {
 		
 	}
 	
+	/**
+	 * Create holding store, and initialize queued task managers
+	 */
 	@PostConstruct
 	private void init(){
 		
@@ -81,14 +99,45 @@ public class FsUploadPipeline {
 			}
 		}
 		
+		addFileExecutorService = Executors.newSingleThreadExecutor();
+		updateFileExecutorService = Executors.newSingleThreadExecutor();
+		
+		addFileTaskManager.setManagerName("Upload Pipeline: Add File Task Manager");
+		updateFileTaskManager.setManagerName("Upload Pipeline: Update File Task Manager");
+		
+		addFileTaskManager.startTaskManager(addFileExecutorService);
+		
+		updateFileTaskManager.startTaskManager(updateFileExecutorService);
+		
+		logger.info(FsUploadPipeline.class.getName() + " post construct initialization complete!.");
+		
 	}
 	
+	/**
+	 * Shut down executors and task managers.
+	 */
 	@PreDestroy
 	private void cleanup(){
 		
-		executor.shutdownNow();
+		logger.info(FsUploadPipeline.class.getName() + " pre destroy cleanup.");
 		
-	}
+		addFileTaskManager.stopTaskManager();
+		updateFileTaskManager.stopTaskManager();
+
+		if(!addFileExecutorService.isShutdown()){
+			logger.error("add file executor service not shutdown...");
+		}		
+		
+		if(!updateFileExecutorService.isShutdown()){
+			logger.error("update file executor service not shutdown...");
+		}
+		
+		addFileExecutorService = null;
+		updateFileExecutorService = null;
+		
+		logger.info(FsUploadPipeline.class.getName() + " pre destroy cleanup complete!.");		
+		
+	}	
 	
 	/**
 	 * Save all files in the file map to the temp upload directory.
@@ -171,6 +220,9 @@ public class FsUploadPipeline {
 	 * @return reference to the newly created directory in the holding resource store.
 	 * @throws ServiceException
 	 */
+	/*
+	 * old code
+	 * 
 	public FsDirectoryResource processToHolding(Path tempDir, boolean replaceExisting) throws ServiceException {
 		
 		if(holdingStore == null){
@@ -210,7 +262,7 @@ public class FsUploadPipeline {
 		filePaths.stream().forEach(
 			(pathToFile) ->{
 			
-				executor.execute(() -> {
+				addFileExecutor.execute(() -> {
 				
 					byte[] fileBytes = null;
 	
@@ -242,6 +294,7 @@ public class FsUploadPipeline {
 		return uploadDir;
 		
 	}
+	*/
 	
 	/**
 	 * Processes files to existing directory
@@ -273,39 +326,145 @@ public class FsUploadPipeline {
 			throw new ServiceException("Failed to fetch resource store for directory path resource with id => " + 
 					parentDirId + ". " + e.getMessage());
 		}
-		final Long maxAllowedBytesInDb = store.getMaxFileSizeInDb();
+		final FsResourceStore finalStore = store;
 		
+		//
+		// Process each file to the database
+		//
 		filePaths.stream().forEach(
 			(pathToFile) ->{
 			
-				executor.execute(() -> {
+				logger.info("Process to directory (start) => " + pathToFile);
 				
-					byte[] fileBytes = null;
-	
-					String fileName = pathToFile.getFileName().toString();
-					
-					try {
-						
-						fileBytes = Files.readAllBytes(pathToFile);
-						
-						boolean storeBinaryInDatabase = fileBytes.length > maxAllowedBytesInDb ? false : true;
-						
-						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, parentDirId, replaceExisting, storeBinaryInDatabase);
-						
-						logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'. Size bytes => " + 
-								fileBytes.length + ", Store in DB => " + storeBinaryInDatabase);
-						
-						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), parentDirId, resource.getName());
-						
-					} catch (ServiceException e) {
-						throw new RuntimeException("Error saving file '" + fileName + "' to directory with id '" + parentDirId + "'.", e);
-					} catch (IOException e){
-						throw new RuntimeException("IOException thrown when attempting to read file byte data from path. " + e.getMessage(), e);
-					}
+				String fileName = pathToFile.getFileName().toString();
 				
-				});
+				//
+				// add file to database
+				//
+				FsFileMetaResource resource = null;
+				try {
+					resource = addFileToDirectory(pathToFile, parentDirId, replaceExisting);
+				} catch (Exception e) {
+					throw new RuntimeException("Error saving file '" + fileName + "' to directory with id '" + parentDirId + "'.", e);
+				}
+				
+				//
+				// update database entry with binary data
+				//
+				try {
+					updateWithBinaryData(resource, finalStore);
+				} catch (Exception e) {
+					throw new RuntimeException("Error updating binary data in database for file '" + fileName + "' in directory with id '" + parentDirId + "'.", e);
+				}
+				
+				logger.info("Process to directory (end) => " + pathToFile);
 				
 			});
+		
+	}
+	
+	/**
+	 * Adds file meta data to database, plus 1-byte placeholder for binary data. Binary data is updated afterwards in
+	 * a second database call. We do this for speed reasons. We want all the file meta entries to appear in the database
+	 * as fast as possible so the end user sees them in the UI.
+	 * 
+	 * @param pathToFile
+	 * @param parentDirId
+	 * @param replaceExisting
+	 * @throws ServiceException
+	 */
+	private FsFileMetaResource addFileToDirectory(Path pathToFile, Long parentDirId, boolean replaceExisting) throws ServiceException {
+		
+		//
+		// create task which adds the file meta data to the database.
+		//
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+
+				String fileName = pathToFile.getFileName().toString();
+				
+				// TODO - no need to read file at this point
+				
+				byte[] fileBytes = null;
+				try {
+					fileBytes = Files.readAllBytes(pathToFile);
+				} catch (IOException e) {
+					throw new ServiceException("Error adding file, failed to read data from file => " + pathToFile, e);
+				}
+				
+				//boolean storeBinaryInDatabase = fileBytes.length > maxAllowedBytesInDb ? false : true;
+				
+				// save meta data to database, then go back and update with binary data
+				boolean storeBinaryInDatabase = false;
+				
+				FsFileMetaResource resource = fsResourceService.addFileResource(
+						fileName, fileBytes, parentDirId, replaceExisting, storeBinaryInDatabase);
+				
+				logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'. Size bytes => " + 
+						fileBytes.length + ", Store in DB => " + storeBinaryInDatabase);
+				
+				uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), parentDirId, resource.getName());				
+				
+				return resource;
+				
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		
+		Task t = new Task();
+		addFileTaskManager.addTask(t);
+		
+		FsFileMetaResource resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Updates the binary data for the file entry in the database with the file data from disk.
+	 * 
+	 * @param fileMeta - the database file entry to update
+	 * @param store - resource store for the file
+	 * @throws ServiceException
+	 */
+	private void updateWithBinaryData(FsFileMetaResource fileMeta, final FsResourceStore store) throws ServiceException {
+		
+		//
+		// create task that updates the binary data in the database for the file
+		//
+		class Task extends AbstractFsTask<Void> {
+
+			@Override
+			public Void doWork() throws ServiceException {
+				
+				final Long maxAllowedBytesInDb = store.getMaxFileSizeInDb();
+				
+				final Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileMeta);				
+
+				final boolean storeBinaryInDatabase = fileMeta.getFileSize() > maxAllowedBytesInDb ? false : true;
+				
+				logger.info("Updated binary data in database for file path resource => " + filePath + ", store in database = " + storeBinaryInDatabase);
+				
+				return null;
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		updateFileTaskManager.addTask(t);
+		
+		// t.waitComplete(); // no need to wait
 		
 	}
 

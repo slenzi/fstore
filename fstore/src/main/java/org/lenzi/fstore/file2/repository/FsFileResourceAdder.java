@@ -15,7 +15,6 @@ import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.core.util.ByteUtil;
 import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;

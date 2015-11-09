@@ -14,10 +14,12 @@ import org.springframework.stereotype.Component;
 /**
  * Queues tasks in a priority blocking queue for execution.
  * 
+ * prototype scope - new instance each time
+ * 
  * @author sal
  */
 @Component
-@Scope(value = "singleton")
+@Scope(value = "prototype")
 public class FsQueuedTaskManager implements FsTaskManager {
 
 	@InjectLogger
@@ -33,10 +35,26 @@ public class FsQueuedTaskManager implements FsTaskManager {
 	
 	private long taskId = 0L;
 	
+	private String managerName = FsQueuedTaskManager.class.getName();
+	
 	public FsQueuedTaskManager() {
 		
 	}
 	
+	/**
+	 * @return the managerName
+	 */
+	public String getManagerName() {
+		return managerName;
+	}
+
+	/**
+	 * @param managerName the managerName to set
+	 */
+	public void setManagerName(String managerName) {
+		this.managerName = managerName;
+	}
+
 	/**
 	 * Starts the task manager by adding it to the executor service.
 	 */
@@ -122,7 +140,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		
 		while(true){
 			
-			//logger.debug("Polling queued task manager... size => " + taskCount());
+			logger.debug("Polling queued task manager '" + managerName + "'  + ... queue size => " + taskCount());
 			
 			if(Thread.currentThread().isInterrupted()){
 				break;
