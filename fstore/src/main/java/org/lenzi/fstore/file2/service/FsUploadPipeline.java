@@ -352,7 +352,7 @@ public class FsUploadPipeline {
 				// update database entry with binary data
 				//
 				try {
-					updateWithBinaryData(resource, finalStore);
+					updateWithBinaryData(resource.getFileId(), finalStore);
 				} catch (Exception e) {
 					throw new RuntimeException("Error updating binary data in database for file '" + fileName + "' in directory with id '" + parentDirId + "'.", e);
 				}
@@ -384,26 +384,11 @@ public class FsUploadPipeline {
 			public FsFileMetaResource doWork() throws ServiceException {
 
 				String fileName = pathToFile.getFileName().toString();
+
+				FsFileMetaResource resource = fsResourceService.addFileResourceMeta(
+						pathToFile, parentDirId, replaceExisting);
 				
-				// TODO - no need to read file at this point
-				
-				byte[] fileBytes = null;
-				try {
-					fileBytes = Files.readAllBytes(pathToFile);
-				} catch (IOException e) {
-					throw new ServiceException("Error adding file, failed to read data from file => " + pathToFile, e);
-				}
-				
-				//boolean storeBinaryInDatabase = fileBytes.length > maxAllowedBytesInDb ? false : true;
-				
-				// save meta data to database, then go back and update with binary data
-				boolean storeBinaryInDatabase = false;
-				
-				FsFileMetaResource resource = fsResourceService.addFileResource(
-						fileName, fileBytes, parentDirId, replaceExisting, storeBinaryInDatabase);
-				
-				logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "'. Size bytes => " + 
-						fileBytes.length + ", Store in DB => " + storeBinaryInDatabase);
+				logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "', Store in DB => " + false);
 				
 				uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), parentDirId, resource.getName());				
 				
@@ -434,25 +419,38 @@ public class FsUploadPipeline {
 	 * @param store - resource store for the file
 	 * @throws ServiceException
 	 */
-	private void updateWithBinaryData(FsFileMetaResource fileMeta, final FsResourceStore store) throws ServiceException {
+	private FsFileMetaResource updateWithBinaryData(Long fileId, final FsResourceStore store) throws ServiceException {
 		
 		//
 		// create task that updates the binary data in the database for the file
 		//
-		class Task extends AbstractFsTask<Void> {
+		class Task extends AbstractFsTask<FsFileMetaResource> {
 
 			@Override
-			public Void doWork() throws ServiceException {
+			public FsFileMetaResource doWork() throws ServiceException {
 				
 				final Long maxAllowedBytesInDb = store.getMaxFileSizeInDb();
 				
-				final Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileMeta);				
+				//final Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileMeta);				
 
-				final boolean storeBinaryInDatabase = fileMeta.getFileSize() > maxAllowedBytesInDb ? false : true;
+				//final boolean storeBinaryInDatabase = fileMeta.getFileSize() > maxAllowedBytesInDb ? false : true;
 				
-				logger.info("Updated binary data in database for file path resource => " + filePath + ", store in database = " + storeBinaryInDatabase);
+				FsFileMetaResource updatedMeta = null;
 				
-				return null;
+				//if(storeBinaryInDatabase){
+					
+					updatedMeta = fsResourceService.syncDatabaseBinary(fileId, store);
+					
+					logger.info("Updated binary data in database for file path resource with file id => " + fileId);
+					
+				//}else{
+				//	
+				//	logger.info("Updated binary data in database for file path resource => " + filePath + 
+				//			", store in database = " + storeBinaryInDatabase + ", file is larger than the max allowed size for the resource store.");
+				//	
+				//}
+				
+				return updatedMeta;
 			}
 
 			@Override
@@ -464,7 +462,9 @@ public class FsUploadPipeline {
 		Task t = new Task();
 		updateFileTaskManager.addTask(t);
 		
-		// t.waitComplete(); // no need to wait
+		FsFileMetaResource resource = t.get(); // block until complete
+		
+		return resource;
 		
 	}
 

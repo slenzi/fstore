@@ -415,7 +415,7 @@ public class FsQueuedResourceService {
 	 * @param fileBytes - file data bytes
 	 * @param dirId - id of directory where file will be added
 	 * @param replaceExisting - true to replace existing file, false not to.
-	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system.
+	 * @param storeInDatabase - true to store file binary data in database AND on file system, false to only store file on file system.
 	 * @return reference to the newly added file
 	 * @throws ServiceException
 	 */
@@ -473,6 +473,72 @@ public class FsQueuedResourceService {
 		List<FsFileMetaResource> resource = t.get(); // block until complete
 		
 		return resource;
+		
+	}
+	
+	/**
+	 * Add / replace file resource meta. Binary data is not store in teh database. A 1-byte placeholder will be added
+	 * in place of the binary data.
+	 * 
+	 * @param fileToAdd
+	 * @param dirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource addFileResourceMeta(Path fileToAdd, Long dirId, boolean replaceExisting) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.addFileResourceMeta(fileToAdd, dirId, replaceExisting);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsFileMetaResource resource = t.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Reads the file data from disk and re-writes it to the database for the existing file entry.
+	 * 
+	 * @param fileId
+	 * @param store
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource syncDatabaseBinary(Long fileId, FsResourceStore store) throws ServiceException {
+		
+		class Task extends AbstractFsTask<FsFileMetaResource> {
+
+			@Override
+			public FsFileMetaResource doWork() throws ServiceException {
+				return fsResourceService.syncDatabaseBinary(fileId, store);
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};
+		Task t = new Task();
+		taskManager.addTask(t);
+		
+		FsFileMetaResource updatedResource = t.get(); // block until complete
+		
+		return updatedResource;
 		
 	}
 	

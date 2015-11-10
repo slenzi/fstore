@@ -17,6 +17,7 @@ import org.lenzi.fstore.core.repository.tree.TreeRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.DateUtil;
 import org.lenzi.fstore.core.util.FileUtil;
+import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileResource;
@@ -130,7 +131,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 	}
 	
 	/**
-	 * Add or replace file
+	 * Add or replace file. This method provides the option of storing the file byte data in the database.
 	 * 
 	 * @param fileName - name of the file
 	 * @param fileBytes - file byte data
@@ -184,7 +185,57 @@ public class FsFileResourceAdder extends AbstractRepository {
 	}
 	
 	/**
-	 * Add or replace a batch of files
+	 * Adds or replaces an existing file. This method adds the new file meta data to the database, plus a 1-byte placeholder for
+	 * the binary data.
+	 * 
+	 * @param fileToAdd
+	 * @param fsDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FsFileMetaResource addFileResourceMeta(Path fileToAdd, Long fsDirId, boolean replaceExisting) throws DatabaseException, IOException {
+		
+		if(fileToAdd == null){
+			throw new DatabaseException("Missing file to add. param is null.");
+		}
+		
+		String fileName = fileToAdd.getFileName().toString();
+		
+		FsDirectoryResource parentDir = fsDirectoryResourceRepository.getDirectoryResourceWithChildren(fsDirId, 1);
+		FsFileMetaResource existingFileResource = fsFileResourceRepository.haveExistingFile(fileName, parentDir, false);
+		
+		FsResourceStore store = null;
+		try {
+			store = fsResourceStoreRepository.getStoreByPathResourceId(fsDirId);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Failed to fetch resource store for dir id => " + fsDirId, e);
+		}
+		
+		boolean needReplace = existingFileResource != null ? true : false;
+		Path absoluteDirPath= fsResourceHelper.getAbsoluteDirectoryPath(store, parentDir);
+		
+		if(needReplace && !replaceExisting){
+			
+			throw new DatabaseException("File " + fileName + " already exists in directory " + parentDir.getName() + 
+					" at path " + absoluteDirPath + ". Cannot replace existing file because 'replaceExisting' param is false.");
+			
+		}else if(needReplace && replaceExisting){
+			
+			// do replace
+			return addReplaceMeta(fileToAdd, existingFileResource, parentDir, store);
+			
+		}else{
+			
+			// do add
+			return addMeta(fileToAdd, parentDir, store);
+			
+		}
+		
+	}
+	
+	/**
+	 * Add or replace a batch of files. This method will store the file binary data in the database.
 	 * 
 	 * @param filesToAdd
 	 * @param fsDirId
@@ -262,7 +313,7 @@ public class FsFileResourceAdder extends AbstractRepository {
 	}
 	
 	/**
-	 * Add new file from path object
+	 * Add new file from path object. This method will store the file binary data in the database.
 	 * 
 	 * @param fileToAdd
 	 * @param fsDirectory
@@ -395,7 +446,8 @@ public class FsFileResourceAdder extends AbstractRepository {
 	 * @param fileData
 	 * @param fsDirectory
 	 * @param fsStore
-	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system.
+	 * @param storeInDatabase - true to store file in database AND on file system, false to only store file on file system. A 1-byte entry
+	 * will be added as a placeholder for the file binary data.
 	 * 
 	 * @return
 	 * @throws DatabaseException
@@ -504,7 +556,161 @@ public class FsFileResourceAdder extends AbstractRepository {
 	}
 	
 	/**
-	 * Add new file and replace existing
+	 * Adds file meta data to database, and 1-byte placeholder for binary data.
+	 * 
+	 * @param fileToAdd
+	 * @param fsDirectory
+	 * @param fsStore
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	public FsFileMetaResource addMeta(Path fileToAdd, FsDirectoryResource fsDirectory, FsResourceStore fsStore) throws DatabaseException, IOException {
+		
+		String fileName = fileToAdd.getFileName().toString();
+		String contentType = FileUtil.detectMimeType(fileToAdd);
+		Long fileSize = FileUtil.getFileSize(fileToAdd);
+		
+		Path absoluteDirPath	= fsResourceHelper.getAbsoluteDirectoryPath(fsStore, fsDirectory);
+		Path absoluteFilePath   = fsResourceHelper.getAbsolutePath(fsStore, fsDirectory, fileName);
+		String relativeFilePath = fsResourceHelper.getRelativePath(fsStore, fsDirectory, fileName);
+		
+		logger.info("Adding file => " + fileName + ", size => " + ((fileSize != null) ? fileSize + " bytes" : "null bytes") +
+				", mime type => " + contentType +
+				", Directory Id => " + fsDirectory.getDirId() + ", Directory Name => " + fsDirectory.getName() +
+				", File system path => " + absoluteDirPath.toString() +
+				", Store in Database => " + false);
+		
+		// get next node id
+		long nodeId = treeRepository.getNextNodeId();
+		
+		// create file entry for byte[] data
+		FsFileResource fileResource = new FsFileResource();
+		fileResource.setFileId(nodeId);
+		fileResource.setFileData( new byte[]{0x00} ); // placeholder
+		//persist(fileResource);		
+		
+		// create file entry for meta data
+		FsFileMetaResource metaResource = new FsFileMetaResource();
+		metaResource.setNodeId(nodeId);
+		metaResource.setPathType(FsPathType.FILE);
+		metaResource.setStoreId(fsStore.getStoreId());
+		metaResource.setName(fileName);
+		metaResource.setMimeType(contentType);
+		metaResource.setFileDataInDatabase(false);
+		metaResource.setFileSize(fileSize);
+		metaResource.setRelativePath(relativeFilePath);
+		
+		metaResource.setFileResource(fileResource);
+		
+		//fileResource.setFileMetaResource(metaResource);
+		
+		FsFileMetaResource persistedMetaResource = null;
+		try {
+			persistedMetaResource = (FsFileMetaResource) treeRepository.addChildNode(fsDirectory, metaResource);
+		} catch (DatabaseException e) {
+			throw new DatabaseException("Error persisting new " + FsFileMetaResource.class.getName() + 
+					", file name => " + metaResource.getName() + " to directory " + absoluteDirPath.toString() + 
+					": " + e.getMessage());
+		}
+	
+		getEntityManager().flush();	
+		
+		// make sure objects have all data set before returning
+		persistedMetaResource.setFileResource(fileResource);
+		fileResource.setFileMetaResource(persistedMetaResource);
+		
+		try {
+			FileUtil.copyFile(fileToAdd, absoluteFilePath);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionWriteError(absoluteFilePath, fsDirectory, e);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionWriteError(absoluteFilePath, fsDirectory, e);
+		}
+		
+		// not really needed... just a little extra precaution
+		if(!Files.exists(absoluteFilePath)){
+			throw new IOException("Write proceeded without error, but file does not appear to exist in target directory...");
+		}
+		
+		return persistedMetaResource;		
+		
+	}
+	
+	/**
+	 * Replaces existing file meta data in database, adds 1-byte place holder for new file binary data.
+	 * 
+	 * @param fileToAdd
+	 * @param existingFsFileEntry
+	 * @param fsDirectory
+	 * @param fsStore
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	public FsFileMetaResource addReplaceMeta(Path fileToAdd, FsFileMetaResource existingFsFileEntry,
+			FsDirectoryResource fsDirectory, FsResourceStore fsStore) throws DatabaseException, IOException {
+		
+		Long existingFileId = existingFsFileEntry.getFileId();
+		String existingFileName = existingFsFileEntry.getName();
+		Long existingFileSize = existingFsFileEntry.getFileSize();
+		
+		String contentType = FileUtil.detectMimeType(fileToAdd);
+		String newFileName = fileToAdd.getFileName().toString();
+		Long newFileSize = FileUtil.getFileSize(fileToAdd);
+		
+		Path absoluteDirPath = fsResourceHelper.getAbsoluteDirectoryPath(fsStore, fsDirectory);
+		Path existingAbsoluteFilePath = fsResourceHelper.getAbsolutePath(fsStore, fsDirectory, existingFileName);
+		Path newAbsoluteFilePath = fsResourceHelper.getAbsolutePath(fsStore, fsDirectory, newFileName);
+		String newRelativeFilePath = fsResourceHelper.getRelativePath(fsStore, fsDirectory, newFileName);
+		
+		logger.info("Replacing existing file => " + existingFileName +
+				", size => " + existingFileSize + " bytes " +
+				", with new file => " + newFileName +
+				", size => " + ((newFileSize != null) ? newFileSize + " bytes" : "null bytes") +
+				", mime type => " + contentType +
+				", Directory Id => " + fsDirectory.getDirId() + ", Directory Name => " + fsDirectory.getName() +
+				", File system path => " + absoluteDirPath.toString() +
+				", Store in Database => " + false);
+		
+		// update database
+		FsFileResource updateFileResource = new FsFileResource();
+		updateFileResource.setFileId(existingFileId);
+		updateFileResource.setFileData( new byte[]{0x00} ); // placeholder
+		existingFsFileEntry.setStoreId(fsStore.getStoreId()); // not really necessary, same store
+		existingFsFileEntry.setName(newFileName);
+		existingFsFileEntry.setMimeType(contentType);
+		existingFsFileEntry.setFileDataInDatabase(false);
+		existingFsFileEntry.setRelativePath(newRelativeFilePath);
+		existingFsFileEntry.setDateUpdated(DateUtil.getCurrentTime());
+		existingFsFileEntry.setFileSize(newFileSize);
+		FsFileResource fsUpdatedFile = (FsFileResource)merge(updateFileResource);
+		FsFileMetaResource fsUpdatedMetaFile = (FsFileMetaResource)merge(existingFsFileEntry);
+		fsUpdatedMetaFile.setFileResource(fsUpdatedFile);
+		fsUpdatedFile.setFileMetaResource(fsUpdatedMetaFile);
+		
+		// delete old file on disk
+		try {
+			FileUtil.deletePath(existingAbsoluteFilePath);
+		} catch (IOException e) {
+			throw new DatabaseException("Could not remove existing file on disk " + existingAbsoluteFilePath.toString());
+		}
+		
+		// copy over new file
+		try {
+			FileUtil.copyFile(fileToAdd, newAbsoluteFilePath);
+		} catch (IOException e) {
+			throw buildDatabaseExceptionWriteError(newAbsoluteFilePath, fsDirectory, e);
+		} catch (SecurityException e) {
+			throw buildDatabaseExceptionWriteError(newAbsoluteFilePath, fsDirectory, e);
+		}	
+		
+		return fsUpdatedMetaFile;		
+		
+	}
+	
+	/**
+	 * Add new file and replace existing. This method stores the file binary data in the database.
 	 * 
 	 * @param newFile
 	 * @param existingFsFileEntry
@@ -656,6 +862,62 @@ public class FsFileResourceAdder extends AbstractRepository {
 		} catch (SecurityException e) {
 			throw buildDatabaseExceptionWriteError(newAbsoluteFilePath, fsDirectory, e);
 		}		
+		
+		return fsUpdatedMetaFile;		
+		
+	}
+	
+	/**
+	 * Updates the binary data in the database for the existing file resource. Reads the file data from disk and updates
+	 * the binary data in the db.
+	 * 
+	 * @param fileId - thid of existing file entry to update
+	 * @param fsStore - the resource store for the file entry
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	public FsFileMetaResource syncDatabaseBinary(Long fileId, FsResourceStore fsStore) throws DatabaseException, IOException {
+		
+		FsFileMetaResource existingFsFileEntry = fsFileResourceRepository.getFileEntry(fileId, FsFileResourceFetch.FILE_META);
+		
+		Long existingFileId = existingFsFileEntry.getFileId();
+		String existingFileName = existingFsFileEntry.getName();
+		Long existingFileSize = existingFsFileEntry.getFileSize();
+		String existingMimeType = existingFsFileEntry.getMimeType();
+		Path existingFilePath = fsResourceHelper.getAbsoluteFilePath(fsStore, existingFsFileEntry);
+		
+		logger.info("Syncing binary data for existing file => " + existingFileName +
+				", size => " + existingFileSize + " bytes " +
+				", mime type => " + existingMimeType +
+				", File system path => " + existingFilePath.toString());
+		
+		// read in file data
+		// TODO - look into reading the file in chunks... not good to read entire file if file is large.
+		byte[] fileBytes = null;
+		try {
+			fileBytes = Files.readAllBytes(existingFilePath);
+		} catch (IOException e) {
+			throw new IOException("Error reading data from file => " + existingFilePath.toString(), e);
+		}
+		
+		logger.info("Read " + fileBytes.length + " bytes from file => " + existingFilePath.toString());
+		
+		// update database
+		FsFileResource updateFileResource = new FsFileResource();
+		updateFileResource.setFileId(existingFileId);
+		updateFileResource.setFileData( fileBytes );
+		//existingFsFileEntry.setStoreId(fsStore.getStoreId()); // not really necessary, same store
+		existingFsFileEntry.setName(existingFilePath.getFileName().toString());
+		//existingFsFileEntry.setMimeType(contentType);
+		existingFsFileEntry.setFileDataInDatabase(true);
+		//existingFsFileEntry.setRelativePath(newRelativeFilePath);
+		existingFsFileEntry.setDateUpdated(DateUtil.getCurrentTime());
+		existingFsFileEntry.setFileSize((long)fileBytes.length);
+		FsFileResource fsUpdatedFile = (FsFileResource)merge(updateFileResource);
+		FsFileMetaResource fsUpdatedMetaFile = (FsFileMetaResource)merge(existingFsFileEntry);
+		fsUpdatedMetaFile.setFileResource(fsUpdatedFile);
+		fsUpdatedFile.setFileMetaResource(fsUpdatedMetaFile);	
 		
 		return fsUpdatedMetaFile;		
 		

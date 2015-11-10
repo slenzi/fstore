@@ -26,6 +26,19 @@ public abstract class FileUtil {
 	private static final Detector DETECTOR = new DefaultDetector(MimeTypes.getDefaultMimeTypes());
 
 	/**
+	 * Get file size in bytes.
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static Long getFileSize(final Path file){
+		if(file == null){
+			return 0L;
+		}
+		return file.toFile().length();
+	}
+	
+	/**
 	 * Get file mime type
 	 * 
 	 * @param file

@@ -338,7 +338,7 @@ public class FsResourceService {
 	}
 	
 	/**
-	 * Add or replace file
+	 * Add or replace file. This method stores the file binary data in the database.
 	 * 
 	 * @param fileToAdd
 	 * @param parentDirId
@@ -362,7 +362,7 @@ public class FsResourceService {
 	}
 	
 	/**
-	 * Add or replace file
+	 * Add or replace file. This method provides the option of storing the file binary data in the database.
 	 * 
 	 * @param fileName
 	 * @param fileBytes
@@ -389,7 +389,7 @@ public class FsResourceService {
 	}	
 	
 	/**
-	 * Add or replace list of files
+	 * Add or replace list of files. This method provides the option of storing the file binary data in the database.
 	 * 
 	 * @param filesToAdd
 	 * @param parentDirId
@@ -409,6 +409,54 @@ public class FsResourceService {
 		}
 		
 		return fileResources;
+		
+	}
+	
+	/**
+	 * Add or replace file. This method does not store the file binary data in the database. A 1-byte placeholder will be
+	 * added in place of the binary data.
+	 * 
+	 * @param fileToAdd
+	 * @param parentDirId
+	 * @param replaceExisting
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource addFileResourceMeta(Path fileToAdd, Long parentDirId, boolean replaceExisting) throws ServiceException {
+		
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsFileResourceAdder.addFileResourceMeta(fileToAdd, parentDirId, replaceExisting);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Database error adding file meta resource => " + fileToAdd.toString() + ", to directory, id => " + parentDirId, e);
+		} catch (IOException e) {
+			throw new ServiceException("IO error adding file meta resource => " + fileToAdd.toString() + ", to directory, id => " + parentDirId, e);
+		}
+		
+		return fileResource;
+		
+	}
+	
+	/**
+	 * Reads the file data from disk and re-writes it to the database for the existing file entry.
+	 * 
+	 * @param fileId
+	 * @param store
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsFileMetaResource syncDatabaseBinary(Long fileId, FsResourceStore store) throws ServiceException {
+		
+		FsFileMetaResource fileResource = null;
+		try {
+			fileResource = fsFileResourceAdder.syncDatabaseBinary(fileId, store);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Database error syncing binary data for file meta resource with id => " + fileId, e);
+		} catch (IOException e) {
+			throw new ServiceException("IO error syncing binary data for file meta resource with id => " + fileId, e);
+		}
+		
+		return fileResource;
 		
 	}
 	
