@@ -887,6 +887,14 @@ public class FsFileResourceAdder extends AbstractRepository {
 		String existingMimeType = existingFsFileEntry.getMimeType();
 		Path existingFilePath = fsResourceHelper.getAbsoluteFilePath(fsStore, existingFsFileEntry);
 		
+		boolean canWriteBinaryToStore = existingFileSize > fsStore.getMaxFileSizeInDb() ? false : true;
+		
+		if(!canWriteBinaryToStore){
+			logger.warn("Size of file " + existingFilePath.toString() + " is greater than the resource store allows. File size is " + 
+					existingFileSize + " bytes, store max file size is " + fsStore.getMaxFileSizeInDb() + " bytes." );
+			return existingFsFileEntry;
+		}
+		
 		logger.info("Syncing binary data for existing file => " + existingFileName +
 				", size => " + existingFileSize + " bytes " +
 				", mime type => " + existingMimeType +
