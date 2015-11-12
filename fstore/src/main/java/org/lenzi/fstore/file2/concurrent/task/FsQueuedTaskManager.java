@@ -63,7 +63,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		
 		this.executorService = executorService;
 		
-		logger.info("Submitting queued task manager to executor service.");
+		logger.info("Submitting queued task manager '" + managerName + "' to executor service.");
 		
 		//this.executorService.submit(this);
 		this.executorService.execute(this);
@@ -76,11 +76,11 @@ public class FsQueuedTaskManager implements FsTaskManager {
 	@Override
 	public void stopTaskManager() {
 		
-		logger.info("Stop task manager called");
+		logger.info("Stop '" + managerName + "' task manager called");
 
 		queue.clear();
 
-		logger.info("Shuttin down executor service...");
+		logger.info("Shuttin down executor service for '" + managerName + "' task manager...");
 
 		executorService.shutdown(); // Disable new tasks from being submitted to executorService
 
@@ -110,7 +110,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 			Thread.currentThread().interrupt();   
 		}
 
-		logger.info("Stop task manager call complete");
+		logger.info("Stop '" + managerName + "' task manager call complete");
 		
 	}
 	
@@ -140,7 +140,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		
 		while(true){
 			
-			logger.debug("Polling queued task manager '" + managerName + "'  + ... queue size => " + taskCount());
+			logger.debug("Polling queued task manager, name => '" + managerName + "', queue size => " + taskCount() + ", hash code => " + hashCode());
 			
 			if(Thread.currentThread().isInterrupted()){
 				break;
@@ -153,7 +153,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 				
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				logger.warn("Interrupt exception thrown while taking next element from task queue.", e);
+				logger.warn("Interrupt exception thrown while taking next element from task queue for '" + managerName + "'.", e);
 			}
 			
 		}		
@@ -161,7 +161,7 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		//isFlaggedToStop = false;
 		isRunning = false;
 		
-		logger.info(FsQueuedTaskManager.class.getName() + " run has ended!");
+		logger.info(FsQueuedTaskManager.class.getName() + " run has ended for '" + managerName + "'!");
 		
 	}
 
@@ -179,10 +179,9 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		try {
 		
 			queue.put(task);
-			
-			logger.info("Task was queued, id => " + task.getTaskId() + 
-					", name => " + task.getClass().getName() + 
-					", queued at " + DateUtil.defaultFormat(task.getQueuedTime()));
+
+			//logger.info("Task was queued, id => " + task.getTaskId() + ", name => " + task.getClass().getName() + 
+			//		", queued at " + DateUtil.defaultFormat(task.getQueuedTime()));
 			
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();

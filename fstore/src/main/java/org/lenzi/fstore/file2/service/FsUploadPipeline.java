@@ -23,8 +23,11 @@ import javax.annotation.PreDestroy;
 
 
 
+
+
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.util.CodeTimer;
 import org.lenzi.fstore.core.util.FileUtil;
 import org.lenzi.fstore.file2.concurrent.service.FsQueuedResourceService;
 import org.lenzi.fstore.file2.concurrent.task.AbstractFsTask;
@@ -35,6 +38,7 @@ import org.lenzi.fstore.file2.web.messaging.UploadMessageService;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author sal
  */
 @Service
+@Scope("singleton")
 @Transactional
 public class FsUploadPipeline {
 
@@ -80,6 +85,8 @@ public class FsUploadPipeline {
 	
 	private ExecutorService addFileExecutorService;
 	private ExecutorService updateFileExecutorService;
+	
+	private CodeTimer timer = new CodeTimer();
     
 	public FsUploadPipeline() {
 		
@@ -216,90 +223,6 @@ public class FsUploadPipeline {
 	}
 	
 	/**
-	 * Creates a new directory in the holding resource store for the uploaded files, then saves all files to the directory.
-	 * 
-	 * @param tempDir - temporary directory where uploaded files reside
-	 * @param replaceExisting - true to replace existing files
-	 * @return reference to the newly created directory in the holding resource store.
-	 * @throws ServiceException
-	 */
-	/*
-	 * old code
-	 * 
-	public FsDirectoryResource processToHolding(Path tempDir, boolean replaceExisting) throws ServiceException {
-		
-		if(holdingStore == null){
-			throw new ServiceException("Error, holding resource store is null. Check application logs for error message. " + holdingSetupErrorMsg);
-		}
-		
-		logger.info("Got holding store");
-		
-		final Long maxAllowedBytesInDb = holdingStore.getMaxFileSizeInDb();		
-		
-		List<Path> filePaths = null;
-		try {
-			filePaths = FileUtil.listFilesToDepth(tempDir, 1);
-		} catch (IOException e) {
-			throw new ServiceException("Error listing files in temporary directory " + tempDir.toString());
-		}
-		
-		LocalDateTime timePoint = LocalDateTime.now();
-		
-		String dirPostfix = String.format("_%d.%s.%d_%d.%d.%d",
-				timePoint.getYear(), timePoint.getMonth(), timePoint.getDayOfMonth(),
-				timePoint.getHour(), timePoint.getMinute(), timePoint.getSecond());
-		
-		String dirName = "Upload" + dirPostfix;
-		
-		FsDirectoryResource uploadDir = null;
-		try {
-			uploadDir = fsResourceService.addDirectoryResource(holdingStore.getRootDirectoryResource().getDirId(), dirName);
-		} catch (ServiceException e) {
-			throw new ServiceException("Error creating new directory for upload in the holding resource store. "
-					+ "Directory name = " + dirName + ". " + e.getMessage(),e);
-		}
-		
-		logger.info("Created new directory in holding store for uploaded data: '" + dirName + "'");
-		
-		final FsDirectoryResource finalDir = uploadDir;
-		filePaths.stream().forEach(
-			(pathToFile) ->{
-			
-				addFileExecutor.execute(() -> {
-				
-					byte[] fileBytes = null;
-	
-					String fileName = pathToFile.getFileName().toString();
-					
-					try {
-						
-						fileBytes = Files.readAllBytes(pathToFile);
-						
-						boolean storeBinaryInDatabase = fileBytes.length > maxAllowedBytesInDb ? false : true;
-						
-						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, finalDir.getDirId(), replaceExisting, storeBinaryInDatabase);
-						
-						logger.info("Saved file '" + fileName + "' to holding store directory '" + dirName + "'. Size bytes => " + 
-								fileBytes.length + ", Store in DB => " + storeBinaryInDatabase);
-						
-						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), finalDir.getDirId(), resource.getName());
-						
-					} catch (ServiceException e) {
-						throw new RuntimeException("Error saving file '" + fileName + "' to directory '" + dirName + "'.", e);
-					} catch (IOException e){
-						throw new RuntimeException("IOException thrown when attempting to read file byte data from path. " + e.getMessage(), e);
-					}
-				
-				});
-				
-			});
-		
-		return uploadDir;
-		
-	}
-	*/
-	
-	/**
 	 * Processes files to existing directory
 	 * 
 	 * @param tempDir - temporary directory where uploaded files reside
@@ -307,7 +230,7 @@ public class FsUploadPipeline {
 	 * @param replaceExisting - true to replace existing files
 	 * @throws ServiceException
 	 */
-	public void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	public synchronized void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
 		//
 		// get paths to all uploaded files
@@ -336,6 +259,8 @@ public class FsUploadPipeline {
 		//
 		filePaths.stream().forEach(
 			(pathToFile) ->{
+				
+				timer.start();
 			
 				logger.info("Process to directory (start) => " + pathToFile);
 				
@@ -360,7 +285,11 @@ public class FsUploadPipeline {
 					throw new RuntimeException("Error updating binary data in database for file '" + fileName + "' in directory with id '" + parentDirId + "'.", e);
 				}
 				
-				logger.info("Process to directory (end) => " + pathToFile);
+				timer.stop();
+				
+				logger.info("Process to directory (end) => " + pathToFile + ", elapsed time => " + timer.getElapsedTime());
+				
+				timer.reset();
 				
 			});
 		
@@ -474,5 +403,91 @@ public class FsUploadPipeline {
 		return new Task();
 		
 	}
+	
+	
+	
+	/**
+	 * Creates a new directory in the holding resource store for the uploaded files, then saves all files to the directory.
+	 * 
+	 * @param tempDir - temporary directory where uploaded files reside
+	 * @param replaceExisting - true to replace existing files
+	 * @return reference to the newly created directory in the holding resource store.
+	 * @throws ServiceException
+	 */
+	/*
+	 * old code
+	 * 
+	public FsDirectoryResource processToHolding(Path tempDir, boolean replaceExisting) throws ServiceException {
+		
+		if(holdingStore == null){
+			throw new ServiceException("Error, holding resource store is null. Check application logs for error message. " + holdingSetupErrorMsg);
+		}
+		
+		logger.info("Got holding store");
+		
+		final Long maxAllowedBytesInDb = holdingStore.getMaxFileSizeInDb();		
+		
+		List<Path> filePaths = null;
+		try {
+			filePaths = FileUtil.listFilesToDepth(tempDir, 1);
+		} catch (IOException e) {
+			throw new ServiceException("Error listing files in temporary directory " + tempDir.toString());
+		}
+		
+		LocalDateTime timePoint = LocalDateTime.now();
+		
+		String dirPostfix = String.format("_%d.%s.%d_%d.%d.%d",
+				timePoint.getYear(), timePoint.getMonth(), timePoint.getDayOfMonth(),
+				timePoint.getHour(), timePoint.getMinute(), timePoint.getSecond());
+		
+		String dirName = "Upload" + dirPostfix;
+		
+		FsDirectoryResource uploadDir = null;
+		try {
+			uploadDir = fsResourceService.addDirectoryResource(holdingStore.getRootDirectoryResource().getDirId(), dirName);
+		} catch (ServiceException e) {
+			throw new ServiceException("Error creating new directory for upload in the holding resource store. "
+					+ "Directory name = " + dirName + ". " + e.getMessage(),e);
+		}
+		
+		logger.info("Created new directory in holding store for uploaded data: '" + dirName + "'");
+		
+		final FsDirectoryResource finalDir = uploadDir;
+		filePaths.stream().forEach(
+			(pathToFile) ->{
+			
+				addFileExecutor.execute(() -> {
+				
+					byte[] fileBytes = null;
+	
+					String fileName = pathToFile.getFileName().toString();
+					
+					try {
+						
+						fileBytes = Files.readAllBytes(pathToFile);
+						
+						boolean storeBinaryInDatabase = fileBytes.length > maxAllowedBytesInDb ? false : true;
+						
+						FsFileMetaResource resource = fsResourceService.addFileResource(fileName, fileBytes, finalDir.getDirId(), replaceExisting, storeBinaryInDatabase);
+						
+						logger.info("Saved file '" + fileName + "' to holding store directory '" + dirName + "'. Size bytes => " + 
+								fileBytes.length + ", Store in DB => " + storeBinaryInDatabase);
+						
+						uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), finalDir.getDirId(), resource.getName());
+						
+					} catch (ServiceException e) {
+						throw new RuntimeException("Error saving file '" + fileName + "' to directory '" + dirName + "'.", e);
+					} catch (IOException e){
+						throw new RuntimeException("IOException thrown when attempting to read file byte data from path. " + e.getMessage(), e);
+					}
+				
+				});
+				
+			});
+		
+		return uploadDir;
+		
+	}
+	*/	
 
 }

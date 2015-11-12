@@ -186,9 +186,8 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 		
 		runStartTime = DateUtil.getCurrentTime();
 		
-		getLogger().info("Task is running, id => " + getTaskId() + 
-				", name => " + getClass().getName() + 
-				", queued at => " + DateUtil.defaultFormat(this.getQueuedTime()));
+		//getLogger().info("Task is running, id => " + getTaskId() + ", name => " + getClass().getName() + 
+		//		", queued at => " + DateUtil.defaultFormat(this.getQueuedTime()));
 		
 		T value = null;
 		
@@ -205,7 +204,7 @@ public abstract class AbstractFsTask<T> implements FsQueuedTask<T>, Comparable<F
 		
 		runEndTime = DateUtil.getCurrentTime();
 		
-		getLogger().info("Task ended.");
+		//getLogger().info("Task ended.");
 		
 		// at this point, any potential client thread that's blocking on CompletableFuture.get() will wake up and receive the value
 		getCompletableFuture().complete(value);
