@@ -351,13 +351,13 @@ public class FsQueuedResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsResourceStore getResourceStoreByPathResource(final Long resourceId) throws ServiceException {
+	public FsResourceStore getResourceStoreByPathResourceId(final Long resourceId) throws ServiceException {
 		
 		class Task extends AbstractFsTask<FsResourceStore> {
 
 			@Override
 			public FsResourceStore doWork() throws ServiceException {
-				return fsResourceService.getStoreByPathResourceId(resourceId);
+				return fsResourceService.getResourceStoreByPathResourceId(resourceId);
 			}
 
 			@Override

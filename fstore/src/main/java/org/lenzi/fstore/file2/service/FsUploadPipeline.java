@@ -55,7 +55,10 @@ public class FsUploadPipeline {
     private ManagedProperties appProps; 	
 	
     @Autowired
-    private FsQueuedResourceService fsResourceService;
+    private FsQueuedResourceService fsQueuedResourceService;
+    
+    @Autowired
+    private FsResourceService fsResourceService;    
     
     @Autowired
     private UploadMessageService uploadMessageService;
@@ -193,7 +196,7 @@ public class FsUploadPipeline {
 		
 		FsResourceStore holdingStore = null;
 		try {
-			holdingStore = fsResourceService.getResourceStoreByName(holdingStoreName);
+			holdingStore = fsQueuedResourceService.getResourceStoreByName(holdingStoreName);
 		} catch (ServiceException e) {
 			throw new ServiceException("Failed to fetch holding resource store from database. " + e.getMessage(), e);
 		}
@@ -202,7 +205,7 @@ public class FsUploadPipeline {
 			String holdingStorePath = appProps.getProperty("resource.store.holding.path");
 			String holdingStoreDesc = appProps.getProperty("resource.store.holding.desc");
 			try {
-				holdingStore = fsResourceService.addResourceStore(Paths.get(holdingStorePath), holdingStoreName, holdingStoreDesc, true);
+				holdingStore = fsQueuedResourceService.addResourceStore(Paths.get(holdingStorePath), holdingStoreName, holdingStoreDesc, true);
 			} catch (ServiceException e) {
 				throw new ServiceException("Failed to create holding store. " + e.getMessage(), e);
 			}
@@ -321,7 +324,7 @@ public class FsUploadPipeline {
 		//
 		FsResourceStore store = null;
 		try {
-			store = fsResourceService.getResourceStoreByPathResource(parentDirId);
+			store = fsResourceService.getResourceStoreByPathResourceId(parentDirId);
 		} catch (ServiceException e) {
 			throw new ServiceException("Failed to fetch resource store for directory path resource with id => " + 
 					parentDirId + ". " + e.getMessage());
@@ -375,9 +378,44 @@ public class FsUploadPipeline {
 	 */
 	private FsFileMetaResource addFileToDirectory(Path pathToFile, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
-		//
-		// create task which adds the file meta data to the database.
-		//
+		AbstractFsTask<FsFileMetaResource> task = getAddToDirectoryTask(pathToFile, parentDirId, replaceExisting);
+		
+		addFileTaskManager.addTask(task);
+		
+		FsFileMetaResource resource = task.get(); // block until complete
+		
+		return resource;
+		
+	}
+	
+	/**
+	 * Updates the binary data for the file entry in the database with the file data from disk.
+	 * 
+	 * @param fileMeta - the database file entry to update
+	 * @param store - resource store for the file
+	 * @throws ServiceException
+	 */
+	private void updateWithBinaryData(Long fileId, final FsResourceStore store) throws ServiceException {
+		
+		AbstractFsTask<Void> task = getUpdateBinaryDataTask(fileId, store);
+		
+		updateFileTaskManager.addTask(task);
+		
+		// do not block
+		//task.waitComplete();
+		
+	}
+	
+	/**
+	 * Return a new task which adds/replaces a file in the database (meta data only.)
+	 * 
+	 * @param pathToFile
+	 * @param parentDirId
+	 * @param replaceExisting
+	 * @return
+	 */
+	private AbstractFsTask<FsFileMetaResource> getAddToDirectoryTask(Path pathToFile, Long parentDirId, boolean replaceExisting) {
+		
 		class Task extends AbstractFsTask<FsFileMetaResource> {
 
 			@Override
@@ -385,8 +423,7 @@ public class FsUploadPipeline {
 
 				String fileName = pathToFile.getFileName().toString();
 
-				FsFileMetaResource resource = fsResourceService.addFileResourceMeta(
-						pathToFile, parentDirId, replaceExisting);
+				FsFileMetaResource resource = fsQueuedResourceService.addFileResourceMeta(pathToFile, parentDirId, replaceExisting);
 				
 				logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "', Store in DB => " + false);
 				
@@ -401,56 +438,30 @@ public class FsUploadPipeline {
 				return logger;
 			}
 			
-		};
+		};		
 		
-		Task t = new Task();
-		addFileTaskManager.addTask(t);
-		
-		FsFileMetaResource resource = t.get(); // block until complete
-		
-		return resource;
+		return new Task();
 		
 	}
 	
 	/**
-	 * Updates the binary data for the file entry in the database with the file data from disk.
+	 * Return a new task that updates the binary data in the database for the file
 	 * 
-	 * @param fileMeta - the database file entry to update
-	 * @param store - resource store for the file
-	 * @throws ServiceException
+	 * @param fileId
+	 * @param store
+	 * @return
 	 */
-	private FsFileMetaResource updateWithBinaryData(Long fileId, final FsResourceStore store) throws ServiceException {
+	private AbstractFsTask<Void> getUpdateBinaryDataTask(Long fileId, final FsResourceStore store) {
 		
-		//
-		// create task that updates the binary data in the database for the file
-		//
-		class Task extends AbstractFsTask<FsFileMetaResource> {
+		class Task extends AbstractFsTask<Void> {
 
 			@Override
-			public FsFileMetaResource doWork() throws ServiceException {
-				
-				final Long maxAllowedBytesInDb = store.getMaxFileSizeInDb();
-				
-				//final Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileMeta);				
+			public Void doWork() throws ServiceException {
+					
+				fsQueuedResourceService.syncDatabaseBinary(fileId, store);
+					
+				return null;
 
-				//final boolean storeBinaryInDatabase = fileMeta.getFileSize() > maxAllowedBytesInDb ? false : true;
-				
-				FsFileMetaResource updatedMeta = null;
-				
-				//if(storeBinaryInDatabase){
-					
-					updatedMeta = fsResourceService.syncDatabaseBinary(fileId, store);
-					
-					logger.info("Updated binary data in database for file path resource with file id => " + fileId);
-					
-				//}else{
-				//	
-				//	logger.info("Updated binary data in database for file path resource => " + filePath + 
-				//			", store in database = " + storeBinaryInDatabase + ", file is larger than the max allowed size for the resource store.");
-				//	
-				//}
-				
-				return updatedMeta;
 			}
 
 			@Override
@@ -459,12 +470,8 @@ public class FsUploadPipeline {
 			}
 			
 		};
-		Task t = new Task();
-		updateFileTaskManager.addTask(t);
 		
-		FsFileMetaResource resource = t.get(); // block until complete
-		
-		return resource;
+		return new Task();
 		
 	}
 

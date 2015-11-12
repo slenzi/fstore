@@ -217,7 +217,7 @@ public class FsResourceService {
 	public FsFile getFsFileById(Long fileId) throws ServiceException {
 		
 		FsFileMetaResource fileResource = getFileResourceById(fileId, FsFileResourceFetch.FILE_META_WITH_DATA);
-		FsResourceStore store = getStoreByPathResourceId(fileId);
+		FsResourceStore store = getResourceStoreByPathResourceId(fileId);
 		java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
 		
 		byte[] fileData = null;
@@ -253,7 +253,7 @@ public class FsResourceService {
 	public FsFile getFsFileByPath(String path) throws ServiceException {
 		
 		FsFileMetaResource fileResource = getFileResourceByPath(path, FsFileResourceFetch.FILE_META_WITH_DATA);
-		FsResourceStore store = getStoreByPathResourceId(fileResource.getFileId());
+		FsResourceStore store = getResourceStoreByPathResourceId(fileResource.getFileId());
 		java.nio.file.Path filePath = fsResourceHelper.getAbsoluteFilePath(store, fileResource);
 		
 		byte[] fileData = null;
@@ -668,7 +668,7 @@ public class FsResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsResourceStore getStoreByPathResourceId(Long resourceId) throws ServiceException {
+	public FsResourceStore getResourceStoreByPathResourceId(Long resourceId) throws ServiceException {
 		
 		FsResourceStore store = null;
 		try {
