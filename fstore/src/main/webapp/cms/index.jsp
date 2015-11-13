@@ -53,9 +53,9 @@
 				<md-toolbar class="md-toolbar-tools md-hue-1">
 				
 					<!-- ui-sref="settings" -->
-					<md-button class="md-raised md-warn leftNavButton" ng-click="main.notImplemented()">
+					<md-button class="md-raised md-warn leftNavButton" ng-href="<%=request.getContextPath()%>/administration/index.jsp">
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_settings_24px.svg"></md-icon>
-						System Settings
+						Administration
 					</md-button>				
 				
 				</md-toolbar>

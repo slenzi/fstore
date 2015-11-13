@@ -1,0 +1,16 @@
+
+/**
+ * administration specific styles go here
+ */
+
+ a.fstore-module-title {
+	 color: #eee;
+ }
+ 
+ .fstore-admin-toolbar button span {
+	 color: #eee;
+ }
+ 
+  .fstore-admin-toolbar md-icon {
+	 color: #eee;
+ }
