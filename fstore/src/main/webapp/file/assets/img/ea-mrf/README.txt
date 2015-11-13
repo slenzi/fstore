@@ -1,0 +1,1 @@
+file manager specific images for ea-mrf version

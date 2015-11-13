@@ -10,7 +10,7 @@ Resource store list partial that's loaded for the "main_storeList" state
     <md-list>
 		<div ng-repeat="store in main.storeList() track by $index"> <!-- ui-sref="home_directory" -->
 			<md-list-item ng-click="main.handleEventViewStore(store.id)">
-				<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_archive_24px.svg"></md-icon>
+				<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_archive_24px.svg"></md-icon>
 				{{store.name}}
 				<span flex></span>
 			</md-list-item>

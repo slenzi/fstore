@@ -8,7 +8,7 @@ Resource store settings partial that's loaded for the "main_storeSettings" state
 <md-content layout-padding id="storeSettingsContent" style="padding: 10px;">
 
 	<p>
-	This is the store settings view. Comming soon.
+	This is the store settings view. Coming soon.
 	</p>
 
 </md-content>

@@ -20,7 +20,10 @@
 		<jsp:include page="includes_header.jsp" />
 	    
 	    <!-- app resources -->
-	    <link rel="stylesheet" href="<%=request.getContextPath()%>/cms/assets/css/app.css"/>
+	    <link rel="stylesheet" href="<%=request.getContextPath()%>/common/assets/css/app.css"/>
+	    
+	    <!-- override common styles with cms specific styles -->
+	    <link rel="stylesheet" href="<%=request.getContextPath()%>/cms/assets/css/app.css"/>	    
 	    
 		<!-- for angular location provider -->
 		<base href="/cms">	    
@@ -40,7 +43,7 @@
 					<a href="<%=request.getContextPath()%>">Content Management System</a>
 					<span flex></span>
 					<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_menu_18px.svg"></md-icon>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_menu_18px.svg"></md-icon>
 					</md-button>
 				</h3>
 			</md-toolbar>
@@ -51,7 +54,7 @@
 				
 					<!-- ui-sref="settings" -->
 					<md-button class="md-raised md-warn leftNavButton" ng-click="main.notImplemented()">
-						<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_settings_24px.svg"></md-icon>
+						<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_settings_24px.svg"></md-icon>
 						System Settings
 					</md-button>				
 				
@@ -87,7 +90,7 @@
 			<span flex></span>
 			<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
 				<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
-					<md-icon md-svg-icon="<%=request.getContextPath()%>/cms/assets/img/icons/ic_menu_18px.svg"></md-icon>
+					<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_menu_18px.svg"></md-icon>
 				</md-button>				
 				<span style="font-style: italic; whitespace:nowrap;">{{main.sectionTitle()}}</span>
 				<div flex></div>

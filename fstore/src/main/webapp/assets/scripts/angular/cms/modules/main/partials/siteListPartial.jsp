@@ -9,7 +9,7 @@ Cms site list partial that's loaded for the "main_siteList" state
 	<md-list>
 		<div ng-repeat="cmsSite in main.cmsSiteList() track by $index">
 			<md-list-item ng-click="main.notImplemented()">
-				<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_archive_24px.svg"></md-icon>
+				<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_archive_24px.svg"></md-icon>
 				{{cmsSite.name}}
 				<span flex></span>
 			</md-list-item>

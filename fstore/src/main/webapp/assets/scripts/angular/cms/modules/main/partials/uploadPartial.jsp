@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 
 <!--
-Uploa form partial that's loaded for the "main_upload" state
+Upload form partial that's loaded for the "main_upload" state
 -->
 	
 <md-content layout-padding id="storeSettingsContent">

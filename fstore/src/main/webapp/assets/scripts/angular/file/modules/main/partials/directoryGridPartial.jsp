@@ -48,7 +48,7 @@ Directory partial that's loaded for the "main_directory_icon" state
 				<span flex></span>
 				<md-menu md-position-mode="target-right target">
 					<md-button aria-label="Open resource menu" class="md-icon-button" ng-click="$mdOpenMenu(); $event.stopPropagation();">
-						<md-icon md-menu-origin md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_more_vert_24px.svg" style="height: 40px;"></md-icon>
+						<md-icon md-menu-origin md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_more_vert_24px.svg" style="height: 40px;"></md-icon>
 					</md-button>
 					<md-menu-content width="4">
 						<md-menu-item>
@@ -60,9 +60,9 @@ Directory partial that's loaded for the "main_directory_icon" state
 				</md-menu>						
 			</md-grid-tile-header>			
 			
-			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_folder_48px.svg"></md-icon>
+			<md-icon ng-if="pathResource.type == 'DIRECTORY'" class="gray shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_folder_48px.svg"></md-icon>
 			
-			<md-icon ng-if="pathResource.type == 'FILE'" class="red shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_insert_drive_file_24px.svg"></md-icon>
+			<md-icon ng-if="pathResource.type == 'FILE'" class="red shadow" style="width:70%; height:70%;" md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_insert_drive_file_24px.svg"></md-icon>
 			
 			<md-grid-tile-footer ng-class="{'selectedFooter' : pathResource.isSelected}">
 				<h3 ng-if="pathResource.type == 'DIRECTORY'" ng-class="{'selectedFooterText' : pathResource.isSelected}">
