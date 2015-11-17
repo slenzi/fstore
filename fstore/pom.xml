@@ -51,6 +51,7 @@
 		<version.javax.jsr311.version>1.1.1</version.javax.jsr311.version>
 		
 		<version.spring>4.2.2.RELEASE</version.spring> <!-- was 4.1.7.RELEASE 10/29/2015 -->
+		<version.spring.security>4.0.3.RELEASE</version.spring.security>
 		
 		<version.hibernate>5.0.2.Final</version.hibernate> <!-- was 4.3.10.Final 10/29/2015 -->
 		<!-- not sure if hibernate jpa is needed -->
@@ -250,6 +251,18 @@
 			<artifactId>spring-messaging</artifactId>
 			<version>${version.spring}</version>
 		</dependency>
+		<!-- Spring security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${version.spring.security}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${version.spring.security}</version>
+		</dependency>
+				
 			
 
 		<!-- used in unit tests -->
