@@ -1,4 +1,4 @@
-package org.lenzi.fstore.core.repository.model;
+package org.lenzi.fstore.core.repository.tree.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

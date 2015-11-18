@@ -1,4 +1,4 @@
-package org.lenzi.fstore.core.repository.model.impl;
+package org.lenzi.fstore.core.repository.tree.model.impl;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -17,8 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.core.repository.model.DBClosure;
-import org.lenzi.fstore.core.repository.model.DBNode;
+import org.lenzi.fstore.core.repository.tree.model.DBClosure;
+import org.lenzi.fstore.core.repository.tree.model.DBNode;
 
 /**
  * Database entity for FS_NODE.

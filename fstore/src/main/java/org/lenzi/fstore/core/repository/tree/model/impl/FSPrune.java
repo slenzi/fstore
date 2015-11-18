@@ -1,4 +1,4 @@
-package org.lenzi.fstore.core.repository.model.impl;
+package org.lenzi.fstore.core.repository.tree.model.impl;
 
 
 import javax.persistence.Column;
@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.core.repository.model.DBPrune;
+import org.lenzi.fstore.core.repository.tree.model.DBPrune;
 
 /**
  * Database entity for FS_PRUNE.

@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.lenzi.fstore.core.model.util.NodeCopier;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
-import org.lenzi.fstore.core.repository.model.DBClosure;
-import org.lenzi.fstore.core.repository.model.impl.FSNode;
-import org.lenzi.fstore.core.repository.model.impl.FSTree;
+import org.lenzi.fstore.core.repository.tree.model.DBClosure;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSTree;
 
 public interface TreeRepository<N extends FSNode<N>> {
 	

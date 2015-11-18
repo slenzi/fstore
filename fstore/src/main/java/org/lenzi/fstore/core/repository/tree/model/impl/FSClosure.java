@@ -1,4 +1,4 @@
-package org.lenzi.fstore.core.repository.model.impl;
+package org.lenzi.fstore.core.repository.tree.model.impl;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.core.repository.model.DBClosure;
+import org.lenzi.fstore.core.repository.tree.model.DBClosure;
 
 /**
  * Database entity for FS_CLOSURE. 

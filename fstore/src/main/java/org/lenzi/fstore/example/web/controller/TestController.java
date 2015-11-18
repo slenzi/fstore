@@ -3,7 +3,7 @@
  */
 package org.lenzi.fstore.example.web.controller;
 
-import org.lenzi.fstore.core.repository.model.impl.FSTree;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSTree;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;

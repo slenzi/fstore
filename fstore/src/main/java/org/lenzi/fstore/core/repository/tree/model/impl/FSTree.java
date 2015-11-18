@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.core.repository.model.impl;
+package org.lenzi.fstore.core.repository.tree.model.impl;
 
 import java.sql.Timestamp;
 
@@ -13,7 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.core.repository.model.DBTree;
+import org.lenzi.fstore.core.repository.tree.model.DBTree;
 
 /**
  * @author sal

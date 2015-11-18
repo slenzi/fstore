@@ -1,6 +1,6 @@
 package org.lenzi.fstore.core.repository.tree.visitor;
 
-import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSNode;
 import org.lenzi.fstore.core.tree.TreeNode;
 import org.lenzi.fstore.core.tree.TreeNodeVisitException;
 import org.lenzi.fstore.core.tree.TreeNodeVisitor;

@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSNode;
 import org.lenzi.fstore.core.util.DateUtil;
 
 /**

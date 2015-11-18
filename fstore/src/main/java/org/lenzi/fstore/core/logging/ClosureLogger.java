@@ -3,8 +3,8 @@ package org.lenzi.fstore.core.logging;
 import java.util.List;
 import java.util.Set;
 
-import org.lenzi.fstore.core.repository.model.DBClosure;
-import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.tree.model.DBClosure;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSNode;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;

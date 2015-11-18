@@ -1,6 +1,6 @@
 package org.lenzi.fstore.core.model.util;
 
-import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSNode;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
 

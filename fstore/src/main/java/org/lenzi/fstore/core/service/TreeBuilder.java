@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.lenzi.fstore.core.repository.model.DBClosure;
-import org.lenzi.fstore.core.repository.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.tree.model.DBClosure;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSNode;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.tree.Tree;
 import org.lenzi.fstore.core.tree.TreeNode;

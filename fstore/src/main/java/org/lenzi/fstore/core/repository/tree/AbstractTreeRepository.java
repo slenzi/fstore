@@ -26,10 +26,10 @@ import org.lenzi.fstore.core.model.util.NodeCopier;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.ResultFetcher;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
-import org.lenzi.fstore.core.repository.model.DBClosure;
-import org.lenzi.fstore.core.repository.model.impl.FSClosure;
-import org.lenzi.fstore.core.repository.model.impl.FSNode;
-import org.lenzi.fstore.core.repository.model.impl.FSTree;
+import org.lenzi.fstore.core.repository.tree.model.DBClosure;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSClosure;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSNode;
+import org.lenzi.fstore.core.repository.tree.model.impl.FSTree;
 import org.lenzi.fstore.core.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.core.service.ClosureMapBuilder;
 import org.lenzi.fstore.core.service.TreeBuilder;
@@ -254,7 +254,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	/**
 	 * Fetch the node's parent node. If this node is a root node then null is returned.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getParentNode(org.lenzi.fstore.core.repository.model.impl.FSNode)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getParentNode(org.lenzi.fstore.core.repository.tree.model.impl.FSNode)
 	 */
 	@Override
 	public N getParentNode(N node) throws DatabaseException {
@@ -300,7 +300,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * Fetch the first level children of the node (does not include the children's children, etc). If the
 	 * node is a leaf node (has no children) then null is returned.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getChildNodes(org.lenzi.fstore.core.repository.model.impl.FSNode)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getChildNodes(org.lenzi.fstore.core.repository.tree.model.impl.FSNode)
 	 */
 	@Override
 	public List<N> getChildNodes(N node) throws DatabaseException {
@@ -428,7 +428,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	/**
 	 * Add a new root node. Parent node ID will be set to 0.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#addRootNode(org.lenzi.fstore.core.repository.model.DBNode)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#addRootNode(org.lenzi.fstore.core.repository.tree.model.DBNode)
 	 */
 	@Override
 	public N addRootNode(N newNode) throws DatabaseException {
@@ -452,7 +452,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @param parentNode - The parent node under which the new node will be added.
 	 * @param newNode - The new node to add.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#addChildNode(org.lenzi.fstore.core.repository.model.DBNode, org.lenzi.fstore.core.repository.model.DBNode)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#addChildNode(org.lenzi.fstore.core.repository.tree.model.DBNode, org.lenzi.fstore.core.repository.tree.model.DBNode)
 	 */
 	@Override
 	public N addChildNode(N parentNode, N newNode) throws DatabaseException {
@@ -622,7 +622,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * 
 	 * UPDATE - Confirmed, the query does properly pull from type N (e.g. FSTestNode, or other). Hibernate magic!
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getClosure(org.lenzi.fstore.core.repository.model.DBNode)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getClosure(org.lenzi.fstore.core.repository.tree.model.DBNode)
 	 */
 	@Override
 	public List<DBClosure<N>> getClosure(N node) throws DatabaseException {
@@ -965,7 +965,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	/**
 	 * Fetch a tree, including it's root node data.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getTree(org.lenzi.fstore.core.repository.model.impl.FSTree)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getTree(org.lenzi.fstore.core.repository.tree.model.impl.FSTree)
 	 */
 	@Override
 	public FSTree<N> getTree(FSTree<N> tree) throws DatabaseException {
@@ -983,7 +983,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	/**
 	 * Fetch a tree, including it's root node data. Also specify the type of the nodes in the tree when performing the join.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getTree(org.lenzi.fstore.core.repository.model.impl.FSTree, java.lang.Class)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#getTree(org.lenzi.fstore.core.repository.tree.model.impl.FSTree, java.lang.Class)
 	 */
 	@Override
 	public FSTree<N> getTree(FSTree<N> tree, Class<N> nodeClass) throws DatabaseException {
@@ -1090,7 +1090,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * Root node object should also contain a name.
 	 * That is all that is required.
 	 * 
-	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#addTree(org.lenzi.fstore.core.repository.model.DBTree, org.lenzi.fstore.core.repository.model.DBNode)
+	 * @see org.lenzi.fstore.core.repository.tree.TreeRepository#addTree(org.lenzi.fstore.core.repository.tree.model.DBTree, org.lenzi.fstore.core.repository.tree.model.DBNode)
 	 */
 	@Override
 	public FSTree<N> addTree(FSTree<N> newTree, N newRootNode) throws DatabaseException {
