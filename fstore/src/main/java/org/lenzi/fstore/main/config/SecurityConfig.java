@@ -52,8 +52,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// TODO Auto-generated method stub
-		super.configure(http);
+		
+		// spring security comes with a default login form. This can be overridden.
+		
+		// restrict access to administration section to users who have 'ADMIN' role 
+		http.authorizeRequests().antMatchers("/administration/**").hasAnyRole("ADMIN","OTHER_1","OTHER_2").and().formLogin();
+		
 	}
 
 

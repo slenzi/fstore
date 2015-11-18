@@ -45,7 +45,8 @@ import org.springframework.stereotype.Controller;
 	CxfConfig.class,
 	RepositoryConfig.class,
 	WebSocketConfig.class,
-	WebSocketChatConfig.class
+	WebSocketChatConfig.class,
+	SecurityConfig.class
 })
 public class AppConfig {
 
@@ -64,5 +65,7 @@ public class AppConfig {
 	// WebSocketConfig - Setup websocket STOMP messaging support
 	
 	// WebSocketChatConfig - Setup websocket chat support
+	
+	// SecurityConfig - Setup spring security
 	
 }
