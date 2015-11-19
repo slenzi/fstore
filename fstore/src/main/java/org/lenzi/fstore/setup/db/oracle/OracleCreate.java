@@ -25,9 +25,10 @@ public class OracleCreate {
 	private EntityManager entityManager;		
 	
 	
+	
 	/***********************************************************************************
 	 * 
-	 * core tree tables
+	 * core tables
 	 * 
 	 */
 	private String SQL_DROP_TABLE_FS_NODE =
@@ -72,6 +73,53 @@ public class OracleCreate {
 		"	UPDATED_DATE date NOT NULL, " +
 		"	PRIMARY KEY (TREE_ID) " +
 		")";
+	private String SQL_DROP_TABLE_FS_USER =
+		"drop table FS_USER";
+	private String SQL_CREATE_TABLE_FS_USER =	
+		"create table FS_USER (  " +
+		"	USER_ID NUMBER(15,0) NOT NULL, " +
+		"	USERNAME VARCHAR2(20) NOT NULL, " +
+		"	PASSWORD VARCHAR2(20) NOT NULL, " +
+		"	FIRST_NAME VARCHAR2(40) NOT NULL, " +
+		"	MIDDLE_NAME VARCHAR2(40) NOT NULL, " +
+		"	LAST_NAME VARCHAR2(40) NOT NULL, " +
+		"	PRIMARY_EMAIL VARCHAR2(256) NOT NULL, " +
+		"	PRIMARY KEY (USER_ID)  " +
+		")";
+	private String SQL_DROP_TABLE_FS_USER_GROUP =
+		"drop table FS_USER_GROUP";
+	private String SQL_CREATE_TABLE_FS_USER_GROUP =		
+		"create table FS_USER_GROUP (  " +
+		"	GROUP_ID NUMBER(15,0) NOT NULL, " +
+		"	GROUP_CODE VARCHAR2(250) NOT NULL, " +
+		"	GROUP_DESC VARCHAR2(2000) NOT NULL, " +
+		"	PRIMARY KEY (GROUP_ID) " +
+		")";
+	private String SQL_DROP_TABLE_FS_USER_ROLE =
+		"drop table FS_USER_ROLE";
+	private String SQL_CREATE_TABLE_FS_USER_ROLE =		
+		"create table FS_USER_ROLE ( " + 
+		"	ROLE_ID NUMBER(15,0) NOT NULL, " +
+		"	ROLE_CODE VARCHAR2(250) NOT NULL, " +
+		"	ROLE_DESC VARCHAR2(2000) NOT NULL, " +
+		"	PRIMARY KEY (ROLE_ID) " +
+		")";
+	private String SQL_DROP_TABLE_FS_USER_ROLE_LINK =
+		"drop table FS_USER_ROLE_LINK";
+	private String SQL_CREATE_TABLE_FS_USER_ROLE_LINK =		
+		"create table FS_USER_ROLE_LINK ( " + 
+		"	USER_ID NUMBER(15,0) NOT NULL, " +
+		"	ROLE_ID NUMBER(15,0) NOT NULL, " +
+		"	PRIMARY KEY (USER_ID,ROLE_ID) " + 
+		")";
+	private String SQL_DROP_TABLE_FS_USER_GROUP_LINK =
+		"drop table FS_USER_GROUP_LINK";
+	private String SQL_CREATE_TABLE_FS_USER_GROUP_LINK =		
+		"create table FS_USER_GROUP_LINK ( " + 
+		"	USER_ID NUMBER(15,0) NOT NULL, " +
+		"	GROUP_ID NUMBER(15,0) NOT NULL, " +
+		"	PRIMARY KEY (USER_ID,GROUP_ID) " + 
+		")";	
 	
 	/***********************************************************************************
 	 * 
@@ -86,61 +134,6 @@ public class OracleCreate {
 		"	TEST_VALUE VARCHAR2(250), " +
 		"	PRIMARY KEY (NODE_ID) " +
 		")";
-	
-	/***********************************************************************************
-	 * 
-	 * File 1 tables
-	 * 
-	 */
-	/* old
-	private String SQL_DROP_TABLE_FS_DIRECTORY =
-		"drop table FS_DIRECTORY";	
-	private String SQL_CREATE_TABLE_FS_DIRECTORY =
-		"create table FS_DIRECTORY ( " + 
-		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
-		"	DIR_NAME VARCHAR2(250) NOT NULL, " +
-		"	RELATIVE_DIR_PATH VARCHAR2(250) NOT NULL, " +
-		"	PRIMARY KEY (NODE_ID) " + 
-		")";
-	private String SQL_DROP_TABLE_FS_DIR_FILE_LINK =
-		"drop table FS_DIR_FILE_LINK";
-	private String SQL_CREATE_TABLE_FS_DIR_FILE_LINK =
-		"create table FS_DIR_FILE_LINK ( " + 
-		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
-		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
-		"	PRIMARY KEY(NODE_ID,FILE_ID) " + 
-		")";
-	private String SQL_DROP_TABLE_FS_FILE_ENTRY =
-		"drop table FS_FILE_ENTRY";	
-	private String SQL_CREATE_TABLE_FS_FILE_ENTRY =
-		"create table FS_FILE_ENTRY ( " +  
-		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
-		"	FILE_SIZE NUMBER(15,0) NOT NULL, " + 
-		"	FILE_NAME VARCHAR2(250) NOT NULL, " +  
-		"	PRIMARY KEY (FILE_ID) " +  
-		")";
-	private String SQL_DROP_TABLE_FS_FILE =
-		"drop table FS_FILE";	
-	private String SQL_CREATE_TABLE_FS_FILE =
-		"create table FS_FILE ( " +  
-		"	FILE_ID NUMBER(15,0) NOT NULL, " + 
-		"	FILE_DATA BLOB NOT NULL, " + 
-		"	PRIMARY KEY (FILE_ID) " + 
-		")";
-	private String SQL_DROP_TABLE_FS_FILE_STORE =
-		"drop table FS_FILE_STORE";	
-	private String SQL_CREATE_TABLE_FS_FILE_STORE =
-		"create table FS_FILE_STORE ( " +  
-		"	STORE_ID NUMBER(15,0) NOT NULL, " + 
-		"	STORE_NAME VARCHAR2(250) NOT NULL, " + 
-		"	STORE_DESCRIPTION VARCHAR2(4000) NOT NULL, " + 
-		"	STORE_PATH VARCHAR2(2000) NOT NULL, " + 
-		"	NODE_ID NUMBER(15,0) NOT NULL, " + 
-		"	CREATION_DATE date NOT NULL,  " + 
-		"	UPDATED_DATE date NOT NULL,  " + 
-		"	PRIMARY KEY (STORE_ID)  " + 
-		")";
-	*/
 	
 	/***********************************************************************************
 	 * 
@@ -345,7 +338,40 @@ public class OracleCreate {
 		"START WITH 1 " +
 		"CACHE 10  " +
 		"ORDER  " +
+		"NOCYCLE";
+	private String SQL_DROP_SEQUENCE_FS_USER_ID =
+		"drop sequence FS_USER_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_USER_ID =
+		"CREATE SEQUENCE FS_USER_ID_SEQUENCE " + 
+		"MINVALUE 1 " +
+		"MAXVALUE 999999999999999999999999999 " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"ORDER  " +
+		"NOCYCLE";
+	private String SQL_DROP_SEQUENCE_FS_USER_GROUP_ID =
+		"drop sequence FS_USER_GROUP_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_USER_GROUP_ID =
+		"CREATE SEQUENCE FS_USER_GROUP_ID_SEQUENCE " + 
+		"MINVALUE 1 " +
+		"MAXVALUE 999999999999999999999999999 " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"ORDER  " +
 		"NOCYCLE";	
+	private String SQL_DROP_SEQUENCE_FS_USER_ROLE_ID =
+		"drop sequence FS_USER_ROLE_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID =
+		"CREATE SEQUENCE FS_USER_ROLE_ID_SEQUENCE " + 
+		"MINVALUE 1 " +
+		"MAXVALUE 999999999999999999999999999 " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"ORDER  " +
+		"NOCYCLE";			
 
 	
 	public OracleCreate() {
@@ -371,12 +397,20 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_FILE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();
 		
 		// core tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TREE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_GROUP).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_ROLE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_GROUP_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_ROLE_LINK).executeUpdate();
 		
 		// test tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
@@ -436,6 +470,11 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_GROUP_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_ROLE_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_GROUP).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_ROLE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER).executeUpdate();
 		
 		// sequences
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_PRUNE_ID).executeUpdate();
@@ -445,6 +484,9 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_FILE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();
 		
 	}
 	

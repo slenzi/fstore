@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 			"org.lenzi.fstore.core.repository",
 			"org.lenzi.fstore.core.repository.tree.model",
 			"org.lenzi.fstore.core.repository.tree.model.impl",
+			"org.lenzi.fstore.core.repository.security.model",
+			"org.lenzi.fstore.core.repository.security.model.impl",			
 			"org.lenzi.fstore.core.service",
 			"org.lenzi.fstore.core.logging",
 			"org.lenzi.fstore.example.service",

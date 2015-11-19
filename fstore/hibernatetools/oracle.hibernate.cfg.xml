@@ -44,6 +44,9 @@
         <mapping class="org.lenzi.fstore.core.repository.tree.model.impl.FSClosure"/>
         <mapping class="org.lenzi.fstore.core.repository.tree.model.impl.FSPrune"/>
         <mapping class="org.lenzi.fstore.core.repository.tree.model.impl.FSTree"/>
+        <mapping class="org.lenzi.fstore.core.repository.security.model.impl.FSUser"/>
+        <mapping class="org.lenzi.fstore.core.repository.security.model.impl.FSUserGroup"/>
+        <mapping class="org.lenzi.fstore.core.repository.security.model.impl.FSUserRole"/>
         
         <mapping class="org.lenzi.fstore.example.repository.model.impl.FSTestNode"/>
       	

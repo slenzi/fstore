@@ -28,7 +28,7 @@ public class PostgreSQLCreate {
 	
 	/***********************************************************************************
 	 * 
-	 * core tree tables
+	 * core tables
 	 * 
 	 */
 	private String SQL_DROP_TABLE_FS_NODE =
@@ -53,7 +53,6 @@ public class PostgreSQLCreate {
 		"	DEPTH NUMERIC(5,0) NOT NULL, " +
 		"	PRIMARY KEY (LINK_ID) " +
 		")";
-	// prune table is used in delete operations (e.g., deleteNode(nodeId) method)
 	private String SQL_DROP_TABLE_FS_PRUNE =
 		"drop table " + SCHEMA + "FS_PRUNE";	
 	private String SQL_CREATE_TABLE_FS_PRUNE =
@@ -74,7 +73,54 @@ public class PostgreSQLCreate {
 		"	UPDATED_DATE TIMESTAMP NOT NULL, " +
 		"	PRIMARY KEY (TREE_ID) " +
 		")";
-	
+	private String SQL_DROP_TABLE_FS_USER =
+		"drop table " + SCHEMA + "FS_USER";
+	private String SQL_CREATE_TABLE_FS_USER =	
+		"create table " + SCHEMA + "FS_USER (  " +
+		"	USER_ID NUMERIC(15,0 NOT NULL, " +
+		"	USERNAME CHARACTER VARYING(20) NOT NULL, " +
+		"	PASSWORD CHARACTER VARYING(20) NOT NULL, " +
+		"	FIRST_NAME CHARACTER VARYING(40) NOT NULL, " +
+		"	MIDDLE_NAME CHARACTER VARYING(40) NOT NULL, " +
+		"	LAST_NAME CHARACTER VARYING(40) NOT NULL, " +
+		"	PRIMARY_EMAIL CHARACTER VARYING(256) NOT NULL, " +
+		"	PRIMARY KEY (USER_ID)  " +
+		")";
+	private String SQL_DROP_TABLE_FS_USER_GROUP =
+		"drop table " + SCHEMA + "FS_USER_GROUP";
+	private String SQL_CREATE_TABLE_FS_USER_GROUP =		
+		"create table " + SCHEMA + "FS_USER_GROUP (  " +
+		"	GROUP_ID NUMERIC(15,0 NOT NULL, " +
+		"	GROUP_CODE CHARACTER VARYING(250) NOT NULL, " +
+		"	GROUP_DESC CHARACTER VARYING(2000) NOT NULL, " +
+		"	PRIMARY KEY (GROUP_ID) " +
+		")";
+	private String SQL_DROP_TABLE_FS_USER_ROLE =
+		"drop table " + SCHEMA + "FS_USER_ROLE";
+	private String SQL_CREATE_TABLE_FS_USER_ROLE =		
+		"create table " + SCHEMA + "FS_USER_ROLE ( " + 
+		"	ROLE_ID NUMERIC(15,0 NOT NULL, " +
+		"	ROLE_CODE CHARACTER VARYING(250) NOT NULL, " +
+		"	ROLE_DESC CHARACTER VARYING(2000) NOT NULL, " +
+		"	PRIMARY KEY (ROLE_ID) " +
+		")";
+	private String SQL_DROP_TABLE_FS_USER_ROLE_LINK =
+		"drop table " + SCHEMA + "FS_USER_ROLE_LINK";
+	private String SQL_CREATE_TABLE_FS_USER_ROLE_LINK =		
+		"create table " + SCHEMA + "FS_USER_ROLE_LINK ( " + 
+		"	USER_ID NUMERIC(15,0 NOT NULL, " +
+		"	ROLE_ID NUMERIC(15,0 NOT NULL, " +
+		"	PRIMARY KEY (USER_ID,ROLE_ID) " + 
+		")";
+	private String SQL_DROP_TABLE_FS_USER_GROUP_LINK =
+		"drop table " + SCHEMA + "FS_USER_GROUP_LINK";
+	private String SQL_CREATE_TABLE_FS_USER_GROUP_LINK =		
+		"create table " + SCHEMA + "FS_USER_GROUP_LINK ( " + 
+		"	USER_ID NUMERIC(15,0 NOT NULL, " +
+		"	GROUP_ID NUMERIC(15,0 NOT NULL, " +
+		"	PRIMARY KEY (USER_ID,GROUP_ID) " + 
+		")";
+
 	/***********************************************************************************
 	 * 
 	 * test table
@@ -88,61 +134,6 @@ public class PostgreSQLCreate {
 		"	TEST_VALUE CHARACTER VARYING(250), " +
 		"	PRIMARY KEY (NODE_ID) " +
 		")";
-	
-	/***********************************************************************************
-	 * 
-	 * File 1 tables
-	 * 
-	 */
-	/* old
-	private String SQL_DROP_TABLE_FS_DIRECTORY =
-		"drop table " + SCHEMA + "FS_DIRECTORY";	
-	private String SQL_CREATE_TABLE_FS_DIRECTORY =
-		"create table " + SCHEMA + "FS_DIRECTORY ( " + 
-		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	DIR_NAME CHARACTER VARYING(250) NOT NULL, " +
-		"	RELATIVE_DIR_PATH CHARACTER VARYING(250) NOT NULL, " +
-		"	PRIMARY KEY (NODE_ID) " + 
-		")";
-	private String SQL_DROP_TABLE_FS_DIR_FILE_LINK =
-		"drop table " + SCHEMA + "FS_DIR_FILE_LINK";
-	private String SQL_CREATE_TABLE_FS_DIR_FILE_LINK =
-		"create table " + SCHEMA + "FS_DIR_FILE_LINK ( " + 
-		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	FILE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	PRIMARY KEY(NODE_ID,FILE_ID) " + 
-		")";
-	private String SQL_DROP_TABLE_FS_FILE_ENTRY =
-		"drop table " + SCHEMA + "FS_FILE_ENTRY";	
-	private String SQL_CREATE_TABLE_FS_FILE_ENTRY =
-		"create table " + SCHEMA + "FS_FILE_ENTRY ( " +  
-		"	FILE_ID NUMERIC(15,0) NOT NULL, " +
-		"	FILE_SIZE NUMERIC(15,0) NOT NULL, " +
-		"	FILE_NAME CHARACTER VARYING(250) NOT NULL, " +  
-		"	PRIMARY KEY (FILE_ID) " +  
-		")";	
-	private String SQL_DROP_TABLE_FS_FILE =
-		"drop table " + SCHEMA + "FS_FILE";	
-	private String SQL_CREATE_TABLE_FS_FILE =
-		"create table " + SCHEMA + "FS_FILE ( " +  
-		"	FILE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	FILE_DATA OID NOT NULL, " + 
-		"	PRIMARY KEY (FILE_ID) " + 
-		")";
-	private String SQL_DROP_TABLE_FS_FILE_STORE =
-		"drop table " + SCHEMA + "FS_FILE_STORE";	
-	private String SQL_CREATE_TABLE_FS_FILE_STORE =
-		"create table " + SCHEMA + "FS_FILE_STORE ( " +  
-		"	STORE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	STORE_NAME CHARACTER VARYING(250) NOT NULL, " + 
-		"	STORE_DESCRIPTION CHARACTER VARYING(4000) NOT NULL, " + 
-		"	STORE_PATH CHARACTER VARYING(2000) NOT NULL, " + 
-		"	NODE_ID NUMERIC(15,0) NOT NULL, " + 
-		"	CREATION_DATE TIMESTAMP NOT NULL,  " + 
-		"	UPDATED_DATE TIMESTAMP NOT NULL,  " + 
-		"	PRIMARY KEY (STORE_ID)  " + 
-		")";
-	*/
 	
 	/***********************************************************************************
 	 * 
@@ -327,6 +318,30 @@ public class PostgreSQLCreate {
 		"START WITH 1 " +
 		"CACHE 10  " +
 		"NO CYCLE";
+	private String SQL_DROP_SEQUENCE_FS_USER_ID =
+		"drop sequence " + SCHEMA + "FS_USER_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_USER_ID =
+		"CREATE SEQUENCE " + SCHEMA + "FS_USER_ID_SEQUENCE " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"NO CYCLE";
+	private String SQL_DROP_SEQUENCE_FS_USER_GROUP_ID =
+		"drop sequence " + SCHEMA + "FS_USER_GROUP_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_USER_GROUP_ID =
+		"CREATE SEQUENCE " + SCHEMA + "FS_USER_GROUP_ID_SEQUENCE " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"NO CYCLE";
+	private String SQL_DROP_SEQUENCE_FS_USER_ROLE_ID =
+		"drop sequence " + SCHEMA + "FS_USER_ROLE_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID =
+		"CREATE SEQUENCE " + SCHEMA + "FS_USER_ROLE_ID_SEQUENCE " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"NO CYCLE";			
 	
 	
 	public PostgreSQLCreate() {
@@ -352,12 +367,20 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_FILE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();		
 		
 		// core tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TREE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_GROUP).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_ROLE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_GROUP_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_USER_ROLE_LINK).executeUpdate();		
 		
 		// test tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_TEST_NODE).executeUpdate();
@@ -417,6 +440,11 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_NODE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_CLOSURE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TREE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_GROUP_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_ROLE_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_GROUP).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER_ROLE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_USER).executeUpdate();		
 		
 		// sequences
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_PRUNE_ID).executeUpdate();
@@ -426,6 +454,9 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_FILE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_STORE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();		
 		
 	}
 	

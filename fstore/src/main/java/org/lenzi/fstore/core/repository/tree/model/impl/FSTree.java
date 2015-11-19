@@ -18,6 +18,7 @@ import org.lenzi.fstore.core.repository.tree.model.DBTree;
 /**
  * @author sal
  *
+ * not really used, except in unit tests. a tree basically just references a root node.
  */
 @Entity
 @Table(name = "FS_TREE")

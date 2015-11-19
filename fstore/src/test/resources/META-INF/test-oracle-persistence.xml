@@ -18,6 +18,9 @@
       	<class>org.lenzi.fstore.core.repository.tree.model.impl.FSClosure</class>
       	<class>org.lenzi.fstore.core.repository.tree.model.impl.FSPrune</class>
       	<class>org.lenzi.fstore.core.repository.tree.model.impl.FSTree</class>
+      	<class>org.lenzi.fstore.core.repository.security.model.impl.FsUser</class>
+      	<class>org.lenzi.fstore.core.repository.security.model.impl.FsUserGroup</class>
+      	<class>org.lenzi.fstore.core.repository.security.model.impl.FsUserRole</class>
       	
       	<!-- test models -->
       	<class>org.lenzi.fstore.example.repository.model.impl.FSTestNode</class>

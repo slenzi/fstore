@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.lenzi.fstore.core.util.StringUtil;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
@@ -28,6 +29,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 	sequenceName="FS_CMS_SITE_ID_SEQUENCE", allocationSize = 1)
 public class FsCmsSite implements Comparable<FsCmsSite>, Serializable {
 
+	@Transient
 	private static final long serialVersionUID = 5020047592914293311L;
 
 	@Id
