@@ -40,10 +40,13 @@ public class PersistenceConfig {
 	
 	private final String[] entityPackages = new String[]{
 			
-			"org.lenzi.fstore.core.repository.model.impl",
-			"org.lenzi.fstore.example.repository.model.impl",
+			"org.lenzi.fstore.core.repository.security.model.impl",
+			"org.lenzi.fstore.core.repository.tree.model.impl",
+			
 			"org.lenzi.fstore.file2.repository.model.impl",
-			"org.lenzi.fstore.cms.repository.model.impl"
+			"org.lenzi.fstore.cms.repository.model.impl",
+			
+			"org.lenzi.fstore.example.repository.model.impl"
 			
 	};
 	

@@ -40,10 +40,10 @@
 
 		<!-- List of all Hibernate mappings for this session -->
 		
-        <mapping class="org.lenzi.fstore.core.repository.model.impl.FSNode"/>
-        <mapping class="org.lenzi.fstore.core.repository.model.impl.FSClosure"/>
-        <mapping class="org.lenzi.fstore.core.repository.model.impl.FSPrune"/>
-        <mapping class="org.lenzi.fstore.core.repository.model.impl.FSTree"/>
+        <mapping class="org.lenzi.fstore.core.repository.tree.model.impl.FSNode"/>
+        <mapping class="org.lenzi.fstore.core.repository.tree.model.impl.FSClosure"/>
+        <mapping class="org.lenzi.fstore.core.repository.tree.model.impl.FSPrune"/>
+        <mapping class="org.lenzi.fstore.core.repository.tree.model.impl.FSTree"/>
         
         <mapping class="org.lenzi.fstore.example.repository.model.impl.FSTestNode"/>
       	

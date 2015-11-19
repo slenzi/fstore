@@ -20,13 +20,18 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+
+//deprecated as of spring 4.2, instead use @Rollback at the class level and the transactionManager qualifier in @Transactional
+//import org.springframework.test.context.transaction.TransactionConfiguration;
+// @TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=true)
 
 /**
  * @author sal
@@ -41,8 +46,8 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 		basePackages={
 				"org.lenzi.fstore.core.model.util",
 				"org.lenzi.fstore.core.repository",
-				"org.lenzi.fstore.core.repository.model",
-				"org.lenzi.fstore.core.repository.model.impl",
+				"org.lenzi.fstore.core.repository.tree.model",
+				"org.lenzi.fstore.core.repository.tree.model.impl",
 				"org.lenzi.fstore.core.service",
 				"org.lenzi.fstore.core.logging",
 				"org.lenzi.fstore.main.properties",
@@ -57,7 +62,8 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 		}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@TransactionConfiguration(transactionManager="postgresqlTxManager", defaultRollback=true)
+@Rollback
+@Transactional(transactionManager = "postgresqlTxManager")
 public class PostgresqlCmsTestConfiguration extends AbstractWebSocketMessageBrokerConfigurer implements TransactionManagementConfigurer {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());

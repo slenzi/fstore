@@ -17,10 +17,15 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+
+// deprecated as of spring 4.2, instead use @Rollback at the class level and the transactionManager qualifier in @Transactional
+//import org.springframework.test.context.transaction.TransactionConfiguration;
+// @TransactionConfiguration(transactionManager="oracleTxManager", defaultRollback=true)
 
 /**
  * @author sal
@@ -33,8 +38,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 		basePackages={
 			"org.lenzi.fstore.core.model.util",
 			"org.lenzi.fstore.core.repository",
-			"org.lenzi.fstore.core.repository.model",
-			"org.lenzi.fstore.core.repository.model.impl",
+			"org.lenzi.fstore.core.repository.tree.model",
+			"org.lenzi.fstore.core.repository.tree.model.impl",
 			"org.lenzi.fstore.core.service",
 			"org.lenzi.fstore.core.logging",
 			"org.lenzi.fstore.example.service",
@@ -43,9 +48,9 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 			"org.lenzi.fstore.cms.repository.model.impl"
 		}
 )
-// "org.lenzi.fstore.service"
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@TransactionConfiguration(transactionManager="oracleTxManager", defaultRollback=true)
+@Rollback
+@Transactional(transactionManager = "oracleTxManager")
 public class OracleCoreTestConfiguration implements TransactionManagementConfigurer {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
