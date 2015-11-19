@@ -31,16 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public class FsCmsSiteRepository extends AbstractRepository {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1355098362744443645L;
 
 	@InjectLogger
 	private Logger logger;
 	
-	@Autowired
-	private FsResourceHelper fsResourceHelper;
+	//@Autowired
+	//private FsResourceHelper fsResourceHelper;
 	
 	
 	public FsCmsSiteRepository() {
