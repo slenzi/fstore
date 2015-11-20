@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.core.web.security;
+package org.lenzi.fstore.core.security;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

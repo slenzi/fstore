@@ -2,7 +2,7 @@ package org.lenzi.fstore.main.config;
 
 import java.util.List;
 
-import org.lenzi.fstore.core.web.security.LoggingInterceptor;
+import org.lenzi.fstore.core.security.LoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

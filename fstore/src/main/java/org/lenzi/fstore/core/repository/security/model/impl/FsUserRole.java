@@ -31,6 +31,39 @@ public class FsUserRole implements Comparable<FsUserRole>, Serializable {
 	@Transient
 	private static final long serialVersionUID = 7866177628583325620L;
 	
+	/**
+	 * Default system roles
+	 * 
+	 * @author sal
+	 */
+	public static enum Role {
+		
+		ADMINISTRATOR("ADMINISTRATOR"),
+		FILE_MANAGER_ADMINISTRATOR("FILE_MANAGER_ADMINISTRATOR"),
+		CMS_WORKPLACE_ADMINISTRATOR("CMS_WORKPLACE_ADMINISTRATOR"),
+		FILE_MANAGER_USER("FILE_MANAGER_USER"),
+		CMS_WORKPLACE_USER("CMS_WORKPLACE_USER"),
+		GUEST("GUEST");
+		
+		private final String roleCode;
+		
+		private Role(final String roleCode){
+			this.roleCode = roleCode;
+		}
+		
+		public String getRoleCode(){
+			return roleCode;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Enum#toString()
+		 */
+		@Override
+		public String toString() {
+			return roleCode;
+		}
+	}
+	
 	@Id
 	@GeneratedValue(generator="FS_USER_ROLE_ID_SEQUENCE_GENERATOR")
 	@Column(name = "ROLE_ID", unique=true, nullable = false)		
@@ -76,6 +109,30 @@ public class FsUserRole implements Comparable<FsUserRole>, Serializable {
 	 */
 	public void setRoleCode(String roleCode) {
 		this.roleCode = roleCode;
+	}
+	
+	public void setRole(Role role) {
+		this.roleCode = role.getRoleCode();
+	}
+	
+	public Role getRole(){
+		
+		if( roleCode.equals( Role.ADMINISTRATOR.getRoleCode()) ){
+			return Role.ADMINISTRATOR;
+		} else if( roleCode.equals( Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode()) ){
+			return Role.FILE_MANAGER_ADMINISTRATOR;
+		} else if( roleCode.equals( Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()) ){
+			return Role.CMS_WORKPLACE_ADMINISTRATOR;
+		} else if( roleCode.equals( Role.FILE_MANAGER_USER.getRoleCode()) ){
+			return Role.FILE_MANAGER_USER;
+		} else if( roleCode.equals( Role.CMS_WORKPLACE_USER.getRoleCode()) ){
+			return Role.CMS_WORKPLACE_USER;
+		} else if( roleCode.equals( Role.GUEST.getRoleCode()) ){
+			return Role.GUEST;
+		} else {
+			return Role.GUEST;
+		}
+		
 	}
 
 	/**

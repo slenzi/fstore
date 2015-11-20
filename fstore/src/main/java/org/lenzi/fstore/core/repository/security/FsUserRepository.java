@@ -97,6 +97,8 @@ public class FsUserRepository extends AbstractRepository {
 	 */
 	public FsUser getUserByUsername(String username, FsUserFetch fetch) throws DatabaseException {
 		
+		logger.debug(FsUserRepository.class.getName() + ".getUserByUsername(...) called");
+		
 		return getUserByUsernameCriteria(username, fetch);
 		
 	}
@@ -217,6 +219,8 @@ public class FsUserRepository extends AbstractRepository {
 	 * @throws DatabaseException
 	 */
 	private FsUser getUserByUsernameCriteria(String username, FsUserFetch fetch) throws DatabaseException {
+		
+		logger.debug(FsUserRepository.class.getName() + ".getUserByUsernameCriteria(...) called");
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		

@@ -215,6 +215,14 @@ public class FsUser implements Comparable<FsUser>, Serializable {
 	public void setGroups(Set<FsUserGroup> groups) {
 		this.groups = groups;
 	}
+	
+	public int roleCount(){
+		return roles != null ? roles.size() : 0;
+	}
+	
+	public int groupCount(){
+		return groups != null ? groups.size() : 0;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
