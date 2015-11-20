@@ -1,5 +1,7 @@
 package org.lenzi.fstore.setup.db.postgresql;
 
+import java.util.Arrays;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -319,11 +321,12 @@ public class PostgreSQLCreate {
 		"CACHE 10  " +
 		"NO CYCLE";
 	private String SQL_DROP_SEQUENCE_FS_USER_ID =
-		"drop sequence " + SCHEMA + "FS_USER_ID_SEQUENCE";	
+		"drop sequence " + SCHEMA + "FS_USER_ID_SEQUENCE";
+	/* start with 2. default row is 1 for admin account. */
 	private String SQL_CREATE_SEQUENCE_FS_USER_ID =
 		"CREATE SEQUENCE " + SCHEMA + "FS_USER_ID_SEQUENCE " + 
 		"INCREMENT BY 1 " +
-		"START WITH 1 " +
+		"START WITH 2 " +
 		"CACHE 10  " +
 		"NO CYCLE";
 	private String SQL_DROP_SEQUENCE_FS_USER_GROUP_ID =
@@ -335,14 +338,29 @@ public class PostgreSQLCreate {
 		"CACHE 10  " +
 		"NO CYCLE";
 	private String SQL_DROP_SEQUENCE_FS_USER_ROLE_ID =
-		"drop sequence " + SCHEMA + "FS_USER_ROLE_ID_SEQUENCE";	
+		"drop sequence " + SCHEMA + "FS_USER_ROLE_ID_SEQUENCE";
+	/* start with 7 to account for default data */
 	private String SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID =
 		"CREATE SEQUENCE " + SCHEMA + "FS_USER_ROLE_ID_SEQUENCE " + 
 		"INCREMENT BY 1 " +
-		"START WITH 1 " +
+		"START WITH 7 " +
 		"CACHE 10  " +
 		"NO CYCLE";			
 	
+	private String[] DEFAULT_DATA = new String[]{
+			
+		"INSERT INTO FS_USER (USER_ID, USERNAME, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PRIMARY_EMAIL) VALUES (1, 'admin', 'admin', 'admin_first', 'admin_middle', 'admin_last', 'admin@your.domain.com')",
+		
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (1, 'ADMINISTRATOR', 'Administrators have access to everything')",
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (2, 'FILE_MANAGER_ADMINISTRATOR', 'Administrative access to file manager section')",
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section')",
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'FILE_MANAGER_USER', 'Access to the file manager section')",
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'CMS_WORKPLACE_USER', 'Access to the CMS workplace section')",
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'GUEST', 'Default role for users not logged into the system')",
+		
+		"INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1)"
+		
+	};
 	
 	public PostgreSQLCreate() {
 		
@@ -403,6 +421,9 @@ public class PostgreSQLCreate {
 		// indexes
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_PARENT_DEPTH_CHILD).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_INDEX_FS_CHILD_PARENT_DEPTH).executeUpdate();
+		
+		// insert data
+		insertDefaultData();		
 		
 	}
 	
@@ -470,9 +491,24 @@ public class PostgreSQLCreate {
 		// drop
 		dropDatabase();
 		
-		// add
+		// create
 		createDatabase();		
 		
 	}
+	
+	/**
+	 * Insert default data
+	 * 
+	 * @throws DatabaseException
+	 */
+	private void insertDefaultData() throws DatabaseException {
+		
+		Arrays.stream(DEFAULT_DATA).forEach( (query) -> {
+			
+			entityManager.createNativeQuery(query).executeUpdate();
+			
+		});
+		
+	}	
 
 }
