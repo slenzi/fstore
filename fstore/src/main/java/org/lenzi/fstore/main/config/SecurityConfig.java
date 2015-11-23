@@ -5,18 +5,16 @@ package org.lenzi.fstore.main.config;
 
 import org.lenzi.fstore.core.repository.security.model.impl.FsUserRole.Role;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @author sal
@@ -28,7 +26,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@InjectLogger
-	private Logger logger;	
+	private Logger logger;
+	
+    @Autowired
+    private ManagedProperties appProps;
 	
 	/**
 	 * Qualifier specifies instance of org.lenzi.fstore.core.security.service.FsUserDetailsService
@@ -79,6 +80,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
+		String appContext = "/fstore";
+		
+		if(appProps != null){
+			appContext = appProps.getProperty("application.context");
+		}else{
+			System.err.println("Error, no autowired properties in " + SecurityConfig.class.getName());
+		}
+		
+		if(logger != null){
+			logger.debug("appContext => " + appContext);
+		}else{
+			System.err.println("Error, no autowired logger in " + SecurityConfig.class.getName());
+		}
+		
 		// spring security comes with a default login form. This can be overridden.
 		
 		//
@@ -86,10 +101,80 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		//
 		//http.authorizeRequests().antMatchers("/administration/**").hasRole( Role.ADMINISTRATOR.getRoleCode() ).and().formLogin();
 		
-		http.authorizeRequests()
-			.antMatchers("/administration/**").access("hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "')").and().formLogin();
+		// works
+		//http.authorizeRequests()
+		//	.antMatchers("/administration/**").access("hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "')").and().formLogin();
 		
-		logger.debug("/administration/** is mapped to role '" + Role.ADMINISTRATOR.getRoleCode() + "'");
+		http.authorizeRequests()
+			
+			// start with open access
+			.antMatchers("/").permitAll()
+			
+			/*
+			// administration section
+			.antMatchers(appContext + "/administration/**").hasRole(
+				Role.ADMINISTRATOR.getRoleCode()
+			
+			// file manager		
+			).antMatchers(appContext + "/file/**").hasAnyRole(
+				Role.ADMINISTRATOR.getRoleCode(),
+				Role.FILE_MANAGER_USER.getRoleCode(),
+				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode()
+			
+			// cms workplace
+			).antMatchers(appContext + "/cms/**").hasAnyRole(
+				Role.ADMINISTRATOR.getRoleCode(),
+				Role.CMS_WORKPLACE_USER.getRoleCode(),
+				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()
+			
+			// file upload handler (used in file manager and cms workplace sections)
+			).antMatchers(appContext + "/spring/file2/**").hasAnyRole(
+				Role.ADMINISTRATOR.getRoleCode(),
+				Role.FILE_MANAGER_USER.getRoleCode(),
+				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
+				Role.CMS_WORKPLACE_USER.getRoleCode(),
+				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()
+			
+			// cms resource dispatcher
+			).antMatchers(appContext + "/spring/cms/**").hasAnyRole(
+				Role.USER.getRoleCode()			
+			
+			// jax-rs service for file resource stores
+			).antMatchers(appContext + "/cxf/resource/store/**").hasAnyRole(
+				Role.ADMINISTRATOR.getRoleCode(),
+				Role.FILE_MANAGER_USER.getRoleCode(),
+				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
+				Role.CMS_WORKPLACE_USER.getRoleCode(),
+				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
+			
+			// jax-rs service for file data
+			).antMatchers(appContext + "/cxf/resource/file/**").hasAnyRole(
+				Role.ADMINISTRATOR.getRoleCode(),
+				Role.FILE_MANAGER_USER.getRoleCode(),
+				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
+				Role.CMS_WORKPLACE_USER.getRoleCode(),
+				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
+			
+			// jax-rs service for directory data
+			).antMatchers(appContext + "/cxf/resource/directory/**").hasAnyRole(
+				Role.ADMINISTRATOR.getRoleCode(),
+				Role.FILE_MANAGER_USER.getRoleCode(),
+				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
+				Role.CMS_WORKPLACE_USER.getRoleCode(),
+				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
+			
+			// jax-rs service for cms sites
+			).antMatchers(appContext + "/cxf/cms/site/**").hasAnyRole(
+				Role.ADMINISTRATOR.getRoleCode(),				
+				Role.CMS_WORKPLACE_USER.getRoleCode(),
+				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
+			
+			)
+			*/
+			
+			.and().formLogin();
+		
+		
 		
 	}
 

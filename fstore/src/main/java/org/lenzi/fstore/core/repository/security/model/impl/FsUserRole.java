@@ -43,6 +43,7 @@ public class FsUserRole implements Comparable<FsUserRole>, Serializable {
 		CMS_WORKPLACE_ADMINISTRATOR("ROLE_CMS_WORKPLACE_ADMINISTRATOR"),
 		FILE_MANAGER_USER("ROLE_FILE_MANAGER_USER"),
 		CMS_WORKPLACE_USER("ROLE_CMS_WORKPLACE_USER"),
+		USER("ROLE_USER"),
 		GUEST("ROLE_GUEST");
 		
 		private final String roleCode;
@@ -135,6 +136,9 @@ public class FsUserRole implements Comparable<FsUserRole>, Serializable {
 			
 		} else if( roleCode.toUpperCase().trim().equals( Role.CMS_WORKPLACE_USER.getRoleCode()) ){
 			return Role.CMS_WORKPLACE_USER;
+			
+		} else if( roleCode.toUpperCase().trim().equals( Role.USER.getRoleCode()) ){
+			return Role.USER;			
 			
 		} else if( roleCode.toUpperCase().trim().equals( Role.GUEST.getRoleCode()) ){
 			return Role.GUEST;

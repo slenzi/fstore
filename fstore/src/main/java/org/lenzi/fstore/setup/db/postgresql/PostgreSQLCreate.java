@@ -339,11 +339,11 @@ public class PostgreSQLCreate {
 		"NO CYCLE";
 	private String SQL_DROP_SEQUENCE_FS_USER_ROLE_ID =
 		"drop sequence " + SCHEMA + "FS_USER_ROLE_ID_SEQUENCE";
-	/* start with 7 to account for default data */
+	/* start with 8 to account for default data */
 	private String SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID =
 		"CREATE SEQUENCE " + SCHEMA + "FS_USER_ROLE_ID_SEQUENCE " + 
 		"INCREMENT BY 1 " +
-		"START WITH 7 " +
+		"START WITH 8 " +
 		"CACHE 10  " +
 		"NO CYCLE";			
 	
@@ -357,9 +357,11 @@ public class PostgreSQLCreate {
 		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'ROLE_CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section')",
 		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'ROLE_FILE_MANAGER_USER', 'Access to the file manager section')",
 		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'ROLE_CMS_WORKPLACE_USER', 'Access to the CMS workplace section')",
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'ROLE_GUEST', 'Default role for users not logged into the system')",
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'ROLE_USER', 'All users, other than guests. All users with accounts are members of this role.')",
+		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (7, 'ROLE_GUEST', 'Default role for users not logged into the system')",
 		
-		"INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1)"
+		"INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1)",
+		"INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 6)"
 		
 	};
 	
