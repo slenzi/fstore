@@ -84,9 +84,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		//
 		// Restrict access to administration section to users who have 'ADMINISTRATOR' role.
 		//
-		// You can provide a comma delimited list of roles.
-		//
-		http.authorizeRequests().antMatchers("/administration/**").hasAnyRole( Role.ADMINISTRATOR.getRoleCode() ).and().formLogin();
+		//http.authorizeRequests().antMatchers("/administration/**").hasRole( Role.ADMINISTRATOR.getRoleCode() ).and().formLogin();
+		
+		http.authorizeRequests()
+			.antMatchers("/administration/**").access("hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "')").and().formLogin();
 		
 		logger.debug("/administration/** is mapped to role '" + Role.ADMINISTRATOR.getRoleCode() + "'");
 		

@@ -309,11 +309,12 @@ NOCYCLE;
  */
 INSERT INTO FS_USER (USER_ID, USERNAME, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PRIMARY_EMAIL) VALUES (1, 'admin', 'admin', 'admin_first', 'admin_middle', 'admin_last', 'admin@your.domain.com');
 
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (1, 'ADMINISTRATOR', 'Administrators have access to everything');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (2, 'FILE_MANAGER_ADMINISTRATOR', 'Administrative access to file manager section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'FILE_MANAGER_USER', 'Access to the file manager section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'CMS_WORKPLACE_USER', 'Access to the CMS workplace section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'GUEST', 'Default role for users not logged into the system');
+/* Role codes MUST start with 'ROLE_' to be compatible with spring security */
+INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (1, 'ROLE_ADMINISTRATOR', 'Administrators have access to everything');
+INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (2, 'ROLE_FILE_MANAGER_ADMINISTRATOR', 'Administrative access to file manager section');
+INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'ROLE_CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section');
+INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'ROLE_FILE_MANAGER_USER', 'Access to the file manager section');
+INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'ROLE_CMS_WORKPLACE_USER', 'Access to the CMS workplace section');
+INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'ROLE_GUEST', 'Default role for users not logged into the system');
 
 INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1);

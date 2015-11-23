@@ -60,7 +60,15 @@ public class FsUserDetailsService implements UserDetailsService {
 		
 		List<GrantedAuthority> authorities = buildUserAuthority(fsUser.getRoles());		
 		
-		return buildUserForAuthentication(fsUser, authorities);
+		final User springUser = buildUserForAuthentication(fsUser, authorities);
+		
+		logger.debug("Spring User => [username='" + springUser.getUsername() + "', password='" + springUser.getPassword() + "']");
+		
+		springUser.getAuthorities().forEach( (authority) ->{
+			logger.debug("Granted Authority for '" + springUser.getUsername() + "' => " + authority.getAuthority());
+		});
+		
+		return springUser;
 		
 	}
 	

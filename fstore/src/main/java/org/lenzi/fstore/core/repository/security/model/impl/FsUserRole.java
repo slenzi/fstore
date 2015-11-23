@@ -38,12 +38,12 @@ public class FsUserRole implements Comparable<FsUserRole>, Serializable {
 	 */
 	public static enum Role {
 		
-		ADMINISTRATOR("ADMINISTRATOR"),
-		FILE_MANAGER_ADMINISTRATOR("FILE_MANAGER_ADMINISTRATOR"),
-		CMS_WORKPLACE_ADMINISTRATOR("CMS_WORKPLACE_ADMINISTRATOR"),
-		FILE_MANAGER_USER("FILE_MANAGER_USER"),
-		CMS_WORKPLACE_USER("CMS_WORKPLACE_USER"),
-		GUEST("GUEST");
+		ADMINISTRATOR("ROLE_ADMINISTRATOR"),
+		FILE_MANAGER_ADMINISTRATOR("ROLE_FILE_MANAGER_ADMINISTRATOR"),
+		CMS_WORKPLACE_ADMINISTRATOR("ROLE_CMS_WORKPLACE_ADMINISTRATOR"),
+		FILE_MANAGER_USER("ROLE_FILE_MANAGER_USER"),
+		CMS_WORKPLACE_USER("ROLE_CMS_WORKPLACE_USER"),
+		GUEST("ROLE_GUEST");
 		
 		private final String roleCode;
 		
@@ -117,18 +117,28 @@ public class FsUserRole implements Comparable<FsUserRole>, Serializable {
 	
 	public Role getRole(){
 		
-		if( roleCode.equals( Role.ADMINISTRATOR.getRoleCode()) ){
-			return Role.ADMINISTRATOR;
-		} else if( roleCode.equals( Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode()) ){
-			return Role.FILE_MANAGER_ADMINISTRATOR;
-		} else if( roleCode.equals( Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()) ){
-			return Role.CMS_WORKPLACE_ADMINISTRATOR;
-		} else if( roleCode.equals( Role.FILE_MANAGER_USER.getRoleCode()) ){
-			return Role.FILE_MANAGER_USER;
-		} else if( roleCode.equals( Role.CMS_WORKPLACE_USER.getRoleCode()) ){
-			return Role.CMS_WORKPLACE_USER;
-		} else if( roleCode.equals( Role.GUEST.getRoleCode()) ){
+		if(roleCode == null){
 			return Role.GUEST;
+		}
+		
+		if( roleCode.toUpperCase().trim().equals( Role.ADMINISTRATOR.getRoleCode()) ){
+			return Role.ADMINISTRATOR;
+			
+		} else if( roleCode.toUpperCase().trim().equals( Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode()) ){
+			return Role.FILE_MANAGER_ADMINISTRATOR;
+			
+		} else if( roleCode.toUpperCase().trim().equals( Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()) ){
+			return Role.CMS_WORKPLACE_ADMINISTRATOR;
+			
+		} else if( roleCode.toUpperCase().trim().equals( Role.FILE_MANAGER_USER.getRoleCode()) ){
+			return Role.FILE_MANAGER_USER;
+			
+		} else if( roleCode.toUpperCase().trim().equals( Role.CMS_WORKPLACE_USER.getRoleCode()) ){
+			return Role.CMS_WORKPLACE_USER;
+			
+		} else if( roleCode.toUpperCase().trim().equals( Role.GUEST.getRoleCode()) ){
+			return Role.GUEST;
+			
 		} else {
 			return Role.GUEST;
 		}
