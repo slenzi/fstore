@@ -103,14 +103,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		// works
 		http.authorizeRequests()
+			
+			.antMatchers("/").permitAll()
+		
 			.antMatchers("/administration/**").access("hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "')")
 			
-			.antMatchers(appContext + "/file/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),
-				Role.FILE_MANAGER_USER.getRoleCode(),
-				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode()
+			// file manager	
+			.antMatchers("/file/**").access(
+				"hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "') or " +
+				"hasRole('" + Role.FILE_MANAGER_USER.getRoleCode() + "') or " +
+				"hasRole('" + Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode() + "')"
 			)
 			
+			// cms workplace	
+			.antMatchers("/cms/**").access(
+				"hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "') or " +
+				"hasRole('" + Role.CMS_WORKPLACE_USER.getRoleCode() + "') or " +
+				"hasRole('" + Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode() + "')"
+			)	
+
 			.and().formLogin();
 		
 		/*
