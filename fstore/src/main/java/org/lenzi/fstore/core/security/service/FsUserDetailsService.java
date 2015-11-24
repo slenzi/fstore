@@ -25,6 +25,9 @@ import org.springframework.stereotype.Service;
 /**
  * Bridge between FsUser and Spring Security User.
  * 
+ * This service is used in the Spring Security configuration setup.
+ * @see org.lenzi.fstore.main.config.SecurityConfig
+ * 
  * @author sal
  */
 @Service("FsUserDetailsService")

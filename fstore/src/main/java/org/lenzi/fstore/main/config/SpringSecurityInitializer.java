@@ -3,7 +3,10 @@
  */
 package org.lenzi.fstore.main.config;
 
+import javax.servlet.ServletContext;
+
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
+import org.springframework.web.multipart.support.MultipartFilter;
 
 /**
  * @author slenzi
@@ -15,10 +18,25 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  */
 public class SpringSecurityInitializer extends AbstractSecurityWebApplicationInitializer {
 
+	/* (non-Javadoc)
+	 * @see org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer#beforeSpringSecurityFilterChain(javax.servlet.ServletContext)
+	 */
+	@Override
+	protected void beforeSpringSecurityFilterChain(ServletContext servletContext) {
+		
+		// prevent spring security from intercepting and block multipart uploads
+		// http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf-multipart
+		
+		insertFilters(servletContext, new MultipartFilter());
+		
+	}
+
 	//
 	// do nothing
 	//
 	
 	// http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#abstractsecuritywebapplicationinitializer-with-spring-mvc
+
+
 	
 }

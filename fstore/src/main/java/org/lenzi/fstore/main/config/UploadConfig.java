@@ -15,9 +15,11 @@ public class UploadConfig {
 	/**
 	 * Enable http multipart file upload from browser to server.
 	 * 
+	 * The bean name needs to be "filterMultipartResolver" for spring security
+	 * 
 	 * @return
 	 */
-	@Bean(name = "multipartResolver")
+	@Bean(name = "filterMultipartResolver")
 	public CommonsMultipartResolver createMultipartResolver() {
 		
 	    CommonsMultipartResolver resolver = new CommonsMultipartResolver();
