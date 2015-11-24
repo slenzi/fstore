@@ -19,18 +19,6 @@ public class SpringSecurityInitializer extends AbstractSecurityWebApplicationIni
 	// do nothing
 	//
 	
-	/**
-	 * 
-	 */
-	public SpringSecurityInitializer() {
-		
-	}
-
-	/**
-	 * @param configurationClasses
-	 */
-	public SpringSecurityInitializer(Class<?>... configurationClasses) {
-		super(configurationClasses);
-	}
-
+	// http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#abstractsecuritywebapplicationinitializer-with-spring-mvc
+	
 }

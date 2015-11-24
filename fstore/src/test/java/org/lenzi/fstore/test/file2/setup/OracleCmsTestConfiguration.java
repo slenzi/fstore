@@ -52,6 +52,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 			"org.lenzi.fstore.core.repository.security.model.impl",				
 			"org.lenzi.fstore.core.service",
 			"org.lenzi.fstore.core.logging",
+			"org.lenzi.fstore.core.security",
 			"org.lenzi.fstore.main.properties",
 			"org.lenzi.fstore.example.repository",
 			"org.lenzi.fstore.example.repository.model.impl",

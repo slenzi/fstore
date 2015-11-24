@@ -102,19 +102,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		//http.authorizeRequests().antMatchers("/administration/**").hasRole( Role.ADMINISTRATOR.getRoleCode() ).and().formLogin();
 		
 		// works
-		//http.authorizeRequests()
-		//	.antMatchers("/administration/**").access("hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "')").and().formLogin();
+		http.authorizeRequests()
+			.antMatchers("/administration/**").access("hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "')").and().formLogin();
 		
+		/*
 		http.authorizeRequests()
 			
 			// start with open access
-			.antMatchers("/").permitAll()
+			//.antMatchers("/").permitAll()
 			
-			/*
+			
 			// administration section
 			.antMatchers(appContext + "/administration/**").hasRole(
 				Role.ADMINISTRATOR.getRoleCode()
 			
+			)
+			
+			.and().formLogin();
+				
+
 			// file manager		
 			).antMatchers(appContext + "/file/**").hasAnyRole(
 				Role.ADMINISTRATOR.getRoleCode(),
@@ -126,7 +132,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				Role.ADMINISTRATOR.getRoleCode(),
 				Role.CMS_WORKPLACE_USER.getRoleCode(),
 				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()
+				
+			)
 			
+
 			// file upload handler (used in file manager and cms workplace sections)
 			).antMatchers(appContext + "/spring/file2/**").hasAnyRole(
 				Role.ADMINISTRATOR.getRoleCode(),
@@ -172,7 +181,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			)
 			*/
 			
-			.and().formLogin();
+			
 		
 		
 		

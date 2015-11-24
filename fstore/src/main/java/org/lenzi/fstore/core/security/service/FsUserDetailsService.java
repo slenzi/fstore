@@ -49,13 +49,17 @@ public class FsUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
 		
-		logger.debug(FsUserDetailsService.class.getName() + ".loadUserByUsername(...) called");
+		logger.debug(FsUserDetailsService.class.getName() + ".loadUserByUsername(final String username) called");
 		
 		FsUser fsUser = null;
 		try {
 			fsUser = fsSecurityService.getUserByUsername(username);
 		} catch (ServiceException e) {
+			
+			logger.error(FsUserDetailsService.class.getName() + " => Failed to fetch user by username [username='" + username + "']. " + e.getMessage());
+			
 			throw new UsernameNotFoundException(e.getMessage(), e);
+			
 		}
 		
 		List<GrantedAuthority> authorities = buildUserAuthority(fsUser.getRoles());		

@@ -97,7 +97,7 @@ public class FsUserRepository extends AbstractRepository {
 	 */
 	public FsUser getUserByUsername(String username, FsUserFetch fetch) throws DatabaseException {
 		
-		logger.debug(FsUserRepository.class.getName() + ".getUserByUsername(...) called");
+		logger.debug(FsUserRepository.class.getName() + ".getUserByUsername(String username, FsUserFetch fetch) called");
 		
 		return getUserByUsernameCriteria(username, fetch);
 		
@@ -201,6 +201,7 @@ public class FsUserRepository extends AbstractRepository {
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( cb.equal(root.get(FsUser_.userId), userId) );
 		
+		query.distinct(true);
 		query.select(root);
 		query.where(
 				cb.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
@@ -220,7 +221,7 @@ public class FsUserRepository extends AbstractRepository {
 	 */
 	private FsUser getUserByUsernameCriteria(String username, FsUserFetch fetch) throws DatabaseException {
 		
-		logger.debug(FsUserRepository.class.getName() + ".getUserByUsernameCriteria(...) called");
+		logger.debug(FsUserRepository.class.getName() + ".getUserByUsernameCriteria(String username, FsUserFetch fetch) called");
 		
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		
@@ -253,6 +254,7 @@ public class FsUserRepository extends AbstractRepository {
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( cb.equal(root.get(FsUser_.username), username) );
 		
+		query.distinct(true);
 		query.select(root);
 		query.where(
 				cb.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )
@@ -303,6 +305,7 @@ public class FsUserRepository extends AbstractRepository {
 		List<Predicate> andPredicates = new ArrayList<Predicate>();
 		andPredicates.add( cb.equal(root.get(FsUser_.primaryEmail), primaryEmail) );
 		
+		query.distinct(true);
 		query.select(root);
 		query.where(
 				cb.and( andPredicates.toArray(new Predicate[andPredicates.size()]) )

@@ -55,7 +55,7 @@ public class FsSecurityService {
 	 */
 	public FsUser getUserByUsername(final String username) throws ServiceException {
 		
-		logger.debug(FsSecurityService.class.getName() + ".getUserByUsername(...) called. [username = '" + username + "']");
+		logger.debug(FsSecurityService.class.getName() + ".getUserByUsername(final String username) called. [username = '" + username + "']");
 		
 		if(username == null || username.trim().equals("")){
 			throw new ServiceException("Username is null or blank. Cannot retrieve user object.");
