@@ -9,6 +9,8 @@
 	
 	fstoreServices = angular
 		.module('fstore-services-module', ['ngResource'])
+		// configuration used by all services
+		.config(['$httpProvider', fstoreServicesConfig])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('FstoreServiceConstants', {
 			contextPath: '@application.context@',
@@ -25,7 +27,37 @@
 		.service('FileServices', [
 			'FstoreServiceConstants', '$log', '$q', '$resource', FileServices
 			]
-		);	
+		);
+
+	/**
+	 * Make sure CSRF token is set in request header for AJAX calls.
+	 * Needed for Spring Security Cross Site Request Forgery (CSRF) protection.
+	 */
+	function fstoreServicesConfig($httpProvider){
+		
+		$httpProvider.defaults.xsrfHeaderName = 'X-CSRF-TOKEN';
+		$httpProvider.interceptors.push(function() {
+			return {
+				response: function(response) {
+					//$httpProvider.defaults.headers.common['X-CSRF-TOKEN'] = response.headers('X-CSRF-TOKEN');
+					//$httpProvider.defaults.headers.common['X-CSRF-Token'] = $('meta[name=csrf-token]').attr('content');
+					$httpProvider.defaults.headers.common['X-CSRF-Token'] = getContentByMetaTagName('_csrf');
+					return response;
+				}
+			}    
+		});
+		
+	}
+
+	/**
+	 * Fetch 'content' value of meta tag by either 'name' or 'property attribute'
+	 */
+	function getContentByMetaTagName(c) {
+		for (var b = document.getElementsByTagName("meta"), a = 0; a < b.length; a++) {
+			if (c == b[a].name || c == b[a].getAttribute("property")) { return b[a].content; }
+		}
+		return false;
+	}	
 	
 	/**
 	 * Setup CMS services
