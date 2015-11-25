@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -78,29 +79,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 	}
 	
+	
+
 	/**
-	 * Builds a "hasRole" list, OR'ing all roles.
+	 * Specify which paths spring security should ignore
 	 * 
-	 * e.g. hasRole('admin') or hasRole('user') or hasRole('other'), etc...
-	 * 
-	 * @param roles
-	 * @return
+	 * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.web.builders.WebSecurity)
 	 */
-	private String anyRole(Role... roles){
-		if(roles == null || roles.length == 0){
-			return "";
-		}else{
-			StringBuffer buf = new StringBuffer();
-			Iterator<Role> roleItr = Arrays.asList(roles).iterator();
-			while(roleItr.hasNext()){
-				Role role = roleItr.next();
-				buf.append("hasRole('" + role.getRoleCode() + "')" + ((roleItr.hasNext()) ? " or " : ""));
-			}
-			return buf.toString();
-		}
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		
+		web.ignoring()
+		    .antMatchers( "/spring/file2/upload" ); // multipart file upload
+		
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Specify access rules
+	 * 
 	 * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
 	 */
 	@Override
@@ -165,7 +161,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			)
 			*/
 			
-			.antMatchers(HttpMethod.POST, "/spring/file2/upload").permitAll()
+			//.antMatchers(HttpMethod.POST, "/spring/file2/upload").permitAll()
 			
 			
 			// cms resource dispatcher	
@@ -311,6 +307,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return encoder;
 	}
 	*/
+	
+	/**
+	 * Builds a "hasRole" list, OR'ing all roles.
+	 * 
+	 * e.g. hasRole('admin') or hasRole('user') or hasRole('other'), etc...
+	 * 
+	 * @param roles
+	 * @return
+	 */
+	private String anyRole(Role... roles){
+		if(roles == null || roles.length == 0){
+			return "";
+		}else{
+			StringBuffer buf = new StringBuffer();
+			Iterator<Role> roleItr = Arrays.asList(roles).iterator();
+			while(roleItr.hasNext()){
+				Role role = roleItr.next();
+				buf.append("hasRole('" + role.getRoleCode() + "')" + ((roleItr.hasNext()) ? " or " : ""));
+			}
+			return buf.toString();
+		}
+	}	
 
 
 }

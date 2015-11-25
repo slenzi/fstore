@@ -27,6 +27,9 @@ public class SpringSecurityInitializer extends AbstractSecurityWebApplicationIni
 		// prevent spring security from intercepting and block multipart uploads
 		// http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf-multipart
 		
+		System.out.println(SpringSecurityInitializer.class.getName() + ".beforeSpringSecurityFilterChain(ServletContext) called.");
+		System.out.println("Inserting MultipartFilter");
+		
 		insertFilters(servletContext, new MultipartFilter());
 		
 	}
