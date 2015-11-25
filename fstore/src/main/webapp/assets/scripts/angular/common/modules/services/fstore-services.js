@@ -30,7 +30,9 @@
 		);
 
 	/**
-	 * Make sure CSRF token is set in request header for AJAX calls.
+	 * Make sure CSRF token is set in request header for AJAX calls. We store the token
+	 * in a meta tag on every page. (see common header jsp)
+	 * 
 	 * Needed for Spring Security Cross Site Request Forgery (CSRF) protection.
 	 */
 	function fstoreServicesConfig($httpProvider){
