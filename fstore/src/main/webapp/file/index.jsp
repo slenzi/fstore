@@ -32,6 +32,8 @@
 
 	<body ng-app="fstoreFileManager" layout="row" ng-controller="mainController as main">
 	
+	<jsp:include page="includes_body_header.jsp" />
+	
 	<!--
 	Left side navigation bar - contains links & buttons to various sections of the site
 	-->	

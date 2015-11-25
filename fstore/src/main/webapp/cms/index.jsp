@@ -32,6 +32,8 @@
 
 	<body ng-app="fstoreCms" layout="row" ng-controller="mainController as main">
 	
+	<jsp:include page="includes_body_header.jsp" />
+	
 	<md-sidenav class="md-sidenav-left  md-hue-1" md-component-id="MyLeftNav" md-is-locked-open="$mdMedia('gt-md')">
 
 		<!-- make sidenav header sticky-->
