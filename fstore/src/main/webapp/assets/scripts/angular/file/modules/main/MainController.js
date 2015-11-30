@@ -70,7 +70,17 @@
 			
 			_doWebSocketTest();
 			
-		}	
+		}
+		
+		/**
+		 * Fetch 'content' value of meta tag by either 'name' or 'property attribute'
+		 */
+		function getContentByMetaTagName(c) {
+			for (var b = document.getElementsByTagName("meta"), a = 0; a < b.length; a++) {
+				if (c == b[a].name || c == b[a].getAttribute("property")) { return b[a].content; }
+			}
+			return false;
+		}		
 		
 		function _doWebSocketTest(){
 			$log.debug('peforming websocket test');
@@ -235,6 +245,11 @@
 					
 					// set parent dir id so we know where to create the new directory on the server
 					myFsUploader.addFormValue('dirId', _currentDirectory().dirId);
+					
+					// add Spring Security Cross Site Request Forgery (CSRF) token
+					// We store the token in a meta tag on every page. (see common header jsp)
+					// Also stored as a hidden input field on every page
+					myFsUploader.addFormValue('_csrf', getContentByMetaTagName('_csrf'));
 					
 					// upload all files in queue as one single upload
 					//myFsUploader.doUpload(_uploadProgressHandler, _uploadAllCompleteHandler);

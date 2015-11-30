@@ -148,8 +148,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						)
 			)
 			
-			/*
 			// file upload handler (used in file manager and cms workplace sections)
+			//
+			// IMPORTANT - Make sure to submit CSRF token as a form value when you submit the file data. If the token
+			// is not part of the multipart request then Spring Security filter will reject the request.
+			//
+			// ALSO - Need to inject Spring MultipartFilter before Spring Security Filter.
+			// see org.lenzi.fstore.main.config.SpringSecurityInitializer
 			.antMatchers(HttpMethod.POST, "/spring/file2/upload").access(
 				anyRole(
 						Role.ADMINISTRATOR, 
@@ -159,7 +164,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						Role.CMS_WORKPLACE_ADMINISTRATOR
 						)
 			)
-			*/
 			
 			//.antMatchers(HttpMethod.POST, "/spring/file2/upload").permitAll()
 			
