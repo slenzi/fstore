@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.User;
 /**
  * User class which extends from the default spring security user class.
  * 
+ * NOT USED RIGHT NOW
+ * 
  * @author sal
  */
 public class SpringSecurityUser extends User {

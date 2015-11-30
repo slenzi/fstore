@@ -1,12 +1,14 @@
 package org.lenzi.fstore.cms.web.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
@@ -33,6 +35,10 @@ public class ResourceDispatcher extends AbstractSpringController {
 	
     @Autowired
     private ManagedProperties appProps; 	
+    
+    @Autowired
+    private FsSecurityService fsSecurityService;
+    
 	
 	public ResourceDispatcher() {
 		
@@ -59,6 +65,16 @@ public class ResourceDispatcher extends AbstractSpringController {
 		
 		String sitePath = sitesOnline;
 		
+		String username = fsSecurityService.getUsername();
+		List<String> roles = fsSecurityService.getAuthorities();
+		
+		logger.debug("Logged in user => " + username);
+		if(roles != null){
+			roles.forEach((role) -> {
+				logger.debug("Has role => " + role);
+			});
+		}
+		
 		// eventually this flag will be controlled by the user that is logged in (for cms editor roles.)
 		boolean isOffline = false;
 		
@@ -68,7 +84,7 @@ public class ResourceDispatcher extends AbstractSpringController {
 		
 		String forwardPath = sitePath + resourcePath;
 		
-		logger.info("Dispatch forward => " + forwardPath);
+		logger.debug("Dispatch forward => " + forwardPath);
 		
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(forwardPath);
 		

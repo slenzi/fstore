@@ -3,6 +3,10 @@
  */
 package org.lenzi.fstore.core.security.service;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.security.FsUserGroupRepository;
 import org.lenzi.fstore.core.repository.security.FsUserRepository;
@@ -14,6 +18,10 @@ import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,5 +96,46 @@ public class FsSecurityService {
 		return user;
 		
 	}
+	
+	/**
+	 * Get username of principal currently interacting with the application (the authenticated spring user.)
+	 * 
+	 * @return
+	 * @throws ServiceException
+	 */
+	public String getUsername() {
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String username = "unknown";
+		
+		if (principal instanceof UserDetails) {
+			username = ((UserDetails)principal).getUsername();
+		} else {
+			username = principal.toString();
+		}		
+		
+		return username;
+		
+	}
+	
+	/**
+	 * Get authorities (roles) of principal currently interacting with the application (the authenticated spring user.)
+	 * 
+	 * @return A list of role codes (e.g. 'ROLE_ADMINISTRATOR', 'ROLE_OTHER', etc..)
+	 * @throws ServiceException
+	 */
+	public List<String> getAuthorities() {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>)auth.getAuthorities();
+		
+		List<String> roles = authorities.stream().map(
+					SimpleGrantedAuthority::getAuthority).collect(Collectors.toList());
+		
+		return roles;
+		
+	}	
 
 }
