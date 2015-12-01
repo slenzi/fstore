@@ -13,6 +13,7 @@ import org.lenzi.fstore.core.repository.security.FsUserRepository;
 import org.lenzi.fstore.core.repository.security.FsUserRepository.FsUserFetch;
 import org.lenzi.fstore.core.repository.security.FsUserRoleRepository;
 import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
+import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CollectionUtil;
@@ -116,7 +117,6 @@ public class FsSecurityService {
 		}		
 		
 		return username;
-		
 	}
 	
 	/**
@@ -135,7 +135,25 @@ public class FsSecurityService {
 					SimpleGrantedAuthority::getAuthority).collect(Collectors.toList());
 		
 		return roles;
+	}
+	
+	/**
+	 * Get principal currently interacting with the application (the authenticated spring user.)
+	 * 
+	 * @return A FsSecureUser object which extends from the default org.springframework.security.core.userdetails.User class.
+	 * 	Otherwise null.
+	 */
+	public FsSecureUser getLoggedInUser() {
 		
-	}	
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		FsSecureUser user = null;
+		
+		if (principal instanceof FsSecureUser) {
+			user = (FsSecureUser)principal;
+		}	
+		
+		return user;	
+	}
 
 }

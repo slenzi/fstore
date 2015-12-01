@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.lenzi.fstore.core.util.StringUtil;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Models a user for the system

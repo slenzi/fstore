@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
+import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.main.properties.ManagedProperties;
@@ -65,15 +67,7 @@ public class ResourceDispatcher extends AbstractSpringController {
 		
 		String sitePath = sitesOnline;
 		
-		String username = fsSecurityService.getUsername();
-		List<String> roles = fsSecurityService.getAuthorities();
-		
-		logger.debug("Logged in user => " + username);
-		if(roles != null){
-			roles.forEach((role) -> {
-				logger.debug("Has role => " + role);
-			});
-		}
+		logDebugUserDetails();
 		
 		// eventually this flag will be controlled by the user that is logged in (for cms editor roles.)
 		boolean isOffline = false;
@@ -116,6 +110,43 @@ public class ResourceDispatcher extends AbstractSpringController {
 
 	    return finalPath;
 
-	}	
+	}
+	
+	/**
+	 * Logs all details of current logged in user (debug level.)
+	 */
+	private void logDebugUserDetails(){
+		
+		FsSecureUser principalUser = fsSecurityService.getLoggedInUser();
+
+		boolean havePricipalUser = (principalUser != null) ? true : false;
+		boolean haveFsUser = (havePricipalUser && principalUser.getFsUser() != null) ? true : false;
+		
+		String username = fsSecurityService.getUsername();
+		List<String> authorityNames = fsSecurityService.getAuthorities();
+	
+		logger.debug("Logged in user details: ");
+		logger.debug("Have principal user (spring security) => " + havePricipalUser);
+		logger.debug("Have FsUser => " + haveFsUser);
+		
+		if(authorityNames != null){
+			authorityNames.forEach((role) -> {
+				logger.debug("Granted Authority => " + role);
+			});
+		}		
+		
+		if(haveFsUser){
+			FsUser fsUser = principalUser.getFsUser();
+			logger.debug("User ID => " + fsUser.getUserId());
+			logger.debug("First name => " + fsUser.getFirstName());
+			logger.debug("Last name => " + fsUser.getLastName());
+			logger.debug("Primary Email => " + fsUser.getPrimaryEmail());
+			logger.debug("Role count => " + fsUser.roleCount());
+			logger.debug("Group count => " + fsUser.groupCount());
+		}
+		
+		logger.debug("Username => " + username);		
+		
+	}
 
 }

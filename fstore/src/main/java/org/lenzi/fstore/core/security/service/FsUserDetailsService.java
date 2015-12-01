@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
 import org.lenzi.fstore.core.repository.security.model.impl.FsUserRole;
+import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -82,17 +83,19 @@ public class FsUserDetailsService implements UserDetailsService {
 
 	
 	/**
-	 * Convert FsUser to org.springframework.security.core.userdetails.User
+	 * Convert FsUser to FsSecureUser. The later extends from org.springframework.security.core.userdetails.User.
 	 * 
 	 * @param user
 	 * @param authorities
 	 * @return
 	 */
-	private User buildUserForAuthentication(FsUser user, List<GrantedAuthority> authorities) {
+	private FsSecureUser buildUserForAuthentication(FsUser user, List<GrantedAuthority> authorities) {
 		
 		logger.debug(FsUserDetailsService.class.getName() + ".buildUserForAuthentication(...) called");
 		
-		return new User(user.getUsername(), user.getPassword(), true, true, true, true, authorities);
+		FsSecureUser fsUser = new FsSecureUser(user, authorities);
+		
+		return fsUser;
 		
 	}	
 	
