@@ -69,7 +69,7 @@ public class ResourceDispatcher extends AbstractSpringController {
 		
 		logDebugUserDetails();
 		
-		// eventually this flag will be controlled by the user that is logged in (for cms editor roles.)
+		// eventually this flag will be controlled by the user that is logged in (for cms related roles.)
 		boolean isOffline = false;
 		
 		if(isOffline){
@@ -83,10 +83,13 @@ public class ResourceDispatcher extends AbstractSpringController {
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(forwardPath);
 		
 		try {
+		
 			requestDispatcher.forward(request, response);
+		
 		} catch (ServletException e) {
 			logger.error("Servlet expception thrown while attempting to use RequestDispatcher to inlcude resource, " + forwardPath);
 			e.printStackTrace();
+			
 		} catch (IOException e) {
 			logger.error("IO expception thrown while attempting to use RequestDispatcher to inlcude resource, " + forwardPath);
 			e.printStackTrace();
