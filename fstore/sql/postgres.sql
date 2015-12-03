@@ -20,9 +20,9 @@ drop sequence TEST.FS_STORE_ID_SEQUENCE;
 
 drop sequence TEST.FS_CMS_SITE_ID_SEQUENCE;
 
-drop sequence TEST.FS_USER_ID_SEQUENCE
-drop sequence TEST.FS_USER_GROUP_ID_SEQUENCE
-drop sequence TEST.FS_USER_ROLE_ID_SEQUENCE
+drop sequence TEST.FS_USER_ID_SEQUENCE;
+drop sequence TEST.FS_USER_GROUP_ID_SEQUENCE;
+drop sequence TEST.FS_USER_ROLE_ID_SEQUENCE;
 
 drop index TEST.fs_parent_depth_child_idx;
 drop index TEST.fs_child_parent_depth_idx;	

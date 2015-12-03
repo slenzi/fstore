@@ -79,7 +79,7 @@ public class PostgreSQLCreate {
 		"drop table " + SCHEMA + "FS_USER";
 	private String SQL_CREATE_TABLE_FS_USER =	
 		"create table " + SCHEMA + "FS_USER (  " +
-		"	USER_ID NUMERIC(15,0 NOT NULL, " +
+		"	USER_ID NUMERIC(15,0) NOT NULL, " +
 		"	USERNAME CHARACTER VARYING(20) NOT NULL, " +
 		"	PASSWORD CHARACTER VARYING(20) NOT NULL, " +
 		"	FIRST_NAME CHARACTER VARYING(40) NOT NULL, " +
@@ -92,7 +92,7 @@ public class PostgreSQLCreate {
 		"drop table " + SCHEMA + "FS_USER_GROUP";
 	private String SQL_CREATE_TABLE_FS_USER_GROUP =		
 		"create table " + SCHEMA + "FS_USER_GROUP (  " +
-		"	GROUP_ID NUMERIC(15,0 NOT NULL, " +
+		"	GROUP_ID NUMERIC(15,0) NOT NULL, " +
 		"	GROUP_CODE CHARACTER VARYING(250) NOT NULL, " +
 		"	GROUP_DESC CHARACTER VARYING(2000) NOT NULL, " +
 		"	PRIMARY KEY (GROUP_ID) " +
@@ -101,7 +101,7 @@ public class PostgreSQLCreate {
 		"drop table " + SCHEMA + "FS_USER_ROLE";
 	private String SQL_CREATE_TABLE_FS_USER_ROLE =		
 		"create table " + SCHEMA + "FS_USER_ROLE ( " + 
-		"	ROLE_ID NUMERIC(15,0 NOT NULL, " +
+		"	ROLE_ID NUMERIC(15,0) NOT NULL, " +
 		"	ROLE_CODE CHARACTER VARYING(250) NOT NULL, " +
 		"	ROLE_DESC CHARACTER VARYING(2000) NOT NULL, " +
 		"	PRIMARY KEY (ROLE_ID) " +
@@ -110,16 +110,16 @@ public class PostgreSQLCreate {
 		"drop table " + SCHEMA + "FS_USER_ROLE_LINK";
 	private String SQL_CREATE_TABLE_FS_USER_ROLE_LINK =		
 		"create table " + SCHEMA + "FS_USER_ROLE_LINK ( " + 
-		"	USER_ID NUMERIC(15,0 NOT NULL, " +
-		"	ROLE_ID NUMERIC(15,0 NOT NULL, " +
+		"	USER_ID NUMERIC(15,0) NOT NULL, " +
+		"	ROLE_ID NUMERIC(15,0) NOT NULL, " +
 		"	PRIMARY KEY (USER_ID,ROLE_ID) " + 
 		")";
 	private String SQL_DROP_TABLE_FS_USER_GROUP_LINK =
 		"drop table " + SCHEMA + "FS_USER_GROUP_LINK";
 	private String SQL_CREATE_TABLE_FS_USER_GROUP_LINK =		
 		"create table " + SCHEMA + "FS_USER_GROUP_LINK ( " + 
-		"	USER_ID NUMERIC(15,0 NOT NULL, " +
-		"	GROUP_ID NUMERIC(15,0 NOT NULL, " +
+		"	USER_ID NUMERIC(15,0) NOT NULL, " +
+		"	GROUP_ID NUMERIC(15,0) NOT NULL, " +
 		"	PRIMARY KEY (USER_ID,GROUP_ID) " + 
 		")";
 
@@ -349,19 +349,19 @@ public class PostgreSQLCreate {
 	
 	private String[] DEFAULT_DATA = new String[]{
 			
-		"INSERT INTO FS_USER (USER_ID, USERNAME, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PRIMARY_EMAIL) VALUES (1, 'admin', 'admin', 'admin_first', 'admin_middle', 'admin_last', 'admin@your.domain.com')",
+		"INSERT INTO " + SCHEMA + "FS_USER (USER_ID, USERNAME, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PRIMARY_EMAIL) VALUES (1, 'admin', 'admin', 'admin_first', 'admin_middle', 'admin_last', 'admin@your.domain.com')",
 		
 		/* Role codes MUST start with 'ROLE_' to be compatible with spring security */
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (1, 'ROLE_ADMINISTRATOR', 'Administrators have access to everything')",
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (2, 'ROLE_FILE_MANAGER_ADMINISTRATOR', 'Administrative access to file manager section')",
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'ROLE_CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section')",
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'ROLE_FILE_MANAGER_USER', 'Access to the file manager section')",
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'ROLE_CMS_WORKPLACE_USER', 'Access to the CMS workplace section')",
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'ROLE_USER', 'All users, other than guests. All users with accounts are members of this role.')",
-		"INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (7, 'ROLE_GUEST', 'Default role for users not logged into the system')",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (1, 'ROLE_ADMINISTRATOR', 'Administrators have access to everything')",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (2, 'ROLE_FILE_MANAGER_ADMINISTRATOR', 'Administrative access to file manager section')",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'ROLE_CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section')",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'ROLE_FILE_MANAGER_USER', 'Access to the file manager section')",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'ROLE_CMS_WORKPLACE_USER', 'Access to the CMS workplace section')",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'ROLE_USER', 'All users, other than guests. All users with accounts are members of this role.')",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (7, 'ROLE_GUEST', 'Default role for users not logged into the system')",
 		
-		"INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1)",
-		"INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 6)"
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1)",
+		"INSERT INTO " + SCHEMA + "FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 6)"
 		
 	};
 	
