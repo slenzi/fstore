@@ -5,8 +5,12 @@ package org.lenzi.fstore.core.security;
 
 import java.io.Serializable;
 
+import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.slf4j.Logger;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 /**
  * Evaluates whether or not a user has access to an FsPathResource
@@ -15,8 +19,12 @@ import org.springframework.security.core.Authentication;
  * 
  * @author sal
  */
+@Component
 public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 
+	@InjectLogger
+	private Logger logger;
+	
 	/**
 	 * 
 	 */
@@ -31,9 +39,13 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
 	
 		// Used in situations where the domain object, to which access is being controlled, is already loaded. 
-		// Then expression will return true if the current user has the given permission for that object.		
+		// Then expression will return true if the current user has the given permission for that object.
 		
-		return false;
+		System.out.println("HasPermission(Authentication authentication, Object targetDomainObject, Object permission) called.");
+		
+		debugUsername(authentication);
+		
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -47,7 +59,28 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 		// been the Java class of the object, but does not have to be as long as it is consistent with how the 
 		// permissions are loaded.
 		
-		return false;
+		System.out.println("HasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) called.");
+		
+		debugUsername(authentication);
+		
+		return true;
+	}
+	
+	private void debugUsername(Authentication auth){
+		if(auth != null){
+			Object principal = auth.getPrincipal();
+			String username = "unknown";
+			if (principal instanceof UserDetails) {
+				username = ((UserDetails)principal).getUsername();
+			} else {
+				username = principal.toString();
+			}
+			if(logger != null){
+				logger.debug("Username => " + username);
+			}else{
+				System.out.println("Username: " + username);
+			}
+		}
 	}
 
 }

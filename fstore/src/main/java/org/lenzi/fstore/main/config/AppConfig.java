@@ -46,7 +46,8 @@ import org.springframework.stereotype.Controller;
 	RepositoryConfig.class,
 	WebSocketConfig.class,
 	WebSocketChatConfig.class,
-	SecurityConfig.class
+	SecurityConfig.class,
+	MethodSecurityConfig.class
 })
 public class AppConfig {
 
@@ -66,6 +67,8 @@ public class AppConfig {
 	
 	// WebSocketChatConfig - Setup websocket chat support
 	
-	// SecurityConfig - Setup spring security
+	// SecurityConfig - Setup role based spring security
+	
+	// MethodSecurityConfig - Setup method level spring security
 	
 }

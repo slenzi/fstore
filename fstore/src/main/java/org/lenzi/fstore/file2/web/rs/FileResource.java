@@ -33,6 +33,7 @@ import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
@@ -204,7 +205,9 @@ public class FileResource extends AbstractResource {
 	}	
 	
 	/**
-	 * Download file resource
+	 * Download file resource.
+	 * 
+	 * Secured with @PreAuthorize annotation which is method level spring security.
 	 * 
 	 * @param fileId - id of file resource to download
 	 * @return
@@ -213,6 +216,7 @@ public class FileResource extends AbstractResource {
 	@GET
 	@Path("/download/id/{fileId}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@PreAuthorize("isAuthenticated() and hasPermission(#fileId, 'path.to.file', 'read')")
 	public Response getFile(@PathParam("fileId") Long fileId) throws WebServiceException {
 		
 		logger.info(FileResource.class.getName() + " jax-rs service called, download file, fileId = " + fileId);

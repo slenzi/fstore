@@ -24,7 +24,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 /**
  * @author sal
  *
- * Setup spring security
+ * Setup spring security role based permissions using our custom user details service which validates users
+ * against the FS_USERS table.
+ * 
+ * Roles are mapped to specific URL requests. See configure(HttpSecurity http) method below.
+ * 
  */
 @Configuration
 @EnableWebSecurity
