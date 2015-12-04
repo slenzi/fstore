@@ -40,13 +40,13 @@ public class PersistenceConfig {
 	
 	private final String[] entityPackages = new String[]{
 			
-			"org.lenzi.fstore.core.repository.security.model.impl",
-			"org.lenzi.fstore.core.repository.tree.model.impl",
-			
-			"org.lenzi.fstore.file2.repository.model.impl",
-			"org.lenzi.fstore.cms.repository.model.impl",
-			
-			"org.lenzi.fstore.example.repository.model.impl"
+		"org.lenzi.fstore.core.repository.security.model.impl",
+		"org.lenzi.fstore.core.repository.tree.model.impl",
+		
+		"org.lenzi.fstore.file2.repository.model.impl",
+		"org.lenzi.fstore.cms.repository.model.impl",
+		
+		"org.lenzi.fstore.example.repository.model.impl"
 			
 	};
 	
@@ -104,14 +104,30 @@ public class PersistenceConfig {
 		properties.setProperty("hibernate.generate_statistics", appProps.getProperty("hibernate.generate_statistics"));
 		properties.setProperty("hibernate.temp.use_jdbc_metadata_defaults", appProps.getProperty("hibernate.temp.use_jdbc_metadata_defaults"));
 		
-		logger.info("Additional JPA Hibernate properties:");
+		logInfo("Additional JPA Hibernate properties:");
 		
 		for(String propName : properties.stringPropertyNames()){
-			logger.info(propName + " = " + properties.getProperty(propName));
+			logInfo(propName + " = " + properties.getProperty(propName));
 		}
 		
 		return properties;
 		
 	}
+	
+	private void logInfo(String message){
+		if(logger != null){
+			logger.info(message);
+		}else{
+			System.out.println(message);
+		}
+	}
+	
+	private void logError(String message, Throwable t){
+		if(logger != null){
+			logger.error(message, t);
+		}else{
+			System.err.println(message + " " + t.getMessage());
+		}
+	}	
 
 }

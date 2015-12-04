@@ -47,18 +47,18 @@ public class DataSourceConfig {
 		
 		if(!StringUtil.isNullEmpty(jndiDataSourceName)){
 			
-			logger.info("Getting data source from JNDI, name => " + jndiDataSourceName);
+			logInfo("Getting data source from JNDI, name => " + jndiDataSourceName);
 			
 			JndiTemplate jndi = new JndiTemplate();
 	        try {
 	            dataSource = (DataSource) jndi.lookup(jndiDataSourceName);
 	        } catch (NamingException e) {
-	            logger.error("NamingException for " + jndiDataSourceName, e);
+	        	logError("NamingException for " + jndiDataSourceName, e);
 	        }
 	        
 		}else{
 			
-			logger.info("No JNDI data source name found for property => " + jndiPropName);
+			logInfo("No JNDI data source name found for property => " + jndiPropName);
 			
 			dataSource = getDriverManagerDataSource();
 			
@@ -120,5 +120,21 @@ public class DataSourceConfig {
         
         return dataSource;
 	}
+	
+	private void logInfo(String message){
+		if(logger != null){
+			logger.info(message);
+		}else{
+			System.out.println(message);
+		}
+	}
+	
+	private void logError(String message, Throwable t){
+		if(logger != null){
+			logger.error(message, t);
+		}else{
+			System.err.println(message + " " + t.getMessage());
+		}
+	}	
 
 }

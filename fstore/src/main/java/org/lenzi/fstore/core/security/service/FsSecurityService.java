@@ -64,7 +64,7 @@ public class FsSecurityService {
 	 */
 	public FsUser getUserByUsername(final String username) throws ServiceException {
 		
-		logger.debug(FsSecurityService.class.getName() + ".getUserByUsername(final String username) called. [username = '" + username + "']");
+		logger.info(FsSecurityService.class.getName() + ".getUserByUsername(final String username) called. [username = '" + username + "']");
 		
 		if(username == null || username.trim().equals("")){
 			throw new ServiceException("Username is null or blank. Cannot retrieve user object.");
@@ -79,19 +79,19 @@ public class FsSecurityService {
 		
 		if(user != null){
 			
-			logger.debug("Fetched user => [first name = '" + user.getFirstName() + "', last name = '" + user.getLastName() + 
+			logger.info("Fetched user => [first name = '" + user.getFirstName() + "', last name = '" + user.getLastName() + 
 					"', username = '" + user.getUsername() + "', role count = " + user.roleCount() + 
 					", group count = " + user.groupCount());
 			
 			CollectionUtil.emptyIfNull(user.getRoles()).forEach( (role) -> {
-				logger.debug("Role for " + username + ": " + role.getRoleCode());
+				logger.info("Role for " + username + ": " + role.getRoleCode());
 			});
 			CollectionUtil.emptyIfNull(user.getGroups()).forEach( (group) -> {
-				logger.debug("Group for " + username + ": " + group.getGroupCode());
+				logger.info("Group for " + username + ": " + group.getGroupCode());
 			});			
 			
 		}else{
-			logger.debug("Fetched user object in null...");
+			logger.info("Fetched user object in null...");
 		}
 		
 		return user;

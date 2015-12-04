@@ -5,8 +5,10 @@ package org.lenzi.fstore.core.security;
 
 import java.io.Serializable;
 
+import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +26,10 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 
 	@InjectLogger
 	private Logger logger;
+	
+	// breaks everything...
+	//@Autowired
+	private FsSecurityService fsSecurityService;
 	
 	/**
 	 * 
@@ -60,6 +66,12 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 		// permissions are loaded.
 		
 		System.out.println("HasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) called.");
+		
+		if(fsSecurityService != null){
+			System.out.println("Have fsSecurityService!");
+		}else{
+			System.out.println("Have NO fsSecurityService...boo!");
+		}
 		
 		debugUsername(authentication);
 		

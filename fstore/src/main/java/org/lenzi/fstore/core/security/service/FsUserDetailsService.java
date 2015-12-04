@@ -53,7 +53,7 @@ public class FsUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
 		
-		logger.debug(FsUserDetailsService.class.getName() + ".loadUserByUsername(final String username) called");
+		logger.info(FsUserDetailsService.class.getName() + ".loadUserByUsername(final String username) called");
 		
 		FsUser fsUser = null;
 		try {
@@ -66,14 +66,16 @@ public class FsUserDetailsService implements UserDetailsService {
 			
 		}
 		
+		logger.info(FsUserDetailsService.class.getName() + ".loadUserByUsername(final String username) fetch user finished");
+		
 		List<GrantedAuthority> authorities = buildUserAuthority(fsUser.getRoles());		
 		
 		final User springUser = buildUserForAuthentication(fsUser, authorities);
 		
-		logger.debug("Spring User => [username='" + springUser.getUsername() + "', password='" + springUser.getPassword() + "']");
+		logger.info("Spring User => [username='" + springUser.getUsername() + "', password='" + springUser.getPassword() + "']");
 		
 		springUser.getAuthorities().forEach( (authority) ->{
-			logger.debug("Granted Authority for '" + springUser.getUsername() + "' => " + authority.getAuthority());
+			logger.info("Granted Authority for '" + springUser.getUsername() + "' => " + authority.getAuthority());
 		});
 		
 		return springUser;

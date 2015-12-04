@@ -7,6 +7,7 @@ import org.lenzi.fstore.core.security.FsResourcePermissionEvaluator;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -31,8 +32,8 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 	@InjectLogger
 	private Logger logger;
 	
-	@Autowired
-	private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
+	//@Autowired
+	//private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
 	
 	/**
 	 * 
@@ -49,10 +50,15 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 		
 		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
 		
-		expressionHandler.setPermissionEvaluator( fsResourcePermissionEvaluator );
+		expressionHandler.setPermissionEvaluator( getFsResourcePermissionEvaluator() );
 		
 		return expressionHandler;
 		
+	}
+	
+	@Bean
+	public FsResourcePermissionEvaluator getFsResourcePermissionEvaluator(){
+		return new FsResourcePermissionEvaluator();
 	}
 
 }
