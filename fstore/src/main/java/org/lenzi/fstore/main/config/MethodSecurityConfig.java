@@ -26,14 +26,13 @@ import org.springframework.security.config.annotation.method.configuration.Globa
  * @author slenzi
  */
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
 	@InjectLogger
 	private Logger logger;
 	
-	//@Autowired
-	//private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
+	private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
 	
 	/**
 	 * 
@@ -50,15 +49,22 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 		
 		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
 		
-		expressionHandler.setPermissionEvaluator( getFsResourcePermissionEvaluator() );
+		expressionHandler.setPermissionEvaluator( fsResourcePermissionEvaluator );
 		
 		return expressionHandler;
 		
 	}
 	
+	@Autowired
+	public void setFsResourcePermissionEvaluator(FsResourcePermissionEvaluator eval){
+		this.fsResourcePermissionEvaluator = eval;
+	}
+	
+	/*
 	@Bean
 	public FsResourcePermissionEvaluator getFsResourcePermissionEvaluator(){
 		return new FsResourcePermissionEvaluator();
 	}
+	*/
 
 }

@@ -57,13 +57,20 @@ public class FsUserDetailsService implements UserDetailsService {
 		
 		FsUser fsUser = null;
 		try {
+			logger.info("A");
 			fsUser = fsSecurityService.getUserByUsername(username);
+			logger.info("B");
 		} catch (ServiceException e) {
 			
-			logger.error(FsUserDetailsService.class.getName() + " => Failed to fetch user by username [username='" + username + "']. " + e.getMessage());
+			logger.error(FsUserDetailsService.class.getName() + " => ServiceException, failed to fetch user by username [username='" + username + "']. " + e.getMessage());
 			
 			throw new UsernameNotFoundException(e.getMessage(), e);
 			
+		} catch (UsernameNotFoundException e){
+			
+			logger.error(FsUserDetailsService.class.getName() + " => UsernameNotFoundException, failed to fetch user by username [username='" + username + "']. " + e.getMessage());
+			
+			throw new UsernameNotFoundException(e.getMessage(), e);
 		}
 		
 		logger.info(FsUserDetailsService.class.getName() + ".loadUserByUsername(final String username) fetch user finished");

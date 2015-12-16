@@ -460,6 +460,8 @@
 				<version>2.6</version>
 				<configuration>
 					<warName>${war.name}</warName>
+					<!-- we use java config to bootsrap the application -->
+					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<webResources>
 						<resource>
 							<filtering>true</filtering>

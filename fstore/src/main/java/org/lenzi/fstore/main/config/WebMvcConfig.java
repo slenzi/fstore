@@ -36,8 +36,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 		"org.lenzi.fstore.file2.web.controller",
 		"org.lenzi.fstore.file2.web.messaging.controller",
 		"org.lenzi.fstore.cms.web.controller",
-		"org.lenzi.fstore.core.logging",
-		"org.lenzi.fstore.core.security"
+		"org.lenzi.fstore.core.logging"
+		//,
+		//"org.lenzi.fstore.core.security"
 		}
 )
 public class WebMvcConfig extends WebMvcConfigurerAdapter {

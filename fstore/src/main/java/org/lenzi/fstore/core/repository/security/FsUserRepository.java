@@ -97,6 +97,8 @@ public class FsUserRepository extends AbstractRepository {
 	 */
 	public FsUser getUserByUsername(String username, FsUserFetch fetch) throws DatabaseException {
 		
+		System.out.println(FsUserRepository.class.getName() + ".getUserByUsername(String username, FsUserFetch fetch) called");
+		
 		logger.debug(FsUserRepository.class.getName() + ".getUserByUsername(String username, FsUserFetch fetch) called");
 		
 		return getUserByUsernameCriteria(username, fetch);
@@ -220,6 +222,8 @@ public class FsUserRepository extends AbstractRepository {
 	 * @throws DatabaseException
 	 */
 	private FsUser getUserByUsernameCriteria(String username, FsUserFetch fetch) throws DatabaseException {
+		
+		System.out.println(FsUserRepository.class.getName() + ".getUserByUsernameCriteria(String username, FsUserFetch fetch) called");
 		
 		logger.debug(FsUserRepository.class.getName() + ".getUserByUsernameCriteria(String username, FsUserFetch fetch) called");
 		
