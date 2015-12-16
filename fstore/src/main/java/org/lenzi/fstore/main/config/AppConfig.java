@@ -45,9 +45,10 @@ import org.springframework.stereotype.Controller;
 	CxfConfig.class,
 	RepositoryConfig.class,
 	WebSocketConfig.class,
-	WebSocketChatConfig.class,
-	SecurityConfig.class,
-	MethodSecurityConfig.class
+	WebSocketChatConfig.class
+	//,
+	//SecurityConfig.class,
+	//MethodSecurityConfig.class
 })
 public class AppConfig {
 

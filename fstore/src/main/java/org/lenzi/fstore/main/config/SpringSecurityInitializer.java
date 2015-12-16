@@ -5,6 +5,7 @@ package org.lenzi.fstore.main.config;
 
 import javax.servlet.ServletContext;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.multipart.support.MultipartFilter;
 
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.support.MultipartFilter;
  * Section 5.2 of example
  * http://www.mkyong.com/spring-security/spring-security-hello-world-annotation-example/
  */
+@Order(1) // should always be registered in first place (= before WebAppInitializer)
 public class SpringSecurityInitializer extends AbstractSecurityWebApplicationInitializer {
 
 	/* (non-Javadoc)

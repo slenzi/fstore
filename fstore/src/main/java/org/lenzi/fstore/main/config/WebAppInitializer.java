@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
  * 
  * @author sal
  */
+@Order(2) // run after SpringSecurityInitializer
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
 	public WebAppInitializer() {
@@ -31,7 +33,11 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 
 		System.out.println(WebAppInitializer.class.getName() + ".getRootConfigClasses() called");
 		
-		Class<?>[] rootConfigClasses = new Class<?>[] { AppConfig.class };
+		Class<?>[] rootConfigClasses = new Class<?>[] { 
+				AppConfig.class
+				,SecurityConfig.class
+				,MethodSecurityConfig.class
+				};
 
 		return rootConfigClasses;		
 		

@@ -27,8 +27,10 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 	@InjectLogger
 	private Logger logger;
 	
-	// breaks everything...
-	//@Autowired
+	// breaks everything when we autowire this and use MethodSecurityConfig.class
+	// FsSecurityService uses the @InjectLogger annotation which is failing. My guess is the beanpostprocessor is not
+	// running when spring security instantiates our FsResourcePermissionEvaluator.class.
+	@Autowired
 	private FsSecurityService fsSecurityService;
 	
 	/**
