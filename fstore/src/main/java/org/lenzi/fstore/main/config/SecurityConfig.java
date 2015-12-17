@@ -34,11 +34,11 @@ import org.springframework.stereotype.Controller;
  * 
  */
 @Configuration
-@ComponentScan(
-	basePackages = {
-		"org.lenzi.fstore.core"
-	}
-)
+//@ComponentScan(
+//	basePackages = {
+//		"org.lenzi.fstore.core"
+//	}
+//)
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 

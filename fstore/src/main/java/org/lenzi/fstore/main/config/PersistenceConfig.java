@@ -118,7 +118,7 @@ public class PersistenceConfig {
 		if(logger != null){
 			logger.info(message);
 		}else{
-			System.out.println(message);
+			System.out.println("> " + message);
 		}
 	}
 	
@@ -126,7 +126,7 @@ public class PersistenceConfig {
 		if(logger != null){
 			logger.error(message, t);
 		}else{
-			System.err.println(message + " " + t.getMessage());
+			System.err.println("> " + message + " " + t.getMessage());
 		}
 	}	
 

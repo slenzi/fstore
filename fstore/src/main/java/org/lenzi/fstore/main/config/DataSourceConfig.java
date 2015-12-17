@@ -96,17 +96,17 @@ public class DataSourceConfig {
 	 */
 	private DataSource getDriverManagerDataSource(){
 		
-		logger.info("Initializing driver manager data source:");
+		logInfo("Initializing driver manager data source:");
 		
-		logger.info("Database driver = " + appProps.getDatabaseDriver());
-		logger.info("Database url = " + appProps.getDatabaseUrl());
-		logger.info("Database user = " + appProps.getDatabaseUser());
-		logger.info("Database password = *******");
+		logInfo("Database driver = " + appProps.getDatabaseDriver());
+		logInfo("Database url = " + appProps.getDatabaseUrl());
+		logInfo("Database user = " + appProps.getDatabaseUser());
+		logInfo("Database password = *******");
 		
 		if(StringUtil.isNullEmpty(appProps.getDatabaseDriver()) || StringUtil.isNullEmpty(appProps.getDatabaseUrl()) ||
 				StringUtil.isNullEmpty(appProps.getDatabaseUser())){
 			
-			logger.error("Missing required values for data source. Check driver name, connection url, username, and/or password");
+			logError("Missing required values for data source. Check driver name, connection url, username, and/or password", null);
 			
 			return null;
 		}
@@ -125,7 +125,7 @@ public class DataSourceConfig {
 		if(logger != null){
 			logger.info(message);
 		}else{
-			System.out.println(message);
+			System.out.println("> " + message);
 		}
 	}
 	
@@ -133,7 +133,7 @@ public class DataSourceConfig {
 		if(logger != null){
 			logger.error(message, t);
 		}else{
-			System.err.println(message + " " + t.getMessage());
+			System.err.println("> " + message + " " + t.getMessage());
 		}
 	}	
 

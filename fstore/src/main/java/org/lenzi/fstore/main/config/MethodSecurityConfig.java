@@ -3,6 +3,7 @@
  */
 package org.lenzi.fstore.main.config;
 
+import org.lenzi.fstore.core.logging.LoggerBeanPostProccessor;
 import org.lenzi.fstore.core.security.FsResourcePermissionEvaluator;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -34,6 +35,9 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 	
 	private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
 	
+	// not sure if needed... beans in this context (spring method scurity context) are not having the logger properly injected by our custom @InjectLogger annotation.
+	private LoggerBeanPostProccessor loggerBeanPostProcessor;
+	
 	/**
 	 * 
 	 */
@@ -60,11 +64,9 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 		this.fsResourcePermissionEvaluator = eval;
 	}
 	
-	/*
-	@Bean
-	public FsResourcePermissionEvaluator getFsResourcePermissionEvaluator(){
-		return new FsResourcePermissionEvaluator();
+	@Autowired
+	public void setLoggerBeanPostProccessor(LoggerBeanPostProccessor processor){
+		this.loggerBeanPostProcessor = processor;
 	}
-	*/
 
 }
