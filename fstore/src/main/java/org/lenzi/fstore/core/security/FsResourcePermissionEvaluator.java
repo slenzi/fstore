@@ -49,7 +49,7 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 		// Used in situations where the domain object, to which access is being controlled, is already loaded. 
 		// Then expression will return true if the current user has the given permission for that object.
 		
-		System.out.println("HasPermission(Authentication authentication, Object targetDomainObject, Object permission) called.");
+		logInfo("HasPermission(Authentication authentication, Object targetDomainObject, Object permission) called.");
 		
 		debugUsername(authentication);
 		
@@ -67,12 +67,12 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 		// been the Java class of the object, but does not have to be as long as it is consistent with how the 
 		// permissions are loaded.
 		
-		System.out.println("HasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) called.");
+		logInfo("HasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) called.");
 		
 		if(fsSecurityService != null){
-			System.out.println("Have fsSecurityService!");
+			logInfo("Have fsSecurityService!");
 		}else{
-			System.out.println("Have NO fsSecurityService...boo!");
+			logInfo("Have NO fsSecurityService...boo!");
 		}
 		
 		debugUsername(authentication);
@@ -89,11 +89,23 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 			} else {
 				username = principal.toString();
 			}
-			if(logger != null){
-				logger.debug("Username => " + username);
-			}else{
-				System.out.println("Username: " + username);
-			}
+			logInfo("Username: " + username);
+		}
+	}
+	
+	private void logInfo(String message){
+		if(logger != null){
+			logger.info(message);
+		}else{
+			System.out.println("> " + message);
+		}
+	}
+	
+	private void logError(String message, Throwable t){
+		if(logger != null){
+			logger.error(message, t);
+		}else{
+			System.err.println("> " + message + " " + t.getMessage());
 		}
 	}
 
