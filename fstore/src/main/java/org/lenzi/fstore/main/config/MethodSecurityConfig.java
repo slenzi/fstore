@@ -24,10 +24,12 @@ import org.springframework.security.config.annotation.method.configuration.Globa
  * 
  * There are four possible annotations one can use, @PreAuthorize, @PreFilter, @PostAuthorize and @PostFilter.
  * 
+ * @deprecated - this has been moved to a private inner class in SecurityConfig.class.
+ * 
  * @author slenzi
  */
-@Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+//@Configuration
+//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
 	@InjectLogger

@@ -7,22 +7,24 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.lenzi.fstore.core.repository.security.model.impl.FsUserRole.Role;
+import org.lenzi.fstore.core.security.FsResourcePermissionEvaluator;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Controller;
 
 /**
  * @author sal
@@ -31,6 +33,8 @@ import org.springframework.stereotype.Controller;
  * against the FS_USERS table.
  * 
  * Roles are mapped to specific URL requests. See configure(HttpSecurity http) method below.
+ * 
+ * This class also sets up method level security using our custom permission evaluator.
  * 
  */
 @Configuration
@@ -51,8 +55,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private UserDetailsService userDetailsService;
 	
 	/**
+	 * Enables method level security using Spring Security.
 	 * 
+	 * Allows us to annotate methods with the following annotation to control access.
+	 * 
+	 * @PreAuthorize("isAuthenticated() and hasPermission(#thingId, 'path.to.Thing', 'read')")
+	 * 
+	 * There are four possible annotations one can use, @PreAuthorize, @PreFilter, @PostAuthorize and @PostFilter.
+	 * 
+	 * @author sal
 	 */
+	@Configuration
+	@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+	static class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
+		
+		@Autowired
+		private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
+
+		@Override
+		protected MethodSecurityExpressionHandler createExpressionHandler() {
+			
+			DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+			expressionHandler.setPermissionEvaluator( fsResourcePermissionEvaluator );
+			return expressionHandler;
+			
+		}
+		
+	}
+	
 	public SecurityConfig() {
 		
 	}

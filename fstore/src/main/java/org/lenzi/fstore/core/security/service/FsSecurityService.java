@@ -64,15 +64,11 @@ public class FsSecurityService {
 	 */
 	public FsUser getUserByUsername(final String username) throws ServiceException {
 		
-		System.out.println("username param = " + username);
-		
-		//logger.debug(FsSecurityService.class.getName() + ".getUserByUsername(final String username) called. [username = '" + username + "']");
+		logInfo(FsSecurityService.class.getName() + ".getUserByUsername(final String username) called. [username = '" + username + "']");
 		
 		if(username == null || username.trim().equals("")){
 			throw new ServiceException("Username is null or blank. Cannot retrieve user object.");
 		}
-		
-		System.out.println("fetching user, with role & groups, from database...");
 		
 		FsUser user = null;
 		try {
@@ -81,23 +77,23 @@ public class FsSecurityService {
 			throw new ServiceException("Failed to retrieve user object,  " + e.getMessage(), e);
 		}
 		
-		System.out.println("Got user object = " + ((user != null) ? "true" : "false"));
+		logInfo("Got user object = " + ((user != null) ? "true" : "false"));
 		
 		if(user != null){
 			
-			System.out.println("Fetched user => [first name = '" + user.getFirstName() + "', last name = '" + user.getLastName() + 
+			logInfo("Fetched user => [first name = '" + user.getFirstName() + "', last name = '" + user.getLastName() + 
 					"', username = '" + user.getUsername() + "', role count = " + user.roleCount() + 
 					", group count = " + user.groupCount());
 			
 			CollectionUtil.emptyIfNull(user.getRoles()).forEach( (role) -> {
-				System.out.println("Role for " + username + ": " + role.getRoleCode());
+				logInfo("Role for " + username + ": " + role.getRoleCode());
 			});
 			CollectionUtil.emptyIfNull(user.getGroups()).forEach( (group) -> {
-				System.out.println("Group for " + username + ": " + group.getGroupCode());
+				logInfo("Group for " + username + ": " + group.getGroupCode());
 			});			
 			
 		}else{
-			System.out.println("Fetched user object in null...");
+			logInfo("Fetched user object in null...");
 		}
 		
 		return user;
@@ -161,5 +157,21 @@ public class FsSecurityService {
 		
 		return user;	
 	}
+	
+	private void logInfo(String message){
+		if(logger != null){
+			logger.info(message);
+		}else{
+			System.out.println("> " + message);
+		}
+	}
+	
+	private void logError(String message, Throwable t){
+		if(logger != null){
+			logger.error(message, t);
+		}else{
+			System.err.println("> " + message + " " + t.getMessage());
+		}
+	}	
 
 }

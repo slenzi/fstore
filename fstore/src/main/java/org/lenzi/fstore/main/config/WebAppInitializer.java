@@ -36,7 +36,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 		Class<?>[] rootConfigClasses = new Class<?>[] { 
 				AppConfig.class
 				,SecurityConfig.class
-				,MethodSecurityConfig.class
+				//,MethodSecurityConfig.class
 				};
 
 		return rootConfigClasses;		

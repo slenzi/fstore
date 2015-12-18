@@ -27,7 +27,7 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 	@InjectLogger
 	private Logger logger;
 	
-	// breaks everything when we autowire this and use MethodSecurityConfig.class
+	// TODO - have't figured out how to fix...
 	// FsSecurityService uses the @InjectLogger annotation which is failing. My guess is the beanpostprocessor is not
 	// running when spring security instantiates our FsResourcePermissionEvaluator.class.
 	@Autowired
@@ -67,6 +67,8 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 		// been the Java class of the object, but does not have to be as long as it is consistent with how the 
 		// permissions are loaded.
 		
+		boolean hasPermission = false;
+		
 		logInfo("HasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) called.");
 		
 		if(fsSecurityService != null){
@@ -77,8 +79,23 @@ public class FsResourcePermissionEvaluator implements PermissionEvaluator {
 		
 		debugUsername(authentication);
 		
-		return true;
+		logInfo("targetId => " + targetId);
+		logInfo("targetType => " + targetType);
+		if(permission instanceof String){
+			logInfo("permission => " + (String)permission);
+		}else{
+			logInfo("permission => unknown object type");
+		}
+		
+		// TODO - remove this line when method implementation is finished
+		hasPermission = true;
+		
+		return hasPermission;
 	}
+	
+	private boolean canHandle(Authentication authentication, Object targetDomainObject, Object permission) {
+        return targetDomainObject != null && authentication != null && permission instanceof String;
+    }	
 	
 	private void debugUsername(Authentication auth){
 		if(auth != null){

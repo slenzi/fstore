@@ -29,7 +29,20 @@ public class LoggerBeanPostProccessor implements BeanPostProcessor {
 	 * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(java.lang.Object, java.lang.String)
 	 */
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessAfterInitialization(final Object bean, String beanName) throws BeansException {
+		ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+		
+				// make the field accessible if defined private
+				ReflectionUtils.makeAccessible(field);
+				
+				if(field.getAnnotation(InjectLogger.class) != null && field.get(bean) == null){
+					Logger log = LoggerFactory.getLogger(bean.getClass());
+					field.set(bean, log);			
+				}
+		
+			}
+		});		
 		return bean;
 	}
 
@@ -40,12 +53,15 @@ public class LoggerBeanPostProccessor implements BeanPostProcessor {
 	public Object postProcessBeforeInitialization(final Object bean, String beanName) throws BeansException {
 		ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+			
 				// make the field accessible if defined private
 				ReflectionUtils.makeAccessible(field);
+				
 				if (field.getAnnotation(InjectLogger.class) != null) {
 					Logger log = LoggerFactory.getLogger(bean.getClass());
 					field.set(bean, log);
 				}
+				
 			}
 		});
 		return bean;
