@@ -194,7 +194,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 			//.expressionHandler(webExpressionHandler())
 			
-			// our decision manager understands our hierarchical roles.
+			// our decision manager understands our hierarchical roles (using a RoleHierarchyVoter)
 			.accessDecisionManager(accessDecisionManager)
 		
 			.antMatchers("/").permitAll()

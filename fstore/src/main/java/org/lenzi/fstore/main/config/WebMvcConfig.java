@@ -23,8 +23,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * -- org.lenzi.fstore.file2.web.controller : file2 controllers for file store, store files and directories in a tree
  * -- org.lenzi.fstore.file2.web.messaging.controller : file2 websocket / stomp messaging
  * -- org.lenzi.fstore.cms.web.controller : cms controllers
+ * -- org.lenzi.fstore.core.web.controller : core controllers (e.g. login controller)
  * -- org.lenzi.fstore.core.logging : custom LoggerBeanPostProccessor which enables us to inject a logger using @InjectLogger annotation.
- * -- org.lenzi.fstore.core.web.security : various components for securing web resources
  * 
  * @author slenzi
  */
@@ -36,9 +36,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 		"org.lenzi.fstore.file2.web.controller",
 		"org.lenzi.fstore.file2.web.messaging.controller",
 		"org.lenzi.fstore.cms.web.controller",
+		"org.lenzi.fstore.core.web.controller",
 		"org.lenzi.fstore.core.logging"
-		//,
-		//"org.lenzi.fstore.core.security"
 		}
 )
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
