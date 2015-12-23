@@ -31,6 +31,14 @@ public class LoginController extends AbstractSpringController {
 		
 	}
 	
+	/**
+	 * Used only to manually display login form during a GET request.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView defaultMethod(HttpServletRequest request, HttpServletResponse response, ModelMap model){
 		

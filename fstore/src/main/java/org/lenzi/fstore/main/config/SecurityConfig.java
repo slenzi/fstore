@@ -286,7 +286,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						)
 			)			
 
-			.and().formLogin().loginPage("/login").permitAll();
+			.and().formLogin().loginPage("/spring/core/login").permitAll();
 		
 		/*
 		http.authorizeRequests()

@@ -18,7 +18,7 @@
 
 <c:url value="/login" var="loginUrl"/>
 
-<form action="<c:url value='j_spring_security_check' />" method="POST">
+<form action="/fstore/spring/core/login" method="POST">
 
 	<c:if test="${param.error != null}">
 		<p>
