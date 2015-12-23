@@ -37,6 +37,10 @@
 	
 	<p>
 		<a href="administration/index.jsp">Administration</a>
+	</p>
+	
+	<p>
+		<a href="<%=request.getContextPath() %>/spring/core/login">Login</a>
 	</p>	
 	
 	<h2>WebSocket Setup Check</h2>

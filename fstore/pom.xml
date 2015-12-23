@@ -49,6 +49,7 @@
 		<version.javax.inject>1</version.javax.inject>
 		<version.javax.servlet>3.1.0</version.javax.servlet>
 		<version.javax.jsr311.version>1.1.1</version.javax.jsr311.version>
+		<version.javax.jstl>1.2.1</version.javax.jstl>
 		
 		<version.spring>4.2.2.RELEASE</version.spring> <!-- was 4.1.7.RELEASE 10/29/2015 -->
 		<version.spring.security>4.0.3.RELEASE</version.spring.security>
@@ -202,6 +203,12 @@
 			<version>${version.javax.servlet}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp.jstl</groupId>
+			<artifactId>javax.servlet.jsp.jstl-api</artifactId>
+			<version>${version.javax.jstl}</version>
+		</dependency>
+
 		
 		<!-- Spring -->
 		<!--
