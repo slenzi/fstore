@@ -46,6 +46,7 @@ public class LoginController extends AbstractSpringController {
 		
 		ModelAndView modelAndView = new ModelAndView();
 		
+		// jsp at /WEB-INF/views/login/defaultLogin.jsp
 		modelAndView.setViewName("login/defaultLogin");
 		
 		return modelAndView;
