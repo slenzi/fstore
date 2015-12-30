@@ -23,7 +23,7 @@
 	    <!-- app resources -->
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/common/assets/css/app.css"/>
 	    
-	    <!-- override common styles with file manager specific styles -->
+	    <!-- override common styles with login app specific styles -->
 	    <link rel="stylesheet" href="<%=request.getContextPath()%>/login/assets/css/app.css"/>
 	    
 		<!-- for angular location provider -->
