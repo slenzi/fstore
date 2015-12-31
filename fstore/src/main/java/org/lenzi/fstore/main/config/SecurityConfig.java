@@ -198,7 +198,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.accessDecisionManager(accessDecisionManager)
 		
 			.antMatchers("/").permitAll()
+			
+			// must be a user in order to log in
+			.antMatchers("/spring/core/home").access("hasRole('" + Role.USER.getRoleCode() + "')")
 		
+			// administration section
 			.antMatchers("/administration/**").access("hasRole('" + Role.ADMINISTRATOR.getRoleCode() + "')")
 			
 			// file manager	

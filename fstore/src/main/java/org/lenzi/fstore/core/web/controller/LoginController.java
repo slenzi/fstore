@@ -39,6 +39,7 @@ public class LoginController extends AbstractSpringController {
 	 * @param model
 	 * @return
 	 */
+	/*
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView defaultMethod(HttpServletRequest request, HttpServletResponse response, ModelMap model){
 		
@@ -52,5 +53,22 @@ public class LoginController extends AbstractSpringController {
 		return modelAndView;
 		
 	}
+	*/
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public String defaultMethod(HttpServletRequest request, HttpServletResponse response, ModelMap model){
+		
+		logger.info(LoginController.class.getName() + ".defaultMethod(....) called.");
+		
+		//ModelAndView modelAndView = new ModelAndView();
+		
+		// jsp at /WEB-INF/views/login/defaultLogin.jsp
+		//modelAndView.setViewName("login/defaultLogin");
+		
+		logger.info("Path > " + "/WEB-INF/views/login/defaultLogin.jsp");
+		
+		return "/WEB-INF/views/login/defaultLogin.jsp";
+		
+	}	
 
 }

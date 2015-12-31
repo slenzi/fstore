@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -67,6 +69,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter#configureViewResolvers(org.springframework.web.servlet.config.annotation.ViewResolverRegistry)
 	 */
+	/*
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry registry) {
 		
@@ -78,6 +81,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         
         registry.viewResolver(viewResolver);
 	}
+	*/
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter#configureMessageConverters(java.util.List)
@@ -90,6 +94,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		//
 		converters.add(new ResourceHttpMessageConverter());
 		converters.add(new ByteArrayHttpMessageConverter());
+		
+		// TODO - test...
+		//converters.add(new StringHttpMessageConverter());
 		
 		super.configureMessageConverters(converters);
 		
@@ -109,5 +116,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		// example path mapping...
 		//registry.addInterceptor(new LoggingInterceptor()).addPathPatterns("/fstore/administration/*");
 	}
+	
+
 	
 }
