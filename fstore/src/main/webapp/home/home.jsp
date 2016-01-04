@@ -210,9 +210,24 @@
 						<a href="<%=request.getContextPath() %>/cxf/resource/file/download/id/14">CXF JAX-RS download file resource (fileId=14).</a><br>
 						Download file #14 from Apache CXF JAX-RS service, should prompt user with a save dialog window.
 					</p>
-					
-					<h2>File 2 Manager Dispatch Tests</h2>
-					
+						
+				</md-card-content>
+				
+			</md-card>
+			
+			<md-card>
+			
+				<md-card-title layout-padding>
+					<md-card-title-text>
+						<span class="md-headline">File 2 Manager Dispatch Tests</span><br>
+					</md-card-title-text>
+					<md-card-title-media>
+						<div class="md-media-lg card-media"></div>
+					</md-card-title-media>
+				</md-card-title>
+				
+				<md-card-content>
+
 					<p>
 						<a href="<%=request.getContextPath() %>/spring/file2/res/load/path/upload_holding/cms/test.jsp">Dispatcher load /upload_holding/cms/test.jsp</a><br>
 						Dispatcher load /upload_holding/cms/test.jsp
@@ -223,11 +238,11 @@
 						<a href="<%=request.getContextPath() %>/spring/file2/res/dispatch/test/test.jsp">Dispatcher dispatch /test/test.jsp (/WEB-INF/jsp)</a><br>
 						Dispatcher dispatch /upload_holding/cms/test.jsp
 					</p>
-					-->			
+					-->		
 				
 				</md-card-content>
 				
-			</md-card>				
+			</md-card>						
 
 			<md-card>
 			
