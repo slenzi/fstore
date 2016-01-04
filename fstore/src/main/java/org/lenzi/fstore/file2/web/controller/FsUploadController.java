@@ -70,12 +70,12 @@ public class FsUploadController extends AbstractSpringController {
 	 * @param model
 	 * @return
 	 */
+	// @Transactional
 	@RequestMapping(
 			method = {
 					RequestMethod.POST
 			})
-	@ResponseStatus(value = HttpStatus.OK)
-	@Transactional	
+	@ResponseStatus(value = HttpStatus.OK)	
 	private void processUpload(MultipartHttpServletRequest request, HttpServletResponse resp, ModelMap model) throws WebAppException {
 		
 		logger.info("Processing incoming HTTP upload");

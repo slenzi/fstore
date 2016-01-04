@@ -85,8 +85,6 @@ public class FsUploadPipeline {
 	
 	private ExecutorService addFileExecutorService;
 	private ExecutorService updateFileExecutorService;
-	
-	private CodeTimer timer = new CodeTimer();
     
 	public FsUploadPipeline() {
 		
@@ -254,6 +252,8 @@ public class FsUploadPipeline {
 		}
 		final FsResourceStore finalStore = store;
 		
+		CodeTimer timer = new CodeTimer();
+		
 		//
 		// Process each file to the database
 		//
@@ -262,7 +262,7 @@ public class FsUploadPipeline {
 				
 				timer.start();
 			
-				logger.info("Process to directory (start) => " + pathToFile);
+				logger.info(">> Process to directory (start) => " + pathToFile);
 				
 				String fileName = pathToFile.getFileName().toString();
 				
@@ -287,7 +287,7 @@ public class FsUploadPipeline {
 				
 				timer.stop();
 				
-				logger.info("Process to directory (end) => " + pathToFile + ", elapsed time => " + timer.getElapsedTime());
+				logger.info(">> Process to directory (end) => " + pathToFile + ", elapsed time => " + timer.getElapsedTime());
 				
 				timer.reset();
 				
@@ -307,11 +307,23 @@ public class FsUploadPipeline {
 	 */
 	private FsFileMetaResource addFileToDirectory(Path pathToFile, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
+		CodeTimer timer = new CodeTimer();
+		
+		timer.start();
+		
+		logger.info(">> addFileToDirectory (start) => " + pathToFile);
+		
 		AbstractFsTask<FsFileMetaResource> task = getAddToDirectoryTask(pathToFile, parentDirId, replaceExisting);
 		
 		addFileTaskManager.addTask(task);
 		
 		FsFileMetaResource resource = task.get(); // block until complete
+		
+		timer.stop();
+		
+		logger.info(">> addFileToDirectory (end) => " + pathToFile + ", elapsed time => " + timer.getElapsedTime());
+
+		timer.reset();
 		
 		return resource;
 		
@@ -326,9 +338,21 @@ public class FsUploadPipeline {
 	 */
 	private void updateWithBinaryData(Long fileId, final FsResourceStore store) throws ServiceException {
 		
+		CodeTimer timer = new CodeTimer();
+		
+		timer.start();
+		
+		logger.info(">> updateWithBinaryData (start) => file id = " + fileId);
+		
 		AbstractFsTask<Void> task = getUpdateBinaryDataTask(fileId, store);
 		
 		updateFileTaskManager.addTask(task);
+		
+		timer.stop();
+		
+		logger.info(">> updateWithBinaryData (end) => file id = " + fileId + ", elapsed time => " + timer.getElapsedTime());
+
+		timer.reset();		
 		
 		// do not block
 		//task.waitComplete();
