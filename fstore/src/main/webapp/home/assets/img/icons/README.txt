@@ -1,0 +1,1 @@
+file manager specific icons

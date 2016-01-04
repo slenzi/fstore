@@ -1,0 +1,1 @@
+our partials for angualar ui-route

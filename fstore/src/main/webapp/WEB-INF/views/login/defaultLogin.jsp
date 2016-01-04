@@ -113,9 +113,7 @@
 				
 			</form>			
 			
-			
 		</md-content>
-		
 		
 	</md-content>
 
