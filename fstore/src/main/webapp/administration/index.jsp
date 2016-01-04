@@ -45,7 +45,7 @@
 			<md-toolbar class="md-tall md-hue-2">
 				<span flex></span>
 				<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
-					<a href="<%=request.getContextPath()%>" class="fstore-module-title">Administration</a>
+					<a href="<%=request.getContextPath()%>/spring/core/home" class="fstore-module-title">Administration</a>
 					<span flex></span>
 					<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 						<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_menu_18px.svg"></md-icon>

@@ -28,15 +28,15 @@
 	<h2>FStore Sections</h2>
 	
 	<p>
-		<a href="file/index.jsp">File Manager</a>
+		<a href="<%=request.getContextPath() %>/file/index.jsp">File Manager</a>
 	</p>
 	
 	<p>
-		<a href="cms/index.jsp">Content Management</a>
+		<a href="<%=request.getContextPath() %>/cms/index.jsp">Content Management</a>
 	</p>
 	
 	<p>
-		<a href="administration/index.jsp">Administration</a>
+		<a href="<%=request.getContextPath() %>/administration/index.jsp">Administration</a>
 	</p>
 	
 	<p>
