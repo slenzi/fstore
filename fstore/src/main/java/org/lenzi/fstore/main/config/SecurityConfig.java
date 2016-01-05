@@ -208,8 +208,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// file manager	
 			.antMatchers("/file/**").access(
 				anyRole(
-						//Role.ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.FILE_MANAGER_ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
 						Role.FILE_MANAGER_USER
 						)
 			)
@@ -217,13 +215,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// cms workplace	
 			.antMatchers("/cms/**").access(
 				anyRole(
-						//Role.ADMINISTRATOR, // redundant, this is enabled by hierarchical roles 
-						//Role.CMS_WORKPLACE_ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
 						Role.CMS_WORKPLACE_USER
 						)
 			)
 			
-			// file upload handler (used in file manager and cms workplace sections)
+			// File upload handler (used in File Manager and CMS Workplace sections)
 			//
 			// IMPORTANT - Make sure to submit CSRF token as a form value when you submit the file data. If the token
 			// is not part of the multipart request then Spring Security filter will reject the request.
@@ -231,17 +227,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// ALSO - Need to inject Spring MultipartFilter before Spring Security Filter.
 			// see org.lenzi.fstore.main.config.SpringSecurityInitializer
 			.antMatchers(HttpMethod.POST, "/spring/file2/upload").access(
-				anyRole(
-						//Role.ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.FILE_MANAGER_ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.CMS_WORKPLACE_ADMINISTRATOR // redundant, this is enabled by hierarchical roles
-						Role.FILE_MANAGER_USER,
-						Role.CMS_WORKPLACE_USER
-						)
+				
+					// allow uploads from those with the 'File Manager User' role or 'CMS Workplace User' role (including all parent roles)
+					// OR any upload from loopback/localhost address 127.0.0.1
+					anyRole(Role.FILE_MANAGER_USER, Role.CMS_WORKPLACE_USER) + " or " + "hasIpAddress('127.0.0.1/32')"
 			)
 			
 			//.antMatchers(HttpMethod.POST, "/spring/file2/upload").permitAll()
-			
 			
 			// cms resource dispatcher	
 			.antMatchers("/spring/cms/**").access(
@@ -251,42 +243,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// jax-rs service for file resource stores
 			.antMatchers("/cxf/resource/store/**").access(
 				anyRole(
-						//Role.ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.FILE_MANAGER_ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.CMS_WORKPLACE_ADMINISTRATOR // redundant, this is enabled by hierarchical roles
-						Role.FILE_MANAGER_USER,
-						Role.CMS_WORKPLACE_USER
+						Role.FILE_MANAGER_USER, Role.CMS_WORKPLACE_USER
 						)
 			)
 			
 			// jax-rs service for file data
 			.antMatchers("/cxf/resource/file/**").access(
 				anyRole(
-						//Role.ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.FILE_MANAGER_ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.CMS_WORKPLACE_ADMINISTRATOR // redundant, this is enabled by hierarchical roles
-						Role.FILE_MANAGER_USER,
-						Role.CMS_WORKPLACE_USER
+						Role.FILE_MANAGER_USER, Role.CMS_WORKPLACE_USER
 						)	
 			)
 			
 			// jax-rs service for directory data
 			.antMatchers("/cxf/resource/directory/**").access(
 				anyRole(
-						//Role.ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.FILE_MANAGER_ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						//Role.CMS_WORKPLACE_ADMINISTRATOR // redundant, this is enabled by hierarchical roles
-						Role.FILE_MANAGER_USER,
-						Role.CMS_WORKPLACE_USER
+						Role.FILE_MANAGER_USER, Role.CMS_WORKPLACE_USER
 						)		
 			)
 			
 			// jax-rs service for cms sites
 			.antMatchers("/cxf/cms/site/**").access(
 				anyRole(
-						//Role.ADMINISTRATOR, // redundant, this is enabled by hierarchical roles
-						Role.CMS_WORKPLACE_USER, 
-						Role.CMS_WORKPLACE_ADMINISTRATOR
+						Role.CMS_WORKPLACE_USER, Role.CMS_WORKPLACE_ADMINISTRATOR
 						)
 			)			
 

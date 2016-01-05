@@ -95,8 +95,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		converters.add(new ResourceHttpMessageConverter());
 		converters.add(new ByteArrayHttpMessageConverter());
 		
-		// TODO - test...
-		//converters.add(new StringHttpMessageConverter());
+		converters.add(new StringHttpMessageConverter());
 		
 		super.configureMessageConverters(converters);
 		
