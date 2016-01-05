@@ -152,8 +152,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		logInfo(SecurityConfig.class.getName() + ".configure(WebSecurity...) called ");
 		
-		web.ignoring()
-		    .antMatchers( "/spring/file2/upload" ); // multipart file upload
+		// no need to ignore, we are now passing the CSRF token for each upload.
+		//web.ignoring().antMatchers( "/spring/file2/upload" ); // multipart file upload
 		
 	}
 
