@@ -29,12 +29,23 @@ public class HttpClientTest {
 	
 	public void doTests(){
 		
+		
 		//doBasicTest();
 		
-		doHeaderCookieTest();
+		//doHeaderCookieTest();
+		
+		doLoginTest();
 		
 	}
 	
+	private void doLoginTest() {
+		
+		String csrfToken = fetchCsrfToken();
+		
+		System.out.println("csrf token => " + csrfToken);
+		
+	}
+
 	public void doBasicTest(){
 		
 		String content = "";
@@ -133,6 +144,49 @@ public class HttpClientTest {
 		String csrf = getCookieValue(cookieStore, "_csrf");
 		
 		System.out.println("_csrf = " + csrf);
+		
+	}
+	
+	public String fetchCsrfToken(){
+		
+		String content = "";
+		
+		HttpGet get = new HttpGet("http://localhost:8080/fstore/spring/core/csrf");
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		CloseableHttpResponse response = null;
+		
+		try {
+			
+			response = httpClient.execute(get);
+			
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			System.err.print("ClientProtocolException, error executing request. " + e.getMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.print("IOException, error executing request. " + e.getMessage());
+		}
+		
+		BufferedReader reader = null;
+		String line = null;
+		
+		HttpEntity entity = response.getEntity();
+
+		try {
+			
+			reader = new BufferedReader(new InputStreamReader(entity.getContent())); 
+			while ((line = reader.readLine()) != null) {
+				content += line;
+			}
+			// ensure response is fully consumed
+			EntityUtils.consume(entity);
+			
+		}catch(IOException e){
+			e.printStackTrace();
+			System.err.print("IOException, error reading HTTP response. " + e.getMessage());
+		}
+		
+		return content;
 		
 	}
 	
