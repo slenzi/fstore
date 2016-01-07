@@ -67,47 +67,35 @@
 	
 	<profiles>
 	
+		<!-- deployment on mac, using postgresql -->
 		<profile>
-			<id>lenzi.mac</id>
-			<!--
-			<activation>
-				<property>
-					<name>env</name>
-					<value>lenzi.mac</value>
-				</property>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			-->
+			<id>lenzi.mac.postgresql</id>
 			<properties>
-				<property.file>lenzi.mac.properties</property.file>
+				<property.file>lenzi.mac.postgresql.properties</property.file>
 			</properties>
 		</profile>
 		
+		<!-- deployment on work pc, with using oracle (ecogtst) -->
 		<profile>
-			<id>lenzi.frontier.pc</id>
-			<!--
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			-->			
-			<!--
-			<activation>
-				<property>
-					<name>env</name>
-					<value>lenzi.frontier.pc</value>
-				</property>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			-->
+			<id>eamrf.desktop.oracle</id>
 			<properties>
-				<property.file>lenzi.frontier.pc.properties</property.file>
+				<property.file>eamrf.desktop.oracle.properties</property.file>
 			</properties>
 		</profile>
 		
+		<!-- deployment on work pc, with local postgresql -->
 		<profile>
-			<id>eamrf.ecog2</id>
+			<id>eamrf.desktop.postgresql</id>
 			<properties>
-				<property.file>eamrf.ecog2.properties</property.file>
+				<property.file>eamrf.desktop.postgresql.properties</property.file>
+			</properties>
+		</profile>		
+		
+		<!-- deployment on ecog2 -->
+		<profile>
+			<id>eamrf.ecog2.oracle</id>
+			<properties>
+				<property.file>eamrf.ecog2.oracle.properties</property.file>
 			</properties>
 		</profile>		
 		

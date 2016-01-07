@@ -100,7 +100,7 @@ public class PostgreSQLSetupConfig {
 		logger.info("Database driver = " + driver);
 		logger.info("Database url = " + url);
 		logger.info("Database user = " + user);
-		logger.info("Database password = *****");
+		logger.info("Database password = " + pwd);
 		
 		if(StringUtil.isNullEmpty(driver) || StringUtil.isNullEmpty(url) || StringUtil.isNullEmpty(user)){
 			
