@@ -8,6 +8,7 @@ import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.provider.BinaryDataProvider;
+import org.lenzi.fstore.cms.web.rs.CmsSessionResource;
 import org.lenzi.fstore.cms.web.rs.CmsSiteResource;
 import org.lenzi.fstore.cms.web.rs.JaxRsCmsResourceApplication;
 import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
@@ -132,7 +133,7 @@ public class CxfConfig {
 		//
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
-					getCmsSiteResource(), getExceptionMapper()
+					getCmsSiteResource(), getCmsSessionResource(), getExceptionMapper()
 			)
 		);
 		
@@ -227,7 +228,12 @@ public class CxfConfig {
 	@Bean
 	public CmsSiteResource getCmsSiteResource(){
 		return new CmsSiteResource();
-	}	
+	}
+	
+	@Bean
+	public CmsSessionResource getCmsSessionResource(){
+		return new CmsSessionResource();
+	}
 	
 	/**
 	 * jax-rs JSON marshalling / provider

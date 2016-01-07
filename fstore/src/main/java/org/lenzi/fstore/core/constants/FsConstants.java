@@ -12,5 +12,10 @@ public abstract class FsConstants {
 	 * No backslash!
 	 */
 	public static final String FILE_SEPARATOR = "/";
+	
+	
+	/**
+	 * Session Variables
+	 */
 
 }

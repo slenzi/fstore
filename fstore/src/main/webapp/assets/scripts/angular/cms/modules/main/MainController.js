@@ -58,6 +58,11 @@
 		$scope.selectedResourceTabIndex = 0;
 		var isViewingOnline = false; // true if viewing online, false if viewing offline (switch this value when user clicks 'Offline Resources' and 'Online Resources' tabs) 
 
+		// for toggle on left-hand nav bar
+		$scope.session = {
+			isViewingOnline: true
+		};		
+		
 		var clipboard = new FsClipboard({});
 		
 		/****************************************************************************************
@@ -209,6 +214,38 @@
 		}
 		function _selectedResourceTabIndex(){
 			return selectedResourceTabIndex;
+		}
+		
+		/**
+		 * For the CMS view mode toggle on the left nav bar
+		 */
+		function _setCmsViewMode(onlineViewMode){
+			
+			$log.debug('_setCmsViewMode => ' + onlineViewMode);
+			
+			if(onlineViewMode){
+				
+				_setIsViewingOnline(true);
+				
+				
+				CmsServices
+					.setCmsViewMode("ONLINE")
+					.then(_cmsViewModeDataCallback);				
+				
+			}else{
+				
+				_setIsViewingOnline(false);
+				
+				CmsServices
+					.setCmsViewMode("OFFLINE")
+					.then(_cmsViewModeDataCallback);					
+				
+			}
+			
+		}
+
+		function _cmsViewModeDataCallback(){
+			
 		}		
 		
 		/**
@@ -1166,6 +1203,7 @@
 			selectedResourceTabIndex : _selectedResourceTabIndex,
 			isViewingOnline : _isViewingOnline,
 			setIsViewingOnline : _setIsViewingOnline,
+			setCmsViewMode : _setCmsViewMode,
 			
 			cmsSiteList : _cmsSiteList,
 			

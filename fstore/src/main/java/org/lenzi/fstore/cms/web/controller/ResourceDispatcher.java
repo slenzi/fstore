@@ -7,11 +7,14 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.lenzi.fstore.cms.constants.CmsConstants;
 import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
 import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.util.StringUtil;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.lenzi.fstore.web.controller.AbstractSpringController;
 import org.slf4j.Logger;
@@ -60,20 +63,19 @@ public class ResourceDispatcher extends AbstractSpringController {
 	@RequestMapping(method = RequestMethod.GET)
 	public void dispatchResource(HttpServletRequest request, HttpServletResponse response, ModelMap model){
 		
+		logDebugUserDetails();
+		
 		String resourcePath = "/" + extractPathFromPattern(request);
 		String sitesRoot = appProps.getProperty("cms.sites.root");
 		String sitesOnline = appProps.getProperty("cms.sites.online");
 		String sitesOffline = appProps.getProperty("cms.sites.offline");
 		
+		// assume online, and check for offline
 		String sitePath = sitesOnline;
-		
-		logDebugUserDetails();
-		
-		// eventually this flag will be controlled by the user that is logged in (for cms related roles.)
-		boolean isOffline = false;
-		
+		boolean isOffline = isOfflineMode(request);
 		if(isOffline){
 			sitePath = sitesOffline;
+			logger.info("CMS offline mode is on.");
 		}
 		
 		String forwardPath = sitePath + resourcePath;
@@ -95,6 +97,26 @@ public class ResourceDispatcher extends AbstractSpringController {
 			e.printStackTrace();
 		}		
 		
+	}
+	
+	/**
+	 * Check if the users is currently viewing in CMS OFFLINE mode. Default mode is ONLINE.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private boolean isOfflineMode(final HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		String cmsViewMode = StringUtil.changeNull((String)session.getAttribute(CmsConstants.SESSION_CMS_VIEW_MODE)).trim();
+		
+		// assume online mode, and check for offline mode
+		
+		if(cmsViewMode.equals("OFFLINE")){
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**

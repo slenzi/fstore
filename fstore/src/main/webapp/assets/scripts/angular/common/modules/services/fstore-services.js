@@ -18,7 +18,8 @@
 			restServiceStore: '@services.rest.store@',
 			restServiceFile: '@services.rest.file@',
 			restServiceDirectory: '@services.rest.directory@',
-			restServiceCmsSite: '@services.cms.rest.site@'
+			restServiceCmsSite: '@services.cms.rest.site@',
+			restServiceCmsSession: '@services.cms.rest.session@'
 		})
 		.service('CmsServices', [
 			'FstoreServiceConstants', '$log', '$q', '$resource', CmsServices
@@ -83,6 +84,18 @@
 					}					
 				}
 			});
+		
+		// cms session service
+		var cmsSessionService = $resource(
+				FstoreServiceConstants.restServiceCmsSession, {
+				toggleViewMode: {
+					url: FstoreServiceConstants.restServiceCmsSite + '/cmsViewMode/:mode',
+					method: 'POST',
+					params: {
+						mode: '@mode'
+					}					
+				}
+			});		
 
 		
 		// *********************************
@@ -110,13 +123,20 @@
 			
 		}
 		
+		function _setCmsViewMode(mode){
+			
+			return cmsSessionService.toggleViewMode({ 'mode' : mode }).$promise;
+			
+		}
+		
 		
 		// *********************************
 		// External API
 		// *********************************
 	    return {
 			addCmsSite: _addCmsSite,
-			getCmsSites: _fetchCmsSiteList
+			getCmsSites: _fetchCmsSiteList,
+			setCmsViewMode: _setCmsViewMode
 	    };
 		
 	}

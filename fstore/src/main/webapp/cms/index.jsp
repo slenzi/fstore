@@ -74,6 +74,16 @@
 					File Manager
 				</md-button>
 				
+				<md-content layout-padding class="md-hue-1">
+				<h5>CMS Quick Settings</h5>
+				</md-content>
+				
+				<md-switch ng-model="session.isViewingOnline" aria-label="Is Online" ng-change="main.setCmsViewMode(session.isViewingOnline)"/>
+				Online Mode: {{ session.isViewingOnline }}
+				</md-switch>								
+				
+				<br>								
+				
 			</md-content>
 			
 			<!-- felx background color to bottom of screen -->
