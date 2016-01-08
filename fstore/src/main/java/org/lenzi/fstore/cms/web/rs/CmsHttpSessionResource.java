@@ -4,7 +4,6 @@
 package org.lenzi.fstore.cms.web.rs;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -17,7 +16,6 @@ import javax.ws.rs.core.Response;
 import org.lenzi.fstore.cms.constants.CmsConstants;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.StringUtil;
-import org.lenzi.fstore.file2.web.rs.FileResource;
 import org.lenzi.fstore.web.rs.AbstractResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
@@ -26,13 +24,13 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * Controls session attributes related to CMS section.
+ * Controls http session attributes related to CMS section.
  * 
  * @author sal
  */
-@Path( "/session")
-@Service("CmsSessionResource")
-public class CmsSessionResource extends AbstractResource {
+@Path( "/httpsession")
+@Service("CmsHttpSessionResource")
+public class CmsHttpSessionResource extends AbstractResource {
 
     @InjectLogger
     Logger logger;
@@ -40,9 +38,34 @@ public class CmsSessionResource extends AbstractResource {
     @Context
     private HttpServletRequest servletRequest;
 	
-	public CmsSessionResource(){
+	public CmsHttpSessionResource(){
 		
 	}
+	
+	/**
+	 * Fetch current CMS view mode, either OFFLINE or ONLINE.
+	 * 
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@GET
+	@Path("/viewmode")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchViewMode() throws WebServiceException{
+	
+		logger.info(CmsHttpSessionResource.class.getName() + " fetchViewMode()");
+	
+		String viewMode = StringUtil.changeNull((String)servletRequest.getSession()
+				.getAttribute(CmsConstants.SESSION_CMS_VIEW_MODE)).trim().toUpperCase();
+		
+		// assume online if currently not set
+		if(viewMode.equals("")){
+			viewMode = "ONLINE";
+		}
+		
+		return Response.ok("{ \"" + CmsConstants.SESSION_CMS_VIEW_MODE + "\": \"" + viewMode + "\" }", MediaType.APPLICATION_JSON).build();
+		
+	}	
 	
 	/**
 	 * Toggle CMS OFFLINE/ONLINE mode.
@@ -50,25 +73,25 @@ public class CmsSessionResource extends AbstractResource {
 	 * @throws WebServiceException 
 	 */
 	@POST
-	@Path("/cmsViewMode/{mode}")
+	@Path("/viewmode/{mode}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response toggleCmsViewMode(@PathParam("mode") String mode) throws WebServiceException{
 	
-		logger.info(CmsSessionResource.class.getName() + " toggleCmsViewMode(...) mode = " + mode);
+		logger.info(CmsHttpSessionResource.class.getName() + " toggleCmsViewMode(...) mode = " + mode);
 		
-		String viewMode = StringUtil.changeNull(mode);
+		String viewMode = StringUtil.changeNull(mode).toUpperCase();
 		
-		if(viewMode.equals("OFFLINE") && viewMode.equals("ONLINE")){
+		if(!viewMode.equals("OFFLINE") && !viewMode.equals("ONLINE")){
 			handleError("Missing CMS view mode in path. Acceptable options are 'OFFLINE' or 'ONLINE'", WebExceptionType.CODE_INVALID_INPUT);
 		}else if(servletRequest == null){
 			handleError("HttpServletRequest is null, check injection.", WebExceptionType.CODE_NOT_FOUND);
 		}
 		
-		servletRequest.getSession().setAttribute(CmsConstants.SESSION_CMS_VIEW_MODE, mode);
+		servletRequest.getSession().setAttribute(CmsConstants.SESSION_CMS_VIEW_MODE, viewMode);
 		
 		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
 		
-	}
+	}	
 	
 	@Override
 	public Logger getLogger() {

@@ -88,8 +88,12 @@
 		// cms session service
 		var cmsSessionService = $resource(
 				FstoreServiceConstants.restServiceCmsSession, {}, {
+				fetchViewMode: {
+					url: FstoreServiceConstants.restServiceCmsSession + '/viewmode',
+					method: 'GET'				
+				},
 				toggleViewMode: {
-					url: FstoreServiceConstants.restServiceCmsSession + '/cmsViewMode/:mode',
+					url: FstoreServiceConstants.restServiceCmsSession + '/viewmode/:mode',
 					method: 'POST',
 					params: {
 						mode: '@mode'
@@ -123,6 +127,14 @@
 			
 		}
 		
+		// fetch current view mode, ither 'offline' or 'online'
+		function _fetchViewMode(){
+			
+			return cmsSessionService.fetchViewMode().$promise;
+			
+		}
+		
+		// set view mode, either 'offline' or 'online'
 		function _setCmsViewMode(mode){
 			
 			return cmsSessionService.toggleViewMode({ 'mode' : mode }).$promise;
@@ -136,6 +148,7 @@
 	    return {
 			addCmsSite: _addCmsSite,
 			getCmsSites: _fetchCmsSiteList,
+			fetchViewMode: _fetchViewMode,
 			setCmsViewMode: _setCmsViewMode
 	    };
 		

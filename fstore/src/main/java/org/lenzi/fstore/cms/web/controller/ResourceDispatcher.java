@@ -108,7 +108,7 @@ public class ResourceDispatcher extends AbstractSpringController {
 	private boolean isOfflineMode(final HttpServletRequest request){
 		
 		HttpSession session = request.getSession();
-		String cmsViewMode = StringUtil.changeNull((String)session.getAttribute(CmsConstants.SESSION_CMS_VIEW_MODE)).trim();
+		String cmsViewMode = StringUtil.changeNull((String)session.getAttribute(CmsConstants.SESSION_CMS_VIEW_MODE)).trim().toUpperCase();
 		
 		// assume online mode, and check for offline mode
 		

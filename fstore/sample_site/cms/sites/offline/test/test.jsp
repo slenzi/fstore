@@ -13,7 +13,11 @@ CmsLink linker = CmsLink.getInstance(request);
 <html>
 
 <head>
+	
 	<title>CMS Test Page 1</title>
+	
+	<link rel="stylesheet" type="text/css" href="<%=linker.createLink("/test/css/test.css") %>">
+	
 </head>
 
 <body>
@@ -42,6 +46,14 @@ for(int i=0; i<10; i++){
 
 <p>
 <img src="<%=linker.createLink("/test/img/cat.jpg") %>"/>
+</p>
+
+<p>
+<img src="<%=linker.createLink("/test/img/let me eat you kitten.jpg") %>"/>
+</p>
+
+<p>
+<a href="https://www.google.com/search?q=lolcats&biw=1920&bih=911&source=lnms&tbm=isch">More Lolcats!</a>
 </p>
 
 </body>

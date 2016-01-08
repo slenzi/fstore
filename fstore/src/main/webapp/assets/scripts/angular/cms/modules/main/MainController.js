@@ -75,7 +75,11 @@
 		 * Fetch all cms from server and pre-load first one (if one exists)
 		 */
 		function _handleOnPageLoad(){
+			
+			_handleFetchCmsViewMode();
+			
 			_handleEventViewSiteList();
+			
 		}
 		
 		/**
@@ -216,6 +220,28 @@
 			return selectedResourceTabIndex;
 		}
 		
+		
+		/**
+		 * Fetch current view mode, called on page load
+		 */
+		function _handleFetchCmsViewMode(){
+			CmsServices
+				.fetchViewMode()
+				.then(_fetchCmsViewModeCallback);	
+		}
+		function _fetchCmsViewModeCallback(data){
+			if(data.SESSION_CMS_VIEW_MODE){
+				$log.debug("_fetchCmsViewModeCallback, " + data.SESSION_CMS_VIEW_MODE);
+				if(data.SESSION_CMS_VIEW_MODE == "OFFLINE"){
+					$scope.session.isViewingOnline = false;					
+				}else{
+					$scope.session.isViewingOnline = true;		
+				}
+			}else{
+				alert('Failed to load current CMS View mode. Cannot properly set toggle on left-nav bar.');
+			}
+		}
+		
 		/**
 		 * For the CMS view mode toggle on the left nav bar
 		 */
@@ -224,26 +250,18 @@
 			$log.debug('_setCmsViewMode => ' + onlineViewMode);
 			
 			if(onlineViewMode){
-				
 				//_setIsViewingOnline(true);
-				
-				
 				CmsServices
-					.setCmsViewMode("ONLINE")
-					.then(_cmsViewModeDataCallback);				
-				
+					.setCmsViewMode("online")
+					.then(_cmsViewModeDataCallback);
 			}else{
-				
 				//_setIsViewingOnline(false);
-				
 				CmsServices
-					.setCmsViewMode("OFFLINE")
-					.then(_cmsViewModeDataCallback);					
-				
+					.setCmsViewMode("offline")
+					.then(_cmsViewModeDataCallback);
 			}
-			
 		}
-
+		// don't need to do anything after setting cms view mode..
 		function _cmsViewModeDataCallback(){
 			
 		}		

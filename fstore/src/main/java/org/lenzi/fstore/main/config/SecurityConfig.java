@@ -235,10 +235,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			
 			//.antMatchers(HttpMethod.POST, "/spring/file2/upload").permitAll()
 			
+			// for now we don't identify users that are not logged in (guests, or basic users) so we can't
+			// apply security to cms sites. security should be built into the site itself (group roles applied to resources.)
+			//
 			// cms resource dispatcher	
-			.antMatchers("/spring/cms/**").access(
-				anyRole(Role.USER)
-			)
+			//.antMatchers("/spring/cms/**").access(
+			//	anyRole(Role.USER)
+			//)
 			
 			// jax-rs service for file resource stores
 			.antMatchers("/cxf/resource/store/**").access(

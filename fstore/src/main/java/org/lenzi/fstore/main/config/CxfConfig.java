@@ -8,7 +8,7 @@ import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.provider.BinaryDataProvider;
-import org.lenzi.fstore.cms.web.rs.CmsSessionResource;
+import org.lenzi.fstore.cms.web.rs.CmsHttpSessionResource;
 import org.lenzi.fstore.cms.web.rs.CmsSiteResource;
 import org.lenzi.fstore.cms.web.rs.JaxRsCmsResourceApplication;
 import org.lenzi.fstore.example.web.rs.JaxRsExampleApplication;
@@ -133,7 +133,7 @@ public class CxfConfig {
 		//
 		factory.setServiceBeans(
 			Arrays.<Object>asList(
-					getCmsSiteResource(), getCmsSessionResource(), getExceptionMapper()
+					getCmsSiteResource(), getCmsHttpSessionResource(), getExceptionMapper()
 			)
 		);
 		
@@ -230,9 +230,14 @@ public class CxfConfig {
 		return new CmsSiteResource();
 	}
 	
+	/**
+	 * jax-rs cms httpsession resource bean
+	 * 
+	 * @return
+	 */	
 	@Bean
-	public CmsSessionResource getCmsSessionResource(){
-		return new CmsSessionResource();
+	public CmsHttpSessionResource getCmsHttpSessionResource(){
+		return new CmsHttpSessionResource();
 	}
 	
 	/**
