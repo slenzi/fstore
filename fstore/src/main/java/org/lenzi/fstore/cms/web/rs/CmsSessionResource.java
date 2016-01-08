@@ -6,6 +6,7 @@ package org.lenzi.fstore.cms.web.rs;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -48,7 +49,7 @@ public class CmsSessionResource extends AbstractResource {
 	 * 
 	 * @throws WebServiceException 
 	 */
-	@GET
+	@POST
 	@Path("/cmsViewMode/{mode}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response toggleCmsViewMode(@PathParam("mode") String mode) throws WebServiceException{

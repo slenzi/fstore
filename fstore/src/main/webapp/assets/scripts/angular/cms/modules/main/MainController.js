@@ -225,7 +225,7 @@
 			
 			if(onlineViewMode){
 				
-				_setIsViewingOnline(true);
+				//_setIsViewingOnline(true);
 				
 				
 				CmsServices
@@ -234,7 +234,7 @@
 				
 			}else{
 				
-				_setIsViewingOnline(false);
+				//_setIsViewingOnline(false);
 				
 				CmsServices
 					.setCmsViewMode("OFFLINE")

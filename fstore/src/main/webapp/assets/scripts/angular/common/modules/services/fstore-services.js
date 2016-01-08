@@ -87,15 +87,15 @@
 		
 		// cms session service
 		var cmsSessionService = $resource(
-				FstoreServiceConstants.restServiceCmsSession, {
+				FstoreServiceConstants.restServiceCmsSession, {}, {
 				toggleViewMode: {
-					url: FstoreServiceConstants.restServiceCmsSite + '/cmsViewMode/:mode',
+					url: FstoreServiceConstants.restServiceCmsSession + '/cmsViewMode/:mode',
 					method: 'POST',
 					params: {
 						mode: '@mode'
 					}					
 				}
-			});		
+			});			
 
 		
 		// *********************************
