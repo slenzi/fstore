@@ -8,17 +8,15 @@
  	"private": true,
 	"dependencies": {
     	"angular": "^1.4.x",
-    	"angular-resource": "^1.4.x",
-    	"angular-touch": "^1.4.x",
-    	"angular-animate": "^1.4.x",
-    	"angular-aria": "^1.4.x",
-    	"angular-ui-router": "^0.2.x",
+    	"angular-resource": "latest",
+    	"angular-touch": "latest",
+    	"angular-animate": "latest",
+    	"angular-aria": "latest",
+    	"angular-ui-router": "latest",
     	"angular-material": "latest",
-    	"angular-smart-table" : "2.1.2",
+    	"angular-smart-table" : "latest",
 		"sockjs-client" : "latest",
-		"stomp-websocket" : "latest"
-  	},
-  	"devDependencies": {
-    	"angular-material": "~0.10.0"
+		"stomp-websocket" : "latest",
+		"textAngular" : "latest"
   	}
 }

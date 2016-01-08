@@ -1,0 +1,24 @@
+
+{
+	"name": "fstore-material",
+	"description": "Fstore Angular Front End",
+	"version": "0.0.2",
+	"homepage": "https://plus.google.com/+SethLenzi",
+	"license": "MIT",
+ 	"private": true,
+	"dependencies": {
+    	"angular": "^1.4.x",
+    	"angular-resource": "^1.4.x",
+    	"angular-touch": "^1.4.x",
+    	"angular-animate": "^1.4.x",
+    	"angular-aria": "^1.4.x",
+    	"angular-ui-router": "^0.2.x",
+    	"angular-material": "latest",
+    	"angular-smart-table" : "2.1.2",
+		"sockjs-client" : "latest",
+		"stomp-websocket" : "latest"
+  	},
+  	"devDependencies": {
+    	"angular-material": "~0.10.0"
+  	}
+}

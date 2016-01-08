@@ -149,3 +149,23 @@ function(tableState, tableController){
 ## version 2.1.2
 
 * improve build #461 [stanleyxu](https://github.com/stanleyxu2005)
+
+## version 2.1.3
+
+* fix #477
+
+## version 2.1.4
+
+* add throttle to sort
+* add watch to first item in collection (@matthewbednarski)
+
+## version 2.1.5
+
+* #544
+* #533
+* #515
+
+## version 2.1.6
+
+* #559
+

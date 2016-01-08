@@ -31,27 +31,34 @@ ng.module('smart-table')
       }
     }
 
-    function deepDelete(object, path) {
+    function deepDelete (object, path) {
       if (path.indexOf('.') != -1) {
-          var partials = path.split('.');
-          var key = partials.pop();
-          var parentPath = partials.join('.'); 
-          var parentObject = $parse(parentPath)(object)
-          delete parentObject[key]; 
-          if (Object.keys(parentObject).length == 0) {
-            deepDelete(object, parentPath);
-          }
-        } else {
-          delete object[path];
+        var partials = path.split('.');
+        var key = partials.pop();
+        var parentPath = partials.join('.');
+        var parentObject = $parse(parentPath)(object)
+        delete parentObject[key];
+        if (Object.keys(parentObject).length == 0) {
+          deepDelete(object, parentPath);
         }
+      } else {
+        delete object[path];
+      }
     }
 
     if ($attrs.stSafeSrc) {
       safeGetter = $parse($attrs.stSafeSrc);
       $scope.$watch(function () {
         var safeSrc = safeGetter($scope);
+        return safeSrc && safeSrc.length ? safeSrc[0] : undefined;
+      }, function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+          updateSafeCopy();
+        }
+      });
+      $scope.$watch(function () {
+        var safeSrc = safeGetter($scope);
         return safeSrc ? safeSrc.length : 0;
-
       }, function (newValue, oldValue) {
         if (newValue !== safeCopy.length) {
           updateSafeCopy();
@@ -61,6 +68,7 @@ ng.module('smart-table')
         return safeGetter($scope);
       }, function (newValue, oldValue) {
         if (newValue !== oldValue) {
+          tableState.pagination.start = 0;
           updateSafeCopy();
         }
       });
