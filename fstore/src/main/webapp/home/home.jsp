@@ -44,9 +44,11 @@
 		<md-toolbar class="md-tall md-hue-3">
 			<span flex></span>
 			<h3 class="md-toolbar-tools md-toolbar-tools-bottom">
+				<!--
 				<md-button ng-click="main.toggleLeftNav()" class="md-icon-button" aria-label="Menu" hide-gt-md>
 					<md-icon md-svg-icon="<%=request.getContextPath()%>/common/assets/img/icons/ic_menu_18px.svg"></md-icon>
-				</md-button>				
+				</md-button>
+				-->
 				<span style="font-style: italic; whitespace:nowrap;">{{main.sectionTitle()}}</span>
 				<div flex></div>
 			</h3>
@@ -59,41 +61,10 @@
 	
 		<!-- layout-fill layout-align="top center" -->
 		<!-- flex style="display: flex; flex-flow: column; height: 100%;" -->
-		<md-content flex layout="column" class="md-hue-1" role="main" layout-padding>		
-
-			
-			<md-card>
-			
-				<md-card-title layout-padding>
-					<md-card-title-text>
-						<span class="md-headline">General Info & Debug</span><br>
-					</md-card-title-text>
-					<md-card-title-media>
-						<div class="md-media-lg card-media"></div>
-					</md-card-title-media>
-				</md-card-title>
-				
-				<md-card-content>
-
-					<p>
-					<b>App name:</b> <spring:eval expression="@MyAppProperties.getProperty('application.title')" />
-					</p>
-				
-					<p>
-					<b>Active spring profiles:</b> <spring:eval expression="@environment.getProperty('spring.profiles.active')" />
-					</p>	
-					
-					<p>
-					This application demos how to read/write trees to a database using a closure table.
-					</p>
-					
-					<p>
-					This application also builds upon the basic tree structure to store files and directories.
-					</p>				
-				
-				</md-card-content>
-				
-			</md-card>			
+		<!--
+		<md-content flex layout="column" class="md-hue-1" role="main" layout-padding>
+		-->
+		<md-content class="md-padding md-hue-1" layout="row" layout-wrap >
 			
 			<md-card>
 			
@@ -101,9 +72,6 @@
 					<md-card-title-text>
 						<span class="md-headline">Sections</span><br>
 					</md-card-title-text>
-					<md-card-title-media>
-						<div class="md-media-lg card-media"></div>
-					</md-card-title-media>
 				</md-card-title>
 				
 				<md-card-content>
@@ -126,6 +94,36 @@
 				
 				</md-card-content>
 				
+			</md-card>			
+			
+			<md-card>
+			
+				<md-card-title layout-padding>
+					<md-card-title-text>
+						<span class="md-headline">General Info & Debug</span><br>
+					</md-card-title-text>
+				</md-card-title>
+				
+				<md-card-content>
+
+					<p>
+					<b>App name:</b> <spring:eval expression="@MyAppProperties.getProperty('application.title')" />
+					</p>
+				
+					<p>
+					<b>Active spring profiles:</b> <spring:eval expression="@environment.getProperty('spring.profiles.active')" />
+					</p>	
+					
+					<p>
+					This application demos how to read/write trees to a database using a closure table.
+					</p>
+					
+					<p>
+					This application also builds upon the basic tree structure to store files and directories.
+					</p>				
+				
+				</md-card-content>
+				
 			</md-card>
 
 			<md-card>
@@ -134,9 +132,6 @@
 					<md-card-title-text>
 						<span class="md-headline">WebSocket Setup Check</span><br>
 					</md-card-title-text>
-					<md-card-title-media>
-						<div class="md-media-lg card-media"></div>
-					</md-card-title-media>
 				</md-card-title>
 				
 				<md-card-content>
@@ -155,9 +150,6 @@
 					<md-card-title-text>
 						<span class="md-headline">Sample Tree Tests</span><br>
 					</md-card-title-text>
-					<md-card-title-media>
-						<div class="md-media-lg card-media"></div>
-					</md-card-title-media>
 				</md-card-title>
 				
 				<md-card-content>
@@ -184,9 +176,6 @@
 					<md-card-title-text>
 						<span class="md-headline">File 2 Manager Tests</span><br>
 					</md-card-title-text>
-					<md-card-title-media>
-						<div class="md-media-lg card-media"></div>
-					</md-card-title-media>
 				</md-card-title>
 				
 				<md-card-content>
@@ -221,9 +210,6 @@
 					<md-card-title-text>
 						<span class="md-headline">File 2 Manager Dispatch Tests</span><br>
 					</md-card-title-text>
-					<md-card-title-media>
-						<div class="md-media-lg card-media"></div>
-					</md-card-title-media>
 				</md-card-title>
 				
 				<md-card-content>
@@ -250,9 +236,6 @@
 					<md-card-title-text>
 						<span class="md-headline">CMS Tests</span><br>
 					</md-card-title-text>
-					<md-card-title-media>
-						<div class="md-media-lg card-media"></div>
-					</md-card-title-media>
 				</md-card-title>
 				
 				<md-card-content>

@@ -55,7 +55,7 @@
 
 			<md-content layout="column" class="md-hue-1" style="padding-top: 0px;">
 			
-				<md-toolbar class="md-toolbar-tools md-hue-1">
+				<md-toolbar class="md-hue-1" style="padding-top:7px;">
 				
 					<!-- ui-sref="settings" -->
 					<md-button class="md-raised md-warn leftNavButton" ng-href="<%=request.getContextPath()%>/administration/index.jsp">

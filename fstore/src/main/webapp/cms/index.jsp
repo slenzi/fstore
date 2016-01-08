@@ -52,7 +52,7 @@
 
 			<md-content layout="column" class="md-hue-1" style="padding-top: 0px;">
 			
-				<md-toolbar class="md-toolbar-tools md-hue-1">
+				<md-toolbar class="md-hue-1" style="padding-top:7px;">
 				
 					<!-- ui-sref="settings" -->
 					<md-button class="md-raised md-warn leftNavButton" ng-href="<%=request.getContextPath()%>/administration/index.jsp">
@@ -75,12 +75,11 @@
 				</md-button>
 				
 				<md-content layout-padding class="md-hue-1">
-				<h5>CMS Quick Settings</h5>
-				</md-content>
-				
-				<md-switch ng-model="session.isViewingOnline" aria-label="Is Online" ng-change="main.setCmsViewMode(session.isViewingOnline)"/>
-				Online Mode: {{ session.isViewingOnline }}
-				</md-switch>								
+					<h5>CMS Quick Settings</h5>
+					<md-switch ng-model="session.isViewingOnline" aria-label="Is Online" ng-change="main.setCmsViewMode(session.isViewingOnline)"/>
+					Online Mode: {{ session.isViewingOnline }}
+					</md-switch>
+				</md-content>								
 				
 				<br>								
 				

@@ -228,7 +228,7 @@ public class FsUploadPipeline {
 	 * @param replaceExisting - true to replace existing files
 	 * @throws ServiceException
 	 */
-	public synchronized void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	public /*synchronized*/ void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
 		//
 		// get paths to all uploaded files
