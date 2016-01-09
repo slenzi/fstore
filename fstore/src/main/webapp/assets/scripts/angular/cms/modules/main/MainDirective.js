@@ -157,7 +157,7 @@
 			'        <td>' +
 			'			<md-menu >' +
 			'				<md-button aria-label="Open phone interactions menu" class="md-icon-button" ng-click="$mdOpenMenu(); $event.stopPropagation();">' +
-			'					<md-icon md-menu-origin md-svg-icon="/fstore/file/assets/img/icons/ic_more_horiz_24px.svg" style="height: 20px;"></md-icon>' +
+			'					<md-icon md-menu-origin md-svg-icon="/fstore/common/assets/img/icons/ic_more_horiz_24px.svg" style="height: 20px;"></md-icon>' +
 			'				</md-button>' +
 			'				<md-menu-content width="3">' +
 			'					<md-menu-item>' +
@@ -195,6 +195,6 @@
 		
 	}]);
 
-	// 			'							<md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>' +
+	// <md-icon md-svg-icon="<%=request.getContextPath()%>/file/assets/img/icons/ic_add_circle_outline_24px.svg"></md-icon>' +
 
 })();

@@ -48,8 +48,8 @@ md-tab-item.md-active  span {
 .fstoreSmartTable .md-button {
 	height: 15px;
 	line-height: 0px;
-	width: 20px;
-	min-height: 10px;
+	//width: 20px;
+	//min-height: 10px;
 }
 
 /**
