@@ -16,12 +16,13 @@
 	 * fstore-upload-module - common fstore services
 	 * fstore-stomp-module - common fstore stomp messaging
 	 * smart-table - lightweight table module
+	 * textAngular - wysiwyg angular text editor
 	 */
 	cmsApp = angular
 		.module('fstoreCms',
 				[
 				 'ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-models-module', 
-				 'fstore-services-module', 'fstore-upload-module', 'fstore-stomp-module', 'smart-table'
+				 'fstore-services-module', 'fstore-upload-module', 'fstore-stomp-module', 'smart-table', 'textAngular'
 				 ])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
@@ -144,6 +145,17 @@
 						},
 						'toolbarContent': {
 							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/toolbarUploadPartial.jsp'							
+						}
+					}
+				})
+				.state('main_edit', {
+					url: '/edit',
+					views: {
+						'mainContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/textEditPartial.jsp'
+						},
+						'toolbarContent': {
+							templateUrl: appConstants.contextPath + '/assets/scripts/angular/cms/modules/main/partials/toolbarTextEditPartial.jsp'							
 						}
 					}
 				});				

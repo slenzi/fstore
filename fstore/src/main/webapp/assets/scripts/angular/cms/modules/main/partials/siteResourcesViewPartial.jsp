@@ -17,7 +17,11 @@ Resource store settings partial that's loaded for the "main_storeSettings" state
                 </h2>
             </div>
 
-			<div fs-path-resource-table directory="main.offlineDirectory()" resource-click-handler="main.handleEventClickTableOfflinePathResource(theResource)"></div>
+			<div fs-path-resource-table directory="main.offlineDirectory()"
+				resource-click-handler="main.handleEventClickTableOfflinePathResource(theResource)"
+				not-implemented-handler="main.notImplemented()"
+				menu-edit-source-handler="main.handleEventViewTextEditForm(theResource)">
+			</div>
 
         </md-content>
         
@@ -33,7 +37,11 @@ Resource store settings partial that's loaded for the "main_storeSettings" state
                 </h2>
             </div>
 
-            <div fs-path-resource-table directory="main.onlineDirectory()" resource-click-handler="main.handleEventClickTableOnlinePathResource(theResource)"></div>
+            <div fs-path-resource-table directory="main.onlineDirectory()"
+				resource-click-handler="main.handleEventClickTableOnlinePathResource(theResource)"
+				not-implemented-handler="main.notImplemented()"
+				menu-edit-source-handler="main.handleEventViewTextEditForm(theResource)">
+			</div>
 
         </md-content>
         

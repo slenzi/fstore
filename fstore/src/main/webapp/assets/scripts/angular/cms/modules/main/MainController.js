@@ -61,7 +61,12 @@
 		// for toggle on left-hand nav bar
 		$scope.session = {
 			isViewingOnline: true
-		};		
+		};
+		
+		// variable for storing file data that is being edit via the textAngular plugin.
+		$scope.myTextAngular = {
+			fileData: "Nothing loaded..."
+		};	
 		
 		var clipboard = new FsClipboard({});
 		
@@ -333,7 +338,45 @@
             
         function _setOnlineBreadcrumb(crumb){
             onlineBreadcrumbNav = crumb;
-        }    
+        }
+
+		/**
+		 * Load the textAngular edit form for the specified text path resource.
+		 */
+		function _handleEventViewTextEditForm(theResource){
+			
+			sectionTitle = "Edit File: " + theResource.name;
+			
+			$scope.myTextAngular.fileData = "<p>Loading...</p>";
+			
+			// load text file data into our local textAngular variable
+			
+			FileServices
+				.fetchTextFileData(theResource.fileId)
+				.then(_handleFetchTextFileCallback);				
+			
+			$state.go('main_edit');
+			
+		}
+		
+		function _handleFetchTextFileCallback(textFileData){
+			
+			//$log.debug("d2 = " + textFileData.data);
+			//$log.debug("d3 = " + JSON.stringify(textFileData));
+			
+			$scope.myTextAngular.fileData = textFileData.data;
+			
+			$log.debug("myTextAngular.fileData => " + $scope.myTextAngular.fileData);
+		}
+
+		/**
+		 * Used for a button on the toolbar for the text edit view. 
+		 */
+		function _cancelTextEdit(){
+			
+			$state.go('main_siteResources');
+			
+		}
 		
 		function _handleEventViewSiteList(){
 			
@@ -1233,6 +1276,9 @@
 			
             offlineBreadcrumb : _offlineBreadcrumb,
             onlineBreadcrumb : _onlineBreadcrumb,
+			
+			handleEventViewTextEditForm : _handleEventViewTextEditForm,
+			cancelTextEdit : _cancelTextEdit,
 			
 			handleEventViewUploadForm : _handleEventViewUploadForm,
 			

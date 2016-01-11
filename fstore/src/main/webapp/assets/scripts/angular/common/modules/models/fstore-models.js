@@ -93,8 +93,25 @@
 			},
 			getHumanReadableSize: function(){
 				return _humanFileSize(this.size,true);
+			},
+			getMimeType: function(){
+				return this.mimeType;
+			},
+			isTextMime: function(){
+				if( _stringStartsWith(this.mimeType, "text") || _stringStartsWith(this.mimeType, "TEXT")){
+					return true;
+				}else{
+					return false;
+				}
 			}
 		};
+		
+		function _stringStartsWith (string, prefix) {
+			if(!string || !prefix){
+				return false;
+			}
+		    return string.slice(0, prefix.length) == prefix;
+		}		
 
 		function _humanFileSize(bytes, si) {
 			var thresh = si ? 1000 : 1024;

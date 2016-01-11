@@ -256,6 +256,49 @@ public class FileResource extends AbstractResource {
 		).header("Content-Disposition", "attachment; filename=" + fsFile.getFileName()).build();
 		
 	}
+	
+	/**
+	 * Return file as plain text. Obviously only for text files... 
+	 * 
+	 * @param fileId - id of the file path resource which is of text/plain type.
+	 * @return
+	 * @throws WebServiceException
+	 */
+	@GET
+	@Path("/text/id/{fileId}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getFileAsText(@PathParam("fileId") Long fileId) throws WebServiceException {
+		
+		logger.info(FileResource.class.getName() + " jax-rs service called, get file as text, fileId = " + fileId);
+		
+		// TODO - stream file from database rather than loading entire file into memory / byte[]
+		
+		FsFile fsFile = null;
+		try {
+			fsFile = fsResourceService.getFsFileById(fileId);
+		} catch (ServiceException e) {
+			handleError("Failed to retrieve file data for file path resource with id => " + fileId, WebExceptionType.CODE_IO_ERROR, e);
+		}
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(fsFile.getBytes());
+		
+		return Response.ok(
+			new StreamingOutput() {
+				@Override
+				public void write(OutputStream out) throws IOException, WebApplicationException {
+					byte[] buffer = new byte[4 * 1024];
+					int bytesRead;
+					while ((bytesRead = bis.read(buffer)) != -1) {
+						out.write(buffer, 0, bytesRead);
+					}
+					out.flush();
+					out.close();
+					bis.close();
+				}
+			}
+		).build();	
+		
+	}
 
 	@Override
 	public Logger getLogger() {

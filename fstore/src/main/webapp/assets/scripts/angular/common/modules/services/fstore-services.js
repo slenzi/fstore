@@ -26,7 +26,7 @@
 			]
 		)
 		.service('FileServices', [
-			'FstoreServiceConstants', '$log', '$q', '$resource', FileServices
+			'FstoreServiceConstants', '$log', '$q', '$resource', '$http', FileServices
 			]
 		);
 
@@ -164,7 +164,7 @@
 	 * @param $resource
 	 * @returns
 	 */
-	function FileServices(FstoreServiceConstants, $log, $q, $resource){
+	function FileServices(FstoreServiceConstants, $log, $q, $resource, $http){
 		
 		// resource store service
 		var storeService = $resource(
@@ -192,6 +192,13 @@
 					params: {
 						fileId: '@fileId', dirId: '@dirId', replaceExisting: true
 					}
+				},
+				fetchTextFile: {
+					url: FstoreServiceConstants.restServiceFile + '/text/id/:fileId',
+					method: 'GET',
+					params: {
+						fileId: '@fileId'
+					}				
 				}				
 			}); 
 		
@@ -306,6 +313,31 @@
 			
 		}
 		
+		// fetch data for a text/plain or other text mime type file
+		function _fetchTextFileData(fileId){
+			
+			$log.debug('fetching text file data for file with id => ' + fileId);		
+			
+			return $http({
+				method: 'GET',
+				url: FstoreServiceConstants.restServiceFile + '/text/id/' + fileId,				
+			}).success(function(data){
+				//$log.debug('d = ' + data);
+				return data;
+			});
+
+			//$http({
+			//	method: 'GET',
+			//	url: FstoreServiceConstants.restServiceFile + '/text/id/:fileId',
+			//	params: {
+			//		fileId: '@fileId'
+			//	}					
+			//}).$promise;			
+			
+			//return fileService.fetchTextFile({ fileId: fileId }).$promise;
+			
+		}		
+		
 		// delete a single file resource
 		function _deleteFile(fileId){
 			
@@ -405,6 +437,7 @@
 			getDirectoryListing: _fetchDirectoryListing,
 			getBreadcrumb: _fetchBreadcrumb,
 			downloadFile: _downloadFile,
+			fetchTextFileData: _fetchTextFileData,
 			deleteFile: _deleteFile,
 			deleteFiles: _deleteFiles,
 			deleteDirectories: _deleteDirectories,

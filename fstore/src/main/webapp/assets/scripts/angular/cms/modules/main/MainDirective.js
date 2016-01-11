@@ -132,6 +132,13 @@
 				//alert('test click resource = ' + JSON.stringify(pathResource));
 				$scope.resourceClickHandler( {theResource: pathResource} );
 			};
+			$scope.menuClickNotImplemented = function(){
+				//alert('test click resource = ' + JSON.stringify(pathResource));
+				$scope.notImplementedHandler();
+			};
+			$scope.menuClickEditSource = function(pathResource){
+				$scope.menuEditSourceHandler( {theResource: pathResource} );
+			};			
 			
 		}];
 
@@ -161,11 +168,16 @@
 			'				</md-button>' +
 			'				<md-menu-content width="3">' +
 			'					<md-menu-item>' +
-			'						<md-button ng-click="main.notImplemented()">' +
-			'							So something...' +
+			'						<md-button ng-click="menuClickNotImplemented()">' +
+			'							Delete' +
 			'						</md-button>' +
 			'					</md-menu-item>' +
-			'				</md-menu-content>' +
+			'					<md-menu-item ng-if="pathResource.isTextMime()">' +
+			'						<md-button ng-click="menuClickEditSource(pathResource)">' +
+			'							Edit Source' +
+			'						</md-button>' +
+			'					</md-menu-item>' +			
+			'				</md-menu-content>' +		
 			'			</md-menu>' +
 			'        </td>' +			
 			'        <td><a href ng-click="clickPathResource(pathResource); $event.stopPropagation();">{{pathResource.name}}</a></td>' +
@@ -187,7 +199,9 @@
 			restrict: 'AE',
 			scope: {
 				directory: '=',
-				resourceClickHandler: '&'
+				resourceClickHandler: '&',
+				notImplementedHandler: '&',
+				menuEditSourceHandler: '&',
 			},
 			controller: controller,
 			template: template
