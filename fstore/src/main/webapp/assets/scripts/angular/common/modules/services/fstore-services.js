@@ -321,9 +321,8 @@
 			
 			return $http({
 				method: 'GET',
-				url: FstoreServiceConstants.restServiceFile + '/text/id/' + fileId,				
+				url: FstoreServiceConstants.restServiceFile + '/text/id/' + fileId				
 			}).success(function(data){
-				//$log.debug('d = ' + data);
 				return data;
 			});
 
@@ -342,7 +341,18 @@
 		// send text data to server and save file
 		function _saveTextFile(fileId, text){
 			
-			$log.debug('saving text file data for file with id => ' + fileId);
+			$log.debug('saving text file data');
+			$log.debug('fileId => ' + fileId);
+			$log.debug('text => ' + text);
+			
+			return $http({
+				method: 'POST',
+				url: FstoreServiceConstants.restServiceFile + '/text',
+				params: { fileId: fileId, text: text },
+				headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+			}).success(function(data){
+				return data;
+			});			
 			
 		}
 		

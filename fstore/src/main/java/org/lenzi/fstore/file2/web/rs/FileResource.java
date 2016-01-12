@@ -29,6 +29,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceHelper;
 import org.lenzi.fstore.file2.service.FsResourceService;
+import org.lenzi.fstore.file2.service.FsUploadService;
 import org.lenzi.fstore.web.rs.AbstractResource;
 import org.lenzi.fstore.web.rs.exception.WebServiceException;
 import org.lenzi.fstore.web.rs.exception.WebServiceException.WebExceptionType;
@@ -57,6 +58,9 @@ public class FileResource extends AbstractResource {
     
     @Autowired
     private FsResourceHelper fsResourceHelper;
+    
+    @Autowired
+    private FsUploadService fsUploadService;
 	
 	public FileResource() {
 		
@@ -308,14 +312,21 @@ public class FileResource extends AbstractResource {
 	 * @throws WebServiceException
 	 */
 	@POST
-	@Path("/savetext")
+	@Path("/text")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response saveTextFile(@FormParam("fileId") Long fileId, @FormParam("text") String text) throws WebServiceException {
 		
 		logger.info(FileResource.class.getName() + " jax-rs service called, save text file");
 		logger.info("fileId = " + fileId);
 		logger.info("text = " + text);
-	
+		
+		
+		try {
+			fsUploadService.rewriteTextFile(fileId, text);
+		} catch (ServiceException e) {
+			handleError("Failed to update text file with new data, fileId => " + fileId, WebExceptionType.CODE_IO_ERROR, e);
+		}
+		
 		return Response.ok("{ \"message\": \"ok\" }", MediaType.APPLICATION_JSON).build();
 		
 	}

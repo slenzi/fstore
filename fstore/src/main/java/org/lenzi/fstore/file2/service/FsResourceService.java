@@ -104,7 +104,6 @@ public class FsResourceService {
 	@Autowired
 	private FsDirectoryResourceMover fsDirectoryResourceMover;
 	
-	
 	public FsResourceService() {
 		
 	}
@@ -165,7 +164,27 @@ public class FsResourceService {
 		}
 		return resourceTree;
 		
-	}	
+	}
+	
+	/**
+	 * Get directory for file
+	 * 
+	 * @param fileId - id of the file path resource
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsDirectoryResource getDirectoryResourceByFileId(Long fileId) throws ServiceException {
+		
+		FsDirectoryResource resource = null;
+		try {
+			resource = fsDirectoryResourceRepository.getDirectoryResourceByFileId(fileId);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error fetching directory resource for fileId => " + fileId + ". " + e.getMessage(), e);
+		}
+		return resource;
+		
+	}
+	
 	
 	/**
 	 * Fetch file resource

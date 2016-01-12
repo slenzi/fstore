@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -145,7 +147,53 @@ public class FsUploadPipeline {
 		
 		logger.info(FsUploadPipeline.class.getName() + " pre destroy cleanup complete!.");		
 		
-	}	
+	}
+	
+	private Path createTempDir() throws ServiceException {
+		
+		String parentTempDir = appProps.getProperty("upload.temp.path");
+		
+		long epochMilli = System.currentTimeMillis();
+		String uuid = UUID.randomUUID().toString();
+		
+		String tempDir = parentTempDir + File.separator + String.valueOf(epochMilli) + "." + uuid;
+		
+		Path tempPath = Paths.get(tempDir);
+		
+		try {
+			FileUtil.createDirectory(tempPath, true);
+		} catch (IOException e) {
+			throw new ServiceException("Failed to create temporary directory at " + tempDir + ". " + e.getMessage());
+		}		
+		
+		return tempPath;
+		
+	}
+	
+	/**
+	 * Write new text file to temp upload dir, for eventual processing through pipeline.
+	 * 
+	 * @param fileName
+	 * @param fileData
+	 * @return
+	 * @throws ServiceException
+	 */
+	public Path processTextFileToTemp(String fileName, String fileData) throws ServiceException {
+		
+		Path tempPath = createTempDir();
+		
+		Path filePath = Paths.get(tempPath.toFile().getAbsolutePath() + File.separator + fileName);
+		
+		try {
+			Files.write(filePath, Arrays.asList(fileData), java.nio.charset.StandardCharsets.UTF_8, 
+					java.nio.file.StandardOpenOption.CREATE);
+		} catch (IOException e) {
+			throw new ServiceException("Failed to write text file at " + filePath + ". " + e.getMessage());
+		}
+		
+		return tempPath;
+		
+	}
 	
 	/**
 	 * Save all files in the file map to the temp upload directory.
@@ -156,6 +204,7 @@ public class FsUploadPipeline {
 	 */
 	public Path processToTemp(Map<String, MultipartFile> fileMap) throws ServiceException {
 		
+		/*
 		String parentTempDir = appProps.getProperty("upload.temp.path");
 		
 		long epochMilli = System.currentTimeMillis();
@@ -170,17 +219,21 @@ public class FsUploadPipeline {
 		} catch (IOException e) {
 			throw new ServiceException("Failed to create temporary directory for uploaded files, at " + tempDir + ". " + e.getMessage());
 		}
+		*/
+		
+		Path tempPath = createTempDir();
 		
 		// save all files
 		fileMap.values().stream().forEach(
 			(filePart) -> {
 				
-				Path filePath = Paths.get(tempDir + File.separator + filePart.getOriginalFilename());
+				Path filePath = Paths.get(tempPath.toFile().getAbsolutePath() + File.separator + filePart.getOriginalFilename());
 				
 				try {
 					Files.write(filePath, filePart.getBytes());
 				} catch (Exception e) {
-					throw new RuntimeException("Error saving file " + filePart.getOriginalFilename() + " to directory " + tempDir + ". " + e.getMessage(), e);
+					throw new RuntimeException("Error saving file " + filePart.getOriginalFilename() + 
+							" to directory " + tempPath.toFile().getAbsolutePath() + ". " + e.getMessage(), e);
 				}
 				
 			});

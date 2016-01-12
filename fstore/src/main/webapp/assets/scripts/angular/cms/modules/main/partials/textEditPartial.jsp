@@ -15,13 +15,6 @@ Resource store settings partial that's loaded for the "main_storeSettings" state
 		mode: 'java'
     }"></div>
 
-    <!-- TextAngular editor -->
-    <%--
-    <p>
-    <div text-angular ng-model="myTextAngular.fileData"></div>
-    </p>
-    --%>
-
-    <div ta-bind ng-model="myTextAngular.fileData"></div>
+    <div ta-bind ng-model="fileEditor.dataTextAngular"></div>
 
 </md-content>

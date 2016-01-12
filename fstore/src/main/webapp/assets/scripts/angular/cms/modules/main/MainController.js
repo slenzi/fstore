@@ -63,16 +63,19 @@
 			isViewingOnline: true
 		};
 		
-		// variable for storing file data that is being edit via the textAngular plugin.
-		$scope.myTextAngular = {
-			fileData: "Nothing loaded..."
+		// store data for editing text file using Ace & TextAngular editors
+		$scope.fileEditor = {
+			dataTextAngular: "Loading...",  // text data for TextAngular editor
+			dataAce: "Loading...",			// text data for Ace editor
+			aceSession: null,				// reference to the current Ace editor
+			fileId: 0						// id of file path resource being edited
 		};
 		
 		// for ui-ace & ace text editor
 		$scope.aceLoaded = function(_editor) {
 			
             // get access to the editor
-			$scope.aceSession = _editor.getSession();
+			$scope.fileEditor.aceSession = _editor.getSession();
             
 			//_editor.setTheme("ace/theme/github");
             _editor.setOption("showInvisibles", true);
@@ -84,10 +87,10 @@
 		$scope.aceChanged = function () {
 			
 			// get access to the contents of the editor
-			$scope.aceDocumentValue = $scope.aceSession.getDocument().getValue();
+			$scope.fileEditor.dataAce = $scope.fileEditor.aceSession.getDocument().getValue();
 			
 			// pass to textAngular
-			$scope.myTextAngular.fileData = $scope.aceDocumentValue;
+			$scope.fileEditor.dataTextAngular = $scope.fileEditor.dataAce;
 			
 		};
 		
@@ -372,21 +375,55 @@
 			$state.go('main_siteResources');
 		}
 		function _saveAndCloseTextEdit(){
-			alert('Feature coming soon.');
+			
+			var fileId = $scope.fileEditor.fileId;
+			var fileText = $scope.fileEditor.aceSession.getDocument().getValue();
+			
+			FileServices
+				.saveTextFile(fileId,fileText)
+				.then(function( response ) {
+					
+					if(response.data.message == "ok"){
+						alert("File was saved.");
+						$state.go('main_siteResources');
+					}else{
+						alert("Error saving file.");
+					}
+					
+				});				
+			
 		}
 		function _saveTextEdit(){
-			alert('Feature coming soon.');
+			
+			var fileId = $scope.fileEditor.fileId;
+			var fileText = $scope.fileEditor.aceSession.getDocument().getValue();
+			
+			FileServices
+				.saveTextFile(fileId,fileText)
+				.then(function( response ) {
+					
+					if(response.data.message == "ok"){
+						alert("File was saved.");
+					}else{
+						alert("Error saving file.");
+					}
+					
+				});	
+			
 		}
+
 		
 		// Load the Ace & TextAngular edit form for the specified text path resource.
 		function _handleEventViewTextEditForm(theResource){
 			
 			sectionTitle = "Edit File: " + theResource.name;
 			
-			$scope.myTextAngular.fileData = "<p>Loading...</p>";
+			$scope.fileEditor.dataTextAngular = "<p>Loading...</p>";
+			
+			// set aside file id for reference later
+			$scope.fileEditor.fileId = theResource.fileId;
 			
 			// load text file data into our local textAngular variable
-			
 			FileServices
 				.fetchTextFile(theResource.fileId)
 				.then(_handleFetchTextFileCallback);				
@@ -394,17 +431,17 @@
 			$state.go('main_edit');
 			
 		}
-		
 		function _handleFetchTextFileCallback(textFileData){
 			
-			$log.debug(textFileData.data);
+			//$log.debug(textFileData.data);
 			//$log.debug("d3 = " + JSON.stringify(textFileData));
 			
-			$scope.aceSession.setValue(textFileData.data,-1);
+			$scope.fileEditor.aceSession.setValue(textFileData.data,-1);
 			
-			$scope.myTextAngular.fileData = textFileData.data;
+			$scope.fileEditor.dataAce = textFileData.data;
+			$scope.fileEditor.dataTextAngular = textFileData.data;
 			
-			//$log.debug("myTextAngular.fileData => " + $scope.myTextAngular.fileData);
+			//$log.debug("myTextAngular.fileData => " + $scope.fileEditor.dataTextAngular);
 		}		
 		
 		/*************************************************************************************
