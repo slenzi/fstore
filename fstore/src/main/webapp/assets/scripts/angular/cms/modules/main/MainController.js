@@ -74,6 +74,7 @@
             // get access to the editor
 			$scope.aceSession = _editor.getSession();
             
+			//_editor.setTheme("ace/theme/github");
             _editor.setOption("showInvisibles", true);
 			
             // pre-load value
@@ -81,8 +82,13 @@
             
 		};
 		$scope.aceChanged = function () {
+			
 			// get access to the contents of the editor
 			$scope.aceDocumentValue = $scope.aceSession.getDocument().getValue();
+			
+			// pass to textAngular
+			$scope.myTextAngular.fileData = $scope.aceDocumentValue;
+			
 		};
 		
 		var clipboard = new FsClipboard({});

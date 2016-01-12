@@ -27,6 +27,8 @@ third party scripts
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/textAngular/dist/textAngularSetup.js"></script>
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/ace-builds/src-min/ace.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/ace-builds/src-min/theme-github.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/ace-builds/src-min/theme-eclipse.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/assets/bower/angular-ui-ace/ui-ace.min.js"></script>
 
 <!--  

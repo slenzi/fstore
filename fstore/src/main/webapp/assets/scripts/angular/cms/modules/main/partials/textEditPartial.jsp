@@ -11,7 +11,8 @@ Resource store settings partial that's loaded for the "main_storeSettings" state
     <div ui-ace="{
         onLoad: aceLoaded,
         onChange: aceChanged,
-        theme:'github'
+		theme:'eclipse',
+		mode: 'java'
     }"></div>
 
     <!-- TextAngular editor -->
@@ -21,9 +22,6 @@ Resource store settings partial that's loaded for the "main_storeSettings" state
     </p>
     --%>
 
-    <%--
-    <h2>Two</h2>
     <div ta-bind ng-model="myTextAngular.fileData"></div>
-    --%>
 
 </md-content>
