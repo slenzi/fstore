@@ -18,11 +18,11 @@ common third party resources
 
 --------------------------------------------- -->
 <link rel='stylesheet' href='<spring:eval expression="@MyAppProperties.getProperty('web.prot')" />://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/angular-material/angular-material.css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/angular-material/angular-material.min.css"/>
 
 <!-- for textAngular -->
 <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/textAngular/dist/textAngular.css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/font-awesome/css/font-awesome.css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/font-awesome/css/font-awesome.min.css"/>
 
 <!-- no longer used
 <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/bower/angular-ui-grid/ui-grid.css"/>

@@ -17,6 +17,7 @@
     	"angular-smart-table" : "latest",
 		"sockjs-client" : "latest",
 		"stomp-websocket" : "latest",
+		"angular-ui-ace" : "latest",
 		"textAngular" : "latest"
   	}
 }
