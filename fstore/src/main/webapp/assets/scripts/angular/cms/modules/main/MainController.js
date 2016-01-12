@@ -363,9 +363,22 @@
             onlineBreadcrumbNav = crumb;
         }
 
-		/**
-		 * Load the textAngular edit form for the specified text path resource.
+		/*************************************************************************************
+		 * Used for either Ace or TextAngular editor section.
 		 */
+		
+		// toolbar button handlers
+		function _cancelTextEdit(){
+			$state.go('main_siteResources');
+		}
+		function _saveAndCloseTextEdit(){
+			alert('Feature coming soon.');
+		}
+		function _saveTextEdit(){
+			alert('Feature coming soon.');
+		}
+		
+		// Load the Ace & TextAngular edit form for the specified text path resource.
 		function _handleEventViewTextEditForm(theResource){
 			
 			sectionTitle = "Edit File: " + theResource.name;
@@ -375,7 +388,7 @@
 			// load text file data into our local textAngular variable
 			
 			FileServices
-				.fetchTextFileData(theResource.fileId)
+				.fetchTextFile(theResource.fileId)
 				.then(_handleFetchTextFileCallback);				
 			
 			$state.go('main_edit');
@@ -392,17 +405,11 @@
 			$scope.myTextAngular.fileData = textFileData.data;
 			
 			//$log.debug("myTextAngular.fileData => " + $scope.myTextAngular.fileData);
-		}
-
-		/**
-		 * Used for a button on the toolbar for the text edit view. 
-		 */
-		function _cancelTextEdit(){
-			
-			$state.go('main_siteResources');
-			
-		}
+		}		
 		
+		/*************************************************************************************
+		 * User clicks on a CMS site.
+		 */
 		function _handleEventViewSiteList(){
 			
 			sectionTitle = "CMS Site List";
@@ -411,13 +418,9 @@
 			
 			CmsServices
 				.getCmsSites()
-				.then(_handleCmsSiteDataCallback);			
-			
+				.then(_handleCmsSiteDataCallback);
 		}
-		
-		/**
-		 * Process cms site data from server
-		 */
+		// process site data from server
 		function _handleCmsSiteDataCallback(siteData){
 			
 			if(siteData.error){
@@ -1304,6 +1307,8 @@
 			
 			handleEventViewTextEditForm : _handleEventViewTextEditForm,
 			cancelTextEdit : _cancelTextEdit,
+			saveTextEdit : _saveTextEdit,
+			saveAndCloseTextEdit : _saveAndCloseTextEdit,
 			
 			handleEventViewUploadForm : _handleEventViewUploadForm,
 			

@@ -193,6 +193,7 @@
 						fileId: '@fileId', dirId: '@dirId', replaceExisting: true
 					}
 				},
+				// not tested (or used)
 				fetchTextFile: {
 					url: FstoreServiceConstants.restServiceFile + '/text/id/:fileId',
 					method: 'GET',
@@ -314,7 +315,7 @@
 		}
 		
 		// fetch data for a text/plain or other text mime type file
-		function _fetchTextFileData(fileId){
+		function _fetchTextFile(fileId){
 			
 			$log.debug('fetching text file data for file with id => ' + fileId);		
 			
@@ -336,7 +337,14 @@
 			
 			//return fileService.fetchTextFile({ fileId: fileId }).$promise;
 			
-		}		
+		}
+		
+		// send text data to server and save file
+		function _saveTextFile(fileId, text){
+			
+			$log.debug('saving text file data for file with id => ' + fileId);
+			
+		}
 		
 		// delete a single file resource
 		function _deleteFile(fileId){
@@ -437,7 +445,8 @@
 			getDirectoryListing: _fetchDirectoryListing,
 			getBreadcrumb: _fetchBreadcrumb,
 			downloadFile: _downloadFile,
-			fetchTextFileData: _fetchTextFileData,
+			fetchTextFile: _fetchTextFile,
+			saveTextFile: _saveTextFile,
 			deleteFile: _deleteFile,
 			deleteFiles: _deleteFiles,
 			deleteDirectories: _deleteDirectories,

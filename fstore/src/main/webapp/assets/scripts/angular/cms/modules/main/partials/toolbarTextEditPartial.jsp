@@ -12,6 +12,14 @@ Toolbar partial that's loaded for the "main_storeList" state
 	-->
 	
 	<div flex></div>
+
+	<md-button class="" ng-click="main.saveTextEdit()">
+		Save
+	</md-button>
+
+	<md-button class="" ng-click="main.saveAndCloseTextEdit()">
+		Save & Close
+	</md-button>
 	
 	<md-button class="" ng-click="main.cancelTextEdit()">
 		Cancel
