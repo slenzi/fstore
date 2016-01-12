@@ -7,12 +7,23 @@ Resource store settings partial that's loaded for the "main_storeSettings" state
 	
 <md-content layout-padding id="storeSettingsContent" style="padding: 10px;">
 
-	<h2>One</h2>
-	<div text-angular ng-model="myTextAngular.fileData"></div>
-	
-	<!--
-	<h2>Two</h2>
-	<div ta-bind ng-model="myTextAngular.fileData"></div>
-	-->
+    <!-- Ace editor - need to preload this partial so the editor properly loads when the page loads -->
+    <div ui-ace="{
+        onLoad: aceLoaded,
+        onChange: aceChanged,
+        theme:'github'
+    }"></div>
+
+    <!-- TextAngular editor -->
+    <%--
+    <p>
+    <div text-angular ng-model="myTextAngular.fileData"></div>
+    </p>
+    --%>
+
+    <%--
+    <h2>Two</h2>
+    <div ta-bind ng-model="myTextAngular.fileData"></div>
+    --%>
 
 </md-content>

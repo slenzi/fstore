@@ -2,3 +2,8 @@
 /**
  * CMS specific styles go here
  */
+
+ .ace_editor, #ace_document {
+	width: 100%;
+	height: 600px;
+}

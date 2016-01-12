@@ -66,7 +66,24 @@
 		// variable for storing file data that is being edit via the textAngular plugin.
 		$scope.myTextAngular = {
 			fileData: "Nothing loaded..."
-		};	
+		};
+		
+		// for ui-ace & ace text editor
+		$scope.aceLoaded = function(_editor) {
+			
+            // get access to the editor
+			$scope.aceSession = _editor.getSession();
+            
+            _editor.setOption("showInvisibles", true);
+			
+            // pre-load value
+            _editor.setValue("Loading...",-1);
+            
+		};
+		$scope.aceChanged = function () {
+			// get access to the contents of the editor
+			$scope.aceDocumentValue = $scope.aceSession.getDocument().getValue();
+		};
 		
 		var clipboard = new FsClipboard({});
 		
@@ -361,12 +378,14 @@
 		
 		function _handleFetchTextFileCallback(textFileData){
 			
-			//$log.debug("d2 = " + textFileData.data);
+			$log.debug(textFileData.data);
 			//$log.debug("d3 = " + JSON.stringify(textFileData));
+			
+			$scope.aceSession.setValue(textFileData.data,-1);
 			
 			$scope.myTextAngular.fileData = textFileData.data;
 			
-			$log.debug("myTextAngular.fileData => " + $scope.myTextAngular.fileData);
+			//$log.debug("myTextAngular.fileData => " + $scope.myTextAngular.fileData);
 		}
 
 		/**

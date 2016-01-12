@@ -17,12 +17,14 @@
 	 * fstore-stomp-module - common fstore stomp messaging
 	 * smart-table - lightweight table module
 	 * textAngular - wysiwyg angular text editor
+	 * ui-ace - angularjs wrapper for Ace editor
 	 */
 	cmsApp = angular
 		.module('fstoreCms',
 				[
 				 'ui.router', 'ngMaterial', 'ngResource', 'fsCmsMain', 'fstore-models-module', 
-				 'fstore-services-module', 'fstore-upload-module', 'fstore-stomp-module', 'smart-table', 'textAngular'
+				 'fstore-services-module', 'fstore-upload-module', 'fstore-stomp-module', 'smart-table',
+				 'textAngular','ui.ace'
 				 ])
 		// @xyz@ values are replaced/filtered by maven during build process
 		.constant('appConstants', {
