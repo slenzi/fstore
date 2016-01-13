@@ -17,6 +17,15 @@ public final class CmsConstants {
 	 */
 	
 	// Currently two possibilities, ONLINE or OFFLINE. Defaults to ONLINE. 
-	public static String SESSION_CMS_VIEW_MODE = "SESSION_CMS_VIEW_MODE";	
+	public static String SESSION_CMS_VIEW_MODE = "SESSION_CMS_VIEW_MODE";
+	
+	// when we use the dispatcher to forward to JSPS, we store the CmsService object
+	// in this session attribute. CmsService lets the developer get access to various
+	// CMS helper functions & tools.
+	public static String SESSION_ATT_CMS_SERVICE = "SESSION_ATT_CMS_SERVICE";	
 
+	/**
+	 * Request attributes
+	 */
+	
 }

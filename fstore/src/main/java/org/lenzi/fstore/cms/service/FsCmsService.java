@@ -5,18 +5,25 @@ package org.lenzi.fstore.cms.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.lenzi.fstore.cms.constants.CmsConstants;
 import org.lenzi.fstore.cms.repository.FsCmsSiteAdder;
 import org.lenzi.fstore.cms.repository.FsCmsSiteRepository;
 import org.lenzi.fstore.cms.repository.model.impl.FsCmsSite;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
+import org.lenzi.fstore.core.util.StringUtil;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Service for CMS related actions
@@ -47,6 +54,43 @@ public class FsCmsService {
 	public FsCmsService() {
 
 	}
+	
+	/**
+	 * Get current HttpServletRequest
+	 * 
+	 * @return
+	 */
+	public HttpServletRequest getCurrentHttpServletRequest(){
+		return ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+	}
+	
+	/**
+	 * Get HttpSession object
+	 *  
+	 * @return
+	 */
+	public HttpSession getHttpSession(){
+		return getCurrentHttpServletRequest().getSession();
+	}
+	
+	/**
+	 * Check if user is currently viewing online or offline mode. This is stored as a session attribute;
+	 * 
+	 * @return
+	 */
+	public boolean isOfflineMode(){
+		
+		HttpSession session = getHttpSession();
+		String cmsViewMode = StringUtil.changeNull((String)session.getAttribute(CmsConstants.SESSION_CMS_VIEW_MODE)).trim().toUpperCase();
+		
+		// assume online mode, and check for offline mode
+		
+		if(cmsViewMode.equals("OFFLINE")){
+			return true;
+		}
+		
+		return false;
+	}	
 	
 	/**
 	 * Create new CMS site entry
