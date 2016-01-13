@@ -4,10 +4,13 @@
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.LocalTime" %>
 
-<%@ page import="org.lenzi.fstore.cms.api.CmsLink" %>
+<%@ page import="org.lenzi.fstore.cms.api.*" %>
+<%@ page import="org.lenzi.fstore.cms.constants.CmsConstants" %>
 
 <%
-CmsLink linker = CmsLink.getInstance(request);
+CmsService cmsService = (CmsService)session.getAttribute(CmsConstants.SESSION_ATT_CMS_SERVICE);
+CmsLink cmsLink = cmsService.getCmsLink();
+CmsPath cmsPath = cmsService.getCmsPath();
 %>
 
 <html>
@@ -16,7 +19,7 @@ CmsLink linker = CmsLink.getInstance(request);
 	
 	<title>CMS Test Page 1</title>
 	
-	<link rel="stylesheet" type="text/css" href="<%=linker.createLink("/test/css/test.css") %>">
+	<jsp:include page="<%=cmsPath.createPath(\"/test/includes/header_include.jsp\") %>" />
 	
 </head>
 
@@ -33,7 +36,7 @@ The time is <b><%=LocalTime.now() %></b> on <b><%=LocalDate.now() %></b>
 </p>
 
 <p>
-<a href="<%=linker.createLink("/test/sub/test.jsp") %>">Link to second page</a>
+<a href="<%=cmsLink.createLink("/test/sub/test.jsp") %>">Link to second page</a>
 </p>
 
 <p>
@@ -45,11 +48,11 @@ for(int i=0; i<10; i++){
 </p>
 
 <p>
-<img src="<%=linker.createLink("/test/img/cat.jpg") %>"/>
+<img src="<%=cmsLink.createLink("/test/img/cat.jpg") %>"/>
 </p>
 
 <p>
-<img src="<%=linker.createLink("/test/img/honey_badger.JPG") %>"/>
+<img src="<%=cmsLink.createLink("/test/img/honey_badger.JPG") %>"/>
 </p>
 
 <p>
@@ -59,3 +62,4 @@ for(int i=0; i<10; i++){
 </body>
 
 </html>
+
