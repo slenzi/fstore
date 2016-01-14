@@ -221,7 +221,7 @@ public class FileResource extends AbstractResource {
 	@GET
 	@Path("/download/id/{fileId}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	@PreAuthorize("isAuthenticated() and hasPermission(#fileId, 'path.to.file', 'read')")
+	//@PreAuthorize("isAuthenticated() and hasPermission(#fileId, 'path.to.file', 'read')")
 	public Response getFile(@PathParam("fileId") Long fileId) throws WebServiceException {
 		
 		logger.info(FileResource.class.getName() + " jax-rs service called, download file, fileId = " + fileId);

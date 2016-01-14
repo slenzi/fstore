@@ -376,7 +376,7 @@ public class PostgreSQLCreate {
 	// create statements for Spring Security ACL
 	private String[] SPRING_SECURITY_ACL_CREATE = new String[]{
 		"create table " + SCHEMA + "acl_sid( " +
-		"    id bigserial test.not null primary key, " +
+		"    id bigserial not null primary key, " +
 		"    principal boolean not null, " +
 		"    sid varchar(100) not null, " +
 		"    constraint unique_uk_1 unique(sid,principal) " +

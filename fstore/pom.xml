@@ -53,6 +53,8 @@
 		<version.javax.jstl.api>1.2.1</version.javax.jstl.api>
 		<version.javax.jstl>1.2</version.javax.jstl>
 		
+		<version.ehcache>2.10.1</version.ehcache>
+		
 		<version.spring>4.2.2.RELEASE</version.spring> <!-- was 4.1.7.RELEASE 10/29/2015 -->
 		<version.spring.security>4.0.3.RELEASE</version.spring.security>
 		
@@ -281,7 +283,26 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-acl</artifactId>
 			<version>${version.spring.security}</version>
-		</dependency>			
+		</dependency>
+		<!-- Use some classes in this package for caching (with acl security) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${version.spring}</version>
+		</dependency>
+
+		<!-- caching framework. we use this for spring security acl -->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>${version.ehcache}</version>
+		</dependency>
+					
 
 		<!-- used in unit tests -->
 		<!--

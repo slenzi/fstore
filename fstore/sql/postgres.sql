@@ -322,8 +322,8 @@ drop table test.acl_object_identity;
 drop table test.acl_class;
 drop table test.acl_sid;
 
-create table acl_sid(
-    id bigserial test.not null primary key,
+create table test.acl_sid(
+    id bigserial not null primary key,
     principal boolean not null,
     sid varchar(100) not null,
     constraint unique_uk_1 unique(sid,principal)
