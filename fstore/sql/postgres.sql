@@ -277,16 +277,87 @@ NO CYCLE;
 /**
  * Default data
  */
-INSERT INTO FS_USER (USER_ID, USERNAME, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PRIMARY_EMAIL) VALUES (1, 'admin', 'admin', 'admin_first', 'admin_middle', 'admin_last', 'admin@your.domain.com');
+INSERT INTO TEST.FS_USER (USER_ID, USERNAME, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PRIMARY_EMAIL) VALUES (1, 'admin', 'admin', 'admin_first', 'admin_middle', 'admin_last', 'admin@your.domain.com');
 
 /* Role codes MUST start with 'ROLE_' to be compatible with spring security */
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (1, 'ROLE_ADMINISTRATOR', 'Administrators have access to everything');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (2, 'ROLE_FILE_MANAGER_ADMINISTRATOR', 'Administrative access to file manager section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'ROLE_CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'ROLE_FILE_MANAGER_USER', 'Access to the file manager section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'ROLE_CMS_WORKPLACE_USER', 'Access to the CMS workplace section');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'ROLE_USER', 'All users, other than guests. All users with accounts are members of this role.');
-INSERT INTO FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (7, 'ROLE_GUEST', 'Default role for users not logged into the system');
+INSERT INTO TEST.FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (1, 'ROLE_ADMINISTRATOR', 'Administrators have access to everything');
+INSERT INTO TEST.FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (2, 'ROLE_FILE_MANAGER_ADMINISTRATOR', 'Administrative access to file manager section');
+INSERT INTO TEST.FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (3, 'ROLE_CMS_WORKPLACE_ADMINISTRATOR', 'Administrative access to CMS workplace section');
+INSERT INTO TEST.FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (4, 'ROLE_FILE_MANAGER_USER', 'Access to the file manager section');
+INSERT INTO TEST.FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (5, 'ROLE_CMS_WORKPLACE_USER', 'Access to the CMS workplace section');
+INSERT INTO TEST.FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (6, 'ROLE_USER', 'All users, other than guests. All users with accounts are members of this role.');
+INSERT INTO TEST.FS_USER_ROLE (ROLE_ID, ROLE_CODE, ROLE_DESC) VALUES (7, 'ROLE_GUEST', 'Default role for users not logged into the system');
 
-INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1);
-INSERT INTO FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 6);
+INSERT INTO TEST.FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 1);
+INSERT INTO TEST.FS_USER_ROLE_LINK (USER_ID, ROLE_ID) VALUES (1, 6);
+
+
+/****************************************************************************************
+ * Spring ACL
+ * 
+ * General ACL schema info:
+ * http://docs.spring.io/spring-security/site/docs/4.0.3.RELEASE/reference/htmlsingle/#dbschema-acl
+ * 
+ * PostgreSQL scripts
+ * http://docs.spring.io/spring-security/site/docs/4.0.3.RELEASE/reference/htmlsingle/#postgresql
+ * 
+ * You will have to set the 'classIdentityQuery' and 'sidIdentityQuery' properties of JdbcMutableAclService to the following values, respectively:
+ *
+ * select currval(pg_get_serial_sequence('acl_class', 'id'))
+ * org.springframework.security.acls.jdbc.JdbcMutableAclService.setClassIdentityQuery(String classIdentityQuery)
+ * 
+ * select currval(pg_get_serial_sequence('acl_sid', 'id'))
+ * org.springframework.security.acls.jdbc.JdbcMutableAclService.setSidIdentityQuery(String sidIdentityQuery)
+ * 
+ * Note: Below table scripts were modified to inlcude the postgres schema name, in this case, 'test'
+ * 
+ * The original scripts are available in the Spring ACL dependency jar, e.g. spring-security-acl-X.Y.Z.RELEASE.jar
+ * where X.Y.Z in the version number.
+ */
+
+-- ACL Schema SQL for PostgreSQL
+
+drop table test.acl_entry;
+drop table test.acl_object_identity;
+drop table test.acl_class;
+drop table test.acl_sid;
+
+create table acl_sid(
+    id bigserial test.not null primary key,
+    principal boolean not null,
+    sid varchar(100) not null,
+    constraint unique_uk_1 unique(sid,principal)
+);
+
+create table test.acl_class(
+    id bigserial not null primary key,
+    class varchar(100) not null,
+    constraint unique_uk_2 unique(class)
+);
+
+create table test.acl_object_identity(
+    id bigserial primary key,
+    object_id_class bigint not null,
+    object_id_identity bigint not null,
+    parent_object bigint,
+    owner_sid bigint,
+    entries_inheriting boolean not null,
+    constraint unique_uk_3 unique(object_id_class,object_id_identity),
+    constraint foreign_fk_1 foreign key(parent_object)references acl_object_identity(id),
+    constraint foreign_fk_2 foreign key(object_id_class)references acl_class(id),
+    constraint foreign_fk_3 foreign key(owner_sid)references acl_sid(id)
+);
+
+create table test.acl_entry(
+    id bigserial primary key,
+    acl_object_identity bigint not null,
+    ace_order int not null,
+    sid bigint not null,
+    mask integer not null,
+    granting boolean not null,
+    audit_success boolean not null,
+    audit_failure boolean not null,
+    constraint unique_uk_4 unique(acl_object_identity,ace_order),
+    constraint foreign_fk_4 foreign key(acl_object_identity) references acl_object_identity(id),
+    constraint foreign_fk_5 foreign key(sid) references acl_sid(id)
+);
