@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import net.sf.ehcache.CacheManager;
+
 import org.lenzi.fstore.core.repository.security.model.impl.FsUserRole.Role;
 import org.lenzi.fstore.core.security.FsResourcePermissionEvaluator;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -15,8 +19,11 @@ import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.ehcache.EhCacheFactoryBean;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -26,6 +33,16 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
+import org.springframework.security.acls.AclPermissionEvaluator;
+import org.springframework.security.acls.domain.AclAuthorizationStrategy;
+import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
+import org.springframework.security.acls.domain.ConsoleAuditLogger;
+import org.springframework.security.acls.domain.EhCacheBasedAclCache;
+import org.springframework.security.acls.jdbc.BasicLookupStrategy;
+import org.springframework.security.acls.jdbc.JdbcMutableAclService;
+import org.springframework.security.acls.jdbc.LookupStrategy;
+import org.springframework.security.acls.model.PermissionGrantingStrategy;
+import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
@@ -33,8 +50,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
@@ -93,9 +110,81 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 	static class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 		
+		// the datasource we'll use for spring security acl. This is the same datasource we use
+		// in our PersistenceConfig.class for JPA & Hibernate.
+		@Autowired
+		@Qualifier("primaryDataSource")
+		private DataSource primaryDataSource;
+		
+		//@Autowired
+		//private JdbcMutableAclService mutableService;
+		
 		@Autowired
 		private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
+		
+		@Bean
+		public EhCacheBasedAclCache aclCache() {
+			
+		    EhCacheFactoryBean factoryBean = new EhCacheFactoryBean();
+		    EhCacheManagerFactoryBean cacheManager = new EhCacheManagerFactoryBean();
+		    
+			cacheManager.setAcceptExisting(true);
+			cacheManager.setCacheManagerName(CacheManager.getInstance().getName());
+			cacheManager.afterPropertiesSet();
+			
+			factoryBean.setName("aclCache");
+			factoryBean.setCacheManager(cacheManager.getObject());
+			factoryBean.setMaxBytesLocalHeap("16M");
+			factoryBean.setMaxEntriesLocalHeap(0L);
+			factoryBean.afterPropertiesSet();
+		    
+		    return new EhCacheBasedAclCache( factoryBean.getObject(), permissionGrantingStrategy(), aclAuthorizationStrategy());
+		    
+		}
+		
+		@Bean
+		public PermissionGrantingStrategy permissionGrantingStrategy(){
+			PermissionGrantingStrategy permissionGrantingStrategy = new DefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
+			return permissionGrantingStrategy;
+		}
+		
+		@Bean
+		public AclAuthorizationStrategy aclAuthorizationStrategy() {
+		    return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority( Role.ADMINISTRATOR.getRoleCode() ));
+		}
+		
+		@Bean
+		public LookupStrategy lookupStrategy() {
+		    return new BasicLookupStrategy(primaryDataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
+		}
+		
+		// for ingres
+		@Bean
+		@Profile("postgresql")
+		public JdbcMutableAclService aclServicePostgresql() {
+		    JdbcMutableAclService service = new JdbcMutableAclService(primaryDataSource, lookupStrategy(), aclCache());
+		    service.setClassIdentityQuery("select currval(pg_get_serial_sequence('acl_class', 'id'))");
+		    service.setSidIdentityQuery("select currval(pg_get_serial_sequence('acl_sid', 'id'))");
+		    return service;
+		}
+		
+		// for oracle
+		@Bean
+		@Profile("postgresql")
+		public JdbcMutableAclService aclServiceOracle() {
+		    JdbcMutableAclService service = new JdbcMutableAclService(primaryDataSource, lookupStrategy(), aclCache());
+		    // no mention of manually setting class identity and sid identity queries for oracle....just postgresql
+		    return service;
+		}
+		
+		@Override
+		protected MethodSecurityExpressionHandler createExpressionHandler() {
+		    DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		    expressionHandler.setPermissionEvaluator(new AclPermissionEvaluator(aclServicePostgresql()));
+		    return expressionHandler;
+		}
 
+		/*
 		@Override
 		protected MethodSecurityExpressionHandler createExpressionHandler() {
 			
@@ -104,6 +193,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			return expressionHandler;
 			
 		}
+		*/
 		
 	}
 	
@@ -119,29 +209,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		auth.userDetailsService(userDetailsService);
 		
-		// uses password encryption/encoding
-		//auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-		
-		/*
-		auth
-			.inMemoryAuthentication()
-			.withUser("lenzi").password("fubar").roles("ADMIN");
-		*/
-		
-		/*
-		 * http://www.mkyong.com/spring-security/spring-security-form-login-using-database/
-		 * 
-		  auth.jdbcAuthentication().dataSource(dataSource)
-			.usersByUsernameQuery(
-				"select username,password, enabled from users where username=?")
-			.authoritiesByUsernameQuery(
-				"select username, role from user_roles where username=?");		 
-		 */
-		
 	}
 	
-	
-
 	/**
 	 * Specify which paths spring security should ignore
 	 * 
@@ -181,13 +250,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}else{
 			System.err.println("Error, no autowired logger in " + SecurityConfig.class.getName());
 		}
-		
-		// spring security comes with a default login form. This can be overridden.
-		
-		//
-		// Restrict access to administration section to users who have 'ADMINISTRATOR' role.
-		//
-		//http.authorizeRequests().antMatchers("/administration/**").hasRole( Role.ADMINISTRATOR.getRoleCode() ).and().formLogin();
 		
 		// works
 		http.authorizeRequests()
@@ -272,82 +334,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			)			
 
 			.and().formLogin().loginPage("/spring/core/login").permitAll();
-		
-		/*
-		http.authorizeRequests()
-			
-			// start with open access
-			//.antMatchers("/").permitAll()
-			
-			
-			// administration section
-			.antMatchers(appContext + "/administration/**").hasRole(
-				Role.ADMINISTRATOR.getRoleCode()
-			
-			)
-			
-			.and().formLogin();
-				
-
-			// file manager		
-			).antMatchers(appContext + "/file/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),
-				Role.FILE_MANAGER_USER.getRoleCode(),
-				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode()
-			
-			// cms workplace
-			).antMatchers(appContext + "/cms/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),
-				Role.CMS_WORKPLACE_USER.getRoleCode(),
-				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()
-				
-			)
-			
-
-			// file upload handler (used in file manager and cms workplace sections)
-			).antMatchers(appContext + "/spring/file2/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),
-				Role.FILE_MANAGER_USER.getRoleCode(),
-				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
-				Role.CMS_WORKPLACE_USER.getRoleCode(),
-				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()
-			
-			// cms resource dispatcher
-			).antMatchers(appContext + "/spring/cms/**").hasAnyRole(
-				Role.USER.getRoleCode()			
-			
-			// jax-rs service for file resource stores
-			).antMatchers(appContext + "/cxf/resource/store/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),
-				Role.FILE_MANAGER_USER.getRoleCode(),
-				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
-				Role.CMS_WORKPLACE_USER.getRoleCode(),
-				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
-			
-			// jax-rs service for file data
-			).antMatchers(appContext + "/cxf/resource/file/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),
-				Role.FILE_MANAGER_USER.getRoleCode(),
-				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
-				Role.CMS_WORKPLACE_USER.getRoleCode(),
-				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
-			
-			// jax-rs service for directory data
-			).antMatchers(appContext + "/cxf/resource/directory/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),
-				Role.FILE_MANAGER_USER.getRoleCode(),
-				Role.FILE_MANAGER_ADMINISTRATOR.getRoleCode(),					
-				Role.CMS_WORKPLACE_USER.getRoleCode(),
-				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
-			
-			// jax-rs service for cms sites
-			).antMatchers(appContext + "/cxf/cms/site/**").hasAnyRole(
-				Role.ADMINISTRATOR.getRoleCode(),				
-				Role.CMS_WORKPLACE_USER.getRoleCode(),
-				Role.CMS_WORKPLACE_ADMINISTRATOR.getRoleCode()		
-			
-			)
-			*/
 		
 	}
 	
