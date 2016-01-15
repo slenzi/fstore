@@ -8,49 +8,25 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import net.sf.ehcache.CacheManager;
-
 import org.lenzi.fstore.core.repository.security.model.impl.FsUserRole.Role;
-import org.lenzi.fstore.core.security.FsResourcePermissionEvaluator;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.ehcache.EhCacheFactoryBean;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
-import org.springframework.security.acls.AclPermissionEvaluator;
-import org.springframework.security.acls.domain.AclAuthorizationStrategy;
-import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
-import org.springframework.security.acls.domain.ConsoleAuditLogger;
-import org.springframework.security.acls.domain.EhCacheBasedAclCache;
-import org.springframework.security.acls.jdbc.BasicLookupStrategy;
-import org.springframework.security.acls.jdbc.JdbcMutableAclService;
-import org.springframework.security.acls.jdbc.LookupStrategy;
-import org.springframework.security.acls.model.PermissionGrantingStrategy;
-import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
@@ -94,108 +70,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Autowired
 	private RoleHierarchyImpl roleHierarchy;
-	
-	/**
-	 * Enables method level security using Spring Security.
-	 * 
-	 * Allows us to annotate methods with the following annotation to control access.
-	 * 
-	 * @PreAuthorize("isAuthenticated() and hasPermission(#thingId, 'path.to.Thing', 'read')")
-	 * 
-	 * There are four possible annotations one can use, @PreAuthorize, @PreFilter, @PostAuthorize and @PostFilter.
-	 * 
-	 * @author sal
-	 */
-	@Configuration
-	@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-	static class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
-		
-		// the datasource we'll use for spring security acl. This is the same datasource we use
-		// in our PersistenceConfig.class for JPA & Hibernate.
-		@Autowired
-		@Qualifier("primaryDataSource")
-		private DataSource primaryDataSource;
-		
-		//@Autowired
-		//private JdbcMutableAclService mutableService;
-		
-		@Autowired
-		private FsResourcePermissionEvaluator fsResourcePermissionEvaluator;
-		
-		@Bean
-		public EhCacheBasedAclCache aclCache() {
-			
-		    EhCacheFactoryBean factoryBean = new EhCacheFactoryBean();
-		    EhCacheManagerFactoryBean cacheManager = new EhCacheManagerFactoryBean();
-		    
-			cacheManager.setAcceptExisting(true);
-			cacheManager.setCacheManagerName(CacheManager.getInstance().getName());
-			cacheManager.afterPropertiesSet();
-			
-			factoryBean.setName("aclCache");
-			factoryBean.setCacheManager(cacheManager.getObject());
-			factoryBean.setMaxBytesLocalHeap("16M");
-			factoryBean.setMaxEntriesLocalHeap(0L);
-			factoryBean.afterPropertiesSet();
-		    
-		    return new EhCacheBasedAclCache( factoryBean.getObject(), permissionGrantingStrategy(), aclAuthorizationStrategy());
-		    
-		}
-		
-		@Bean
-		public PermissionGrantingStrategy permissionGrantingStrategy(){
-			PermissionGrantingStrategy permissionGrantingStrategy = new DefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
-			return permissionGrantingStrategy;
-		}
-		
-		@Bean
-		public AclAuthorizationStrategy aclAuthorizationStrategy() {
-		    return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority( Role.ADMINISTRATOR.getRoleCode() ));
-		}
-		
-		@Bean
-		public LookupStrategy lookupStrategy() {
-		    return new BasicLookupStrategy(primaryDataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
-		}
-		
-		// for ingres
-		@Bean
-		@Profile("postgresql")
-		public JdbcMutableAclService aclServicePostgresql() {
-		    JdbcMutableAclService service = new JdbcMutableAclService(primaryDataSource, lookupStrategy(), aclCache());
-		    service.setClassIdentityQuery("select currval(pg_get_serial_sequence('acl_class', 'id'))");
-		    service.setSidIdentityQuery("select currval(pg_get_serial_sequence('acl_sid', 'id'))");
-		    return service;
-		}
-		
-		// for oracle
-		@Bean
-		@Profile("postgresql")
-		public JdbcMutableAclService aclServiceOracle() {
-		    JdbcMutableAclService service = new JdbcMutableAclService(primaryDataSource, lookupStrategy(), aclCache());
-		    // no mention of manually setting class identity and sid identity queries for oracle....just postgresql
-		    return service;
-		}
-		
-		@Override
-		protected MethodSecurityExpressionHandler createExpressionHandler() {
-		    DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-		    expressionHandler.setPermissionEvaluator(new AclPermissionEvaluator(aclServicePostgresql()));
-		    return expressionHandler;
-		}
-
-		/*
-		@Override
-		protected MethodSecurityExpressionHandler createExpressionHandler() {
-			
-			DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-			expressionHandler.setPermissionEvaluator( fsResourcePermissionEvaluator );
-			return expressionHandler;
-			
-		}
-		*/
-		
-	}
 	
 	public SecurityConfig() {
 		
