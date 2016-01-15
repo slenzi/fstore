@@ -8,6 +8,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.service.FsSecurityService;
+
 //used before upgrading to hibernate 5. now we use org.springframework.transaction.annotation.Transactional
 //import javax.transaction.Transactional;
 
@@ -57,6 +60,12 @@ public class FsUploadController extends AbstractSpringController {
     
     @Autowired
     private UploadMessageService uploadMessageService;
+    
+	//
+	// ACLs security
+	//
+	@Autowired
+	private FsSecurityService fsSecurityService;     
 
 	public FsUploadController() {
 		
@@ -79,6 +88,14 @@ public class FsUploadController extends AbstractSpringController {
 	private void processUpload(MultipartHttpServletRequest request, HttpServletResponse resp, ModelMap model) throws WebAppException {
 		
 		logger.info("Processing incoming HTTP upload");
+		
+		// see who is performing an upload
+		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		if(fsUser != null){
+			logger.info("User '" + fsUser.getUsername() + "' is submitting an HTTP upload");
+		}else{
+			logger.error("FsSecureUser is null.. cannot dermin who is is submitting an HTTP upload");
+		}			
 		
 		// get id of destination directory
 		String dirId = StringUtil.changeNull(request.getParameter("dirId")).trim();
