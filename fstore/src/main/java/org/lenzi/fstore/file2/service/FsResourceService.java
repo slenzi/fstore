@@ -10,7 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
+import org.lenzi.fstore.core.acls.service.FsAclService;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
+import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
@@ -103,6 +106,14 @@ public class FsResourceService {
 	private FsDirectoryResourceCopier fsDirectoryResourceCopier;
 	@Autowired
 	private FsDirectoryResourceMover fsDirectoryResourceMover;
+	
+	//
+	// ACLs security
+	//
+	@Autowired
+	private FsSecurityService fsSecurityService;
+	@Autowired
+	private FsAclService fsAclService;
 	
 	public FsResourceService() {
 		
@@ -452,6 +463,15 @@ public class FsResourceService {
 			throw new ServiceException("IO error adding file meta resource => " + fileToAdd.toString() + ", to directory, id => " + parentDirId, e);
 		}
 		
+		//TODO - upload pipeline uses this method to add the new file. Get current logged in user and add Spring ACL
+		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		if(fsUser != null){
+			logger.info("User '" + fsUser.getUsername() + "' added file " + fileToAdd.toString());
+			fsAclService.setDefaultPermission(FsFileMetaResource.class, fileResource.getFileId(), fsUser);
+		}else{
+			logger.error("FsSecureUser is null.. cannot set ACL permissions for " + fileResource.getName());
+		}
+		
 		return fileResource;
 		
 	}
@@ -548,6 +568,8 @@ public class FsResourceService {
 	 * @throws ServiceException
 	 */
 	public void removeDirectoryResource(Long dirId) throws ServiceException {
+		
+		logger.info(this.getClass().getName() + ".removeDirectoryResource(...) called");
 		
 		try {
 			fsDirectoryResourceRemover.removeDirectory(dirId);

@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -147,7 +148,21 @@ public class FsSecurityService {
 	 */
 	public FsSecureUser getLoggedInUser() {
 		
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		SecurityContext context = SecurityContextHolder.getContext();
+		if(context == null){
+			logError("Security context is null.",null);
+			return null;
+		}
+		Authentication auth = context.getAuthentication();
+		if(auth == null){
+			logError("Authentication is null",null);
+			return null;
+		}
+		Object principal = auth.getPrincipal();
+		if(principal == null){
+			logError("Object principal is null",null);
+			return null;
+		}
 		
 		FsSecureUser user = null;
 		
@@ -170,7 +185,7 @@ public class FsSecurityService {
 		if(logger != null){
 			logger.error(message, t);
 		}else{
-			System.err.println("> " + message + " " + t.getMessage());
+			System.err.println("> " + message + ((t != null) ? " " + t.getMessage() : ""));
 		}
 	}	
 
