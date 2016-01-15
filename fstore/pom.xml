@@ -56,7 +56,9 @@
 		<version.spring>4.2.2.RELEASE</version.spring> <!-- was 4.1.7.RELEASE 10/29/2015 -->
 		<version.spring.security>4.0.3.RELEASE</version.spring.security>
 		
-		<version.hibernate>5.0.2.Final</version.hibernate> <!-- was 4.3.10.Final 10/29/2015 -->
+		<!-- was 4.3.10.Final 10/29/2015 -->
+		<!-- was 5.0.2.Final 1/15/2016 -->
+		<version.hibernate>5.0.7.Final</version.hibernate>
 		<!-- not sure if hibernate jpa is needed -->
 		<version.hibernate.jpa>1.0.0.Final</version.hibernate.jpa>
 		

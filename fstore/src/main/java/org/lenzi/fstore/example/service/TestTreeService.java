@@ -35,6 +35,9 @@ public class TestTreeService {
 	@InjectLogger
 	private Logger logger;
 	
+	/**
+	 * @see org.lenzi.fstore.example.repository.tree.TestTreeRepository
+	 */
 	@Autowired
 	@Qualifier("testNodeTree")
 	private TreeRepository<FSTestNode> treeRepository;	
