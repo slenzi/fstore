@@ -1400,7 +1400,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			} catch (DatabaseException e) {
 				throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(), e);
 			}
-			logger.info("Added list of nodes to delete to prune table under prune id " + pruneId);
+			
+			logger.info("Added list of nodes to delete to prune table under prune id => " + pruneId + ", node id => " + deleteNodeId);
 			
 		}
 		
@@ -1420,7 +1421,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			// TODO = we can get this data from the 'treeToDelete' object.... redundant. 
 			userNodesToDelete = doCriteriaDeleteNode(node, false);
 			
-			logger.debug("Deleted node " + deleteNodeId + " from the node table.");
+			logger.info("Deleted node " + deleteNodeId + " from the node table.");
 			
 		}
 		
@@ -1435,7 +1436,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			} catch (DatabaseException e) {
 				throw new DatabaseException("Failed to remove node " + deleteNodeId + ", plus all children links, from FS_CLOSURE. " +  e.getMessage(), e);
 			}
-			logger.debug("Deleted node " + deleteNodeId + " from the closure table.");
+			logger.info("Deleted node " + deleteNodeId + " from the closure table.");
 			
 		}
 		
@@ -1548,6 +1549,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 */
 	private List<N> doCriteriaDeleteNode(N node, boolean childrenOnly) throws DatabaseException {
 		
+		logger.info(this.getClass().getName() + ".doCriteriaDeleteNode(...) called. Node id => " + node.getNodeId() + ", childrenOnly => " + childrenOnly);
+		
 		List<Long> nodeIdList = getNodeIdList(node, childrenOnly);
 		
 		if(CollectionUtil.isEmpty(nodeIdList)){
@@ -1560,6 +1563,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			throw new DatabaseException("Failed to get " + ((childrenOnly) ? "child" : "") + " node data in preparation for deletion. Cannot delete");
 		}
 		
+		logger.info(this.getClass().getName() + ".doCriteriaDeleteNode(...) deleting " + userNodesToDelete.size() + " nodes.");
+		
 		// create delete query which uses the list of child node ID we just retrieved.
 		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 		CriteriaDelete criteriaDelete = criteriaBuilder.createCriteriaDelete(node.getClass());
@@ -1569,6 +1574,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			);
 		
 		getEntityManager().createQuery(criteriaDelete).executeUpdate();
+		
+		logger.info(this.getClass().getName() + ".doCriteriaDeleteNode(...) done");
 		
 		return userNodesToDelete;
 		
@@ -1586,6 +1593,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @throws DatabaseException
 	 */
 	public List<Long> getNodeIdList(N node, boolean onlyChildren) throws DatabaseException {
+		
+		logger.info(this.getClass().getName() + ".getNodeIdList(...) called ");
 		
 		Long nodeId = node.getNodeId();
 		List<Long> nodeIdList = null;
@@ -1722,6 +1731,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @throws DatabaseException
 	 */
 	private N getNodeWithChildClosureHql(N node) throws DatabaseException {
+		
+		logger.info(this.getClass().getName() + ".getNodeWithChildClosureHql(...) called. Node id => " + node.getNodeId());
 		
 		String selectQuery =
 				"select distinct r from " + node.getClass().getName() + " as r " +
@@ -2025,6 +2036,8 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	 * @throws DatabaseException
 	 */
 	private List<N> getNodesCriteria(List<Long> nodeIdList, Class c) throws DatabaseException {
+		
+		logger.info(this.getClass().getName() + ".getNodesCriteria(...) called ");
 		
 		List<N> nodeList = null;
 		
