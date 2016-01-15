@@ -36,7 +36,8 @@ public class OracleConcurrentAddTest extends AbstractConcurrentAdd {
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/concurrent/sample_store";
+		//return "C:/temp/file_store/concurrent/sample_store";
+		return getProperty("test.store.test_concurrent_add");
 		
 	}
 

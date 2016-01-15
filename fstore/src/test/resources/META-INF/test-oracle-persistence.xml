@@ -37,16 +37,16 @@
     
         <properties>
         	
-        	<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+        	<property name="hibernate.dialect" value="@test.hibernate.dialect@"/>
         	<!--
         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
         	-->
-            <property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver"/>
-            <property name="hibernate.connection.username" value="ecoguser"/>
-            <property name="hibernate.connection.password" value="ecogweb"/>
+            <property name="hibernate.connection.driver_class" value="@test.hibernate.driver@"/>
+            <property name="hibernate.connection.username" value="@test.database.user@"/>
+            <property name="hibernate.connection.password" value="@test.database.password@"/>
             <!-- specify default schema so you don't have to hard code schema on each entity  -->
-            <property name="hibernate.default_schema" value="ecoguser"/>
-            <property name="hibernate.connection.url" value="jdbc:oracle:thin:@ecog1.dfci.harvard.edu:1511:ecogtst"/>
+            <property name="hibernate.default_schema" value="@hibernate.default_schema@"/>
+            <property name="hibernate.connection.url" value="@test.database.url@"/>
             
             <!-- Turn off autodetection of class and hbm files (default to class,hbm) -->
             <!--
@@ -56,12 +56,12 @@
             <!-- 
             Needed for oracle. meta data is not supported!
             -->
-            <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+            <property name="hibernate.temp.use_jdbc_metadata_defaults" value="@test.hibernate.temp.use_jdbc_metadata_defaults@"/>
             
-            <property name="hibernate.show_sql" value="false"/>
-            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.show_sql" value="@test.hibernate.show_sql@"/>
+            <property name="hibernate.format_sql" value="@test.hibernate.format_sql@"/>
             
-            <property name="hibernate.jdbc.batch_size" value="25"/>
+            <property name="hibernate.jdbc.batch_size" value="@test.hibernate.jdbc.batch_size@"/>
                  
         </properties>
         

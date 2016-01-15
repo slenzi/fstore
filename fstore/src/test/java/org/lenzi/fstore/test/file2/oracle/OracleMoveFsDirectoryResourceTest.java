@@ -42,7 +42,8 @@ public class OracleMoveFsDirectoryResourceTest extends AbstractMoveFsDirectoryRe
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_resource_store_move_directory";
+		//return "C:/temp/file_store/sample_resource_store_move_directory";
+		return getProperty("test.store.test_move_dir");
 		
 	}
 

@@ -42,7 +42,8 @@ public class OracleAddFsFileResourceTest extends AbstractAddFsFileResource {
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_resource_store_add_file";
+		//return "C:/temp/file_store/sample_resource_store_add_file";
+		return getProperty("test.store.test_add_file");
 		
 	}
 

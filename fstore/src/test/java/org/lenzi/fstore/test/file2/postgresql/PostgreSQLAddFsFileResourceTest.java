@@ -42,8 +42,8 @@ public class PostgreSQLAddFsFileResourceTest extends AbstractAddFsFileResource {
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_add_file";
-		
+		//return "/Users/slenzi/Programming/file_store/sample_resource_store_add_file";
+		return getProperty("test.store.test_add_file");
 	}
 
 	@Test

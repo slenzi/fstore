@@ -42,7 +42,8 @@ public class OracleRemoveFsFileResourceTest extends AbstractRemoveFsFileResource
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_resource_store_remove_file";
+		//return "C:/temp/file_store/sample_resource_store_remove_file";
+		return getProperty("test.store.test_remove_file");
 		
 	}
 

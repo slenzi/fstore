@@ -42,7 +42,8 @@ public class OracleCopyFsDirectoryResourceTest extends AbstractCopyFsDirectoryRe
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_resource_store_copy_directory";
+		//return "C:/temp/file_store/sample_resource_store_copy_directory";
+		return getProperty("test.store.test_copy_dir");
 		
 	}
 

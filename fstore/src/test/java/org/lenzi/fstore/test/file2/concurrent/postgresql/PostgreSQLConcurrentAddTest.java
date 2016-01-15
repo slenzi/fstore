@@ -36,7 +36,8 @@ public class PostgreSQLConcurrentAddTest extends AbstractConcurrentAdd {
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/concurrent/sample_store";
+		//return "/Users/slenzi/Programming/file_store/concurrent/sample_store";
+		return getProperty("test.store.test_concurrent_add");
 		
 	}
 

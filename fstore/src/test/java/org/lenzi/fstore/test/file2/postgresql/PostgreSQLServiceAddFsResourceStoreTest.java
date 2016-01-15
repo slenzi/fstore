@@ -42,8 +42,8 @@ public class PostgreSQLServiceAddFsResourceStoreTest extends AbstractServiceAddF
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_from_service";
-		
+		//return "/Users/slenzi/Programming/file_store/sample_resource_store_from_service";
+		return getProperty("test.store.test_service_add_store");
 	}
 
 	@Test

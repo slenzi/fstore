@@ -42,7 +42,8 @@ public class OracleAddFsFileResourceBulkTest extends AbstractAddFsFileResourceBu
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_resource_store_add_bulk_file";
+		//return "C:/temp/file_store/sample_resource_store_add_bulk_file";
+		return getProperty("test.store.test_add_file_bulk");
 		
 	}
 

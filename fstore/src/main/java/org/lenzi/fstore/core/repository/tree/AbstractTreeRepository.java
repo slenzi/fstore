@@ -1302,7 +1302,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 	@Override
 	public void removeNode(N node) throws DatabaseException {
 		
-		logger.debug("remove node " + node.getNodeId());
+		logger.info("remove node: id => " + node.getNodeId() + ", name => " + node.getName());
 		
 		//if(node.getParentNodeId() == 0L){
 		//	throw new DatabaseException("Cannot remove root node of tree. Use removeTree() method.");
@@ -1380,7 +1380,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 		
 		Long deleteNodeId = node.getNodeId();
 		
-		logger.debug("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
+		logger.info("remove node " + deleteNodeId + ", nodeTable => " + nodeTable + ", pruneTable => " + pruneTable);
 		
 		long pruneId = 0;
 		N rootDeleteNode = null;
@@ -1400,7 +1400,7 @@ public abstract class AbstractTreeRepository<N extends FSNode<N>> extends Abstra
 			} catch (DatabaseException e) {
 				throw new DatabaseException("Failed populate prune table with list of nodes to delete. " +  e.getMessage(), e);
 			}
-			logger.debug("Added list of nodes to delete to prune table under prune id " + pruneId);
+			logger.info("Added list of nodes to delete to prune table under prune id " + pruneId);
 			
 		}
 		

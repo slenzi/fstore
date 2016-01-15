@@ -187,7 +187,8 @@ public abstract class AbstractRemoveFsDirectoryResource extends AbstractTreeTest
 			logger.info("File was added at => " + filePath.toString());
 		});
 		
-		logger.info("Peforming remove directory test...");
+		logger.info("Peforming remove directory test. Removing directory: id => " + 
+				dirResource2.getDirId() + ", name => " + dirResource2.getName());
 		
 		try {
 			fsResourceService.removeDirectoryResource(dirResource2.getDirId());

@@ -42,7 +42,8 @@ public class PostgreSQLAddFsDirectoryResourceTest extends AbstractAddFsDirectory
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_add_dir";
+		//return "/Users/slenzi/Programming/file_store/sample_resource_store_add_dir";
+		return getProperty("test.store.test_add_dir");
 		
 	}
 

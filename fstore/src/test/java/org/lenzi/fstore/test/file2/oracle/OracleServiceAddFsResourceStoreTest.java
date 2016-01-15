@@ -42,7 +42,8 @@ public class OracleServiceAddFsResourceStoreTest extends AbstractServiceAddFsRes
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_resource_store_from_service";
+		//return "C:/temp/file_store/sample_resource_store_from_service";
+		return getProperty("test.store.test_service_add_store");
 		
 	}
 

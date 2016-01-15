@@ -410,7 +410,7 @@
 			<filter>${property.file}</filter>
 		</filters>
 		
-		<!-- define resources that will be filtered -->
+		<!-- define src/main/resources to filter  -->
 		<resources>
 		
 			<!-- filter java, xml, and properties files from main source folder -->
@@ -456,6 +456,20 @@
 			-->
 				
 		</resources>
+		
+		<!-- define src/test/resources to filter  -->
+		<testResources>
+		
+			<testResource>
+				<directory>${basedir}/src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>			
+			</testResource>
+		
+		</testResources>
 		
 		<plugins>
 		

@@ -107,7 +107,7 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 						
 						FsPathResource resourceToDelete = treeNode.getData();
 						
-						//logger.info("Deleting path resource " + ", id => " + resourceToDelete.getNodeId() + ", name => " + resourceToDelete.getName() + ", type => " + resourceToDelete.getPathType().getType());
+						logger.info("Deleting path resource " + ", id => " + resourceToDelete.getNodeId() + ", name => " + resourceToDelete.getName() + ", type => " + resourceToDelete.getPathType().getType());
 						
 						try {
 							
@@ -119,7 +119,7 @@ public class FsDirectoryResourceRemover extends AbstractRepository {
 							}else if(resourceToDelete.getPathType().equals(FsPathType.FILE)){
 								
 								// remove file
-								this.removeFileResource(resourceToDelete, fsStore);
+								removeFileResource(resourceToDelete, fsStore);
 								
 							}else{
 								
