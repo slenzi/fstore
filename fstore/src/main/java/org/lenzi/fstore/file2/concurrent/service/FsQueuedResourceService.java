@@ -705,11 +705,14 @@ public class FsQueuedResourceService {
 	 */
 	public void removeDirectoryResourceList(List<Long> dirIdList) throws ServiceException {
 		
+		logger.info(this.getClass().getCanonicalName() + ".removeDirectoryResourceList(...) called.");
+		
 		class Task extends AbstractFsTask<Void> {
 
 			@Override
 			public Void doWork() throws ServiceException {
 				for(Long dirId : dirIdList){
+					logger.info("Removing dir with id => " + dirId);
 					fsResourceService.removeDirectoryResource(dirId);
 				}
 				return null;

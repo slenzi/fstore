@@ -178,6 +178,8 @@ public class FsQueuedTaskManager implements FsTaskManager {
 		
 		try {
 		
+			logger.info(this.getClass().getName() + ".addTask(...) called");
+			
 			queue.put(task);
 
 			//logger.info("Task was queued, id => " + task.getTaskId() + ", name => " + task.getClass().getName() + 
