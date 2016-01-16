@@ -22,6 +22,7 @@ import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.service.FsResourceService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,9 +64,13 @@ public class FsQueuedResourceService {
 		
 		taskExecutorService = Executors.newSingleThreadExecutor();
 		
+		// allows us to get access to the spring security context on other thread pools
+		//DelegatingSecurityContextExecutorService securityContextTaskExecutorService = new DelegatingSecurityContextExecutorService(taskExecutorService);
+		
 		taskManager.setManagerName("Queued Resource Service");
 		
 		taskManager.startTaskManager(taskExecutorService);
+		//taskManager.startTaskManager(securityContextTaskExecutorService);
 		
 		logger.info("Startup complete.");
 		

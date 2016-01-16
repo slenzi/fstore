@@ -27,6 +27,7 @@ import javax.annotation.PreDestroy;
 
 
 
+
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CodeTimer;
@@ -41,6 +42,7 @@ import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -115,9 +117,14 @@ public class FsUploadPipeline {
 		addFileTaskManager.setManagerName("Upload Pipeline: Add File Task Manager");
 		updateFileTaskManager.setManagerName("Upload Pipeline: Update File Task Manager");
 		
+		// allows us to get access to the spring security context on other thread pools
+		//DelegatingSecurityContextExecutorService addFilesecurityContextExecutor = new DelegatingSecurityContextExecutorService(addFileExecutorService);
+		
 		addFileTaskManager.startTaskManager(addFileExecutorService);
+		//addFileTaskManager.startTaskManager(addFilesecurityContextExecutor);
 		
 		updateFileTaskManager.startTaskManager(updateFileExecutorService);
+		
 		
 		logger.info(FsUploadPipeline.class.getName() + " post construct initialization complete!.");
 		

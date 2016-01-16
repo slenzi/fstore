@@ -92,7 +92,7 @@ public class FsUploadController extends AbstractSpringController {
 		// see who is performing an upload
 		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
 		if(fsUser != null){
-			logger.info("User '" + fsUser.getUsername() + "' is submitting an HTTP upload");
+			logger.info("User [id='" + fsUser.getFsUser().getUserId() + "', name='" + fsUser.getUsername() + "'] is submitting an HTTP upload");
 		}else{
 			logger.error("FsSecureUser is null.. cannot dermin who is is submitting an HTTP upload");
 		}			
