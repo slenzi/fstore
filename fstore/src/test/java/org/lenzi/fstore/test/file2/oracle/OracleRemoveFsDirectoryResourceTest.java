@@ -42,7 +42,8 @@ public class OracleRemoveFsDirectoryResourceTest extends AbstractRemoveFsDirecto
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/sample_resource_store_remove_directory";
+		//return "C:/temp/file_store/sample_resource_store_remove_directory";
+		return getProperty("test.store.test_remove_directory");
 		
 	}
 

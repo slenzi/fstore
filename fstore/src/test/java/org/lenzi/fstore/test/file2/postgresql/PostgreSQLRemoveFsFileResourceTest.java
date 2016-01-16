@@ -42,8 +42,8 @@ public class PostgreSQLRemoveFsFileResourceTest extends AbstractRemoveFsFileReso
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_remove_file";
-		
+		//return "/Users/slenzi/Programming/file_store/sample_resource_store_remove_file";
+		return getProperty("test.store.test_remove_file");
 	}
 
 	@Test

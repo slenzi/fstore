@@ -43,8 +43,8 @@ public class PostgreSQLDirectoryTreeTest extends AbstractDirectoryTreeTest {
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/directory_tree_test";
-		
+		//return "/Users/slenzi/Programming/file_store/directory_tree_test";
+		return getProperty("test.store.test_tree");
 	}
 
 	@Test

@@ -42,8 +42,8 @@ public class PostgreSQLCopyFsFileResourceTest extends AbstractCopyFsFileResource
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_copy_file";
-		
+		//return "/Users/slenzi/Programming/file_store/sample_resource_store_copy_file";
+		return getProperty("test.store.test_copy_file");
 	}
 
 	@Test

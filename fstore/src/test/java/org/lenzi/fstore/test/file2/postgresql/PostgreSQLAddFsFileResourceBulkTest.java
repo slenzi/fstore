@@ -42,8 +42,8 @@ public class PostgreSQLAddFsFileResourceBulkTest extends AbstractAddFsFileResour
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_add_file_bulk";
-		
+		//return "/Users/slenzi/Programming/file_store/sample_resource_store_add_file_bulk";
+		return getProperty("test.store.test_add_file_bulk");
 	}
 
 	@Test

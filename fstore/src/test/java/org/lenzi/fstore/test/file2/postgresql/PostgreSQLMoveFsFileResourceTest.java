@@ -42,8 +42,8 @@ public class PostgreSQLMoveFsFileResourceTest extends AbstractMoveFsFileResource
 	@Override
 	public String getTestStorePath() {
 		
-		return "/Users/slenzi/Programming/file_store/sample_resource_store_move_file";
-		
+		//return "/Users/slenzi/Programming/file_store/sample_resource_store_move_file";
+		return getProperty("test.store.test_move_file");
 	}
 
 	@Test

@@ -42,7 +42,8 @@ public class OracleDirectoryTreeTest extends AbstractDirectoryTreeTest {
 	@Override
 	public String getTestStorePath() {
 		
-		return "C:/temp/file_store/directory_tree_test";
+		//return "C:/temp/file_store/directory_tree_test";
+		return getProperty("test.store.test_tree");
 		
 	}
 

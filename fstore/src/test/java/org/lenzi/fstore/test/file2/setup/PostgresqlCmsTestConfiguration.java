@@ -40,7 +40,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
  */
 @Configuration
 @EnableWebSocketMessageBroker
-@PropertySource("classpath:my.application.test.postgresql.properties")
+@PropertySource("classpath:my.application.test.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
 		basePackages={

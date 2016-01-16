@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.cxf.attachment.ContentDisposition;
+import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.FsFile;
@@ -61,6 +63,12 @@ public class FileResource extends AbstractResource {
     
     @Autowired
     private FsUploadService fsUploadService;
+    
+	//
+	// ACLs security
+	//
+	@Autowired
+	private FsSecurityService fsSecurityService;    
 	
 	public FileResource() {
 		
@@ -225,6 +233,14 @@ public class FileResource extends AbstractResource {
 	public Response getFile(@PathParam("fileId") Long fileId) throws WebServiceException {
 		
 		logger.info(FileResource.class.getName() + " jax-rs service called, download file, fileId = " + fileId);
+		
+		// see who is asking for the file...see if they have permission
+		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		if(fsUser != null){
+			logger.info("User '" + fsUser.getUsername() + "' is requesting file, file id =>  " + fileId);
+		}else{
+			logger.error("FsSecureUser is null.. cannot dermin who is request file, file id => " + fileId);
+		}		
 		
 		// TODO - stream file from database rather than loading entire file into memory / byte[]
 		

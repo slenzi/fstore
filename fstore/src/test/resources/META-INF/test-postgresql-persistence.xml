@@ -37,16 +37,16 @@
     
         <properties>
         
-        	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        	<property name="hibernate.dialect" value="@test.hibernate.dialect@"/>
         	<!--
         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
         	-->
-            <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-            <property name="hibernate.connection.username" value="slenzi"/>
-            <property name="hibernate.connection.password" value=""/>
+            <property name="hibernate.connection.driver_class" value="@test.hibernate.driver@"/>
+            <property name="hibernate.connection.username" value="@test.database.user@"/>
+            <property name="hibernate.connection.password" value="@test.database.password@"/>
             <!-- specify default schema so you don't have to hard code schema on each entity  -->
-            <property name="hibernate.default_schema" value="test"/>
-            <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/testdb"/>
+            <property name="hibernate.default_schema" value="@test.hibernate.default_schema@"/>
+            <property name="hibernate.connection.url" value="@test.database.url@"/>
 
             <!-- Turn off autodetection of class and hbm files (default to class,hbm) -->
             <!--
@@ -54,10 +54,10 @@
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             -->
           
-            <property name="hibernate.show_sql" value="false"/>
-            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.show_sql" value="@test.hibernate.show_sql@"/>
+            <property name="hibernate.format_sql" value="@test.hibernate.format_sql@"/>
             
-            <property name="hibernate.jdbc.batch_size" value="25"/>
+            <property name="hibernate.jdbc.batch_size" value="@test.hibernate.jdbc.batch_size@"/>
                  
         </properties>        
         

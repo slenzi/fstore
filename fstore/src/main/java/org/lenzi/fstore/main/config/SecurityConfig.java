@@ -353,9 +353,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		if(logger != null){
 			logger.error(message, t);
 		}else{
-			System.err.println("> " + message + " " + t.getMessage());
+			System.err.println("> " + message + ((t != null) ? " " + t.getMessage() : ""));
 		}
 	}	
-
 
 }

@@ -32,7 +32,7 @@
 			dateUpdated: 'Loading...'
 		});
 		var myFsUploader = new FsFileUploader({
-			url: appConstants.httpUploadHandler
+			url: appConstants.httpUploadHandler + '?_csrf=' + getContentByMetaTagName('_csrf')
         });
 		var myStomp;
 		
