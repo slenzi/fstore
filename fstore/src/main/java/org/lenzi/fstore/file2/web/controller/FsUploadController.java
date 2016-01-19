@@ -91,11 +91,10 @@ public class FsUploadController extends AbstractSpringController {
 		
 		// see who is performing an upload
 		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
-		if(fsUser != null){
-			logger.info("User [id='" + fsUser.getFsUser().getUserId() + "', name='" + fsUser.getUsername() + "'] is submitting an HTTP upload");
-		}else{
-			logger.error("FsSecureUser is null.. cannot dermin who is is submitting an HTTP upload");
-		}			
+		if(fsUser == null){
+			throw new WebAppException("FsSecureUser is null. Cannot determine who is submitting an HTTP upload. Check security setup.");
+		}
+		logger.info("User [id='" + fsUser.getFsUser().getUserId() + "', name='" + fsUser.getUsername() + "'] is submitting an HTTP upload");	
 		
 		// get id of destination directory
 		String dirId = StringUtil.changeNull(request.getParameter("dirId")).trim();

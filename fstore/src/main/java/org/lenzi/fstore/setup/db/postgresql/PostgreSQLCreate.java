@@ -195,6 +195,39 @@ public class PostgreSQLCreate {
 	
 	/***********************************************************************************
 	 * 
+	 * Upload log specific tables
+	 * 
+	 */
+	private String SQL_DROP_TABLE_FS_UPLOAD_LOG =
+		"drop table " + SCHEMA + "FS_UPLOAD_LOG";	
+	private String SQL_CREATE_TABLE_FS_UPLOAD_LOG =	
+		"create table " + SCHEMA + "FS_UPLOAD_LOG ( " +
+		"	UPLD_ID NUMERIC(15,0) NOT NULL, " +
+		"	UPLD_DATE TIMESTAMP NOT NULL, " +
+		"	UPLD_TEMP_PATH CHARACTER VARYING(2000) NOT NULL, " +
+		"	UPLD_USER_ID NUMERIC(15,0) NOT NULL, " +
+		"	UPLD_NODE_ID NUMERIC(15,0) NOT NULL, " +
+		"	PRIMARY KEY (UPLD_ID)  " +
+		")";
+	private String SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE =
+		"drop table " + SCHEMA + "FS_UPLOAD_LOG_RESOURCE";	
+	private String SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE =		
+		"create table " + SCHEMA + "FS_UPLOAD_LOG_RESOURCE (  " +
+		"	UPLD_RESOURCE_ID NUMERIC(15,0) NOT NULL, " +
+		"	UPLD_RESOURCE_NAME CHARACTER VARYING(250) NOT NULL, " +
+		"	PRIMARY KEY (UPLD_RESOURCE_ID)  " +
+		")";
+	private String SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK =
+		"drop table " + SCHEMA + "FS_UPLOAD_LOG_RESOURCE_LINK";	
+	private String SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK =		
+		"create table " + SCHEMA + "FS_UPLOAD_LOG_RESOURCE_LINK (  " +
+		"	UPLD_ID NUMERIC(15,0) NOT NULL, " +
+		"	UPLD_RESOURCE_ID NUMERIC(15,0) NOT NULL, " +
+		"	PRIMARY KEY (UPLD_ID,UPLD_RESOURCE_ID)  " +
+		")";
+	
+	/***********************************************************************************
+	 * 
 	 * CMS tables
 	 * 
 	 */
@@ -345,7 +378,24 @@ public class PostgreSQLCreate {
 		"INCREMENT BY 1 " +
 		"START WITH 8 " +
 		"CACHE 10  " +
-		"NO CYCLE";			
+		"NO CYCLE";
+	
+	private String SQL_DROP_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE =
+		"drop sequence " + SCHEMA + "FS_UPLD_LOG_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE =	
+		"CREATE SEQUENCE TEST.FS_UPLD_LOG_ID_SEQUENCE " +
+		"INCREMENT BY 1 " +
+		"START WITH 1  " +
+		"CACHE 10   " +
+		"NO CYCLE";
+	private String SQL_DROP_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE =
+		"drop sequence " + SCHEMA + "FS_UPLD_LOG_RES_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE =
+		"CREATE SEQUENCE TEST.FS_UPLD_LOG_RES_ID_SEQUENCE " +  
+		"INCREMENT BY 1  " +
+		"START WITH 1  " +
+		"CACHE 10   " +
+		"NO CYCLE";	
 	
 	private String[] DEFAULT_DATA = new String[]{
 			
@@ -441,7 +491,9 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_CMS_SITE_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
-		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();		
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE).executeUpdate();
 		
 		// core tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
@@ -463,6 +515,11 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_FILE_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();	
+		
+		// upload log tables
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_UPLOAD_LOG).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK).executeUpdate();
 		
 		// cms tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_SITE).executeUpdate();
@@ -508,6 +565,11 @@ public class PostgreSQLCreate {
 		// test tables
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
 		
+		// upload log tables
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_UPLOAD_LOG).executeUpdate();
+		
 		// file 2 tables	
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
@@ -537,6 +599,8 @@ public class PostgreSQLCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE).executeUpdate();
 		
 		// drop spring security acl tables
 		for(String aclQuery : SPRING_SECURITY_ACL_DROP){

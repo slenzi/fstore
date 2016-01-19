@@ -195,6 +195,39 @@ public class OracleCreate {
 	
 	/***********************************************************************************
 	 * 
+	 * Upload log specific tables
+	 * 
+	 */
+	private String SQL_DROP_TABLE_FS_UPLOAD_LOG =
+		"drop table FS_UPLOAD_LOG";	
+	private String SQL_CREATE_TABLE_FS_UPLOAD_LOG =	
+		"create table FS_UPLOAD_LOG ( " + 
+		"	UPLD_ID NUMBER(15,0) NOT NULL, " +
+		"	UPLD_DATE date NOT NULL, " +
+		"	UPLD_TEMP_PATH VARCHAR2(2000) NOT NULL, " +
+		"	UPLD_USER_ID NUMBER(15,0) NOT NULL, " +
+		"	UPLD_NODE_ID NUMBER(15,0) NOT NULL, " +
+		"	PRIMARY KEY (UPLD_ID) " +
+		")";
+	private String SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE =
+		"drop table FS_UPLOAD_LOG_RESOURCE";	
+	private String SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE =		
+		"create table FS_UPLOAD_LOG_RESOURCE (  " +
+		"	UPLD_RESOURCE_ID NUMBER(15,0) NOT NULL, " +
+		"	UPLD_RESOURCE_NAME VARCHAR2(2000) NOT NULL, " +
+		"	PRIMARY KEY (UPLD_RESOURCE_ID)  " +
+		")";
+	private String SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK =
+		"drop table FS_UPLOAD_LOG_RESOURCE_LINK";	
+	private String SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK =		
+		"create table FS_UPLOAD_LOG_RESOURCE_LINK ( " + 
+		"	UPLD_ID NUMBER(15,0) NOT NULL, " +
+		"	UPLD_RESOURCE_ID NUMBER(15,0) NOT NULL, " +
+		"	PRIMARY KEY (UPLD_ID,UPLD_RESOURCE_ID)  " +
+		")";	
+	
+	/***********************************************************************************
+	 * 
 	 * CMS tables
 	 * 
 	 */
@@ -377,6 +410,30 @@ public class OracleCreate {
 		"ORDER  " +
 		"NOCYCLE";
 	
+	private String SQL_DROP_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE =
+		"drop sequence FS_UPLD_LOG_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE =
+		"CREATE SEQUENCE FS_UPLD_LOG_ID_SEQUENCE " + 
+		"MINVALUE 1 " +
+		"MAXVALUE 999999999999999999999999999 " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"ORDER  " +
+		"NOCYCLE";
+	
+	private String SQL_DROP_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE =
+		"drop sequence FS_UPLD_LOG_RES_ID_SEQUENCE";	
+	private String SQL_CREATE_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE =
+		"CREATE SEQUENCE FS_UPLD_LOG_RES_ID_SEQUENCE " + 
+		"MINVALUE 1 " +
+		"MAXVALUE 999999999999999999999999999 " + 
+		"INCREMENT BY 1 " +
+		"START WITH 1 " +
+		"CACHE 10  " +
+		"ORDER  " +
+		"NOCYCLE";		
+	
 	private String[] DEFAULT_DATA = new String[]{
 			
 		"INSERT INTO FS_USER (USER_ID, USERNAME, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, PRIMARY_EMAIL) VALUES (1, 'admin', 'admin', 'admin_first', 'admin_middle', 'admin_last', 'admin@your.domain.com')",
@@ -516,6 +573,8 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE).executeUpdate();		
 		
 		// core tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_PRUNE).executeUpdate();
@@ -538,6 +597,11 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_DIRECTORY_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_RESOURCE_STORE).executeUpdate();	
 		
+		// upload log tables
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_UPLOAD_LOG).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK).executeUpdate();
+
 		// cms tables
 		entityManager.createNativeQuery(SQL_CREATE_TABLE_FS_CMS_SITE).executeUpdate();
 		
@@ -582,6 +646,11 @@ public class OracleCreate {
 		// test tables
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_TEST_NODE).executeUpdate();
 		
+		// upload log tables
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE_LINK).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_UPLOAD_LOG_RESOURCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_UPLOAD_LOG).executeUpdate();		
+		
 		// file 2 tables	
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_PATH_RESOURCE).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_TABLE_FS_FILE_META_RESOURCE).executeUpdate();
@@ -611,7 +680,9 @@ public class OracleCreate {
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_GROUP_ID).executeUpdate();
 		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_USER_ROLE_ID).executeUpdate();
-		
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_UPLD_LOG_ID_SEQUENCE).executeUpdate();
+		entityManager.createNativeQuery(SQL_DROP_SEQUENCE_FS_UPLD_LOG_RES_ID_SEQUENCE).executeUpdate();
+
 		// drop spring security acl tables
 		for(String aclQuery : SPRING_SECURITY_ACL_DROP){
 			entityManager.createNativeQuery(aclQuery).executeUpdate();
