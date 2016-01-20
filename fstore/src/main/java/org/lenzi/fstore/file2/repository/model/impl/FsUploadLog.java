@@ -19,8 +19,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
+ * Upload log entry meta data. See FsUploadLogResource for file specific data that's logged.
+ * 
  * @author sal
- *
  */
 @Entity
 @Table(name="FS_UPLOAD_LOG")

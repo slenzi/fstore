@@ -463,8 +463,13 @@ public class FsResourceService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsFileMetaResource addFileResourceMeta(Path fileToAdd, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	public FsFileMetaResource addFileResourceMeta(Long userId, Path fileToAdd, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
+		if(userId == null || userId <= 0L){
+			throw new ServiceException("Error adding file resource meta. User ID is null, or not set.");
+		}
+		
+		// add meta data to database
 		FsFileMetaResource fileResource = null;
 		try {
 			fileResource = fsFileResourceAdder.addFileResourceMeta(fileToAdd, parentDirId, replaceExisting);
@@ -474,14 +479,8 @@ public class FsResourceService {
 			throw new ServiceException("IO error adding file meta resource => " + fileToAdd.toString() + ", to directory, id => " + parentDirId, e);
 		}
 		
-		//TODO - upload pipeline uses this method to add the new file. Get current logged in user and add Spring ACL
-		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
-		if(fsUser != null){
-			logger.info("User '" + fsUser.getUsername() + "' added file " + fileToAdd.toString());
-			fsAclService.setDefaultPermission(FsFileMetaResource.class, fileResource.getFileId(), fsUser);
-		}else{
-			logger.error("FsSecureUser is null.. cannot set ACL permissions for " + fileResource.getName());
-		}
+		// set file permissions
+		fsAclService.setDefaultPermission(FsFileMetaResource.class, fileResource.getFileId(), userId);
 		
 		return fileResource;
 		

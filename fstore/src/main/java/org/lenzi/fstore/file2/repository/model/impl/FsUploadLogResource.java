@@ -18,8 +18,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
+ * Entry for single resource for upload log.
+ * 
  * @author sal
- *
  */
 @Entity
 @Table(name="FS_UPLOAD_LOG_RESOURCE")

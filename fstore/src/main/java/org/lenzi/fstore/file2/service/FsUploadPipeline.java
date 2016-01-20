@@ -391,7 +391,7 @@ public class FsUploadPipeline {
 				//
 				FsFileMetaResource resource = null;
 				try {
-					resource = addFileToDirectory(pathToFile, parentDirId, replaceExisting);
+					resource = addFileToDirectory(userId, pathToFile, parentDirId, replaceExisting);
 				} catch (Exception e) {
 					throw new RuntimeException("Error saving file '" + fileName + "' to directory with id '" + parentDirId + "'.", e);
 				}
@@ -434,7 +434,7 @@ public class FsUploadPipeline {
 	 * @param replaceExisting
 	 * @throws ServiceException
 	 */
-	private FsFileMetaResource addFileToDirectory(Path pathToFile, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	private FsFileMetaResource addFileToDirectory(Long userId, Path pathToFile, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
 		CodeTimer timer = new CodeTimer();
 		
@@ -442,7 +442,7 @@ public class FsUploadPipeline {
 		
 		logger.info(">> addFileToDirectory (start) => " + pathToFile);
 		
-		AbstractFsTask<FsFileMetaResource> task = getAddToDirectoryTask(pathToFile, parentDirId, replaceExisting);
+		AbstractFsTask<FsFileMetaResource> task = getAddToDirectoryTask(userId, pathToFile, parentDirId, replaceExisting);
 		
 		addFileTaskManager.addTask(task);
 		
@@ -525,7 +525,7 @@ public class FsUploadPipeline {
 	 * @param replaceExisting
 	 * @return
 	 */
-	private AbstractFsTask<FsFileMetaResource> getAddToDirectoryTask(Path pathToFile, Long parentDirId, boolean replaceExisting) {
+	private AbstractFsTask<FsFileMetaResource> getAddToDirectoryTask(Long userId, Path pathToFile, Long parentDirId, boolean replaceExisting) {
 		
 		class Task extends AbstractFsTask<FsFileMetaResource> {
 
@@ -534,7 +534,7 @@ public class FsUploadPipeline {
 
 				String fileName = pathToFile.getFileName().toString();
 
-				FsFileMetaResource resource = fsQueuedResourceService.addFileResourceMeta(pathToFile, parentDirId, replaceExisting);
+				FsFileMetaResource resource = fsQueuedResourceService.addFileResourceMeta(userId, pathToFile, parentDirId, replaceExisting);
 				
 				logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "', Store in DB => " + false);
 				

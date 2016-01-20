@@ -44,15 +44,15 @@ public class FsAclService {
 	 * Sample method for setting ACL permissions.
 	 * 
 	 * @param domainClass - class type of domain object (e.g. FsFileMetaResource, FsDirectoryResource, or some other FSNode type...)
-	 * @param domainId
-	 * @param user
+	 * @param domainId - Unique ID of domain object.
+	 * @param userId - Unique ID of user.
 	 */
-	public void setDefaultPermission(Class<? extends FsPathResource> domainClass, Long domainId, FsSecureUser user){
+	public void setDefaultPermission(Class<? extends FsPathResource> domainClass, Long domainId, Long userId){
 		
 		logger.info(FsAclService.class.getName() + ".setDefaultPermission(...) called");
 		
 		ObjectIdentity oi = new ObjectIdentityImpl(domainClass, domainId);
-		Sid sid = new PrincipalSid(user.getUsername());
+		Sid sid = new PrincipalSid(String.valueOf(userId.longValue()));
 		
 		Permission p = FsBasePemission.ADMINISTRATION;
 		
