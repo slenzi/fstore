@@ -30,6 +30,9 @@ import javax.annotation.PreDestroy;
 
 
 
+
+
+
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CodeTimer;
@@ -39,6 +42,7 @@ import org.lenzi.fstore.file2.concurrent.task.AbstractFsTask;
 import org.lenzi.fstore.file2.concurrent.task.FsQueuedTaskManager;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
+import org.lenzi.fstore.file2.repository.model.impl.FsUploadLog;
 import org.lenzi.fstore.file2.web.messaging.UploadMessageService;
 import org.lenzi.fstore.main.properties.ManagedProperties;
 import org.slf4j.Logger;
@@ -83,7 +87,11 @@ public class FsUploadPipeline {
 	
     // task manager for binary update process. after file is added we go back and add the binary data to the database
 	@Autowired
-	private FsQueuedTaskManager updateFileTaskManager;     
+	private FsQueuedTaskManager updateFileTaskManager;
+	
+    // task manager for adding upload log entries
+	@Autowired
+	private FsQueuedTaskManager uploadLogTaskManager;
     
     private String holdingSetupErrorMsg = "";
     
@@ -91,6 +99,9 @@ public class FsUploadPipeline {
 	
 	private ExecutorService addFileExecutorService;
 	private ExecutorService updateFileExecutorService;
+	private ExecutorService uploadLogExecutorService;
+	
+	private final String TASK_MANAGER_NAME_PREFIX = "Upload Pipeline Task Manager:";
     
 	public FsUploadPipeline() {
 		
@@ -115,9 +126,11 @@ public class FsUploadPipeline {
 		
 		addFileExecutorService = Executors.newSingleThreadExecutor();
 		updateFileExecutorService = Executors.newSingleThreadExecutor();
+		uploadLogExecutorService = Executors.newSingleThreadExecutor();
 		
-		addFileTaskManager.setManagerName("Upload Pipeline: Add File Task Manager");
-		updateFileTaskManager.setManagerName("Upload Pipeline: Update File Task Manager");
+		addFileTaskManager.setManagerName(TASK_MANAGER_NAME_PREFIX + " Add File.");
+		updateFileTaskManager.setManagerName(TASK_MANAGER_NAME_PREFIX + " Update File Binary Data.");
+		uploadLogTaskManager.setManagerName(TASK_MANAGER_NAME_PREFIX + " Upload Log.");
 		
 		// allows us to get access to the spring security context on other thread pools
 		//DelegatingSecurityContextExecutorService addFilesecurityContextExecutor = new DelegatingSecurityContextExecutorService(addFileExecutorService);
@@ -127,6 +140,7 @@ public class FsUploadPipeline {
 		
 		updateFileTaskManager.startTaskManager(updateFileExecutorService);
 		
+		uploadLogTaskManager.startTaskManager(uploadLogExecutorService);
 		
 		logger.info(FsUploadPipeline.class.getName() + " post construct initialization complete!.");
 		
@@ -303,7 +317,7 @@ public class FsUploadPipeline {
 		
 		// process to database directory
 		try {
-			processToDirectory(tempDir, parentDirId, replaceExisting);
+			processToDirectory(userId, tempDir, parentDirId, replaceExisting);
 		} catch (ServiceException e) {
 			throw new ServiceException("Error processing files to directory with dirId => " + parentDirId, e);
 		}
@@ -321,19 +335,20 @@ public class FsUploadPipeline {
 	 */
 	public void processInternalFiles(Long userId, Long parentDirId, Path dirPath, boolean replaceExisting) throws ServiceException {
 		
-		processToDirectory(dirPath, parentDirId, replaceExisting);
+		processToDirectory(userId, dirPath, parentDirId, replaceExisting);
 		
 	}
 	
 	/**
 	 * Processes files to existing directory
 	 * 
+	 * @param userId -id of user who is adding the file
 	 * @param tempDir - temporary directory where uploaded files reside
 	 * @param parentDirId - id of parent directory node
 	 * @param replaceExisting - true to replace existing files
 	 * @throws ServiceException
 	 */
-	private /*synchronized*/ void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	private /*synchronized*/ void processToDirectory(Long userId, Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
 		//
 		// get paths to all uploaded files
@@ -390,6 +405,15 @@ public class FsUploadPipeline {
 					throw new RuntimeException("Error updating binary data in database for file '" + fileName + "' in directory with id '" + parentDirId + "'.", e);
 				}
 				
+				//
+				// add to upload log
+				//
+				try {
+					addToUploadLog(userId, parentDirId, tempDir, pathToFile);
+				} catch (Exception e) {
+					throw new RuntimeException("Error adding upload log entry for file '" + fileName + "' in directory with id '" + parentDirId + "'.", e);
+				}
+						
 				timer.stop();
 				
 				logger.info(">> Process to directory (end) => " + pathToFile + ", elapsed time => " + timer.getElapsedTime());
@@ -465,6 +489,35 @@ public class FsUploadPipeline {
 	}
 	
 	/**
+	 * Adds upload to upload log.
+	 * 
+	 * @param userId - id of user who uploaded
+	 * @param parentDirId - id of directory path resource where uploaded files are being submitted to.
+	 * @param tempDir - temp dir where uploaded files reside
+	 * @param fileMap - map of uploaded files, from upload controller.
+	 * @throws ServiceException
+	 */
+	private void addToUploadLog(Long userId, Long parentDirId, Path tempDir, Path filePath) throws ServiceException {
+		
+		CodeTimer timer = new CodeTimer();
+		
+		timer.start();
+		
+		logger.info(">> addToUploadLog (start) => user id = " + userId);
+		
+		AbstractFsTask<FsUploadLog> task = getAddToUploadLogTask(userId, parentDirId, tempDir, filePath);
+		
+		updateFileTaskManager.addTask(task);
+		
+		timer.stop();
+		
+		logger.info(">> addToUploadLog (end) => user id = " + userId + ", elapsed time => " + timer.getElapsedTime());
+
+		timer.reset();	
+		
+	}
+	
+	/**
 	 * Return a new task which adds/replaces a file in the database (meta data only.)
 	 * 
 	 * @param pathToFile
@@ -533,7 +586,40 @@ public class FsUploadPipeline {
 		
 	}
 	
-	
+	/**
+	 * Return a new task that adds an entry to the upload log.
+	 * 
+	 * @param userId - id of user who uploaded
+	 * @param parentDirId - id of directory path resource where uploaded files are being submitted to.
+	 * @param tempDir - temp dir where uploaded files reside
+	 * @param filePath - path to file being added
+	 * @return
+	 */
+	private AbstractFsTask<FsUploadLog> getAddToUploadLogTask(Long userId, Long parentDirId, Path tempDir, Path filePath) {
+		
+		class Task extends AbstractFsTask<FsUploadLog> {
+
+			@Override
+			public FsUploadLog doWork() throws ServiceException {
+
+				FsUploadLog log = fsResourceService.logUpload(userId, parentDirId, tempDir, filePath);
+				
+				logger.info("Saved upload log entry for user with userId => " + userId);			
+				
+				return log;
+				
+			}
+
+			@Override
+			public Logger getLogger() {
+				return logger;
+			}
+			
+		};		
+		
+		return new Task();
+		
+	}
 	
 	/**
 	 * Creates a new directory in the holding resource store for the uploaded files, then saves all files to the directory.

@@ -122,6 +122,7 @@ public class FsResourceService {
 	//
 	// Upload logging
 	//
+	@Autowired
 	private FsUploadLogAdder fsUploadLogAdder;
 	
 	
@@ -860,15 +861,15 @@ public class FsResourceService {
 	 * @param userId - id of upload user
 	 * @param dirId - id of directory path resource where files will be placed.
 	 * @param tempDir - path of temporary upload directory where files reside
-	 * @param fileMap - map of uploaded files, from upload controller.
+	 * @filePath - path to file being added
 	 * @return
 	 * @throws ServiceException
 	 */
-	public FsUploadLog logUpload(Long userId, Long dirId, Path tempDir, Map<String, MultipartFile> fileMap) throws ServiceException {
+	public FsUploadLog logUpload(Long userId, Long dirId, Path tempDir, Path filePath) throws ServiceException {
 		
 		FsUploadLog log = null;
 		try {
-			log = fsUploadLogAdder.addLogEntry(userId, dirId, tempDir, fileMap);
+			log = fsUploadLogAdder.addLogEntry(userId, dirId, tempDir, filePath);
 		} catch (DatabaseException e) {
 			throw new ServiceException("Error adding upload log entry to database. ", e);
 		}

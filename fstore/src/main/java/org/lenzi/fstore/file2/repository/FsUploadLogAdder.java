@@ -4,6 +4,8 @@
 package org.lenzi.fstore.file2.repository;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,21 +45,38 @@ public class FsUploadLogAdder extends AbstractRepository {
 	 * @param userId - ID of user who uploaded
 	 * @param dirId - ID of directory path resource where files will go
 	 * @param tempDir - tempDir holding directory for uploaded files
-	 * @param fileMap - map containing uploaded files
+	 * @filePath - path to file being added
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public FsUploadLog addLogEntry(Long userId, Long dirId, Path tempDir, Map<String, MultipartFile> fileMap) throws DatabaseException {
+	public FsUploadLog addLogEntry(Long userId, Long dirId, Path tempDir, Path filePath) throws DatabaseException {
+		
+		return this.addLogEntry(userId, dirId, tempDir, Arrays.asList(filePath));
+		
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param userId
+	 * @param dirId
+	 * @param tempDir
+	 * @param filePaths
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public FsUploadLog addLogEntry(Long userId, Long dirId, Path tempDir, List<Path> filePaths) throws DatabaseException {
 		
 		logger.info(this.getClass().getName() + ". addLogEntry(...) called");
 		
 		FsUploadLog log = new FsUploadLog();
 		Set<FsUploadLogResource> resources = new HashSet<FsUploadLogResource>();
 		
-		fileMap.values().stream().forEach(
-			(filePart) -> {
+		filePaths.forEach(
+			(path) -> {
 				FsUploadLogResource logRes = new FsUploadLogResource();
-				logRes.setResourceName(filePart.getOriginalFilename());
+				logRes.setResourceName(path.toFile().getName());
+				logRes.setUploadLog(log);
 				resources.add(logRes);
 			});
 		
@@ -75,6 +94,6 @@ public class FsUploadLogAdder extends AbstractRepository {
 		
 		return log;
 		
-	}	
+	}
 
 }
