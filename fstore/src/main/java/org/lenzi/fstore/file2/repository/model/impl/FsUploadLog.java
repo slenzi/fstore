@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -52,7 +53,7 @@ public class FsUploadLog implements Comparable<FsUploadLog>, Serializable {
 	private Long nodeId;
 	
 	// all resurces for this upload
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "uploadLog")  
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "uploadLog", cascade=CascadeType.ALL)  
     private Set<FsUploadLogResource> resources = new HashSet<FsUploadLogResource>(0);
 	
 	/**
