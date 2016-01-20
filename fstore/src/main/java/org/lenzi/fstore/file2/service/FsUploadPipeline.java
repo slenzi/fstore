@@ -28,6 +28,8 @@ import javax.annotation.PreDestroy;
 
 
 
+
+
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CodeTimer;
@@ -209,7 +211,7 @@ public class FsUploadPipeline {
 	 * @return Path to newly created temp directory where all files are saved.
 	 * @throws ServiceException
 	 */
-	public Path processToTemp(Map<String, MultipartFile> fileMap) throws ServiceException {
+	private Path processToTemp(Map<String, MultipartFile> fileMap) throws ServiceException {
 		
 		/*
 		String parentTempDir = appProps.getProperty("upload.temp.path");
@@ -281,6 +283,49 @@ public class FsUploadPipeline {
 	}
 	
 	/**
+	 * Process http upload to directory path resource
+	 * 
+	 * @param userId - id of user who uploaded
+	 * @param parentDirId - id of directory path resource where files are being submitted to
+	 * @param fileMap - map of files, from upload controller
+	 * @param replaceExisting - true to replace any existing files in directory (parentDirId), false not to.
+	 * @throws ServiceException
+	 */
+	public void processUpload(Long userId, Long parentDirId, Map<String, MultipartFile> fileMap, boolean replaceExisting) throws ServiceException {
+		
+		// save to temp dir
+		Path tempDir = null;
+		try {
+			tempDir = processToTemp(fileMap);
+		} catch (ServiceException e) {
+			throw new ServiceException("Error saving files to temporary upload directory. ",e);
+		}
+		
+		// process to database directory
+		try {
+			processToDirectory(tempDir, parentDirId, replaceExisting);
+		} catch (ServiceException e) {
+			throw new ServiceException("Error processing files to directory with dirId => " + parentDirId, e);
+		}
+		
+	}
+	
+	/**
+	 * Process file from some local directory path
+	 * 
+	 * @param userId -id of user who is adding the local file
+	 * @param parentDirId - id of directory path resource where files are being submitted to
+	 * @param dirPath - directory where files are
+	 * @param replaceExisting - true to replace any existing files in directory (parentDirId), false not to.
+	 * @throws ServiceException
+	 */
+	public void processInternalFiles(Long userId, Long parentDirId, Path dirPath, boolean replaceExisting) throws ServiceException {
+		
+		processToDirectory(dirPath, parentDirId, replaceExisting);
+		
+	}
+	
+	/**
 	 * Processes files to existing directory
 	 * 
 	 * @param tempDir - temporary directory where uploaded files reside
@@ -288,7 +333,7 @@ public class FsUploadPipeline {
 	 * @param replaceExisting - true to replace existing files
 	 * @throws ServiceException
 	 */
-	public /*synchronized*/ void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
+	private /*synchronized*/ void processToDirectory(Path tempDir, Long parentDirId, boolean replaceExisting) throws ServiceException {
 		
 		//
 		// get paths to all uploaded files

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.lenzi.fstore.cms.repository.model.impl.FsCmsSite;
 import org.lenzi.fstore.core.repository.AbstractRepository;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -32,7 +31,6 @@ public class FsUploadLogAdder extends AbstractRepository {
 	@InjectLogger
 	private Logger logger;
 		
-	
 	private static final long serialVersionUID = -3745550013699389177L;
 
 	public FsUploadLogAdder() {
@@ -50,6 +48,8 @@ public class FsUploadLogAdder extends AbstractRepository {
 	 * @throws DatabaseException
 	 */
 	public FsUploadLog addLogEntry(Long userId, Long dirId, Path tempDir, Map<String, MultipartFile> fileMap) throws DatabaseException {
+		
+		logger.info(this.getClass().getName() + ". addLogEntry(...) called");
 		
 		FsUploadLog log = new FsUploadLog();
 		Set<FsUploadLogResource> resources = new HashSet<FsUploadLogResource>();

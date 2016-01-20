@@ -2,6 +2,9 @@ package org.lenzi.fstore.file2.service;
 
 import java.nio.file.Path;
 
+import org.lenzi.fstore.core.acls.service.FsAclService;
+import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResourceFetch;
@@ -30,7 +33,13 @@ public class FsUploadService {
     private FsResourceService fsResourceService; 	
 	
     @Autowired
-    private FsUploadPipeline uploadPipeline;	
+    private FsUploadPipeline uploadPipeline;
+    
+	//
+	// ACLs security
+	//
+	@Autowired
+	private FsSecurityService fsSecurityService;
 	
 	public FsUploadService() {
 		
@@ -45,6 +54,13 @@ public class FsUploadService {
 	 */
 	public void rewriteTextFile(Long fileId, String fileData) throws ServiceException {
 		
+		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		if(fsUser != null){
+			logger.info("User '" + fsUser.getUsername() + "' saving text file, with fileId =>" + fileId);
+		}else{
+			logger.error("FsSecureUser is null.. cannot save text file, with fileId =? " + fileId);
+		}
+		
 		FsFileMetaResource currentResource = fsResourceService.getFileResourceById(fileId, FsFileResourceFetch.FILE_META);
 		String currentFileName = currentResource.getName();
 		
@@ -53,7 +69,8 @@ public class FsUploadService {
 		
 		Path tempPath = uploadPipeline.processTextFileToTemp(currentFileName, fileData);
 		
-		uploadPipeline.processToDirectory(tempPath, currentDirId, true);
+		// TODO - might want to block for this to finish. but what it pipeline has a large queue.... you don't want the save operation to take long.
+		uploadPipeline.processInternalFiles(fsUser.getFsUser().getUserId(), currentDirId, tempPath, true);
 		
 	}	
 

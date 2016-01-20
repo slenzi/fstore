@@ -123,6 +123,7 @@ public class FsUploadController extends AbstractSpringController {
 				uploadMessageService.sendUploadReceivedMessage(filePart.getOriginalFilename());
 			});
 		
+		/*
 		// save files to temporary directory
 		Path tempDir = null;
 		try {
@@ -136,6 +137,13 @@ public class FsUploadController extends AbstractSpringController {
 			uploadPipeline.processToDirectory(tempDir, parentDirId, true);
 		} catch (ServiceException e) {
 			throw new WebAppException("Failed to process uploaded files to directory " + parentDirId + ". " + e.getMessage(), e);
+		}
+		*/
+		
+		try {
+			uploadPipeline.processUpload(fsUser.getFsUser().getUserId(), parentDirId, fileMap, true);
+		} catch (ServiceException e) {
+			throw new WebAppException("Error processing upload. " + e.getMessage(), e);
 		}
 		
 		logger.info("Upload controller complete");

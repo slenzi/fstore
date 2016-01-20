@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.lenzi.fstore.core.acls.service.FsAclService;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
@@ -36,11 +37,13 @@ import org.lenzi.fstore.file2.repository.FsFileResourceRepository.FsFileResource
 import org.lenzi.fstore.file2.repository.FsResourceStoreAdder;
 import org.lenzi.fstore.file2.repository.FsResourceStoreRemover;
 import org.lenzi.fstore.file2.repository.FsResourceStoreRepository;
+import org.lenzi.fstore.file2.repository.FsUploadLogAdder;
 import org.lenzi.fstore.file2.repository.model.impl.FsDirectoryResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsFileMetaResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.lenzi.fstore.file2.repository.model.impl.FsResourceStore;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathType;
+import org.lenzi.fstore.file2.repository.model.impl.FsUploadLog;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -49,6 +52,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 
@@ -114,6 +118,12 @@ public class FsResourceService {
 	private FsSecurityService fsSecurityService;
 	@Autowired
 	private FsAclService fsAclService;
+	
+	//
+	// Upload logging
+	//
+	private FsUploadLogAdder fsUploadLogAdder;
+	
 	
 	public FsResourceService() {
 		
@@ -841,6 +851,28 @@ public class FsResourceService {
 		}
 		
 		return fsStore;
+		
+	}
+	
+	/**
+	 * Add upload log entry to database.
+	 * 
+	 * @param userId - id of upload user
+	 * @param dirId - id of directory path resource where files will be placed.
+	 * @param tempDir - path of temporary upload directory where files reside
+	 * @param fileMap - map of uploaded files, from upload controller.
+	 * @return
+	 * @throws ServiceException
+	 */
+	public FsUploadLog logUpload(Long userId, Long dirId, Path tempDir, Map<String, MultipartFile> fileMap) throws ServiceException {
+		
+		FsUploadLog log = null;
+		try {
+			log = fsUploadLogAdder.addLogEntry(userId, dirId, tempDir, fileMap);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Error adding upload log entry to database. ", e);
+		}
+		return log;
 		
 	}
 
