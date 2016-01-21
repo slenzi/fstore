@@ -494,10 +494,14 @@ public class FsQueuedResourceService {
 	public FsFileMetaResource addFileResourceMeta(Long userId, Path fileToAdd, Long dirId, boolean replaceExisting) throws ServiceException {
 		
 		class Task extends AbstractFsTask<FsFileMetaResource> {
-
+			
 			@Override
 			public FsFileMetaResource doWork() throws ServiceException {
-				return fsResourceService.addFileResourceMeta(userId, fileToAdd, dirId, replaceExisting);
+				
+				FsFileMetaResource res = fsResourceService.addFileResourceMeta(userId, fileToAdd, dirId, replaceExisting);
+				
+				return res;
+				
 			}
 
 			@Override

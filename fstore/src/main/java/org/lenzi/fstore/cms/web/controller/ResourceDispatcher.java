@@ -45,9 +45,8 @@ public class ResourceDispatcher extends AbstractSpringController {
 	
     @Autowired
     private ManagedProperties appProps; 	
-    
-    //@Autowired
-    //private FsSecurityService fsSecurityService;
+
+	// Security
     @Autowired
     private FsAuthenticationService fsAuthService;
     
@@ -77,7 +76,7 @@ public class ResourceDispatcher extends AbstractSpringController {
 	@RequestMapping(method = RequestMethod.GET)
 	public void dispatchResource(HttpServletRequest request, HttpServletResponse response, ModelMap model){
 		
-		logDebugUserDetails();
+		fsAuthService.logDebugUserDetails();
 		
 		if(request.getSession().getAttribute(CmsConstants.SESSION_ATT_CMS_SERVICE) == null){
 			request.getSession().setAttribute(CmsConstants.SESSION_ATT_CMS_SERVICE, cmsService);
@@ -117,22 +116,6 @@ public class ResourceDispatcher extends AbstractSpringController {
 		
 	}
 	
-	/*
-	private boolean isOfflineMode(final HttpServletRequest request){
-		
-		HttpSession session = request.getSession();
-		String cmsViewMode = StringUtil.changeNull((String)session.getAttribute(CmsConstants.SESSION_CMS_VIEW_MODE)).trim().toUpperCase();
-		
-		// assume online mode, and check for offline mode
-		
-		if(cmsViewMode.equals("OFFLINE")){
-			return true;
-		}
-		
-		return false;
-	}
-	*/
-	
 	/**
 	 * Extract path from a controller mapping. /controllerUrl/** => return matched **
 	 * 
@@ -149,46 +132,6 @@ public class ResourceDispatcher extends AbstractSpringController {
 
 	    return finalPath;
 
-	}
-	
-	/**
-	 * Logs all details of current logged in user (debug level.)
-	 */
-	private void logDebugUserDetails(){
-		
-		//FsSecureUser principalUser = fsSecurityService.getLoggedInUser();
-		FsSecureUser principalUser = fsAuthService.getLoggedInUser();
-
-		boolean havePricipalUser = (principalUser != null) ? true : false;
-		boolean haveFsUser = (havePricipalUser && principalUser.getFsUser() != null) ? true : false;
-		
-		//String username = fsSecurityService.getUsername();
-		//List<String> authorityNames = fsSecurityService.getAuthorities();
-		String username = fsAuthService.getUsername();
-		List<String> authorityNames = fsAuthService.getAuthorities();		
-	
-		logger.debug("Logged in user details: ");
-		logger.debug("Have principal user (spring security) => " + havePricipalUser);
-		logger.debug("Have FsUser => " + haveFsUser);
-		
-		if(authorityNames != null){
-			authorityNames.forEach((role) -> {
-				logger.debug("Granted Authority => " + role);
-			});
-		}		
-		
-		if(haveFsUser){
-			FsUser fsUser = principalUser.getFsUser();
-			logger.debug("User ID => " + fsUser.getUserId());
-			logger.debug("First name => " + fsUser.getFirstName());
-			logger.debug("Last name => " + fsUser.getLastName());
-			logger.debug("Primary Email => " + fsUser.getPrimaryEmail());
-			logger.debug("Role count => " + fsUser.roleCount());
-			logger.debug("Group count => " + fsUser.groupCount());
-		}
-		
-		logger.debug("Username => " + username);		
-		
 	}
 
 }

@@ -3,27 +3,17 @@
  */
 package org.lenzi.fstore.core.security.service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.repository.security.FsUserGroupRepository;
 import org.lenzi.fstore.core.repository.security.FsUserRepository;
 import org.lenzi.fstore.core.repository.security.FsUserRepository.FsUserFetch;
 import org.lenzi.fstore.core.repository.security.FsUserRoleRepository;
 import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
-import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +68,7 @@ public class FsSecurityService {
 			throw new ServiceException("Failed to retrieve user object,  " + e.getMessage(), e);
 		}
 		
+		/*
 		logInfo("Got user object = " + ((user != null) ? "true" : "false"));
 		
 		if(user != null){
@@ -96,88 +87,37 @@ public class FsSecurityService {
 		}else{
 			logInfo("Fetched user object in null...");
 		}
+		*/
 		
 		return user;
 		
 	}
 	
 	/**
-	 * Get username of principal currently interacting with the application (the authenticated spring user.)
+	 * Fetch user by user id
 	 * 
+	 * @param userId
 	 * @return
 	 * @throws ServiceException
 	 */
-	/*
-	public String getUsername() {
+	public FsUser getUserById(final Long userId) throws ServiceException {
+	
+		logInfo(FsSecurityService.class.getName() + ".getUserById(final Long userId) called. [userId = '" + userId + "']");
 		
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		String username = "unknown";
+		if(userId == null || userId == 0L){
+			throw new ServiceException("User ID is null or not set. Cannot retrieve user object.");
+		}
 		
-		if (principal instanceof UserDetails) {
-			username = ((UserDetails)principal).getUsername();
-		} else {
-			username = principal.toString();
+		FsUser user = null;
+		try {
+			user = fsUserRepository.getUserById(userId, FsUserFetch.WITH_ROLES_AND_GROUPS);
+		} catch (DatabaseException e) {
+			throw new ServiceException("Failed to retrieve user object,  " + e.getMessage(), e);
 		}		
 		
-		return username;
+		return user;
+		
 	}
-	*/
-	
-	/**
-	 * Get authorities (roles) of principal currently interacting with the application (the authenticated spring user.)
-	 * 
-	 * @return A list of role codes (e.g. 'ROLE_ADMINISTRATOR', 'ROLE_OTHER', etc..)
-	 * @throws ServiceException
-	 */
-	/*
-	public List<String> getAuthorities() {
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>)auth.getAuthorities();
-		
-		List<String> roles = authorities.stream().map(
-					SimpleGrantedAuthority::getAuthority).collect(Collectors.toList());
-		
-		return roles;
-	}
-	*/
-	
-	/**
-	 * Get principal currently interacting with the application (the authenticated spring user.)
-	 * 
-	 * @return A FsSecureUser object which extends from the default org.springframework.security.core.userdetails.User class.
-	 * 	Otherwise null.
-	 */
-	/*
-	public FsSecureUser getLoggedInUser() {
-		
-		SecurityContext context = SecurityContextHolder.getContext();
-		if(context == null){
-			logError("Security context is null.",null);
-			return null;
-		}
-		Authentication auth = context.getAuthentication();
-		if(auth == null){
-			logError("Authentication is null",null);
-			return null;
-		}
-		Object principal = auth.getPrincipal();
-		if(principal == null){
-			logError("Object principal is null",null);
-			return null;
-		}
-		
-		FsSecureUser user = null;
-		
-		if (principal instanceof FsSecureUser) {
-			user = (FsSecureUser)principal;
-		}	
-		
-		return user;	
-	}
-	*/
 	
 	private void logInfo(String message){
 		if(logger != null){

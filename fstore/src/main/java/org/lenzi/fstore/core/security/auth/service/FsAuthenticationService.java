@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
 import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -148,6 +150,60 @@ public class FsAuthenticationService {
 		
 		return user;	
 	}
+	
+	/**
+	 * Fetch the current principal interacting with the application, and log the user details
+	 */
+	public void logDebugUserDetails(){
+		logDebugUserDetails(getLoggedInUser());
+	}
+	
+	/**
+	 * Log the details of the user
+	 * 
+	 * @param user
+	 */
+	public void logDebugUserDetails(FsSecureUser user){
+
+		boolean havePricipalUser = (user != null) ? true : false;
+		
+		
+		String username = null;
+		Collection<GrantedAuthority> authorities = null;
+		if(havePricipalUser){
+			
+			username = user.getUsername();
+			authorities = user.getAuthorities();
+			
+			boolean haveFsUser = (havePricipalUser && user.getFsUser() != null) ? true : false;
+			
+			logger.debug("Logged in user details: ");
+			logger.debug("Have principal user (spring security) => " + havePricipalUser);
+			logger.debug("Have FsUser => " + haveFsUser);
+			
+			if(authorities != null){
+				authorities.forEach((authority) -> {
+					logger.debug("Granted Authority => " + authority.toString());
+				});
+			}		
+			
+			logger.debug("Username => " + username);
+			
+			if(haveFsUser){
+				FsUser fsUser = user.getFsUser();
+				logger.debug("User ID => " + fsUser.getUserId());
+				logger.debug("First name => " + fsUser.getFirstName());
+				logger.debug("Last name => " + fsUser.getLastName());
+				logger.debug("Primary Email => " + fsUser.getPrimaryEmail());
+				logger.debug("Role count => " + fsUser.roleCount());
+				logger.debug("Group count => " + fsUser.groupCount());
+			}		
+			
+		}else{
+			logger.warn("Cannot log user details. FsSecureUser object is null.");
+		}		
+		
+	}	
 	
 	private void logInfo(String message){
 		if(logger != null){

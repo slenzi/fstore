@@ -65,11 +65,6 @@ public class FileResource extends AbstractResource {
     @Autowired
     private FsUploadService fsUploadService;
     
-	//
-	// ACLs security
-	//
-	//@Autowired
-	//private FsSecurityService fsSecurityService;
     @Autowired
     private FsAuthenticationService fsAuthService;     
 	

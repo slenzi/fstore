@@ -16,6 +16,9 @@ import java.util.concurrent.Executors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
+
 // used before upgrading to hibernate 5. now we use org.springframework.transaction.annotation.Transactional
 //import javax.transaction.Transactional;
 
@@ -78,8 +81,9 @@ public class FsUploadPipeline {
     @Autowired
     private UploadMessageService uploadMessageService;
     
-    //@Autowired
-    //private FsResourceHelper fsResourceHelper;
+	// Security
+    @Autowired
+    private FsAuthenticationService fsAuthService;    
     
     // task manager for adding files to database - adds file meta data, plus 1 byte placeholder for binary data.
 	@Autowired
@@ -532,6 +536,17 @@ public class FsUploadPipeline {
 			@Override
 			public FsFileMetaResource doWork() throws ServiceException {
 
+				logger.info("Add file meta to directory task runnning...");
+				
+				/*
+				FsSecureUser user = fsAuthService.getLoggedInUser();
+				if(user == null){
+					logger.error("FsSecureUser object is null!");
+				}else{
+					fsAuthService.logDebugUserDetails(user);
+				}
+				*/
+				
 				String fileName = pathToFile.getFileName().toString();
 
 				FsFileMetaResource resource = fsQueuedResourceService.addFileResourceMeta(userId, pathToFile, parentDirId, replaceExisting);
@@ -539,6 +554,8 @@ public class FsUploadPipeline {
 				logger.info("Saved file '" + fileName + "' to directory with id '" + parentDirId + "', Store in DB => " + false);
 				
 				uploadMessageService.sendUploadProcessedMessage(resource.getFileId(), parentDirId, resource.getName());				
+				
+				logger.info("Add file meta to directory task completed...");
 				
 				return resource;
 				

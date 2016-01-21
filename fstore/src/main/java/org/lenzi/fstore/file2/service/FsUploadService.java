@@ -36,11 +36,6 @@ public class FsUploadService {
     @Autowired
     private FsUploadPipeline uploadPipeline;
     
-	//
-	// ACLs security
-	//
-	//@Autowired
-	//private FsSecurityService fsSecurityService;
     @Autowired
     private FsAuthenticationService fsAuthService;	    
 	

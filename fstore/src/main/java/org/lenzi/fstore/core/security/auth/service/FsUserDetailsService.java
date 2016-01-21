@@ -90,7 +90,27 @@ public class FsUserDetailsService implements UserDetailsService {
 		
 	}
 	
-
+	/**
+	 * Load user by user id.
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws ServiceException
+	 */
+	public UserDetails loadUserByUserId(final Long userId) throws ServiceException {
+		
+		logger.info(FsUserDetailsService.class.getName() + ".loadUserByUserId(final Long userId) called");
+		
+		FsUser fsUser = null;
+		try {
+			fsUser = fsSecurityService.getUserById(userId);
+		} catch (ServiceException e) {
+			throw new ServiceException("Failed to fetch user with user id " + userId, e);
+		}
+		List<GrantedAuthority> authorities = buildUserAuthority(fsUser.getRoles());	
+		final User springUser = buildUserForAuthentication(fsUser, authorities);
+		return springUser;
+	}
 	
 	/**
 	 * Convert FsUser to FsSecureUser. The later extends from org.springframework.security.core.userdetails.User.

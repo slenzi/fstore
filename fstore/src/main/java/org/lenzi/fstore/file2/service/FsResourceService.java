@@ -9,13 +9,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.security.acls.service.FsAclService;
 import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
-import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
@@ -53,7 +51,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 
@@ -113,10 +110,8 @@ public class FsResourceService {
 	private FsDirectoryResourceMover fsDirectoryResourceMover;
 	
 	//
-	// ACLs security
+	// Security
 	//
-	//@Autowired
-	//private FsSecurityService fsSecurityService;
     @Autowired
     private FsAuthenticationService fsAuthService;	
 	@Autowired
@@ -472,7 +467,6 @@ public class FsResourceService {
 			throw new ServiceException("Error adding file resource meta. User ID is null, or not set.");
 		}
 		
-		//FsSecureUser user = fsSecurityService.getLoggedInUser();
 		FsSecureUser user = fsAuthService.getLoggedInUser();
 		if(user == null){
 			throw new ServiceException("FsSecureUser object is null. Need user object when writing file resource to database.");

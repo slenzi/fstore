@@ -62,11 +62,6 @@ public class FsUploadController extends AbstractSpringController {
     @Autowired
     private UploadMessageService uploadMessageService;
     
-	//
-	// ACLs security
-	//
-	//@Autowired
-	//private FsSecurityService fsSecurityService;
     @Autowired
     private FsAuthenticationService fsAuthService;    
 
