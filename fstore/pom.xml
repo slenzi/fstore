@@ -64,7 +64,7 @@
 		<!-- not sure if hibernate jpa is needed -->
 		<version.hibernate.jpa>1.0.0.Final</version.hibernate.jpa>
 		
-		<version.jdbc.postgres>9.1-901-1.jdbc4</version.jdbc.postgres>
+		<version.jdbc.postgres>9.4.1207.jre7</version.jdbc.postgres> <!-- was 9.1-901-1.jdbc4, from older artifact with group id 'postgresql' -->
 		<version.jdbc.oracle>11.2.0.4</version.jdbc.oracle> <!-- was 10.2.0.2 5/28/2015 -->
 		
 	</properties>
@@ -348,10 +348,17 @@
 	
 		<!-- Postgres JDBC driver -->
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${version.jdbc.postgres}</version>
+		</dependency>
+		<!-- old artifact
+		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${version.jdbc.postgres}</version>
 		</dependency>
+		-->
 		
 		<!-- Oracle JDBC Driver -->
 		
