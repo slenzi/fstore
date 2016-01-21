@@ -117,7 +117,7 @@ public class DataSourceConfig {
 		dataSource.setUrl(appProps.getDatabaseUrl());
         dataSource.setUsername(appProps.getDatabaseUser());
         dataSource.setPassword(appProps.getDatabasePassword());
-        
+
         return dataSource;
 	}
 	
