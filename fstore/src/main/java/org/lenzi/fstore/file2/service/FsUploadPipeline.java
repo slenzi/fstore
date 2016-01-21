@@ -538,15 +538,6 @@ public class FsUploadPipeline {
 
 				logger.info("Add file meta to directory task runnning...");
 				
-				/*
-				FsSecureUser user = fsAuthService.getLoggedInUser();
-				if(user == null){
-					logger.error("FsSecureUser object is null!");
-				}else{
-					fsAuthService.logDebugUserDetails(user);
-				}
-				*/
-				
 				String fileName = pathToFile.getFileName().toString();
 
 				FsFileMetaResource resource = fsQueuedResourceService.addFileResourceMeta(userId, pathToFile, parentDirId, replaceExisting);

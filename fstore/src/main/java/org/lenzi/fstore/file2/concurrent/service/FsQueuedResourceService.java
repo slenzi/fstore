@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.tree.Tree;
@@ -44,6 +46,10 @@ public class FsQueuedResourceService {
 	
 	@Autowired
 	private FsResourceService fsResourceService;
+	
+	// Security
+    @Autowired
+    private FsAuthenticationService fsAuthService;  	
 	
 	@Autowired
 	private FsSpringHelper taskCreator;
@@ -498,7 +504,22 @@ public class FsQueuedResourceService {
 			@Override
 			public FsFileMetaResource doWork() throws ServiceException {
 				
+				logger.info("queued add file meta to directory task, started...");
+				
+				FsSecureUser user = fsAuthService.getLoggedInUser();
+				if(user == null){
+					logger.error("FsSecureUser object is null!");
+				}else{
+					fsAuthService.logDebugUserDetails(user);
+				}
+				
+				fsAuthService.configureAuthentication("admin");
+				
 				FsFileMetaResource res = fsResourceService.addFileResourceMeta(userId, fileToAdd, dirId, replaceExisting);
+				
+				fsAuthService.clearAuthentication();
+				
+				logger.info("queued add file meta to directory task, finished...");
 				
 				return res;
 				
