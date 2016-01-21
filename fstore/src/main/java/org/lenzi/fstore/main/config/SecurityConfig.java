@@ -22,6 +22,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -56,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * Qualifier specifies instance of org.lenzi.fstore.core.security.service.FsUserDetailsService
 	 */
 	@Autowired
-	@Qualifier("FsUserDetailsService")	
+	@Qualifier("fsUserDetailsService")	
 	private UserDetailsService userDetailsService;
 	
 	/**
@@ -85,6 +86,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 	}
 	
+	/**
+	 * Exposes the spring authentication manager that was created via the configureGlobal(AuthenticationManagerBuilder auth)
+	 * method above.
+	 */
+	@Bean(name="fsLocalAuthenticationManager")
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
 	/**
 	 * Specify which paths spring security should ignore
 	 * 

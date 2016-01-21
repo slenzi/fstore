@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
 import org.lenzi.fstore.core.security.service.FsSecurityService;
 
 //used before upgrading to hibernate 5. now we use org.springframework.transaction.annotation.Transactional
@@ -64,8 +65,10 @@ public class FsUploadController extends AbstractSpringController {
 	//
 	// ACLs security
 	//
-	@Autowired
-	private FsSecurityService fsSecurityService;     
+	//@Autowired
+	//private FsSecurityService fsSecurityService;
+    @Autowired
+    private FsAuthenticationService fsAuthService;    
 
 	public FsUploadController() {
 		
@@ -90,7 +93,8 @@ public class FsUploadController extends AbstractSpringController {
 		logger.info("Processing incoming HTTP upload");
 		
 		// see who is performing an upload
-		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		//FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		FsSecureUser fsUser = fsAuthService.getLoggedInUser();
 		if(fsUser == null){
 			throw new WebAppException("FsSecureUser is null. Cannot determine who is submitting an HTTP upload. Check security setup.");
 		}

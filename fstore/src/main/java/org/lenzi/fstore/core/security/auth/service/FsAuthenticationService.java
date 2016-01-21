@@ -1,103 +1,79 @@
-/**
- * 
- */
-package org.lenzi.fstore.core.security.service;
+package org.lenzi.fstore.core.security.auth.service;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.lenzi.fstore.core.repository.exception.DatabaseException;
-import org.lenzi.fstore.core.repository.security.FsUserGroupRepository;
-import org.lenzi.fstore.core.repository.security.FsUserRepository;
-import org.lenzi.fstore.core.repository.security.FsUserRepository.FsUserFetch;
-import org.lenzi.fstore.core.repository.security.FsUserRoleRepository;
-import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
 import org.lenzi.fstore.core.security.FsSecureUser;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
-import org.lenzi.fstore.core.util.CollectionUtil;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service for security related actions
+ * For authentication related operations.
  * 
  * @author sal
  */
-@Service
-@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
-public class FsSecurityService {
+@Service("fsAuthenticationManager")
+public class FsAuthenticationService {
 
 	@InjectLogger
-	private Logger logger;
-	
-	@Autowired
-	private FsUserRepository fsUserRepository;
-	
-	@Autowired
-	private FsUserRoleRepository fsUserRoleRepository;
-	
-	@Autowired
-	private FsUserGroupRepository fsUserGroupRepository;
+	private Logger logger;	
 	
 	/**
+	 * Get access to the Spring Authentication Manager which users our custom UserDetailsService (FsUserDetailsService)
+	 * to authenticate users against our local database.
 	 * 
+	 * See the SecurityConfig class for more details.
 	 */
-	public FsSecurityService() {
+	@Autowired
+	@Qualifier("fsLocalAuthenticationManager")
+	private AuthenticationManager fsAuthenticationManager;
+	
+	/**
+	 * Qualifier specifies instance of org.lenzi.fstore.core.security.service.FsUserDetailsService
+	 */
+	@Autowired
+	@Qualifier("fsUserDetailsService")	
+	private UserDetailsService userDetailsService;
+	
+	public FsAuthenticationService() {
 		
 	}
 	
 	/**
-	 * Fetch user by username
+	 * Load user authentication object into security context for current thread-local.
 	 * 
-	 * @param username
-	 * @return
+	 * @param username - username of user
 	 * @throws ServiceException
 	 */
-	public FsUser getUserByUsername(final String username) throws ServiceException {
+	public void configureAuthentication(final String username)  throws ServiceException {
 		
-		logInfo(FsSecurityService.class.getName() + ".getUserByUsername(final String username) called. [username = '" + username + "']");
+		UserDetails user = userDetailsService.loadUserByUsername(username);
 		
-		if(username == null || username.trim().equals("")){
-			throw new ServiceException("Username is null or blank. Cannot retrieve user object.");
-		}
+		Authentication authentication =  new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 		
-		FsUser user = null;
-		try {
-			user = fsUserRepository.getUserByUsername(username, FsUserFetch.WITH_ROLES_AND_GROUPS);
-		} catch (DatabaseException e) {
-			throw new ServiceException("Failed to retrieve user object,  " + e.getMessage(), e);
-		}
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 		
-		logInfo("Got user object = " + ((user != null) ? "true" : "false"));
+	}
+	
+	/**
+	 * Clear authentication object from security context for current thread-local.
+	 */
+	public void clearAuthentication(){
 		
-		if(user != null){
-			
-			logInfo("Fetched user => [first name = '" + user.getFirstName() + "', last name = '" + user.getLastName() + 
-					"', username = '" + user.getUsername() + "', role count = " + user.roleCount() + 
-					", group count = " + user.groupCount());
-			
-			CollectionUtil.emptyIfNull(user.getRoles()).forEach( (role) -> {
-				logInfo("Role for " + username + ": " + role.getRoleCode());
-			});
-			CollectionUtil.emptyIfNull(user.getGroups()).forEach( (group) -> {
-				logInfo("Group for " + username + ": " + group.getGroupCode());
-			});			
-			
-		}else{
-			logInfo("Fetched user object in null...");
-		}
-		
-		return user;
+		SecurityContextHolder.getContext().setAuthentication(null);
 		
 	}
 	
@@ -107,7 +83,6 @@ public class FsSecurityService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	/*
 	public String getUsername() {
 		
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -122,7 +97,6 @@ public class FsSecurityService {
 		
 		return username;
 	}
-	*/
 	
 	/**
 	 * Get authorities (roles) of principal currently interacting with the application (the authenticated spring user.)
@@ -130,7 +104,6 @@ public class FsSecurityService {
 	 * @return A list of role codes (e.g. 'ROLE_ADMINISTRATOR', 'ROLE_OTHER', etc..)
 	 * @throws ServiceException
 	 */
-	/*
 	public List<String> getAuthorities() {
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -142,7 +115,6 @@ public class FsSecurityService {
 		
 		return roles;
 	}
-	*/
 	
 	/**
 	 * Get principal currently interacting with the application (the authenticated spring user.)
@@ -150,7 +122,6 @@ public class FsSecurityService {
 	 * @return A FsSecureUser object which extends from the default org.springframework.security.core.userdetails.User class.
 	 * 	Otherwise null.
 	 */
-	/*
 	public FsSecureUser getLoggedInUser() {
 		
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -177,7 +148,6 @@ public class FsSecurityService {
 		
 		return user;	
 	}
-	*/
 	
 	private void logInfo(String message){
 		if(logger != null){
@@ -193,6 +163,6 @@ public class FsSecurityService {
 		}else{
 			System.err.println("> " + message + ((t != null) ? " " + t.getMessage() : ""));
 		}
-	}
-
+	}	
+	
 }

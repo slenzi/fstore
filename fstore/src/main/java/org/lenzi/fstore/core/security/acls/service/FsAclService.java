@@ -1,7 +1,7 @@
-package org.lenzi.fstore.core.acls.service;
+package org.lenzi.fstore.core.security.acls.service;
 
-import org.lenzi.fstore.core.acls.domain.FsBasePemission;
 import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.acls.domain.FsBasePemission;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.file2.repository.model.impl.FsPathResource;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class FsAclService {
 	 */
 	public void setDefaultPermission(Class<? extends FsPathResource> domainClass, Long domainId, Long userId){
 		
-		logger.info(FsAclService.class.getName() + ".setDefaultPermission(...) called");
+		logger.info(this.getClass().getName() + ".setDefaultPermission(...) called");
 		
 		ObjectIdentity oi = new ObjectIdentityImpl(domainClass, domainId);
 		Sid sid = new PrincipalSid(String.valueOf(userId.longValue()));

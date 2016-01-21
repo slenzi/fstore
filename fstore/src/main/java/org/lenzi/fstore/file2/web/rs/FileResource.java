@@ -21,6 +21,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.cxf.attachment.ContentDisposition;
 import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
 import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -67,8 +68,10 @@ public class FileResource extends AbstractResource {
 	//
 	// ACLs security
 	//
-	@Autowired
-	private FsSecurityService fsSecurityService;    
+	//@Autowired
+	//private FsSecurityService fsSecurityService;
+    @Autowired
+    private FsAuthenticationService fsAuthService;     
 	
 	public FileResource() {
 		
@@ -235,7 +238,8 @@ public class FileResource extends AbstractResource {
 		logger.info(FileResource.class.getName() + " jax-rs service called, download file, fileId = " + fileId);
 		
 		// see who is asking for the file...see if they have permission
-		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		//FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		FsSecureUser fsUser = fsAuthService.getLoggedInUser();
 		if(fsUser != null){
 			logger.info("User '" + fsUser.getUsername() + "' is requesting file, file id =>  " + fileId);
 		}else{

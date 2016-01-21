@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.core.security.service;
+package org.lenzi.fstore.core.security.auth.service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,6 +11,7 @@ import java.util.Set;
 import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
 import org.lenzi.fstore.core.repository.security.model.impl.FsUserRole;
 import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.slf4j.Logger;
@@ -24,14 +25,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Bridge between FsUser and Spring Security User.
+ * Bridge between FsUser and Spring Security User. Pulls users data from database and converts
+ * FsUser to a FsSecureUser. The FsSecureUser extends from default Spring User object, which in
+ * turn implements UserDetails.
  * 
  * This service is used in the Spring Security configuration setup.
  * @see org.lenzi.fstore.main.config.SecurityConfig
  * 
  * @author sal
  */
-@Service("FsUserDetailsService")
+@Service("fsUserDetailsService")
 public class FsUserDetailsService implements UserDetailsService {
 
 	@InjectLogger
@@ -57,9 +60,7 @@ public class FsUserDetailsService implements UserDetailsService {
 		
 		FsUser fsUser = null;
 		try {
-			logger.info("A");
 			fsUser = fsSecurityService.getUserByUsername(username);
-			logger.info("B");
 		} catch (ServiceException e) {
 			
 			logger.error(FsUserDetailsService.class.getName() + " => ServiceException, failed to fetch user by username [username='" + username + "']. " + e.getMessage());

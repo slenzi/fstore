@@ -2,8 +2,9 @@ package org.lenzi.fstore.file2.service;
 
 import java.nio.file.Path;
 
-import org.lenzi.fstore.core.acls.service.FsAclService;
 import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.acls.service.FsAclService;
+import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
 import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -38,8 +39,10 @@ public class FsUploadService {
 	//
 	// ACLs security
 	//
-	@Autowired
-	private FsSecurityService fsSecurityService;
+	//@Autowired
+	//private FsSecurityService fsSecurityService;
+    @Autowired
+    private FsAuthenticationService fsAuthService;	    
 	
 	public FsUploadService() {
 		
@@ -54,7 +57,8 @@ public class FsUploadService {
 	 */
 	public void rewriteTextFile(Long fileId, String fileData) throws ServiceException {
 		
-		FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		//FsSecureUser fsUser = fsSecurityService.getLoggedInUser();
+		FsSecureUser fsUser = fsAuthService.getLoggedInUser();
 		if(fsUser != null){
 			logger.info("User '" + fsUser.getUsername() + "' saving text file, with fileId =>" + fileId);
 		}else{

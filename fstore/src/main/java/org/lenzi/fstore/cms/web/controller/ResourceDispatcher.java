@@ -14,6 +14,7 @@ import org.lenzi.fstore.cms.constants.CmsConstants;
 import org.lenzi.fstore.cms.service.FsCmsService;
 import org.lenzi.fstore.core.repository.security.model.impl.FsUser;
 import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
 import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.core.util.StringUtil;
@@ -45,8 +46,10 @@ public class ResourceDispatcher extends AbstractSpringController {
     @Autowired
     private ManagedProperties appProps; 	
     
+    //@Autowired
+    //private FsSecurityService fsSecurityService;
     @Autowired
-    private FsSecurityService fsSecurityService;
+    private FsAuthenticationService fsAuthService;
     
     // behind the scenes cms service class, used only by core classes
     @Autowired
@@ -153,13 +156,16 @@ public class ResourceDispatcher extends AbstractSpringController {
 	 */
 	private void logDebugUserDetails(){
 		
-		FsSecureUser principalUser = fsSecurityService.getLoggedInUser();
+		//FsSecureUser principalUser = fsSecurityService.getLoggedInUser();
+		FsSecureUser principalUser = fsAuthService.getLoggedInUser();
 
 		boolean havePricipalUser = (principalUser != null) ? true : false;
 		boolean haveFsUser = (havePricipalUser && principalUser.getFsUser() != null) ? true : false;
 		
-		String username = fsSecurityService.getUsername();
-		List<String> authorityNames = fsSecurityService.getAuthorities();
+		//String username = fsSecurityService.getUsername();
+		//List<String> authorityNames = fsSecurityService.getAuthorities();
+		String username = fsAuthService.getUsername();
+		List<String> authorityNames = fsAuthService.getAuthorities();		
 	
 		logger.debug("Logged in user details: ");
 		logger.debug("Have principal user (spring security) => " + havePricipalUser);

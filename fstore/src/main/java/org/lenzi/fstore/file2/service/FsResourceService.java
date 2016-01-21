@@ -11,9 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.lenzi.fstore.core.acls.service.FsAclService;
 import org.lenzi.fstore.core.repository.exception.DatabaseException;
 import org.lenzi.fstore.core.security.FsSecureUser;
+import org.lenzi.fstore.core.security.acls.service.FsAclService;
+import org.lenzi.fstore.core.security.auth.service.FsAuthenticationService;
 import org.lenzi.fstore.core.security.service.FsSecurityService;
 import org.lenzi.fstore.core.service.exception.ServiceException;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
@@ -114,8 +115,10 @@ public class FsResourceService {
 	//
 	// ACLs security
 	//
-	@Autowired
-	private FsSecurityService fsSecurityService;
+	//@Autowired
+	//private FsSecurityService fsSecurityService;
+    @Autowired
+    private FsAuthenticationService fsAuthService;	
 	@Autowired
 	private FsAclService fsAclService;
 	
@@ -467,6 +470,12 @@ public class FsResourceService {
 		
 		if(userId == null || userId <= 0L){
 			throw new ServiceException("Error adding file resource meta. User ID is null, or not set.");
+		}
+		
+		//FsSecureUser user = fsSecurityService.getLoggedInUser();
+		FsSecureUser user = fsAuthService.getLoggedInUser();
+		if(user == null){
+			throw new ServiceException("FsSecureUser object is null. Need user object when writing file resource to database.");
 		}
 		
 		// add meta data to database

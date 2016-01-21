@@ -1,4 +1,4 @@
-package org.lenzi.fstore.core.acls.domain;
+package org.lenzi.fstore.core.security.acls.domain;
 
 import org.springframework.security.acls.domain.BasePermission;
 

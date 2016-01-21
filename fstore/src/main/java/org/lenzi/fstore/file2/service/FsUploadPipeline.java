@@ -78,8 +78,8 @@ public class FsUploadPipeline {
     @Autowired
     private UploadMessageService uploadMessageService;
     
-    @Autowired
-    private FsResourceHelper fsResourceHelper;
+    //@Autowired
+    //private FsResourceHelper fsResourceHelper;
     
     // task manager for adding files to database - adds file meta data, plus 1 byte placeholder for binary data.
 	@Autowired
