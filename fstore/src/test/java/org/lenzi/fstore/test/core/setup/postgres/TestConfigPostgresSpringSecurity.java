@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.core.setup;
+package org.lenzi.fstore.test.core.setup.postgres;
 
 import java.util.ArrayList;
 import java.util.Arrays;

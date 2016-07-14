@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.core.setup;
+package org.lenzi.fstore.test.core.setup.postgres;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

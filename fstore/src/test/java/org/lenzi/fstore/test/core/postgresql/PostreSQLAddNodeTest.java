@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.test.core.AbstractAddNodeTest;
-import org.lenzi.fstore.test.core.setup.TestConfigPostgres;
+import org.lenzi.fstore.test.core.setup.postgres.TestConfigPostgres;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;

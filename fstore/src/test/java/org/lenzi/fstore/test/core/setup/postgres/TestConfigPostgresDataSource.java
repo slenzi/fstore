@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.core.setup;
+package org.lenzi.fstore.test.core.setup.postgres;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -91,9 +91,15 @@ public class TestConfigPostgresDataSource {
 		
 		logInfo("Initializing driver manager data source:");
 		
-		logInfo("Database driver = " + appProps.getDatabaseDriver());
-		logInfo("Database url = " + appProps.getDatabaseUrl());
-		logInfo("Database user = " + appProps.getDatabaseUser());
+		// uses test version of connection properties. all test properties are prefixed with 'test.'
+		String dbDriver = StringUtil.changeNull(appProps.getProperty("test.database.driver"));
+		String dbUrl = StringUtil.changeNull(appProps.getProperty("test.database.url"));
+		String dbUser = StringUtil.changeNull(appProps.getProperty("test.database.user"));
+		String dbPwd = StringUtil.changeNull(appProps.getProperty("test.database.password"));
+		
+		logInfo("Database driver = " + dbDriver);
+		logInfo("Database url = " + dbUrl);
+		logInfo("Database user = " + dbUser);
 		logInfo("Database password = *******");
 		
 		if(StringUtil.isNullEmpty(appProps.getDatabaseDriver()) || StringUtil.isNullEmpty(appProps.getDatabaseUrl()) ||
@@ -106,10 +112,10 @@ public class TestConfigPostgresDataSource {
 		
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		
-		dataSource.setDriverClassName(appProps.getDatabaseDriver());
-		dataSource.setUrl(appProps.getDatabaseUrl());
-        dataSource.setUsername(appProps.getDatabaseUser());
-        dataSource.setPassword(appProps.getDatabasePassword());
+		dataSource.setDriverClassName(dbDriver);
+		dataSource.setUrl(dbUrl);
+        dataSource.setUsername(dbUser);
+        dataSource.setPassword(dbPwd);
 
         return dataSource;
 	}	
