@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.core.setup.postgres;
+package org.lenzi.fstore.test.core.setup.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,9 +14,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 @Configuration
 @PropertySource("classpath:my.application.test.properties")
-public class TestConfigPostgresProperty {
+public class TestConfigProperty {
 
-	public TestConfigPostgresProperty() {
+	public TestConfigProperty() {
 	
 	}
 	

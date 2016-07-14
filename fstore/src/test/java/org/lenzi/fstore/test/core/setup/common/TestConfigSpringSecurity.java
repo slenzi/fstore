@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.core.setup.postgres;
+package org.lenzi.fstore.test.core.setup.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
  */
 @Configuration
 @EnableWebSecurity
-public class TestConfigPostgresSpringSecurity extends WebSecurityConfigurerAdapter {
+public class TestConfigSpringSecurity extends WebSecurityConfigurerAdapter {
 
 	@InjectLogger
 	private Logger logger;
@@ -64,7 +64,7 @@ public class TestConfigPostgresSpringSecurity extends WebSecurityConfigurerAdapt
 	@Autowired
 	private RoleHierarchyImpl roleHierarchy;
 	
-	public TestConfigPostgresSpringSecurity() {
+	public TestConfigSpringSecurity() {
 		
 	}
 	

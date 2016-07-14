@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.core.setup.postgres;
+package org.lenzi.fstore.test.core.setup.common;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -24,7 +24,7 @@ import org.springframework.jndi.JndiTemplate;
  * @author slenzi
  */
 @Configuration
-public class TestConfigPostgresDataSource {
+public class TestConfigDataSource {
 
     @Autowired
     private ManagedProperties appProps;
@@ -35,7 +35,7 @@ public class TestConfigPostgresDataSource {
 	/**
 	 * 
 	 */
-	public TestConfigPostgresDataSource() {
+	public TestConfigDataSource() {
 	
 	}
 	

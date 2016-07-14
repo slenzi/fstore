@@ -1,9 +1,9 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.core.setup.postgres;
+package org.lenzi.fstore.test.core.setup.oracle;
 
-import org.lenzi.fstore.core.repository.tree.query.TreeQueryPostgresqlRepository;
+import org.lenzi.fstore.core.repository.tree.query.TreeQueryOracleRepository;
 import org.lenzi.fstore.core.repository.tree.query.TreeQueryRepository;
 import org.lenzi.fstore.core.stereotype.InjectLogger;
 import org.lenzi.fstore.test.core.setup.common.TestConfigDataSource;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * New java-based config for PostgreSQL unit tests. The older config setup made use of
+ * New java-based config for Oracle unit tests. The older config setup made use of
  * a persistence.xml file and we want to get rid of any XML!
  * 
  * @author slenzi
@@ -50,27 +50,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Import({
 	TestConfigProperty.class,
 	TestConfigDataSource.class,
-	TestConfigPostgresPersistence.class,
+	TestConfigOraclePersistence.class,
 	TestConfigSpringSecurity.class,
 	TestConfigSpringACL.class
 })
-@Transactional(transactionManager = "postgresqlTxManager")
-public class TestConfigPostgres {
+@Transactional(transactionManager = "oracleTxManager")
+public class TestConfigOracle {
 
 	@InjectLogger
 	private Logger logger;	
 	
-	public TestConfigPostgres() {
+	public TestConfigOracle() {
 
 	}
 	
 	@Bean
-	@Profile("postgresql")
+	@Profile("oracle")
 	public TreeQueryRepository getPostgresqlTreeQueryRepository(){
 		
-		logInfo("Creating PostgreSQL Tree Query Repository");
+		logInfo("Creating Oracle Tree Query Repository");
 		
-		return new TreeQueryPostgresqlRepository();
+		return new TreeQueryOracleRepository();
 		
 	}
 	

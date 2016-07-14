@@ -1,4 +1,4 @@
-package org.lenzi.fstore.test.core.setup.postgres;
+package org.lenzi.fstore.test.core.setup.common;
 
 import javax.sql.DataSource;
 
@@ -32,7 +32,7 @@ import net.sf.ehcache.CacheManager;
  * @author slenzi
  */
 @Configuration
-public class TestConfigPostgresSpringACL {
+public class TestConfigSpringACL {
 
 	@InjectLogger
 	private Logger logger;
@@ -43,7 +43,7 @@ public class TestConfigPostgresSpringACL {
 	@Qualifier("primaryDataSource")
 	private DataSource primaryDataSource;
 	
-	// for ingres
+	// for postgres
 	@Bean
 	@Profile("postgresql")
 	public JdbcMutableAclService aclServicePostgresql() {
@@ -56,7 +56,6 @@ public class TestConfigPostgresSpringACL {
 	    return service;
 	}
 	
-	/*
 	// for oracle
 	@Bean
 	@Profile("oracle")
@@ -68,7 +67,6 @@ public class TestConfigPostgresSpringACL {
 	    // no mention of manually setting class identity and sid identity queries for oracle....just postgresql
 	    return service;
 	}
-	*/
 	
 	@Bean
 	public AclAuthorizationStrategy aclAuthorizationStrategy() {
