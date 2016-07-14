@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author slenzi
  */
+//TODO - ADD THIS BACK AFTER YOU REWRITE JUNIT TESTS TO USE PURE JAVA CONFIG (NO XML)
 @Service
 @Transactional(propagation=Propagation.REQUIRED, rollbackFor=Throwable.class)
 public class FsAclService {

@@ -114,7 +114,8 @@ public class FsResourceService {
 	//
     @Autowired
     private FsAuthenticationService fsAuthService;	
-	@Autowired
+	
+    @Autowired
 	private FsAclService fsAclService;
 	
 	//
