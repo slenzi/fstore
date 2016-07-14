@@ -24,7 +24,7 @@ import org.springframework.jndi.JndiTemplate;
  * @author slenzi
  */
 @Configuration
-public class TestConfigDataSource {
+public class TestCoreConfigDataSource {
 
     @Autowired
     private ManagedProperties appProps;
@@ -35,7 +35,7 @@ public class TestConfigDataSource {
 	/**
 	 * 
 	 */
-	public TestConfigDataSource() {
+	public TestCoreConfigDataSource() {
 	
 	}
 	

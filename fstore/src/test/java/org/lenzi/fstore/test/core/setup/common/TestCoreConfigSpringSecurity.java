@@ -37,7 +37,7 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
  */
 @Configuration
 @EnableWebSecurity
-public class TestConfigSpringSecurity extends WebSecurityConfigurerAdapter {
+public class TestCoreConfigSpringSecurity extends WebSecurityConfigurerAdapter {
 
 	@InjectLogger
 	private Logger logger;
@@ -64,7 +64,7 @@ public class TestConfigSpringSecurity extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private RoleHierarchyImpl roleHierarchy;
 	
-	public TestConfigSpringSecurity() {
+	public TestCoreConfigSpringSecurity() {
 		
 	}
 	

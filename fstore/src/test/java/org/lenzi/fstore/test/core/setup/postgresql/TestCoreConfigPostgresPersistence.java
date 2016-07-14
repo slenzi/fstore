@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.lenzi.fstore.test.core.setup.oracle;
+package org.lenzi.fstore.test.core.setup.postgresql;
 
 import java.util.Properties;
 
@@ -23,13 +23,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Oracle persistence config used for oracle unit tests.
+ * Postgres persistence config used for postgres unit tests.
  * 
  * @author slenzi
  */
 @Configuration 
 @EnableTransactionManagement
-public class TestConfigOraclePersistence {
+public class TestCoreConfigPostgresPersistence {
 
     @Autowired
     private ManagedProperties appProps;
@@ -56,7 +56,7 @@ public class TestConfigOraclePersistence {
 	/**
 	 * 
 	 */
-	public TestConfigOraclePersistence() {
+	public TestCoreConfigPostgresPersistence() {
 		
 	}
 	
@@ -66,7 +66,7 @@ public class TestConfigOraclePersistence {
 	 * @return
 	 */
 	@Bean
-	@Qualifier("oracle")
+	@Qualifier("postgresql")
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
@@ -88,8 +88,8 @@ public class TestConfigOraclePersistence {
 	 * @param emf
 	 * @return
 	 */
-    @Bean(name="oracleTxManager")
-    @Qualifier("oracle")	
+    @Bean(name="postgresqlTxManager")
+    @Qualifier("postgresql")	
 	public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
 		
 		JpaTransactionManager transactionManager = new JpaTransactionManager();

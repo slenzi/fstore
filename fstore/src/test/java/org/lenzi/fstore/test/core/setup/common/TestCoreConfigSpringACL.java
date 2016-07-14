@@ -32,7 +32,7 @@ import net.sf.ehcache.CacheManager;
  * @author slenzi
  */
 @Configuration
-public class TestConfigSpringACL {
+public class TestCoreConfigSpringACL {
 
 	@InjectLogger
 	private Logger logger;

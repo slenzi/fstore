@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lenzi.fstore.test.core.AbstractGetParentNodeTest;
-import org.lenzi.fstore.test.core.setup.oracle.TestConfigOracle;
+import org.lenzi.fstore.test.core.setup.oracle.TestCoreConfigOracle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,13 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @author slenzi
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=TestConfigOracle.class, loader=AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes=TestCoreConfigOracle.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
 public class OracleGetParentNodeTest extends AbstractGetParentNodeTest {
 	
 	@Autowired
-	private TestConfigOracle configuration = null;
+	private TestCoreConfigOracle configuration = null;
 	
 	public OracleGetParentNodeTest() {
 

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lenzi.fstore.test.file2.setup.OracleCmsTestConfiguration;
+import org.lenzi.fstore.test.file2.setup.oracle.TestFileConfigOracle;
 import org.lenzi.fstore.test.file2.AbstractAddFsFileResourceBulk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=OracleCmsTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes=TestFileConfigOracle.class, loader=AnnotationConfigContextLoader.class)
 @Transactional("oracle")
 @ActiveProfiles({"oracle"})
 public class OracleAddFsFileResourceBulkTest extends AbstractAddFsFileResourceBulk {
 
 	@Autowired
-	private OracleCmsTestConfiguration configuration = null;	
+	private TestFileConfigOracle configuration = null;	
 	
 	/**
 	 * 

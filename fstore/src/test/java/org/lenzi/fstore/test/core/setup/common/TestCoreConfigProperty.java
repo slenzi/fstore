@@ -14,9 +14,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 @Configuration
 @PropertySource("classpath:my.application.test.properties")
-public class TestConfigProperty {
+public class TestCoreConfigProperty {
 
-	public TestConfigProperty() {
+	public TestCoreConfigProperty() {
 	
 	}
 	

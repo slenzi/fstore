@@ -37,32 +37,35 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
  * @author sal
  *
  * Configuration setup for our PostgreSQL unit test cases.
+ * 
+ * @deprecated - Used an XML file for persistence setup. We don't like XML! Replaced with
+ * new configuration that is purely java based.
  */
 @Configuration
 @EnableWebSocketMessageBroker
 @PropertySource("classpath:my.application.test.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(
-		basePackages={
-				"org.lenzi.fstore.core.model.util",
-				"org.lenzi.fstore.core.repository",
-				"org.lenzi.fstore.core.repository.tree.model",
-				"org.lenzi.fstore.core.repository.tree.model.impl",
-				"org.lenzi.fstore.core.repository.security.model",
-				"org.lenzi.fstore.core.repository.security.model.impl",					
-				"org.lenzi.fstore.core.service",
-				"org.lenzi.fstore.core.logging",
-				"org.lenzi.fstore.core.security",
-				"org.lenzi.fstore.main.properties",
-				"org.lenzi.fstore.example.repository",
-				"org.lenzi.fstore.example.repository.model.impl",
-				"org.lenzi.fstore.file2.service",
-				"org.lenzi.fstore.file2.repository",
-				"org.lenzi.fstore.file2.repository.model.impl",
-				"org.lenzi.fstore.file2.concurrent",
-				"org.lenzi.fstore.file2.web.messaging",
-				"org.lenzi.fstore.cms.repository.model.impl"
-		}
+	basePackages={
+		"org.lenzi.fstore.core.model.util",
+		"org.lenzi.fstore.core.repository",
+		"org.lenzi.fstore.core.repository.tree.model",
+		"org.lenzi.fstore.core.repository.tree.model.impl",
+		"org.lenzi.fstore.core.repository.security.model",
+		"org.lenzi.fstore.core.repository.security.model.impl",					
+		"org.lenzi.fstore.core.service",
+		"org.lenzi.fstore.core.logging",
+		"org.lenzi.fstore.core.security",
+		"org.lenzi.fstore.main.properties",
+		"org.lenzi.fstore.example.repository",
+		"org.lenzi.fstore.example.repository.model.impl",
+		"org.lenzi.fstore.file2.service",
+		"org.lenzi.fstore.file2.repository",
+		"org.lenzi.fstore.file2.repository.model.impl",
+		"org.lenzi.fstore.file2.concurrent",
+		"org.lenzi.fstore.file2.web.messaging",
+		"org.lenzi.fstore.cms.repository.model.impl"
+	}
 )
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 @Rollback
