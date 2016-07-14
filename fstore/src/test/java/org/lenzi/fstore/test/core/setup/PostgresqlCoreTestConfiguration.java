@@ -32,6 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @author sal
  *
  * Configuration setup for our PostgreSQL unit test cases.
+ * 
+ * @deprecated - This setup uses an XML config file for the persistence setup Boo! This has been replaced with new
+ * java-based config files in the org.lenzi.fstore.test.core.setup.postgres package.
+ * @see org.lenzi.fstore.test.core.setup.postgres.TestConfigPostgres
  */
 @Configuration
 @EnableTransactionManagement(proxyTargetClass=true)
